@@ -1,15 +1,15 @@
 import { CommonHead } from '../../components/head/CommonHead';
 import { webview } from '@kit.ArkWeb';
-import { BusinessError } from '@kit.BasicServicesKit';
 import { promptAction } from '@kit.ArkUI';
 import { getLoginStatus } from '../../api/getLoginStatus';
 import { LoginHelpSheet } from '../../components/sheets/LoginHelpSheet';
+import { ToastUtil } from '@pura/harmony-utils';
 
 @Entry
 @Component
 struct WebLogin {
   @StorageProp('bottomRectHeight') bottomRectHeight: number = 0;
-  @State userAgent: string = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36 Edg/130.0.0.0'
+  @State userAgent: string = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.142 Safari/537.36'
   controller: webview.WebviewController = new webview.WebviewController()
 
   build() {
@@ -45,13 +45,14 @@ struct WebLogin {
   async getCookie() {
     try {
       let cookie = webview.WebCookieManager.fetchCookieSync('https://music.163.com')
-      if (cookie) {
+      if (await this.checkValidCookie(cookie)) {
+        console.log('WebLogin Get Cookie: ' + cookie)
         cookie = cookie + '; OS=pc'
         AppStorage.setOrCreate("cookie",cookie)
         console.log('Cookie => ' + cookie)
         getLoginStatus(cookie)
       } else {
-        promptAction.showToast({ message: '获取登录信息失败！' })
+        ToastUtil.showToast('获取登录信息失败，请确认是否已在网页内登录！')
       }
     } catch (error) {
       console.error('获取Cookie失败', error.message)
@@ -60,6 +61,26 @@ struct WebLogin {
       })
     }
   }
+
+  async checkValidCookie(cookie: string): Promise<boolean> {
+    try {
+      const hasMusicU = cookie.includes('MUSIC_U');
+      const hasCsrf = cookie.includes('__csrf');
+
+      if (hasMusicU && hasCsrf) {
+        console.log('Valid cookie detected:', cookie);
+        return true;
+      } else {
+        console.log('Invalid or unauthenticated cookie:', cookie);
+        return false;
+      }
+    } catch (error) {
+      console.error('Error while checking cookie validity:', error.message);
+      return false;
+    }
+  }
+
+
 }
 
 @Component

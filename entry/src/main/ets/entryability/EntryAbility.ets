@@ -5,6 +5,7 @@ import { BusinessError } from '@kit.BasicServicesKit';
 import PreferencesUtils from '../common/utils/PreferencesUtils';
 import { getLoginInfo } from '../common/functions/getLoginInfo';
 import Constants from '../common/constants/Constants';
+import { LogUtil } from '@pura/harmony-utils';
 
 
 export default class EntryAbility extends UIAbility {
@@ -13,6 +14,7 @@ export default class EntryAbility extends UIAbility {
 
     // 初始化 Preferences
     PreferencesUtils.loadPreference(this.context, Constants.USER_PREF)
+    LogUtil.init(0x1010, 'Cloud Music', true)
   }
 
   onDestroy(): void {

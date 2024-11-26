@@ -1,4 +1,3 @@
-import { HttpRequest } from '../common/utils/HttpRequestUtil'
 import { IndexHead } from '../components/head/IndexHead'
 import { PlayLists } from '../components/main/PlayLists'
 import { SearchComponent } from '../components/main/SearchComponent'
@@ -7,14 +6,6 @@ import { SearchComponent } from '../components/main/SearchComponent'
 @Component
 struct Index {
   @StorageProp("ValidCookie") isValidCookie:boolean = false
-
-  onPageShow(): void {
-    const url:string = `http://111.229.38.178:3000/song/download/url/v1?id=2155423468&level=hires`
-    const request = new HttpRequest(url)
-    request.Request().then((data) => {
-      console.log('IndexGetData: ' + JSON.stringify(data.result))
-    })
-  }
 
   async build() {
     Stack() {

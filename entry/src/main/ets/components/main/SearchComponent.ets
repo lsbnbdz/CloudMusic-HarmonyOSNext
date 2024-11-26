@@ -29,7 +29,7 @@ export struct SearchComponent {
             })
           } else { promptAction.showToast({ message: '请输入搜索词' }) }
         })
-      }.width('80%').justifyContent(FlexAlign.Center)
+      }.width('100%').justifyContent(FlexAlign.Center)
     }
     .backgroundColor($r('app.color.main'))
     .padding( {bottom:20} )

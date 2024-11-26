@@ -5,13 +5,13 @@
         "name": "default",
         "type": "HarmonyOS",
         "material": {
-          "certpath": "C:\\Users\\zcy01\\.ohos\\config\\default_MusicDownloaderForHM_4ppOoTRHnjAofOcXxa9BplG03n5DQUfiNNDkXS-vI1A=.cer",
-          "storePassword": "0000001B1FA8D20A2F0C55D4F9BB58312F856C34C599C9A14D73B1E007B96158B9FCB6B42ACA4FC1CA20C1",
+          "certpath": "C:\\Users\\Zhou Chenlvin\\.ohos\\config\\default_CloudMusic-HMOS_49Cx5ZkdoyjQADe6JwU6Rz-R50i5AkaXO1mOEwbzolc=.cer",
+          "storePassword": "0000001B20F6C5DE31864D27D5DCFF06257F2D85586D9BDEDC88BED5CEEE828DA7788CAB738DBB55BB4B17",
           "keyAlias": "debugKey",
-          "keyPassword": "0000001BC0C43C42BFF7E471F5B3433473873EC80DA2375D9884A15A02C1DFB50DBC08DAF5F07AF0879B18",
-          "profile": "C:\\Users\\zcy01\\.ohos\\config\\default_MusicDownloaderForHM_4ppOoTRHnjAofOcXxa9BplG03n5DQUfiNNDkXS-vI1A=.p7b",
+          "keyPassword": "0000001B08CE077FF05C6F0B646CED1CC13CCC97AB8A53B31BD5165FB89C233A0F2900803060372DFF1E6B",
+          "profile": "C:\\Users\\Zhou Chenlvin\\.ohos\\config\\default_CloudMusic-HMOS_49Cx5ZkdoyjQADe6JwU6Rz-R50i5AkaXO1mOEwbzolc=.p7b",
           "signAlg": "SHA256withECDSA",
-          "storeFile": "C:\\Users\\zcy01\\.ohos\\config\\default_MusicDownloaderForHM_4ppOoTRHnjAofOcXxa9BplG03n5DQUfiNNDkXS-vI1A=.p12"
+          "storeFile": "C:\\Users\\Zhou Chenlvin\\.ohos\\config\\default_CloudMusic-HMOS_49Cx5ZkdoyjQADe6JwU6Rz-R50i5AkaXO1mOEwbzolc=.p12"
         }
       }
     ],

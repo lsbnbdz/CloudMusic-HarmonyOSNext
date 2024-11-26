@@ -3,9 +3,9 @@ import { PlayListSongs } from "../common/entities/PlayListSongs";
 import { Song } from "../common/entities/SongsResult";
 import { HttpRequest } from "../common/utils/HttpRequestUtil";
 
-export async function getPlayListSongs(listId:number): Promise<Array<Song>> {
+export async function getPlayListSongs(listId:number, trackCount:number, offset:number): Promise<Array<Song>> {
   let list:Array<Song> = new Array()
-  const url:string = `${Constants.ROOT_URL}/playlist/track/all?id=${listId}&limit=20&offset=0`
+  const url:string = `${Constants.ROOT_URL}/playlist/track/all?id=${listId}&limit=30&offset=${offset}`
   const request = new HttpRequest(url)
   await request.Request().then((data) => {
     const dataGot:PlayListSongs = data.result as PlayListSongs

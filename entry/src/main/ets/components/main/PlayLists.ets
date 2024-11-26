@@ -1,6 +1,7 @@
 import { getPlayLists } from "../../api/getPlayLists"
 import { playList } from "../../common/entities/PlayList"
 import { PlayListCard } from "./PlayListCard"
+import { SpinKit, SpinType } from '@pura/spinkit'
 
 @Component
 export struct PlayLists {
@@ -28,7 +29,7 @@ export struct PlayLists {
     Column() {
       if(this.isLoading == true) {
         Column() {
-          LoadingProgress().width(80)
+          SpinKit({ spinType: SpinType.spinG, spinSize:60, spinColor:Color.Gray }).width(60)
         }.height('50%').width('100%').justifyContent(FlexAlign.Center)
       }
       else {

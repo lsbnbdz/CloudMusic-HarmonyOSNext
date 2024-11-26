@@ -17,7 +17,7 @@ export struct IndexHead {
         })
         .onClick(() => { this.isShowSheet = !this.isShowSheet })
 
-      Text("Cloud Music").fontSize(20).fontColor($r('app.color.reverse'))
+      Text("云音汇").fontSize(20).fontColor($r('app.color.reverse'))
       CommonCircleButton({ ButtonImageName:'ic_public_more_filled', BgColor:'#00cbcbcb'})
         .bindMenu(this.MoreMenu())
     }

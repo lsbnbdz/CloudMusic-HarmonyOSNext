@@ -29,7 +29,7 @@ export struct PlayListCard {
     .onClick(() => {
       router.pushUrl({
         url: 'pages/PlayListPage',
-        params: { 'playList': this.playList }
+        params: { 'playList': this.playList, 'trackCount': this.playList.trackCount }
       })
     })
   }

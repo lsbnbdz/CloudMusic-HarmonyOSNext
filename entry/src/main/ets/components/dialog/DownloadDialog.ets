@@ -3,6 +3,7 @@ import { QualityType, SongDownload, SongDownloadClass } from "../../common/entit
 import { Song, SongClass } from "../../common/entities/SongsResult"
 import { pasteboard } from "@kit.BasicServicesKit"
 import { promptAction } from "@kit.ArkUI"
+import { SpinKit, SpinType } from "@pura/spinkit"
 
 @CustomDialog
 export struct DownloadDialog {
@@ -37,7 +38,7 @@ export struct DownloadDialog {
       Divider()
       Stack() {
         if(this.isLoading) {
-          LoadingProgress().width(40)
+          SpinKit({ spinType: SpinType.spinB, spinSize:40, spinColor:$r('app.color.reverse') }).width(40)
         }
         Column({ space:10 }) {
           Image(this.picUrl).width(128)

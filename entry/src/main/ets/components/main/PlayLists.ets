@@ -39,7 +39,11 @@ export struct PlayLists {
               PlayListCard({playList: item})
             }
           })
-        }.height(`calc(100% - ${vp2px(this.topRectHeight) + 80}px)`).width('100%').scrollBar(BarState.Auto)
+          ListItem().height(px2vp(this.bottomRectHeight))
+        }
+        .height('100%')
+        .width('100%')
+        .scrollBar(BarState.Auto)
       }
     }.width('100%').height('100%')
   }

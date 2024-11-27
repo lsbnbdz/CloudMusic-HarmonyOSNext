@@ -21,10 +21,9 @@ export struct IndexHead {
       CommonCircleButton({ ButtonImageName:'ic_public_more_filled', BgColor:'#00cbcbcb'})
         .bindMenu(this.MoreMenu())
     }
-    .padding({ top: px2vp(this.topRectHeight), left: 10, right: 10 })
+    .padding({ left: 10, right: 10 })
     .justifyContent(FlexAlign.SpaceBetween)
     .width('100%')
-    .height(90)
     .backgroundColor(Color.Transparent)
   }
 

@@ -16,7 +16,8 @@ export struct PlayListCard {
         Column() {
           Text(this.playList.name).textStyle(16)
           Text(`${this.playList.trackCount} 首歌曲     ${this.playList.playCount} 次播放`).textStyle(12)
-        }.width(`calc(100% - ${90}px)`)
+        }
+        .layoutWeight(1)
       }
       .width('100%')
     }

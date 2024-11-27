@@ -5,13 +5,26 @@
         "name": "default",
         "type": "HarmonyOS",
         "material": {
-          "certpath": "C:\\Users\\Zhou Chenlvin\\.ohos\\config\\default_CloudMusic-HMOS_49Cx5ZkdoyjQADe6JwU6Rz-R50i5AkaXO1mOEwbzolc=.cer",
-          "storePassword": "0000001B20F6C5DE31864D27D5DCFF06257F2D85586D9BDEDC88BED5CEEE828DA7788CAB738DBB55BB4B17",
-          "keyAlias": "debugKey",
-          "keyPassword": "0000001B08CE077FF05C6F0B646CED1CC13CCC97AB8A53B31BD5165FB89C233A0F2900803060372DFF1E6B",
-          "profile": "C:\\Users\\Zhou Chenlvin\\.ohos\\config\\default_CloudMusic-HMOS_49Cx5ZkdoyjQADe6JwU6Rz-R50i5AkaXO1mOEwbzolc=.p7b",
+          "certpath": "D:/Code/Key/CloudMusic.cer",
+          "storePassword": "0000001BD17BE922912EB1B56C543CE57ECB914B140182D3D63F42D76B742F5ED4C6BB255E7CE7A2F444D4",
+          "keyAlias": "test",
+          "keyPassword": "0000001BDEF6CB9B33C34DC490B050D5B17C1534C6BFFBED618CFA9312DD092621FA7C7755CE8143578F04",
+          "profile": "D:/Code/Key/cloudmusicRelease.p7b",
           "signAlg": "SHA256withECDSA",
-          "storeFile": "C:\\Users\\Zhou Chenlvin\\.ohos\\config\\default_CloudMusic-HMOS_49Cx5ZkdoyjQADe6JwU6Rz-R50i5AkaXO1mOEwbzolc=.p12"
+          "storeFile": "D:/Code/Key/CloudMusic.p12"
+        }
+      },
+      {
+        "name": "cc",
+        "type": "HarmonyOS",
+        "material": {
+          "certpath": "C:\\Users\\Zhou Chenlvin\\.ohos\\config\\cc_CloudMusic-HMOS_49Cx5ZkdoyjQADe6JwU6Rz-R50i5AkaXO1mOEwbzolc=.cer",
+          "storePassword": "0000001BFD2136DED04634A4BFFEA1C424AD430E601863E23644D3244632785ED1BB105294DB4D93491A3D",
+          "keyAlias": "debugKey",
+          "keyPassword": "0000001B85E3656D23472D0BE3665FA0A3EFF69C2AA52F64C779E18C87520D7F0ABB2BE591244DC7DD99B7",
+          "profile": "C:\\Users\\Zhou Chenlvin\\.ohos\\config\\cc_CloudMusic-HMOS_49Cx5ZkdoyjQADe6JwU6Rz-R50i5AkaXO1mOEwbzolc=.p7b",
+          "signAlg": "SHA256withECDSA",
+          "storeFile": "C:\\Users\\Zhou Chenlvin\\.ohos\\config\\cc_CloudMusic-HMOS_49Cx5ZkdoyjQADe6JwU6Rz-R50i5AkaXO1mOEwbzolc=.p12"
         }
       }
     ],

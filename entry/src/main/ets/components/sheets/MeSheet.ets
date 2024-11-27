@@ -4,14 +4,14 @@ import { User, UserClass } from "../../common/entities/User";
 
 @Component
 export struct MeSheet {
-  @StorageProp("ValidCookie") validCookie: boolean = false;
+  @StorageProp("isValidCookie") isValidCookie: boolean = false;
   @StorageProp("User") user: User = UserClass;
   @StorageProp("bottomRectHeight") bottomRectHeight: number = 0;
   @Link isShowSheet:boolean
 
   build() {
     Column({ space: 20 }) {
-      if (!this.validCookie || !this.user) {// 未登录
+      if (!this.isValidCookie || !this.user) {// 未登录
         Image($r('app.media.ic_user_portrait')).width(80)
         Text('未登录').NormalText(24)
         Button('登 录').LoginButton()

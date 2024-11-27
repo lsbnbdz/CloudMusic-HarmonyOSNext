@@ -1,4 +1,5 @@
 import { PasteboardUtil, ToastUtil } from '@pura/harmony-utils';
+import Constants from '../common/constants/Constants';
 import { SettingsHead } from '../components/head/SettingsHead'
 
 @Entry
@@ -8,14 +9,20 @@ struct Settings {
   @StorageProp('topRectHeight') topRectHeight: number = 0;
 
   build() {
-    Column({ space: 30 }) {
-      SettingsHead()
-      List({ space:10 }) {
-        ListItem() { Version() }
-      }.divider({ strokeWidth:2 }).width('100%').scrollBar(BarState.Auto)
-      Bottom()
+    Stack() {
+      Column({ space: 10 }) {
+        SettingsHead().padding({ bottom: 20 })
+
+        List({ space: 20 }) {
+          ListItem() { Version() }
+          ListItem() { Feedback() }
+        }.divider({ strokeWidth: 2 }).scrollBar(BarState.Auto)
+        .height('100%').width('100%').layoutWeight(1)
+
+        Bottom()
+      }
     }
-    // .height(`calc(100% - 70px - ${this.topRectHeight}px - ${this.bottomRectHeight}px)`)
+    .padding({ top: px2vp(this.topRectHeight) })
     .width('100%')
     .height('100%')
     .backgroundColor($r('app.color.main'))
@@ -27,8 +34,23 @@ struct Version {
   build() {
     Row() {
       Text('当前版本').LeftText()
-      Text('V.0.9.1 - 云音汇测试版').RightText()
+      Text(Constants.VERSION + Constants.VER_DESC).RightText()
     }.width('100%').justifyContent(FlexAlign.SpaceBetween).padding({ left:30, right: 30})
+  }
+}
+
+@Component
+struct Feedback {
+  build() {
+    Row() {
+      Text('问题反馈').LeftText()
+      Text('chenlvin@126.com\n' +
+        '或 GitHub issue').RightText().textAlign(TextAlign.End)
+    }.width('100%').justifyContent(FlexAlign.SpaceBetween).padding({ left:30, right: 30})
+    .onClick(() => {
+      PasteboardUtil.setDataText('chenlvin@126.com')
+      ToastUtil.showToast('已复制邮箱地址!')
+    })
   }
 }
 
@@ -38,7 +60,9 @@ struct Bottom {
     Column() {
       Text('云音汇 @Chenlvin\n' +
         'GitHub: CloudMusic-HarmonyOSNext').BottomText()
-    }.width('100%')
+    }
+    .width('100%')
+    .height(50)
   }
 }
 

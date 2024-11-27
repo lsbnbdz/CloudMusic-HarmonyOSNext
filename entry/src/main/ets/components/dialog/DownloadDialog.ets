@@ -18,10 +18,11 @@ export struct DownloadDialog {
   fileSize:number = -1
 
   @State songDownload:SongDownload = SongDownloadClass
+  @StorageProp('isValidCookie') isValidCookie:boolean = false
 
   async aboutToAppear(): Promise<void> {
     try {
-      const gotDownloadData: SongDownload = await getDownloadInfo(this.song.id, 'hires')
+      const gotDownloadData: SongDownload = await getDownloadInfo(this.song.id, 'hires', this.isValidCookie)
       this.songDownload = gotDownloadData
       this.fileSize = await convertSize(this.songDownload.data.size)
       setTimeout(() => {
@@ -51,6 +52,9 @@ export struct DownloadDialog {
             .onClick(() => { copyDownloadUrl(this.songDownload.data.url) })
           Button('下载到本地').ButtonStyle()
             .onClick(() => { promptAction.showToast({ message: '该功能正在开发中，敬请期待。', duration: 3000})})
+          if(!this.isValidCookie) {
+            Text('你尚未登录，将无法完整获取部分会员歌曲')
+          }
         }
         .opacity(this.isLoading ? 0 : 1)
       }

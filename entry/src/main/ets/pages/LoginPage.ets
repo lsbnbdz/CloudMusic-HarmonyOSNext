@@ -22,7 +22,7 @@ struct LoginPage {
           }.height('100%').onClick(() => {
             router.replaceUrl({ url:'pages/login/WebLogin' })
           })
-        }.backgroundColor('#ff3e93ea').borderRadius(10).height(80).width(180)
+        }.backgroundColor('#ff3e93ea').borderRadius(10).height(80).width(240)
 
         Button({ type: ButtonType.Normal }) {
           Row({ space: 10 }) {
@@ -31,7 +31,7 @@ struct LoginPage {
           }.height('100%').onClick(() => {
             promptAction.showDialog({ message: '该功能正在开发中，敬请期待！' })
           })
-        }.backgroundColor('#ffff3737').borderRadius(10).height(80).width(180)
+        }.backgroundColor('#ffff3737').borderRadius(10).height(80).width(240)
 
 
       }

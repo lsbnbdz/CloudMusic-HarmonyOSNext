@@ -5,7 +5,7 @@
 @Component
 export struct CommonCircleButton {
   ButtonImageName: string = ''
-  BgColor: string = '#ffdbdbdb'
+  BgColor: string = 'transparent'
 
   build() {
     Column() {

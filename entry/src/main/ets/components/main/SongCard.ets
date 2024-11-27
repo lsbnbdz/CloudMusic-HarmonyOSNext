@@ -28,9 +28,10 @@ export struct SongCard {
         Text(`${this.sid + 1}`).width(40).fontWeight(FontWeight.Bold)
         Image(this.picUrl + '?param=100y100').width(50).padding({right:10}).borderRadius(5)
         Column() {
-          Text(this.song.name).textStyle(18)
+          Text(this.song.name).textStyle(16)
           Text(this.artists).textStyle(12)
         }
+        .layoutWeight(1)
         .width(`100%`)
       }
       .width('100%')
@@ -55,7 +56,6 @@ export struct SongCard {
 }
 
 @Extend(Text) function textStyle(size:number) {
-  .width(`calc(100% - 300px)`)
   .fontSize(size)
   .alignSelf(ItemAlign.Start)
   .fontColor($r('app.color.reverse'))

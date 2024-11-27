@@ -38,23 +38,27 @@ struct SongsListPage {
   }
 
   build() {
-    Column() {
+    Stack() {
       if(this.isLoading == true) {
         Column() {
           LoadingProgress().width(80)
         }.height('100%').width('100%').justifyContent(FlexAlign.Center)
       } else {
-        SongsListHead({ searchKeyword: this.searchKeyword })
-
-        List() {
-          ForEach(this.list, (item: Song, index) => {
-            ListItem() {
-              SongCard({ song: item, sid: index })
-            }
-          })
-        }.height(`calc(100% - 70px - ${this.topRectHeight}px - ${this.bottomRectHeight}px)`).width('100%').scrollBar(BarState.Auto)
+        Column() {
+          SongsListHead({ searchKeyword: this.searchKeyword })
+          List() {
+            ForEach(this.list, (item: Song, index) => {
+              ListItem() {
+                SongCard({ song: item, sid: index })
+              }
+            })
+            ListItem().padding({bottom: px2vp(this.bottomRectHeight)})
+          }.layoutWeight(1).width('100%').scrollBar(BarState.Auto)
+        }
+        .height('100%')
       }
     }
+    .padding({ top: px2vp(this.topRectHeight) })
     .backgroundColor($r('app.color.main'))
   }
 }

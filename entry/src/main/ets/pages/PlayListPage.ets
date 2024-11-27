@@ -62,44 +62,52 @@ struct PlayListPage {
   }
 
   build() {
-    Column() {
+    Stack() {
       if (this.isLoading == true) {
         Column() {
           SpinKit({ spinType: SpinType.spinO, spinSize: 60, spinColor: Color.Gray }).width(60)
         }.height('100%').width('100%').justifyContent(FlexAlign.Center)
       } else {
-        PlayListHead({ playListName: this.playList.name })
-        List() {
-          ForEach(this.list, (item: Song, index) => {
-            ListItem() {
-              SongCard({ song: item, sid: index })
-            }
-          });
-
-          // 添加加载更多
-          if (this.isLoadingMore) {
-            ListItem() {
-              Column() {
-                SpinKit({ spinType: SpinType.spinO, spinSize: 30, spinColor: Color.Gray }).width(30)
-              }.justifyContent(FlexAlign.Center).width('100%').height(50)
-            }
-          } else if(this.hasMore) {
-            ListItem() {
-              Text("点击加载更多").onClick(() => {
-                this.loadSongs(30, this.currentOffset)
-              }).height(50).fontColor($r('app.color.reverse')).width('100%').textAlign(TextAlign.Center)
-            }
-          }else if (!this.hasMore) {
-            ListItem() {
-              Text('没有更多了~').fontSize(16).textAlign(TextAlign.Center).width('100%').height(50);
+        Column({ space: 10 }) {
+          PlayListHead({ playListName: this.playList.name })
+          List() {
+            ForEach(this.list, (item: Song, index) => {
+              ListItem() {
+                SongCard({ song: item, sid: index })
+              }
+            });
+            // 添加加载更多
+            if (this.isLoadingMore) {
+              ListItem() {
+                Column() {
+                  SpinKit({ spinType: SpinType.spinO, spinSize: 30, spinColor: Color.Gray }).width(30)
+                }.justifyContent(FlexAlign.Center).width('100%').height(50)
+              }
+            } else if (this.hasMore) {
+              ListItem() {
+                Text("点击加载更多")
+                  .onClick(() => {
+                    this.loadSongs(30, this.currentOffset)
+                  })
+                  .padding({ top:10, bottom:px2vp(this.bottomRectHeight) })
+                  .fontColor($r('app.color.reverse'))
+                  .width('100%')
+                  .textAlign(TextAlign.Center)
+              }
+            } else if (!this.hasMore) {
+              ListItem() {
+                Text('没有更多了~').fontSize(16).textAlign(TextAlign.Center).width('100%').height(50);
+              }
             }
           }
+          .layoutWeight(1)
+          .width('100%')
+          .scrollBar(BarState.Auto)
         }
-        .height(`calc(100% - 70px - ${this.topRectHeight}px - ${this.bottomRectHeight}px)`)
-        .width('100%')
-        .scrollBar(BarState.Auto)
+        .height('100%')
       }
     }
+    .padding({ top: px2vp(this.topRectHeight) })
     .backgroundColor($r('app.color.main'));
   }
 }

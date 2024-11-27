@@ -9,7 +9,7 @@ export struct SearchComponent {
       // 搜索框和按钮
       Row({ space: 10 }) {
         // 搜索框
-        TextInput({ placeholder: '请输入搜索词' }).width('70%').backgroundColor('#ffb3afaf').height(40)
+        TextInput({ placeholder: '请输入搜索词' }).width('70%').backgroundColor('#ffdbd9d9').height(40)
           .onChange((value:string) => {
             this.searchKeyword = value
           })
@@ -31,7 +31,6 @@ export struct SearchComponent {
         })
       }.width('100%').justifyContent(FlexAlign.Center)
     }
-    .backgroundColor($r('app.color.main'))
-    .padding( {bottom:20} )
+    .backgroundColor(Color.Transparent)
   }
 }

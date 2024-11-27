@@ -17,9 +17,8 @@ export struct SongsListHead {
 
     }
     // 避让状态栏
-    .padding({ top: px2vp(this.topRectHeight), left: 15, right: 10 })
+    .padding({ left: 15, right: 10 })
     .width('100%')
-    .height(90)
     .backgroundColor(Color.Transparent)
   }
 }

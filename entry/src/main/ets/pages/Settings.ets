@@ -1,6 +1,13 @@
-import { PasteboardUtil, ToastUtil } from '@pura/harmony-utils';
+import { AppUtil, PasteboardUtil, ToastUtil } from '@pura/harmony-utils';
 import Constants from '../common/constants/Constants';
 import { SettingsHead } from '../components/head/SettingsHead'
+import { Want } from '@kit.AbilityKit';
+
+let wantInfo: Want = {
+  action: 'ohos.want.action.viewData',
+  entities: ['entity.system.browsable'],
+  uri: 'https://docs.chenlvin.cc/cloudmusic/#/privacy'
+}
 
 @Entry
 @Component
@@ -16,6 +23,7 @@ struct Settings {
         List({ space: 20 }) {
           ListItem() { Version() }
           ListItem() { Feedback() }
+          ListItem() { Privacy() }
         }.divider({ strokeWidth: 2 }).scrollBar(BarState.Auto)
         .height('100%').width('100%').layoutWeight(1)
 
@@ -49,8 +57,21 @@ struct Feedback {
     }.width('100%').justifyContent(FlexAlign.SpaceBetween).padding({ left:30, right: 30})
     .onClick(() => {
       PasteboardUtil.setDataText('chenlvin@126.com')
-      ToastUtil.showToast('已复制邮箱地址!')
+      ToastUtil.showToast('已复制邮箱地址到剪贴板')
     })
+  }
+}
+
+@Component
+struct Privacy {
+  build() {
+    Row() {
+      Text('隐私政策').LeftText()
+      Text('前往查看本软件的隐私政策').RightText()
+        .onClick(() => {
+          AppUtil.getContext().startAbility(wantInfo)
+        })
+    }.width('100%').justifyContent(FlexAlign.SpaceBetween).padding({ left:30, right: 30})
   }
 }
 

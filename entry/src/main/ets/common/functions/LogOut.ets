@@ -8,7 +8,6 @@ export async function logOut() {
   await PreferencesUtils.delPreferenceValue(userPref,'user')
   await PreferencesUtils.delPreferenceValue(userPref,'cookie')
   await PreferencesUtils.delPreferenceValue(userPref,'signTime')
-  AppStorage.set('ValidCookie', false)
-  AppStorage.set('Profile', null)
+  AppStorage.set('isValidCookie', false)
   promptAction.showToast({ message: '成功退出登录' })
 }

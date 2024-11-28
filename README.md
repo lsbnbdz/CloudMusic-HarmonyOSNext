@@ -25,6 +25,7 @@
 - [NeteaseCloudMusicApi](https://gitlab.com/Binaryify/neteasecloudmusicapi)
 - [OH三方库 @pura/harmony-utils](https://ohpm.openharmony.cn/#/cn/detail/@pura%2Fharmony-utils)
 - [OH三方库 @pura/harmony-dialog](https://ohpm.openharmony.cn/#/cn/detail/@pura%2Fharmony-dialog)
+- [Music Sharing](https://github.com/Okysu/harmony-next-music-sharing)
 
 
 

@@ -17,6 +17,5 @@ export async function getSongsList(searchKeyword:string): Promise<Array<Song>> {
       })
     }
   })
-  console.log('getSongList: ' + JSON.stringify(list))
   return list;
 }

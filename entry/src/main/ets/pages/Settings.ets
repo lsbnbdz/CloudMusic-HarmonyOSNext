@@ -22,8 +22,8 @@ struct Settings {
 
         List({ space: 20 }) {
           ListItem() { Version() }
-          ListItem() { Feedback() }
           ListItem() { Privacy() }
+          ListItem() { Feedback() }
         }.divider({ strokeWidth: 2 }).scrollBar(BarState.Auto)
         .height('100%').width('100%').layoutWeight(1)
 

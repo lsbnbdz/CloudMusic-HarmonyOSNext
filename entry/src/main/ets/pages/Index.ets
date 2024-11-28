@@ -1,3 +1,4 @@
+import { HttpRequest } from '../common/utils/HttpRequestUtil'
 import { IndexHead } from '../components/head/IndexHead'
 import { PlayLists } from '../components/main/PlayLists'
 import { SearchComponent } from '../components/main/SearchComponent'
@@ -7,6 +8,16 @@ import { SearchComponent } from '../components/main/SearchComponent'
 struct Index {
   @StorageProp("isValidCookie") isValidCookie:boolean = false
   @StorageProp('topRectHeight') topRectHeight: number = 0;
+
+  onPageShow(): void {
+    const url = 'http://111.229.38.178:3000/login/status'
+    const request = new HttpRequest(url)
+    request.Request().then((data) => { console.log('IndexGotResult: ' + JSON.stringify(data.result))})
+
+    const url2 = 'http://111.229.38.178:3000/song/download/url/v1?id=108485&level=hires'
+    const request2 = new HttpRequest(url2)
+    request2.Request().then((data) => { console.log('IndexGotResult2: ' + JSON.stringify(data.result))})
+  }
 
   async build() {
     Stack() {

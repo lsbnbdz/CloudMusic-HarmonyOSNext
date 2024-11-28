@@ -14,17 +14,18 @@ export struct IndexHead {
         .bindSheet(this.isShowSheet, this.Sheet(), {
           height: '50%',
           dragBar: false,
+          showClose: false,
         })
         .onClick(() => { this.isShowSheet = !this.isShowSheet })
 
       Text("云音汇").fontSize(20).fontColor($r('app.color.reverse'))
       CommonCircleButton({ ButtonImageName:'ic_public_more_filled', BgColor:'#00cbcbcb'})
         .bindMenu(this.MoreMenu())
+
     }
     .padding({ left: 10, right: 10 })
     .justifyContent(FlexAlign.SpaceBetween)
     .width('100%')
-    .backgroundColor(Color.Transparent)
   }
 
   // 更多菜单

@@ -19,16 +19,19 @@ export struct DownloadDialog {
 
   @State songDownload:SongDownload = SongDownloadClass
   @StorageProp('isValidCookie') isValidCookie:boolean = false
+  @State succ:boolean = true
 
   async aboutToAppear(): Promise<void> {
     try {
       const gotDownloadData: SongDownload = await getDownloadInfo(this.song.id, 'hires', this.isValidCookie)
       this.songDownload = gotDownloadData
+      if(this.songDownload.data.url == null) { this.succ = false }
       this.fileSize = await convertSize(this.songDownload.data.size)
       setTimeout(() => {
         this.isLoading = false
       },500)
     } catch (e) {
+      this.succ = false
       console.error('Download Dialog Error: ' + JSON.stringify(e.message))
     }
   }
@@ -37,32 +40,46 @@ export struct DownloadDialog {
     Column({ space: 10 }) {
       Text('下载').textStyle(24)
       Divider()
-      Stack() {
-        if(this.isLoading) {
-          SpinKit({ spinType: SpinType.spinB, spinSize:40, spinColor:$r('app.color.reverse') }).width(40)
-        }
-        Column({ space:10 }) {
-          Image(this.picUrl).width(128)
-          Text(this.song.name).textStyle(20)
-          Text(this.artists).textStyle(14)
-          Divider()
-          Text(`时长 ${this.duration}`).textStyle(12)
-          Text(`音质: ${this.songDownload.data.level}     格式: ${this.songDownload.data.type}     大小: ${this.fileSize}MB`).textStyle(12)
-          Button('获取下载地址').ButtonStyle()
-            .onClick(() => { copyDownloadUrl(this.songDownload.data.url) })
-          Button('下载到本地').ButtonStyle()
-            .onClick(() => { promptAction.showToast({ message: '该功能正在开发中，敬请期待。', duration: 3000})})
-          if(!this.isValidCookie) {
-            Text('你尚未登录，将无法完整获取部分会员歌曲')
+      if(this.succ) {
+        Stack() {
+          if (this.isLoading) {
+            SpinKit({ spinType: SpinType.spinB, spinSize: 40, spinColor: $r('app.color.reverse') }).width(40)
           }
+          Column({ space: 10 }) {
+            Image(this.picUrl).width(128)
+            Text(this.song.name).textStyle(20)
+            Text(this.artists).textStyle(14)
+            Divider()
+            Text(`时长 ${this.duration}`).textStyle(12)
+            Text(`音质: ${this.songDownload.data.level}     格式: ${this.songDownload.data.type}     大小: ${this.fileSize}MB`)
+              .textStyle(12)
+            Button('获取下载地址').ButtonStyle()
+              .onClick(() => {
+                copyDownloadUrl(this.songDownload.data.url)
+              })
+            Button('下载到本地').ButtonStyle()
+              .onClick(() => {
+                promptAction.showToast({ message: '该功能正在开发中，敬请期待。', duration: 3000 })
+              })
+            if (!this.isValidCookie) {
+              Text('你尚未登录，将无法完整获取部分会员歌曲')
+            }
+          }
+          .opacity(this.isLoading ? 0 : 1)
         }
-        .opacity(this.isLoading ? 0 : 1)
+      } else {
+        Text('获取下载内容失败，原因可能如下：').textStyle(18)
+        Text('- 此歌曲为付费歌曲/数字专辑\n' +
+          '- 当前未登录，无法获取试听链接\n' +
+          '- 当前登录账号非会员，公共Cookie失效').textStyle(14)
       }
     }
     .margin({ left:10, right:10, top:20, bottom:20})
     .borderRadius(5)
   }
 }
+
+
 
 @Extend(Text) function textStyle(size:number) {
   .fontSize(size)

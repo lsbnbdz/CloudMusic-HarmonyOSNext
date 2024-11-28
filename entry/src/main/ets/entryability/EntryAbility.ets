@@ -29,6 +29,7 @@ export default class EntryAbility extends UIAbility {
 
       getLoginInfo()
 
+
       let windowClass: window.Window = windowStage.getMainWindowSync(); // 获取应用主窗口
       // 1. 设置窗口全屏
       let isLayoutFullScreen = true;

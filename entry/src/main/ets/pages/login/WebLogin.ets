@@ -23,7 +23,7 @@ struct WebLogin {
           .onControllerAttached(() => {
             try {
               this.controller.setCustomUserAgent(this.userAgent)
-              this.controller.loadUrl("https://music.163.com/#/login")
+              this.controller.loadUrl(`https://music.163.com/#/login`)
             } catch (error) {
               console.error('Login Web Error: ' + error.message)
             }
@@ -46,7 +46,6 @@ struct WebLogin {
     try {
       let cookie = webview.WebCookieManager.fetchCookieSync('https://music.163.com')
       if (await this.checkValidCookie(cookie)) {
-        console.log('WebLogin Get Cookie: ' + cookie)
         cookie = cookie + '; OS=pc'
         AppStorage.setOrCreate("cookie",cookie)
         console.log('Cookie => ' + cookie)

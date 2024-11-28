@@ -9,6 +9,7 @@ interface Profile {
 interface Account {
   id:number
   userName:string
+  vipType:number
 }
 
 interface Data {
@@ -24,7 +25,8 @@ export const UserClass: User = {
   data: {
     account: {
       id: 0,
-      userName: ''
+      userName: '',
+      vipType: 0
     },
     profile: {
       userId: 0,

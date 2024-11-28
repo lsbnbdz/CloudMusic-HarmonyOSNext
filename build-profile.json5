@@ -6,9 +6,9 @@
         "type": "HarmonyOS",
         "material": {
           "certpath": "D:/Code/Key/CloudMusic.cer",
-          "storePassword": "0000001BD17BE922912EB1B56C543CE57ECB914B140182D3D63F42D76B742F5ED4C6BB255E7CE7A2F444D4",
+          "storePassword": "0000001B1C8F3A1C527B1C85C07C0CAC0F0FF17871781F00EC747E1B6A6848F94E87934471738BFEB83181",
           "keyAlias": "test",
-          "keyPassword": "0000001BDEF6CB9B33C34DC490B050D5B17C1534C6BFFBED618CFA9312DD092621FA7C7755CE8143578F04",
+          "keyPassword": "0000001B6BB835CCF69F4105FCA1EB995443D9BAB99C30A640D431DAB34FD160AB86CBA7E051EE87BDC934",
           "profile": "D:/Code/Key/cloudmusicRelease.p7b",
           "signAlg": "SHA256withECDSA",
           "storeFile": "D:/Code/Key/CloudMusic.p12"
@@ -19,9 +19,9 @@
         "type": "HarmonyOS",
         "material": {
           "certpath": "C:\\Users\\Zhou Chenlvin\\.ohos\\config\\cc_CloudMusic-HMOS_49Cx5ZkdoyjQADe6JwU6Rz-R50i5AkaXO1mOEwbzolc=.cer",
-          "storePassword": "0000001BFD2136DED04634A4BFFEA1C424AD430E601863E23644D3244632785ED1BB105294DB4D93491A3D",
+          "storePassword": "0000001B44D967AFA1D60A102E63C10376EEA03F32CB4B04FA7B59025EC4EC96FE433710A42E33A7ABB138",
           "keyAlias": "debugKey",
-          "keyPassword": "0000001B85E3656D23472D0BE3665FA0A3EFF69C2AA52F64C779E18C87520D7F0ABB2BE591244DC7DD99B7",
+          "keyPassword": "0000001B229D3322308B53803D660E0025A4C68C0F77CA1A26C8C2736530F1BD222F06E7934332BBEEB9CF",
           "profile": "C:\\Users\\Zhou Chenlvin\\.ohos\\config\\cc_CloudMusic-HMOS_49Cx5ZkdoyjQADe6JwU6Rz-R50i5AkaXO1mOEwbzolc=.p7b",
           "signAlg": "SHA256withECDSA",
           "storeFile": "C:\\Users\\Zhou Chenlvin\\.ohos\\config\\cc_CloudMusic-HMOS_49Cx5ZkdoyjQADe6JwU6Rz-R50i5AkaXO1mOEwbzolc=.p12"

@@ -69,8 +69,8 @@ export struct DownloadDialog {
         }
       } else {
         Text('获取下载内容失败，原因可能如下：').textStyle(18)
-        Text('- 此歌曲为付费歌曲/数字专辑\n' +
-          '- 当前未登录，无法获取试听链接\n' +
+        Text('- 此歌曲需要单曲付费或为数字专辑曲目\n' +
+          '- 当前未登录账号，无法获取试听链接\n' +
           '- 当前登录账号非会员，公共Cookie失效').textStyle(14)
       }
     }

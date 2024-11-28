@@ -1,7 +1,6 @@
 import Constants from "../common/constants/Constants"
 import { QualityType, SongDownload, SongDownloadClass } from "../common/entities/SongDownload"
 import { HttpRequest } from "../common/utils/HttpRequestUtil"
-import { promptAction } from "@kit.ArkUI"
 import { LogUtil } from "@pura/harmony-utils"
 
 export async function getDownloadInfo(songId: number, quality:QualityType, isLogged:boolean): Promise<SongDownload> {

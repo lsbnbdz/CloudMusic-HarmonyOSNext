@@ -1,6 +1,5 @@
 import { LogUtil } from "@pura/harmony-utils"
 import Constants from "../constants/Constants"
-import AudioPlayUtils from "../utils/AudioPlayUtils"
 import PreferencesUtils from "../utils/PreferencesUtils"
 
 const TAG = '[appInit] '

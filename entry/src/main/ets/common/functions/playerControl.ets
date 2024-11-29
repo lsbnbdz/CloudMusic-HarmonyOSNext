@@ -9,6 +9,7 @@ export async function playMusic(song:Song,artists:string,picUrl:string) {
   try {
     const songPlay = await getSongUrl(song.id)
     if(songPlay.data[0].url) {
+      AppStorage.setOrCreate('player-ispaused',false)
       AppStorage.setOrCreate('player-isplaying',false)
       AppStorage.setOrCreate('player-songname',song.name)
       AppStorage.setOrCreate('player-artists',artists)

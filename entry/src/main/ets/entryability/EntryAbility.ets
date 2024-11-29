@@ -18,6 +18,7 @@ export default class EntryAbility extends UIAbility {
     await PreferencesUtils.loadPreference(this.context, Constants.SET_PERF)
     LogUtil.init(0x1010, 'Cloud Music', true)
     appInit()
+
   }
 
   onDestroy(): void {

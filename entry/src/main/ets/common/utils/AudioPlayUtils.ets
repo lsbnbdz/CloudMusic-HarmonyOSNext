@@ -1,6 +1,7 @@
 import { LogUtil } from '@pura/harmony-utils'
 import { EfAVPlayer } from '@yunkss/ef_audio'
 import { Song } from '../entities/SongsResult'
+import backgroundRunningManager from './BackgroundRunningManager'
 
 const TAG = '[AudioPlayUtils] '
 
@@ -30,6 +31,7 @@ class AudioPlayUtils {
       }
       LogUtil.info(TAG + '开始播放: ' + url)
       this.mPlayer.play()
+      backgroundRunningManager.startBackgroundRunning()
     } catch (e) {
       AppStorage.setOrCreate('player-isplaying',false)
       LogUtil.error(TAG + '播放失败: ' + JSON.stringify(e))
@@ -38,6 +40,7 @@ class AudioPlayUtils {
 
   async stop() {
     await this.mPlayer.stop()
+    backgroundRunningManager.stopBackgroundRunning()
     LogUtil.info(TAG + '停止播放')
   }
 

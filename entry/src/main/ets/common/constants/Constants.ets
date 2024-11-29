@@ -1,5 +1,5 @@
 export default class Constants {
-  static readonly VERSION: string = '0.9.3'
+  static readonly VERSION: string = '0.9.3.5'
   static readonly VER_DESC: string = ' - 测试版'
 
   static readonly USER_PREF: string = 'UserPreference'

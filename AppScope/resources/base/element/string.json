@@ -7,6 +7,10 @@
     {
       "name": "REASON_INTERNET_PERMISSION",
       "value": "用于获取登录信息和音乐信息"
+    },
+    {
+      "name": "REASON_KEEP_BACKGROUND_RUNNING",
+      "value": "后台播放和下载"
     }
   ]
 }

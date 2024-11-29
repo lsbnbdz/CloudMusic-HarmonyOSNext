@@ -1,9 +1,9 @@
-import { LogUtil, ToastUtil } from "@pura/harmony-utils";
-import { getPubCookie } from "../../api/getPubCookie";
-import Constants from "../constants/Constants";
-import { User, UserClass } from "../entities/User";
-import { HttpRequest } from "../utils/HttpRequestUtil";
-import PreferencesUtils from "../utils/PreferencesUtils";
+import { LogUtil } from "@pura/harmony-utils"
+import { getPubCookie } from "../../api/getPubCookie"
+import Constants from "../constants/Constants"
+import { User, UserClass } from "../entities/User"
+import { HttpRequest } from "../utils/HttpRequestUtil"
+import PreferencesUtils from "../utils/PreferencesUtils"
 
 export async function getLoginInfo() {
   const userPref:string = Constants.USER_PREF

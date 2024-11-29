@@ -1,13 +1,15 @@
-import { PasteboardUtil, ToastUtil } from '@pura/harmony-utils';
-import Constants from '../common/constants/Constants';
+import { PasteboardUtil, ToastUtil } from '@pura/harmony-utils'
+import Constants from '../common/constants/Constants'
 import { SettingsHead } from '../components/head/SettingsHead'
-import { router } from '@kit.ArkUI';
+import { router } from '@kit.ArkUI'
+import PreferencesUtils from '../common/utils/PreferencesUtils'
 
 @Entry
 @Component
 struct Settings {
-  @StorageProp('bottomRectHeight') bottomRectHeight: number = 0;
-  @StorageProp('topRectHeight') topRectHeight: number = 0;
+  @StorageProp('bottomRectHeight') bottomRectHeight: number = 0
+  @StorageProp('topRectHeight') topRectHeight: number = 0
+
 
   build() {
     Stack() {
@@ -15,11 +17,14 @@ struct Settings {
         SettingsHead().padding({ bottom: 20 })
 
         List({ space: 20 }) {
+          ListItem() { hasAnimation() }
+          ListItem() { Divider() }
           ListItem() { Version() }
           ListItem() { Privacy() }
           ListItem() { Feedback() }
-        }.divider({ strokeWidth: 2 }).scrollBar(BarState.Auto)
-        .height('100%').width('100%').layoutWeight(1)
+        }
+        .scrollBar(BarState.Auto)
+        .width('100%').layoutWeight(1)
 
         Bottom()
       }
@@ -31,8 +36,18 @@ struct Settings {
   }
 }
 
-@Component
-struct Version {
+@Component struct hasAnimation {
+  @StorageLink('set-hasAnimation') hasAnimation: boolean = true
+  build() {
+    Row() {
+      Text('是否开启列表动画').LeftText()
+      Toggle({ type: ToggleType.Switch, isOn:this.hasAnimation }).height(24).width(48)
+        .onChange(async () => { this.hasAnimation = !this.hasAnimation; AppStorage.setOrCreate('set-hasAnimation',this.hasAnimation); await PreferencesUtils.putPreferenceValue('Settings','hasAnimation',this.hasAnimation)})
+    }.width('100%').justifyContent(FlexAlign.SpaceBetween).padding({ left:30, right: 30})
+  }
+}
+
+@Component struct Version {
   build() {
     Row() {
       Text('当前版本').LeftText()
@@ -41,36 +56,37 @@ struct Version {
   }
 }
 
-@Component
-struct Feedback {
+@Component struct Feedback {
   build() {
     Row() {
-      Text('问题反馈').LeftText()
-      Text('chenlvin@126.com\n' +
-        '或 GitHub issue').RightText().textAlign(TextAlign.End)
+      Text('建议与反馈').LeftText()
+      Text('前往反馈').RightText().textAlign(TextAlign.End).decoration({type: TextDecorationType.Underline})
     }.width('100%').justifyContent(FlexAlign.SpaceBetween).padding({ left:30, right: 30})
     .onClick(() => {
-      PasteboardUtil.setDataText('chenlvin@126.com')
-      ToastUtil.showToast('已复制邮箱地址到剪贴板')
+      router.pushUrl({
+        url:'pages/WebPage',
+        params: {title:'建议与反馈', url:'https://www.wjx.cn/vm/PeLnYfc.aspx# '}
+      })
     })
   }
 }
 
-@Component
-struct Privacy {
+@Component struct Privacy {
   build() {
     Row() {
       Text('隐私政策').LeftText()
-      Text('前往查看本软件的隐私政策').RightText()
+      Text('前往查看本软件的隐私政策').RightText().decoration({type: TextDecorationType.Underline})
         .onClick(() => {
-          router.push({ url:'pages/PrivacyPage' })
+          router.pushUrl({
+            url:'pages/WebPage',
+            params: {title:'隐私政策', url:'https://docs.chenlvin.cc/cloudmusic/#/privacy'}
+          })
         })
     }.width('100%').justifyContent(FlexAlign.SpaceBetween).padding({ left:30, right: 30})
   }
 }
 
-@Component
-struct Bottom {
+@Component struct Bottom {
   build() {
     Column() {
       Text('云音汇 @Chenlvin\n' +

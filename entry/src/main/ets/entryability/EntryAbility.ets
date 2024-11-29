@@ -6,15 +6,18 @@ import PreferencesUtils from '../common/utils/PreferencesUtils';
 import { getLoginInfo } from '../common/functions/getLoginInfo';
 import Constants from '../common/constants/Constants';
 import { LogUtil } from '@pura/harmony-utils';
+import { appInit } from '../common/functions/appInit';
 
 
 export default class EntryAbility extends UIAbility {
   async onCreate(want: Want, launchParam: AbilityConstant.LaunchParam): Promise<void> {
     hilog.info(0x0000, 'testTag', '%{public}s', 'Ability onCreate');
 
-    // 初始化 Preferences
-    PreferencesUtils.loadPreference(this.context, Constants.USER_PREF)
+    // 初始化
+    await PreferencesUtils.loadPreference(this.context, Constants.USER_PREF)
+    await PreferencesUtils.loadPreference(this.context, Constants.SET_PERF)
     LogUtil.init(0x1010, 'Cloud Music', true)
+    appInit()
   }
 
   onDestroy(): void {
@@ -28,7 +31,6 @@ export default class EntryAbility extends UIAbility {
       }
 
       getLoginInfo()
-
 
       let windowClass: window.Window = windowStage.getMainWindowSync(); // 获取应用主窗口
       // 1. 设置窗口全屏

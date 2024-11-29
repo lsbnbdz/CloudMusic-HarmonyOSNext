@@ -2,14 +2,18 @@ import { router } from '@kit.ArkUI'
 import { Song } from '../common/entities/SongsResult'
 import { SongCard } from '../components/main/SongCard'
 import { playList } from '../common/entities/PlayList'
-import { PlayListHead } from '../components/head/PlayListHead'
+import { ListHead } from '../components/head/ListHead'
 import { getPlayListSongs } from '../api/getPlayListSongs'
 import { SpinKit, SpinType } from '@pura/spinkit'
 import { LogUtil } from '@pura/harmony-utils'
+import AudioPlayUtils from '../common/utils/AudioPlayUtils'
+import { PlayController } from '../components/main/PlayController'
 
 /**
  * 歌单二级页面
  */
+
+const TAG = '[PlayListPage] '
 
 @Entry
 @Component
@@ -27,9 +31,10 @@ struct PlayListPage {
   @State hasMore: boolean = true
 
   private currentOffset: number = 0 // 歌曲偏移量
+  hasAnimation:boolean | undefined = false
 
   async onPageShow(): Promise<void> {
-    LogUtil.setTag('PlayListPage')
+    this.hasAnimation = AppStorage.get('set-hasAnimation')
     if (!this.hasLoaded) {
       await this.loadSongs(30, 0)
     }
@@ -53,7 +58,7 @@ struct PlayListPage {
         this.hasMore = false
       }
     } catch (e) {
-      LogUtil.error('Error fetching songs: ', e)
+      LogUtil.error(TAG + 'Error fetching songs: ', e)
     } finally {
       this.isLoading = false
       this.isLoadingMore = false
@@ -69,11 +74,11 @@ struct PlayListPage {
         }.height('100%').width('100%').justifyContent(FlexAlign.Center)
       } else {
         Column({ space: 10 }) {
-          PlayListHead({ playListName: this.playList.name })
+          ListHead({ title: this.playList.name })
           List() {
             ForEach(this.list, (item: Song, index) => {
               ListItem() {
-                SongCard({ song: item, sid: index })
+                SongCard({ song: item, sid: index, hasAnimation: this.hasAnimation })
               }
             });
             // 添加加载更多
@@ -100,13 +105,17 @@ struct PlayListPage {
               }
             }
           }
+          .height('100%')
           .layoutWeight(1)
           .width('100%')
           .scrollBar(BarState.Auto)
         }
         .height('100%')
       }
+
     }
+    .width('100%')
+    .height('100%')
     .padding({ top: px2vp(this.topRectHeight) })
     .backgroundColor($r('app.color.main'));
   }

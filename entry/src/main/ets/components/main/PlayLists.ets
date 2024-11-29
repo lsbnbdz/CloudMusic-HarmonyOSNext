@@ -3,7 +3,7 @@ import { playList } from "../../common/entities/PlayList"
 import { PlayListCard } from "./PlayListCard"
 import { SpinKit, SpinType } from '@pura/spinkit'
 import { LogUtil } from "@pura/harmony-utils";
-import { ListView, RefreshController } from '@abner/refresh'
+import { RefreshController } from '@abner/refresh'
 
 @Component
 export struct PlayLists {
@@ -42,39 +42,40 @@ export struct PlayLists {
         }.height('50%').width('100%').justifyContent(FlexAlign.Center)
       }
       else {
-        ListView({
-          controller: this.controller,
-          items: this.playLists,
-          itemLayout: (item: Object, index: number) => {
-            this.itemLayout(item as playList, index)
-          },
-          isScrollSpring: true,
-          onRefresh: async () => {
-            this.playLists = []
-            this.isLoading = true
-            try {
-              const result = await getPlayLists(false)
-              this.playLists = result
-
-              setTimeout(() => {
-                this.isLoading = false
-              }, 0)
-            } catch (e) {
-              LogUtil.error('Error fetching playlists: ', e)
-            }
-          }
-        })
-        // List({ space: 10 }) {
-        //   ForEach(this.playLists, (item: playList, index) => {
-        //     ListItem() {
-        //       PlayListCard({playList: item})
+        // ListView({
+        //   controller: this.controller,
+        //   items: this.playLists,
+        //   itemLayout: (item: Object, index: number) => {
+        //     this.itemLayout(item as playList, index)
+        //   },
+        //   isScrollSpring: true,
+        //   onRefresh: async () => {
+        //     this.playLists = []
+        //     this.isLoading = true
+        //     try {
+        //       const result = await getPlayLists(false)
+        //       this.playLists = result
+        //
+        //       setTimeout(() => {
+        //         this.isLoading = false
+        //       }, 0)
+        //     } catch (e) {
+        //       LogUtil.error('Error fetching playlists: ', e)
         //     }
-        //   })
-        //   ListItem().height(px2vp(this.bottomRectHeight))
-        // }
-        // .height('100%')
-        // .width('100%')
-        // .scrollBar(BarState.Auto)
+        //   }
+        // })
+
+        List({ space: 10 }) {
+          ForEach(this.playLists, (item: playList, index) => {
+            ListItem() {
+              PlayListCard({playList: item})
+            }
+          })
+          ListItem().height(px2vp(this.bottomRectHeight))
+        }
+        .height('100%')
+        .width('100%')
+        .scrollBar(BarState.Auto)
       }
     }.width('100%').height('100%')
   }

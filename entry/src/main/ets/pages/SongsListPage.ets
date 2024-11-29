@@ -1,8 +1,8 @@
-import { SongsListHead } from '../components/head/SongsListHead';
 import { router } from '@kit.ArkUI';
 import { getSongsList } from '../api/getSongsList';
 import { Song } from '../common/entities/SongsResult';
 import { SongCard } from '../components/main/SongCard';
+import { ListHead } from '../components/head/ListHead';
 
 /**
  * 歌曲列表页（搜索结果）
@@ -18,8 +18,10 @@ struct SongsListPage {
   @State isLoading:boolean = true
   @State list:Array<Song> = new Array()
   private searchKeyword:string = Object(router.getParams())['searchKeyword']
+  hasAnimation:boolean | undefined = false
 
   async onPageShow(): Promise<void> {
+    this.hasAnimation = AppStorage.get('set-hasAnimation')
     if (!this.hasLoaded) {
       await this.loadSongs();
     }
@@ -45,15 +47,15 @@ struct SongsListPage {
         }.height('100%').width('100%').justifyContent(FlexAlign.Center)
       } else {
         Column() {
-          SongsListHead({ searchKeyword: this.searchKeyword })
+          ListHead({ title: `"${this.searchKeyword}"` })
           List() {
             ForEach(this.list, (item: Song, index) => {
               ListItem() {
-                SongCard({ song: item, sid: index })
+                SongCard({ song: item, sid: index, hasAnimation: this.hasAnimation })
               }
             })
             ListItem().padding({bottom: px2vp(this.bottomRectHeight)})
-          }.layoutWeight(1).width('100%').scrollBar(BarState.Auto)
+          }.layoutWeight(1).width('100%').scrollBar(BarState.Auto).height('100%')
         }
         .height('100%')
       }

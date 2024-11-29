@@ -5,7 +5,9 @@ import { SongSheet } from "../sheets/SongSheet"
 @Preview
 @Component
 export struct SongCard {
+  @State hasAnimation:boolean = false
   @State isShowSheet:boolean = false
+  @State startWidth:string = '100%'
 
   @State picUrl:string = ''
   song:Song = SongClass
@@ -14,12 +16,12 @@ export struct SongCard {
 
 
   async aboutToAppear(): Promise<void> {
+    if(this.hasAnimation) { this.startWidth = '50%'}
     const artistsStr = await getArtists(this.song.artists)
     this.artists = artistsStr
 
     const picUrl = await getSongPicUrl(this.song)
     this.picUrl = picUrl
-    console.log('SongPicUrl: ' + this.picUrl)
   }
 
   build() {
@@ -34,7 +36,13 @@ export struct SongCard {
         .layoutWeight(1)
         .width(`100%`)
       }
-      .width('100%')
+      .width(this.startWidth)
+      .onAppear( () => { this.startWidth = '100%' })
+      .animation({
+        duration: 300,
+        curve: Curve.Friction,
+      })
+
     }
     .backgroundColor(Color.Transparent)
     .borderRadius(5)
@@ -43,7 +51,7 @@ export struct SongCard {
     .height(60)
     .padding({ left: 20, right: 20 })
     .bindSheet(this.isShowSheet, this.Sheet(), {
-      height: '80%',
+      height: '60%',
       dragBar: true,
     })
     .onClick(() => { this.isShowSheet = !this.isShowSheet })
@@ -66,7 +74,6 @@ export struct SongCard {
 async function getArtists(artists:Artist[]): Promise<string> {
   let artistStr:string = ''
   for(let artist of artists) {
-    console.log('artist += ' + artist.name)
     artistStr = artistStr + artist.name + ', '
   }
   return artistStr.slice(0,-2)

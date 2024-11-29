@@ -32,12 +32,14 @@ export struct IndexHead {
   @Builder
   MoreMenu() {
     Menu() {
-      MenuItem({ startIcon: $r('app.media.ic_public_settings_filled'), content: "设置" })
+      MenuItem({ startIcon: $r('app.media.ic_public_settings_filled'),content: "设置" })
+        .contentFontColor($r('app.color.reverse'))
         .onClick(()=>{
           router.pushUrl({ url:'pages/Settings' })
         })
 
       MenuItem({ startIcon: $r('app.media.ic_public_download_filled'), content: "下载管理" })
+        .contentFontColor($r('app.color.reverse'))
         .onClick(()=>{
           router.pushUrl({ url:'pages/Downloads' })
         })

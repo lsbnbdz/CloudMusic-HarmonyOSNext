@@ -3,7 +3,7 @@ export default class Constants {
   static readonly VER_DESC: string = ' - 测试版'
 
   static readonly USER_PREF: string = 'UserPreference'
-
+  static readonly SET_PERF: string = 'Settings'
   static readonly ROOT_URL: string = 'http://111.229.38.178:3000'
   static readonly EAPI_URL: string = 'https://interface.music.163.com/eapi'
   static readonly MUSIC_URL: string = 'https://music.163.com'

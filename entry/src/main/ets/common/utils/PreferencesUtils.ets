@@ -14,6 +14,7 @@ class PreferencesUtils {
       LogUtil.info(TAG + `加载 Preference ${name} 成功`)
     } catch (e) {
       LogUtil.info(TAG + `加载 Preference ${name} 失败: ${JSON.stringify(e)}`)
+      throw new Error(`加载 Preference ${name} 失败: ${JSON.stringify(e)}`)
     }
   }
 
@@ -39,6 +40,7 @@ class PreferencesUtils {
       throw new Error(TAG + `Preference ${name} 尚未初始化`);
     }
     try {
+      LogUtil.info(TAG + `开始读取 Preference ${name}.${key}`);
       const preference = this.preferencesMap.get(name);
       const value = await preference?.get(key, defaultValue);
       LogUtil.info(TAG + `读取 Preference ${name}.${key}=${JSON.stringify(value)} 成功`);
@@ -65,6 +67,23 @@ class PreferencesUtils {
       LogUtil.error(TAG + `删除 Preference ${name} 失败: ${JSON.stringify(e)}`)
     }
   }
+
+  // 判断 Preference 中是否存在指定的 key
+  async hasPreferenceValue(name: string, key: string): Promise<boolean> {
+    if (!this.preferencesMap.has(name)) {
+      LogUtil.error(TAG + `Preference ${name} 尚未初始化`)
+      return false
+    }
+    try {
+      const preference = this.preferencesMap.get(name)
+      const value = await preference?.get(key, undefined)
+      return value !== undefined
+    } catch (e) {
+      LogUtil.error(TAG + `判断 Preference ${name} 是否存在失败: ${JSON.stringify(e)}`)
+      return false
+    }
+  }
+
 }
 
 const preferencesUtils = new PreferencesUtils()

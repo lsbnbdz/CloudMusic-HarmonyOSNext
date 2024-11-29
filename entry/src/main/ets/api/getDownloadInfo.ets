@@ -1,5 +1,5 @@
 import Constants from "../common/constants/Constants"
-import { QualityType, SongDownload, SongDownloadClass } from "../common/entities/SongDownload"
+import { QualityType, SongDownload } from "../common/entities/SongDownload"
 import { HttpRequest } from "../common/utils/HttpRequestUtil"
 import { LogUtil } from "@pura/harmony-utils"
 

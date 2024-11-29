@@ -13,9 +13,9 @@ export struct PlayListCard {
     Button() {
       Row({ space:15 }) {
         Image(`${this.playList.coverImgUrl}?param=128y128`).width(50).borderRadius(15)
-        Column() {
-          Text(this.playList.name).textStyle(16)
-          Text(`${this.playList.trackCount} 首歌曲     ${this.playList.playCount} 次播放`).textStyle(12)
+        Column({ space: 8 }) {
+          Text(this.playList.name).textStyle(16).fontWeight(FontWeight.Medium)
+          Text(`歌单 · ${this.playList.trackCount} 首 · ${this.playList.playCount} 次播放`).textStyle(12)
         }
         .layoutWeight(1)
       }
@@ -34,8 +34,6 @@ export struct PlayListCard {
       })
     })
   }
-
-
 }
 
 @Extend(Text) function textStyle(size:number) {

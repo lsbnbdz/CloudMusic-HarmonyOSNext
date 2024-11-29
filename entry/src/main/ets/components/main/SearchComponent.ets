@@ -1,5 +1,6 @@
 import { promptAction, router } from "@kit.ArkUI"
 import { ToastUtil } from "@pura/harmony-utils"
+import { PlayController } from "./PlayController"
 
 @Component
 export struct SearchComponent {
@@ -10,7 +11,7 @@ export struct SearchComponent {
       // 搜索框和按钮
       Row({ space: 10 }) {
         // 搜索框
-        TextInput({ placeholder: '请输入搜索内容' }).width('70%').backgroundColor('#ffdbd9d9').height(40).placeholderColor(Color.Gray).fontColor(Color.Black)
+        TextInput({ placeholder: '请输入搜索内容' }).layoutWeight(1).backgroundColor('#ffdbd9d9').height(40).placeholderColor(Color.Gray).fontColor(Color.Black)
           .onChange((value:string) => {
             this.searchKeyword = value
           })
@@ -30,7 +31,13 @@ export struct SearchComponent {
             })
           } else { ToastUtil.showToast('请输入搜索内容') }
         })
-      }.width('100%').justifyContent(FlexAlign.Center)
+
+        PlayController()
+
+      }
+      .width('100%')
+      .justifyContent(FlexAlign.Center)
+      .padding({ left:30, right:30 })
     }
     .backgroundColor(Color.Transparent)
   }

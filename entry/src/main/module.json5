@@ -38,6 +38,10 @@
         {
           "name": "ohos.permission.INTERNET",
           "reason": '$string:REASON_INTERNET_PERMISSION'
+        },
+        {
+          "name": "ohos.permission.KEEP_BACKGROUND_RUNNING",
+          "reason": '$string:REASON_KEEP_BACKGROUND_RUNNING'
         }
       ]
 //    "extensionAbilities": [

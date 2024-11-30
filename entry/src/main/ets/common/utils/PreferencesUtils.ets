@@ -2,6 +2,9 @@ import { preferences } from '@kit.ArkData'
 import { Context } from '@kit.AbilityKit'
 import { LogUtil } from '@pura/harmony-utils'
 
+/**
+ * 用户首选项工具
+ */
 const TAG = '[PreferenceUtils] '
 
 class PreferencesUtils {

@@ -4,7 +4,11 @@ import Constants from "../constants/Constants"
 import { User, UserClass } from "../entities/User"
 import { HttpRequest } from "../utils/HttpRequestUtil"
 import PreferencesUtils from "../utils/PreferencesUtils"
+import { getApiUrl } from "./functions"
 
+/**
+ * 获取登录信息（应用启动时）
+ */
 export async function getLoginInfo() {
   const userPref:string = Constants.USER_PREF
 
@@ -13,8 +17,8 @@ export async function getLoginInfo() {
   const user = await PreferencesUtils.getPreferenceValue<User>(userPref, 'user', UserClass)
 
   const isValidCookie = cookie && signTime && (Date.now() - signTime) < Constants.COOKIE_EXPIRY_DAYS * 24 * 60 * 60 * 1000;
-
-  const url:string = `${Constants.ROOT_URL}/login/status`
+  const rootUrl = await getApiUrl()
+  const url:string = `${rootUrl}/login/status`
   const request = new HttpRequest(url)
 
   AppStorage.setOrCreate('User', user)

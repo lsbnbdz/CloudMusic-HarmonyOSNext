@@ -1,7 +1,12 @@
 import { ToastUtil } from "@pura/harmony-utils";
 import Constants from "../common/constants/Constants";
+import { getApiUrl } from "../common/functions/functions";
 import { HttpRequest } from "../common/utils/HttpRequestUtil";
 
+/**
+ * 从API服务器获取公共Cookie
+ * （非网易云API）
+ */
 export async function getPubCookie() {
   const url = `${Constants.API_URL}/api/cloudmusic/getCookie.json`
   const request = new HttpRequest(url)

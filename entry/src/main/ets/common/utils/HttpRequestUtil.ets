@@ -1,6 +1,10 @@
 import { http } from "@kit.NetworkKit"
 import { BusinessError } from "@kit.BasicServicesKit"
 
+/**
+ * 网络请求工具类
+ * HTTP Request
+ */
 export class HttpRequest {
   private url: string = ''
   private usingCache:boolean = true

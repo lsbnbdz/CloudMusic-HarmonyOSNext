@@ -1,5 +1,7 @@
 import { ToastUtil } from "@pura/harmony-utils";
+import Constants from "../../common/constants/Constants";
 import { Song, SongClass } from "../../common/entities/SongsResult";
+import { changeDuration } from "../../common/functions/functions";
 import { playMusic } from "../../common/functions/playerControl";
 import { DownloadDialog } from "../dialog/DownloadDialog";
 
@@ -10,13 +12,15 @@ export struct SongSheet {
   artists:string = ''
 
   @State duration:string = 'null'
+  @State qualitySelected:number = 3
 
   dialogController: CustomDialogController = new CustomDialogController({
     builder: DownloadDialog({
       song: this.song,
       picUrl: this.picUrl,
       artists: this.artists,
-      duration: this.duration
+      duration: this.duration,
+      quality: Constants.QUALITY[this.qualitySelected]
     }),
   })
 
@@ -56,6 +60,11 @@ export struct SongSheet {
       }.width('100%')
       // 按钮
       Column({ space:5 }) {
+        // 音质选择框
+        Select([{ value: '标准' }, { value: '高' }, { value: '极高' }, { value: '无损' }])
+          .selected(3)
+          .value('无损')
+          .onSelect((index: number) => { this.qualitySelected = index })
         // 下载按钮
         Button() {
           Row({ space:5 }) {
@@ -108,11 +117,4 @@ export struct SongSheet {
   .fontSize(size)
   .fontColor($r('app.color.reverse'))
   .textAlign(TextAlign.Center)
-}
-
-function changeDuration(dur: number): string {
-  const seconds = Math.floor(dur / 1000);
-  const minutes = Math.floor(seconds / 60);
-  const remainingSeconds = seconds % 60;
-  return `${minutes}:${remainingSeconds < 10 ? '0' + remainingSeconds : remainingSeconds}`;
 }

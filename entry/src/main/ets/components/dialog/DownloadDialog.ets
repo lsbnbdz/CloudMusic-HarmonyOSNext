@@ -14,7 +14,7 @@ export struct DownloadDialog {
   picUrl:string = ''
   artists:string = ''
   duration:string = ''
-  quality:QualityType = 'hires'
+  quality:QualityType = 'lossless'
   fileSize:number = -1
 
   @State songDownload:SongDownload = SongDownloadClass
@@ -23,7 +23,7 @@ export struct DownloadDialog {
 
   async aboutToAppear(): Promise<void> {
     try {
-      const gotDownloadData: SongDownload = await getDownloadInfo(this.song.id, 'hires', this.isValidCookie)
+      const gotDownloadData: SongDownload = await getDownloadInfo(this.song.id, this.quality, this.isValidCookie)
       this.songDownload = gotDownloadData
       if(this.songDownload.data.url == null) { this.succ = false }
       this.fileSize = await convertSize(this.songDownload.data.size)

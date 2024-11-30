@@ -15,13 +15,14 @@ export struct IndexHead {
           height: '50%',
           dragBar: false,
           showClose: false,
+          blurStyle: BlurStyle.Thick,
+          onDisappear: () => { this.isShowSheet = false }
         })
         .onClick(() => { this.isShowSheet = !this.isShowSheet })
 
       Text("云音汇").fontSize(20).fontColor($r('app.color.reverse'))
       CommonCircleButton({ ButtonImageName:'ic_public_more_filled', BgColor:'#00cbcbcb'})
         .bindMenu(this.MoreMenu())
-
     }
     .padding({ left: 10, right: 10 })
     .justifyContent(FlexAlign.SpaceBetween)

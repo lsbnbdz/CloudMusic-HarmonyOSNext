@@ -17,10 +17,10 @@ export struct SearchComponent {
           })
 
         //搜索按钮
-        Button() {
-          Image($r('app.media.ic_public_search_filled')).fillColor(Color.White).width(30)
+        Button({type:ButtonType.Circle}) {
+          Image($r('app.media.ic_public_search_filled')).width(20).fillColor(Color.White).margin(10)
         }
-        .type(ButtonType.Circle)
+        .backgroundColor('#ff3587c8')
         .width(40)
         .height(40)
         .onClick(() => {

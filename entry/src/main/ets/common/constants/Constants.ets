@@ -1,6 +1,11 @@
+import { QualityType } from "../entities/SongDownload"
+
+/**
+ * 常量类
+ */
 export default class Constants {
-  static readonly VERSION: string = '0.9.3.5'
-  static readonly VER_DESC: string = ' - 测试版'
+  static readonly VERSION: string = '0.9.4'
+  static readonly VER_DESC: string = ' - 241201'
 
   static readonly USER_PREF: string = 'UserPreference'
   static readonly SET_PERF: string = 'Settings'
@@ -11,5 +16,5 @@ export default class Constants {
 
   static readonly COOKIE_EXPIRY_DAYS = 7;
 
-  static readonly SET_SONG_PIC_SIZE: string = '?param=128y128'
+  static readonly QUALITY: QualityType[] = ['standard','higher','exhigh','lossless']
 }

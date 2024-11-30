@@ -5,6 +5,9 @@ import { getLoginStatus } from '../../api/getLoginStatus';
 import { LoginHelpSheet } from '../../components/sheets/LoginHelpSheet';
 import { ToastUtil } from '@pura/harmony-utils';
 
+/**
+ * 网页登录页面
+ */
 @Entry
 @Component
 struct WebLogin {

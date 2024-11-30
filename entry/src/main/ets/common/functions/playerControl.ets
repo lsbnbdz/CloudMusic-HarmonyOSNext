@@ -2,7 +2,11 @@ import { LogUtil, ToastUtil } from "@pura/harmony-utils";
 import { getSongUrl } from "../../api/getSongUrl";
 import { Song } from "../entities/SongsResult";
 import AudioPlayUtils from "../utils/AudioPlayUtils";
+import ContinuousTask from "../utils/ContinuousTask";
 
+/**
+ * 音频播放控制
+ */
 const TAG = '[playerControl] '
 
 export async function playMusic(song:Song,artists:string,picUrl:string) {
@@ -11,17 +15,13 @@ export async function playMusic(song:Song,artists:string,picUrl:string) {
     if(songPlay.data[0].url) {
       AppStorage.setOrCreate('player-ispaused',false)
       AppStorage.setOrCreate('player-isplaying',false)
-      AppStorage.setOrCreate('player-songname',song.name)
+      AppStorage.setOrCreate('player-song',song)
       AppStorage.setOrCreate('player-artists',artists)
       AppStorage.setOrCreate('player-picurl',picUrl)
-
-      await AudioPlayUtils.mPlayer.reset().then(async () => {
-        LogUtil.info(TAG + songPlay.data[0].url)
-        await AudioPlayUtils.play(songPlay.data[0].url).then(() => {
-          AppStorage.setOrCreate('player-isplaying',true)
-        })
-        ToastUtil.showToast('开始播放歌曲: ' + song.name)
-      })
+      await AudioPlayUtils.mPlayer.reset()
+      await ContinuousTask.stopTask()
+      ContinuousTask.startTask(song,artists,picUrl,songPlay.data[0].url)
+      ToastUtil.showToast('开始播放歌曲: ' + song.name)
     } else {
       ToastUtil.showToast('获取播放资源失败')
     }

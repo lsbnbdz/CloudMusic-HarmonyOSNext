@@ -1,10 +1,16 @@
-import Constants from "../common/constants/Constants";
 import { SongsData, Song } from "../common/entities/SongsResult";
+import { getApiUrl } from "../common/functions/functions";
 import { HttpRequest } from "../common/utils/HttpRequestUtil";
 
+/**
+ * 搜素歌曲列表
+ * @param searchKeyword 搜索词
+ * @returns list 歌曲列表
+ */
 export async function getSongsList(searchKeyword:string): Promise<Array<Song>> {
   let list:Array<Song> = new Array()
-  const url:string = `${Constants.ROOT_URL}/search?keywords=${encodeURIComponent(searchKeyword)}`
+  const rootUrl = await getApiUrl()
+  const url:string = `${rootUrl}/search?keywords=${encodeURIComponent(searchKeyword)}`
   const request = new HttpRequest(url)
   await request.Request().then((data) => {
     const dataGot:SongsData = data.result as SongsData

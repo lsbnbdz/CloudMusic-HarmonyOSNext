@@ -16,7 +16,7 @@ export struct SongCard {
 
 
   async aboutToAppear(): Promise<void> {
-    if(this.hasAnimation) { this.startWidth = '50%'}
+    if(this.hasAnimation) { this.startWidth = '1%'}
     const artistsStr = await getArtists(this.song.artists)
     this.artists = artistsStr
 
@@ -42,7 +42,6 @@ export struct SongCard {
         duration: 300,
         curve: Curve.Friction,
       })
-
     }
     .backgroundColor(Color.Transparent)
     .borderRadius(5)
@@ -51,8 +50,9 @@ export struct SongCard {
     .height(60)
     .padding({ left: 20, right: 20 })
     .bindSheet(this.isShowSheet, this.Sheet(), {
-      height: '60%',
+      height: '70%',
       dragBar: true,
+      onDisappear: () => { this.isShowSheet = false }
     })
     .onClick(() => { this.isShowSheet = !this.isShowSheet })
   }

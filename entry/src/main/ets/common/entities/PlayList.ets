@@ -15,8 +15,6 @@ export interface PlayListResult {
   playlist:playList[]
 }
 
-
-
 export const playListClass: playList = {
   coverImgUrl: '',
   name: '',
@@ -26,7 +24,6 @@ export const playListClass: playList = {
   userId: 0,
   trackCount: 0
 };
-
 
 export const PlayListClass: PlayListResult = {
   playlist: [

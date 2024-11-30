@@ -2,6 +2,9 @@ import Constants from "../constants/Constants"
 import PreferencesUtils from "../utils/PreferencesUtils"
 import { promptAction } from "@kit.ArkUI"
 
+/**
+ * 退出登录
+ */
 const userPref = Constants.USER_PREF
 
 export async function logOut() {

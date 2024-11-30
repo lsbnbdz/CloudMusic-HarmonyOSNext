@@ -2,6 +2,9 @@ import { LogUtil } from "@pura/harmony-utils"
 import Constants from "../constants/Constants"
 import PreferencesUtils from "../utils/PreferencesUtils"
 
+/**
+ * App初始化
+ */
 const TAG = '[appInit] '
 
 export async function appInit() {
@@ -25,13 +28,33 @@ async function initSettings() {
   const hasAnimationExist = await PreferencesUtils.hasPreferenceValue(SetPerf, 'hasAnimation')
   if (!hasAnimationExist) {
     await PreferencesUtils.putPreferenceValue(SetPerf, 'hasAnimation', true)
-    const hasAnimation = true
-    AppStorage.setOrCreate('set-hasAnimation',hasAnimation)
+    AppStorage.setOrCreate('set-hasAnimation',true)
   } else {
     const hasAnimation = await PreferencesUtils.getPreferenceValue(SetPerf, 'hasAnimation', true)
     AppStorage.setOrCreate('set-hasAnimation',hasAnimation)
   }
 
-  // setQuality
+  // customApiUrl
+  const isCustomApiUrlExist = await PreferencesUtils.hasPreferenceValue(SetPerf, 'isCustomApiUrl')
+  if (!isCustomApiUrlExist) {
+    await PreferencesUtils.putPreferenceValue(SetPerf, 'isCustomApiUrl', false)
+    await PreferencesUtils.putPreferenceValue(SetPerf,'customApiUrl','')
+    AppStorage.setOrCreate('set-isCustomApiUrl',false)
+    AppStorage.setOrCreate('set-customApiUrl','')
+  } else {
+    const isCustomApiUrl = await PreferencesUtils.getPreferenceValue(SetPerf, 'isCustomApiUrl', false)
+    const customApiUrl = await PreferencesUtils.getPreferenceValue(SetPerf, 'customApiUrl', '')
+    AppStorage.setOrCreate('set-isCustomApiUrl',isCustomApiUrl)
+    AppStorage.setOrCreate('set-customApiUrl',customApiUrl)
+  }
 
+  // usePublicCookie
+  const isUsePubCookieExist = await PreferencesUtils.hasPreferenceValue(SetPerf, 'isUsePubCookie')
+  if (!isUsePubCookieExist) {
+    await PreferencesUtils.putPreferenceValue(SetPerf, 'isUsePubCookie', true)
+    AppStorage.setOrCreate('set-isUsePubCookie', true)
+  } else {
+    const isUsePubCookie = await PreferencesUtils.getPreferenceValue(SetPerf, 'isUsePubCookie', true)
+    AppStorage.setOrCreate('set-isUsePubCookie', isUsePubCookie)
+  }
 }

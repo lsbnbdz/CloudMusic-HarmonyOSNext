@@ -1,14 +1,18 @@
-import Constants from "../common/constants/Constants"
 import { HttpRequest } from "../common/utils/HttpRequestUtil"
 import { LogUtil } from "@pura/harmony-utils"
 import { SongPlay } from "../common/entities/SongPlay"
+import { getApiUrl } from "../common/functions/functions"
 
+/**
+ * 获取歌曲Url（播放Url）
+ */
 const TAG = '[getSongUrl] '
 export async function getSongUrl(songId: number): Promise<SongPlay> {
-  const url:string = `${Constants.ROOT_URL}/song/url/v1?id=${songId}&level=standard`
+  const rootUrl = await getApiUrl()
+  const url:string = `${rootUrl}/song/url/v1?id=${songId}&level=standard`
   const request = new HttpRequest(url)
   try {
-    const data = await request.Request();
+    const data = await request.RequestWithVipType();
     LogUtil.info(TAG + JSON.stringify(data.result))
     const dataGot: SongPlay = data.result as SongPlay
     return dataGot

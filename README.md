@@ -8,7 +8,7 @@
 
 该项目当前为测试版本，更多功能敬请期待。
 
-AG尝鲜：https://appgallery.huawei.com/link/invite-test-wap?taskId=50b3ec42ea2f226c064f710bccd44431&invitationCode=2reLomLPNjy
+AG尝鲜：https://appgallery.huawei.com/link/invite-test-wap?taskId=b5540a41763c66bda68d7ad0fdbd1750&invitationCode=2reLomLPNjy
 
 ### 当前支持功能：
 

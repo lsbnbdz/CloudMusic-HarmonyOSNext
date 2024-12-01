@@ -39,3 +39,8 @@ export async function isUsePubCookie(): Promise<boolean> {
   if(isUsePubCookie) return true
   else return false
 }
+
+export function removeHTTPOnly(cookieString: string): string {
+  // 使用正则表达式匹配并删除所有 HTTPOnly 标记
+  return cookieString.replace(/HTTPOnly;/g, "")
+}

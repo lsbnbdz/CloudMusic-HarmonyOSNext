@@ -4,6 +4,7 @@ import { SettingsHead } from '../components/head/SettingsHead'
 import { router } from '@kit.ArkUI'
 import PreferencesUtils from '../common/utils/PreferencesUtils'
 import { ExplainButton } from '../components/buttons/ExplainButton'
+import { QualityType } from '../common/entities/SongDownload'
 
 /**
  * 设置页面
@@ -22,6 +23,7 @@ struct Settings {
         List({ space: 20 }) {
           ListItem() { hasAnimation() }
           ListItem() { isUsePubCookie() }
+          ListItem() { setPlayQuality() }
           ListItem() { customApiUrl() }
           ListItem() { Divider() }
           ListItem() { Version() }
@@ -73,6 +75,32 @@ struct Settings {
       Toggle({ type: ToggleType.Switch, isOn:this.isUsePubCookie }).height(24).width(48)
         .onChange(async () => { this.isUsePubCookie = !this.isUsePubCookie; AppStorage.setOrCreate('set-isUsePubCookie',this.isUsePubCookie); await PreferencesUtils.putPreferenceValue('Settings','isUsePubCookie',this.isUsePubCookie)})
     }.width('100%').justifyContent(FlexAlign.SpaceBetween).padding({ left:30, right: 30})
+  }
+}
+
+/**
+ * 设置播放音质
+ */
+@Component struct setPlayQuality {
+  @StorageLink('set-playQuality') playQuality:QualityType = "standard"
+  @State selected:number | undefined = 0
+
+  async aboutToAppear(): Promise<void> {
+    this.selected = await AppStorage.get('set-playQuality')
+  }
+  build() {
+    Row() {
+      Text('在线播放音质').LeftText()
+      Select([{ value: '标准' }, { value: '高' }, { value: '极高' }, { value: '无损' }])
+        .selected(this.selected)
+        .value(this.selected ? Constants.QUALITY_NAME[this.selected] : '标准')
+        .width(100)
+        .onSelect((index: number) => {
+          AppStorage.setOrCreate('set-playQuality',index)
+          PreferencesUtils.putPreferenceValue('Settings', 'playQuality', index)
+        })
+    }
+    .width('100%').justifyContent(FlexAlign.SpaceBetween).padding({ left:30, right: 30})
   }
 }
 

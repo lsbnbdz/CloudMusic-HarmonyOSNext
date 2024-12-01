@@ -26,7 +26,7 @@ class AudioPlayUtils {
     LogUtil.info(TAG + '成功设置播放Url: ' + url)
   }
 
-  async play(url:string) {
+  async playWithUrl(url:string) {
     try {
       await this.init()
       await this.setUrl(url)

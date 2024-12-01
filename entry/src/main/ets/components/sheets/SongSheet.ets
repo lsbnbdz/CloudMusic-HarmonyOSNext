@@ -25,10 +25,11 @@ export struct SongSheet {
   })
 
   @StorageProp("bottomRectHeight") bottomRectHeight: number = 0;
+  @StorageProp('isValidCookie') isValidCookie:boolean = false
   @Link isShowSheet:boolean
   @State isPicLoading:boolean = true
   @State isPlayerLoading:boolean = false
-  
+
   aboutToAppear(): void {
     this.duration = changeDuration(this.song.duration)
   }
@@ -97,7 +98,7 @@ export struct SongSheet {
           if(!this.isPlayerLoading) {
             this.isPlayerLoading = true
             this.isShowSheet = !this.isShowSheet
-            await playMusic(this.song,this.artists,this.picUrl).then(() => {
+            await playMusic(this.song,this.artists,this.picUrl,this.isValidCookie).then(() => {
               setTimeout(() => {
                 this.isPlayerLoading = false
               }, 3000)

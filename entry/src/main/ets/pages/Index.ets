@@ -17,7 +17,8 @@ struct Index {
         if (this.isValidCookie) {
           PlayLists()
             .layoutWeight(1)
-        } else {
+        }
+        else {
           Column({ space: 5 }) {
             Text('登录账号\n' +
               '以显示你的歌单')

@@ -1,5 +1,6 @@
 import { LogUtil } from "@pura/harmony-utils"
 import Constants from "../constants/Constants"
+import { QualityType } from "../entities/SongDownload"
 import PreferencesUtils from "../utils/PreferencesUtils"
 
 /**
@@ -20,6 +21,9 @@ async function audioPlayerInit() {
   }
 }
 
+/**
+ * 初始化设置
+ */
 async function initSettings() {
   LogUtil.info(TAG + 'initSettings - 开始初始化设置')
   const SetPerf: string = Constants.SET_PERF
@@ -56,5 +60,15 @@ async function initSettings() {
   } else {
     const isUsePubCookie = await PreferencesUtils.getPreferenceValue(SetPerf, 'isUsePubCookie', true)
     AppStorage.setOrCreate('set-isUsePubCookie', isUsePubCookie)
+  }
+
+  // setPlayQuality
+  const isPlayQualityExist = await PreferencesUtils.hasPreferenceValue(SetPerf, 'playQuality')
+  if (!isPlayQualityExist) {
+    await PreferencesUtils.putPreferenceValue(SetPerf, 'playQuality', 0)
+    AppStorage.setOrCreate('set-playQuality', 0)
+  } else {
+    const playQuality:number = await PreferencesUtils.getPreferenceValue(SetPerf, 'playQuality', 0)
+    AppStorage.setOrCreate('set-playQuality', playQuality)
   }
 }

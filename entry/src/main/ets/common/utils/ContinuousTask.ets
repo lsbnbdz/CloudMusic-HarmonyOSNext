@@ -2,9 +2,9 @@ import { BusinessError } from '@kit.BasicServicesKit';
 import { backgroundTaskManager } from '@kit.BackgroundTasksKit';
 import { WantAgent, wantAgent } from '@kit.AbilityKit';
 import { avSession } from '@kit.AVSessionKit';
-import AudioPlayUtils from './AudioPlayUtils';
 import { LogUtil } from '@pura/harmony-utils';
 import { Song } from '../entities/SongsResult';
+import AudioPlayUtils from './AudioPlayUtils';
 
 /**
  * 长时任务
@@ -35,7 +35,7 @@ class ContinuousTask {
         const session = await avSession.createAVSession(this.context, 'playSession', 'audio')
         await session.activate()
 
-        AudioPlayUtils.play(url)
+        AudioPlayUtils.playWithUrl(url)
         LogUtil.info(TAG + `启动长时任务 stopBackgroundRunning.`);
         AudioPlayUtils.mPlayer.onStateChange((state) => {
           if(state == 'paused') { AppStorage.setOrCreate('player-ispaused', true) }

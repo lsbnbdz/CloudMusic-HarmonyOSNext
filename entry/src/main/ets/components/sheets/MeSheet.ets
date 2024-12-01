@@ -1,12 +1,12 @@
 import { router } from "@kit.ArkUI";
-import { logOut } from "../../common/functions/LogOut";
+import { logOut } from "../../api/LogOut";
 import { User, UserClass } from "../../common/entities/User";
 
 @Component
 export struct MeSheet {
-  @StorageProp("isValidCookie") isValidCookie: boolean = false;
-  @StorageProp("User") user: User = UserClass;
-  @StorageProp("bottomRectHeight") bottomRectHeight: number = 0;
+  @StorageProp("isValidCookie") isValidCookie: boolean = false
+  @StorageProp("User") user: User = UserClass
+  @StorageProp("bottomRectHeight") bottomRectHeight: number = 0
   @Link isShowSheet:boolean
 
   build() {
@@ -16,7 +16,7 @@ export struct MeSheet {
         Text('未登录').NormalText(24)
         Button('登 录').LoginButton()
           .onClick(() => {
-            router.pushUrl({ url:'pages/LoginPage' })
+            router.pushUrl({ url:'pages/login/LoginPage' })
           })
         } else {
         Column({ space: 20 }) {

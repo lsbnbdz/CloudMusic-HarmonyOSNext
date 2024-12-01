@@ -36,8 +36,13 @@ export struct PlayLists {
     Column() {
       if(this.isLoading == true) {
         Column() {
-          SpinKit({ spinType: SpinType.spinG, spinSize:60, spinColor:Color.Gray }).width(60)
-        }.height('50%').width('100%').justifyContent(FlexAlign.Center)
+          SpinKit({ spinType: SpinType.spinG, spinSize:60, spinColor:Color.Gray })
+            .width(60)
+        }
+        .height('100%')
+        .padding({ bottom: px2vp(this.topRectHeight) })
+        .width('100%')
+        .justifyContent(FlexAlign.Center)
       }
       else {
         List({ space: 10 }) {

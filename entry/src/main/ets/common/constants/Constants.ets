@@ -17,4 +17,5 @@ export default class Constants {
   static readonly COOKIE_EXPIRY_DAYS = 7;
 
   static readonly QUALITY: QualityType[] = ['standard','higher','exhigh','lossless']
+  static readonly QUALITY_NAME: string[] = ['标准','高','极高','无损']
 }

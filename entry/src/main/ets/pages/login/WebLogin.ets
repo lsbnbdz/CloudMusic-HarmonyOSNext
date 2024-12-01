@@ -12,7 +12,7 @@ import { ToastUtil } from '@pura/harmony-utils';
 @Component
 struct WebLogin {
   @StorageProp('bottomRectHeight') bottomRectHeight: number = 0;
-  @State userAgent: string = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.142 Safari/537.36'
+  @State userAgent: string = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36';
   controller: webview.WebviewController = new webview.WebviewController()
 
   build() {

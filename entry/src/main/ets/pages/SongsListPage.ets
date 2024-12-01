@@ -45,8 +45,9 @@ struct SongsListPage {
     Stack() {
       if(this.isLoading == true) {
         Column() {
-          SpinKit({ spinType: SpinType.spinF, spinSize:60, spinColor:Color.Gray }).width(60)
+          SpinKit({ spinType: SpinType.spinO, spinSize:60, spinColor:Color.Gray }).width(60)
         }
+        .padding({ bottom: px2vp(this.topRectHeight) })
         .height('100%')
         .width('100%')
         .justifyContent(FlexAlign.Center)

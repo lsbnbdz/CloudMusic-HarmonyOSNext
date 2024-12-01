@@ -3,11 +3,9 @@ import { playList } from "../../common/entities/PlayList"
 import { PlayListCard } from "./PlayListCard"
 import { SpinKit, SpinType } from '@pura/spinkit'
 import { LogUtil } from "@pura/harmony-utils";
-import { RefreshController } from '@abner/refresh'
 
 @Component
 export struct PlayLists {
-  controller: RefreshController = new RefreshController() //刷新控制器
   @StorageProp('bottomRectHeight') bottomRectHeight: number = 0;
   @StorageProp('topRectHeight') topRectHeight: number = 0;
 
@@ -42,29 +40,6 @@ export struct PlayLists {
         }.height('50%').width('100%').justifyContent(FlexAlign.Center)
       }
       else {
-        // ListView({
-        //   controller: this.controller,
-        //   items: this.playLists,
-        //   itemLayout: (item: Object, index: number) => {
-        //     this.itemLayout(item as playList, index)
-        //   },
-        //   isScrollSpring: true,
-        //   onRefresh: async () => {
-        //     this.playLists = []
-        //     this.isLoading = true
-        //     try {
-        //       const result = await getPlayLists(false)
-        //       this.playLists = result
-        //
-        //       setTimeout(() => {
-        //         this.isLoading = false
-        //       }, 0)
-        //     } catch (e) {
-        //       LogUtil.error('Error fetching playlists: ', e)
-        //     }
-        //   }
-        // })
-
         List({ space: 10 }) {
           ForEach(this.playLists, (item: playList, index) => {
             ListItem() {

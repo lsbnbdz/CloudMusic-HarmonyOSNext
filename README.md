@@ -8,7 +8,7 @@
 
 该项目当前为测试版本，更多功能敬请期待。
 
-AG尝鲜：https://appgallery.huawei.com/link/invite-test-wap?taskId=b5540a41763c66bda68d7ad0fdbd1750&invitationCode=2reLomLPNjy
+AG尝鲜：https://docs.chenlvin.cc/cloudmusic/#/
 
 ### 当前支持功能：
 
@@ -25,6 +25,7 @@ AG尝鲜：https://appgallery.huawei.com/link/invite-test-wap?taskId=b5540a41763
 - [NeteaseCloudMusicApi](https://gitlab.com/Binaryify/neteasecloudmusicapi)
 - [OH三方库 @pura/harmony-utils](https://ohpm.openharmony.cn/#/cn/detail/@pura%2Fharmony-utils)
 - [OH三方库 @pura/harmony-dialog](https://ohpm.openharmony.cn/#/cn/detail/@pura%2Fharmony-dialog)
+- [OH三方库 @yunkss/ef_audio](https://ohpm.openharmony.cn/#/cn/detail/@yunkss%2Fef_audio)
 - [Music Sharing](https://github.com/Okysu/harmony-next-music-sharing)
 
 

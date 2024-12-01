@@ -10,12 +10,12 @@ export struct ListHead {
   build() {
     Row({ space: 20 }) {
       BackButton()
-      Text(`${this.title}`).fontSize(20).fontColor($r('app.color.reverse')).maxLines(1)
+      Text(`${this.title}`).fontSize(18).fontColor($r('app.color.reverse')).maxLines(1)
         .textOverflow({ overflow: TextOverflow.Ellipsis }).layoutWeight(1).textAlign(TextAlign.Center)
       PlayController()
     }
     .justifyContent(FlexAlign.SpaceBetween)
-    .padding({ left: 15, right: 10 })
+    .padding({ left: 10, right: 10 })
     .width('100%')
     .backgroundColor(Color.Transparent)
     .onClick(() => {

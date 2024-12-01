@@ -15,7 +15,8 @@ struct Index {
         IndexHead()
         SearchComponent()
         if (this.isValidCookie) {
-          PlayLists().layoutWeight(1)
+          PlayLists()
+            .layoutWeight(1)
         } else {
           Column({ space: 5 }) {
             Text('登录账号\n' +
@@ -24,7 +25,8 @@ struct Index {
               .fontWeight(FontWeight.Bold)
               .textAlign(TextAlign.Center)
               .padding({top:50})
-          }.width('100%').layoutWeight(1)
+          }.width('100%')
+          .layoutWeight(1)
         }
       }
     }

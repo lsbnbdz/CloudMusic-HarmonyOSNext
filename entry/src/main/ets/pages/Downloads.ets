@@ -13,7 +13,7 @@ struct Downloads {
         Text('敬请期待').fontSize(24).fontWeight(FontWeight.Bold)
       }
       .justifyContent(FlexAlign.Center)
-      .height(`calc(100% - ${this.topRectHeight*2 + 90}px)`)
+      .layoutWeight(1)
       .width('100%')
     }
     .width('100%')

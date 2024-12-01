@@ -3,11 +3,13 @@ import { getSongsList } from '../api/getSongsList';
 import { Song } from '../common/entities/SongsResult';
 import { SongCard } from '../components/main/SongCard';
 import { ListHead } from '../components/head/ListHead';
+import { LogUtil } from '@pura/harmony-utils';
+import { SpinKit, SpinType } from '@pura/spinkit';
 
 /**
  * 歌曲列表页（搜索结果）
  */
-
+const TAG = "[SongListPage] "
 @Entry
 @Component
 struct SongsListPage {
@@ -35,7 +37,7 @@ struct SongsListPage {
       this.isLoading = false;
       this.hasLoaded = true;
     } catch (e) {
-      console.error('Error fetching songs: ', e);
+      LogUtil.error( TAG + 'Error fetching songs: ', JSON.stringify(e));
     }
   }
 
@@ -43,19 +45,27 @@ struct SongsListPage {
     Stack() {
       if(this.isLoading == true) {
         Column() {
-          LoadingProgress().width(80)
-        }.height('100%').width('100%').justifyContent(FlexAlign.Center)
-      } else {
+          SpinKit({ spinType: SpinType.spinF, spinSize:60, spinColor:Color.Gray }).width(60)
+        }
+        .height('100%')
+        .width('100%')
+        .justifyContent(FlexAlign.Center)
+      }
+      else {
         Column() {
-          ListHead({ title: `"${this.searchKeyword}"` })
+          ListHead({ title: `"${this.searchKeyword}" 的搜索结果` })
           List() {
             ForEach(this.list, (item: Song, index) => {
               ListItem() {
                 SongCard({ song: item, sid: index, hasAnimation: this.hasAnimation })
               }
             })
-            ListItem().padding({bottom: px2vp(this.bottomRectHeight)})
-          }.layoutWeight(1).width('100%').scrollBar(BarState.Auto).height('100%')
+            ListItem().padding({ bottom: px2vp(this.bottomRectHeight) })
+          }
+          .layoutWeight(1)
+          .width('100%')
+          .scrollBar(BarState.Auto)
+          .height('100%')
         }
         .height('100%')
       }

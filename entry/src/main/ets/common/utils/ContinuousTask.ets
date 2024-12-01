@@ -13,7 +13,7 @@ import { Song } from '../entities/SongsResult';
 const TAG = '[ContinuousTask] '
 
 class ContinuousTask {
-  private context: Context = getContext(this);
+  private context: Context = getContext(this)
 
   startTask(song:Song, artists:string, picUrl:string ,url:string) {
     let wantAgentInfo: wantAgent.WantAgentInfo = {
@@ -36,24 +36,24 @@ class ContinuousTask {
         await session.activate()
 
         AudioPlayUtils.play(url)
-        LogUtil.info(`启动长时任务 stopBackgroundRunning.`);
+        LogUtil.info(TAG + `启动长时任务 stopBackgroundRunning.`);
         AudioPlayUtils.mPlayer.onStateChange((state) => {
           if(state == 'paused') { AppStorage.setOrCreate('player-ispaused', true) }
           if(state == 'idle') { session.destroy() }
           if(state == 'stopped') { AppStorage.setOrCreate('player-ispaused', true); session.destroy() }
-          if(state == 'completed') { AppStorage.setOrCreate('player-ispaused', true); session.destroy() }
+          if(state == 'completed') { AppStorage.setOrCreate('player-ispaused', true) }
         })
       }).catch((err: BusinessError) => {
-        LogUtil.error(`开启长时任务 startBackgroundRunning 失败：Code - ${err.code}, Message - ${err.message}`);
+        LogUtil.error(TAG + `开启长时任务 startBackgroundRunning 失败：Code - ${err.code}, Message - ${err.message}`);
       });
     });
   }
 
   async stopTask() {
     backgroundTaskManager.stopBackgroundRunning(this.context).then(() => {
-      LogUtil.info(`成功结束长时任务 stopBackgroundRunning.`);
+      LogUtil.info(TAG + `成功结束长时任务 stopBackgroundRunning.`);
     }).catch((err: BusinessError) => {
-      LogUtil.error(`结束长时任务 stopBackgroundRunning 失败：Code - ${err.code}, Message - ${err.message}`);
+      LogUtil.error(TAG + `结束长时任务 stopBackgroundRunning 失败：Code - ${err.code}, Message - ${err.message}`);
     });
   }
 }

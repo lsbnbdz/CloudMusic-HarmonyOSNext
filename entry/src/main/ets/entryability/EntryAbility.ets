@@ -16,6 +16,7 @@ export default class EntryAbility extends UIAbility {
     // 初始化
     await PreferencesUtils.loadPreference(this.context, Constants.USER_PREF)
     await PreferencesUtils.loadPreference(this.context, Constants.SET_PERF)
+    await PreferencesUtils.loadPreference(this.context, Constants.FILE_PREF)
     LogUtil.init(0x1010, 'Cloud Music', true)
     appInit()
 

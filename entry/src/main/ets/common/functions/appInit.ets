@@ -42,12 +42,12 @@ async function initSettings() {
   const isCustomApiUrlExist = await PreferencesUtils.hasPreferenceValue(SetPerf, 'isCustomApiUrl')
   if (!isCustomApiUrlExist) {
     await PreferencesUtils.putPreferenceValue(SetPerf, 'isCustomApiUrl', false)
-    await PreferencesUtils.putPreferenceValue(SetPerf,'customApiUrl','')
+    await PreferencesUtils.putPreferenceValue(SetPerf,'customApiUrl','http://example.com:8080')
     AppStorage.setOrCreate('set-isCustomApiUrl',false)
-    AppStorage.setOrCreate('set-customApiUrl','')
+    AppStorage.setOrCreate('set-customApiUrl','http://example.com:8080')
   } else {
     const isCustomApiUrl = await PreferencesUtils.getPreferenceValue(SetPerf, 'isCustomApiUrl', false)
-    const customApiUrl = await PreferencesUtils.getPreferenceValue(SetPerf, 'customApiUrl', '')
+    const customApiUrl = await PreferencesUtils.getPreferenceValue(SetPerf, 'customApiUrl', 'http://example.com:8080')
     AppStorage.setOrCreate('set-isCustomApiUrl',isCustomApiUrl)
     AppStorage.setOrCreate('set-customApiUrl',customApiUrl)
   }

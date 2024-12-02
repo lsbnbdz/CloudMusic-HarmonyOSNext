@@ -1,6 +1,8 @@
 import { http } from "@kit.NetworkKit"
 import { BusinessError } from "@kit.BasicServicesKit"
-import { LogUtil } from "@pura/harmony-utils"
+import { DialogUtil, LogUtil } from "@pura/harmony-utils"
+import { router } from "@kit.ArkUI"
+import Constants from "../constants/Constants"
 
 /**
  * 网络请求工具类
@@ -48,7 +50,9 @@ export class HttpRequest {
           httpRequest.off('headersReceive')
           httpRequest.destroy()
           reject(err)  // 出现错误时reject
-          throw new Error('Http Request Error')
+          setTimeout(() => {
+            DialogUtil.showConfirmDialog({ title: '出错', message: Constants.HTTP_ERROR_MSG})
+          },1000)
         }
       })
     })
@@ -71,8 +75,8 @@ export class HttpRequest {
           },
           usingCache: this.usingCache,
           expectDataType: http.HttpDataType.OBJECT,
-          connectTimeout: 60000,
-          readTimeout: 60000,
+          connectTimeout: 8000,
+          readTimeout: 8000,
         }, (err: BusinessError, data: http.HttpResponse) => {
         if (!err) {
           // 解析HTTP响应内容
@@ -83,10 +87,13 @@ export class HttpRequest {
           httpRequest.destroy()
           resolve(data)  // 返回请求数据
         } else {
-          console.error('HttpRequest Error: ' + JSON.stringify(err))
+          LogUtil.error(TAG + 'HttpRequest Error: ' + JSON.stringify(err))
           httpRequest.off('headersReceive')
           httpRequest.destroy()
           reject(err)  // 出现错误时reject
+          setTimeout(() => {
+            DialogUtil.showConfirmDialog({ title: '出错', message: Constants.HTTP_ERROR_MSG})
+          },1000)
         }
       })
     })

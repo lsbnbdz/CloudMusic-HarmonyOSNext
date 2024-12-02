@@ -15,6 +15,7 @@ export struct PlayController {
   @StorageProp('player-ispaused') isPaused:boolean = false
   @StorageProp('player-picurl') picUrl:string = ''
   @StorageProp('player-time') time:number = 0
+  @StorageProp('set-playQuality') playQuality:number = 0
   @State isShowPopup:boolean = false
   @State qualitySelected:number = 3
   artists1:string = 'this.artists'
@@ -78,7 +79,7 @@ export struct PlayController {
   ControllerPopup() {
     Column({ space: 5 }) {
       Column({ space: 10 }) {
-        Text('正在播放').textStyle(12).padding({ bottom: 10 })
+        Text(`正在播放 [${Constants.QUALITY_NAME[this.playQuality]}]`).textStyle(12).padding({ bottom: 10 })
         Image(this.picUrl + '?param=256y256').width(120).height(120)
         Text(this.song.name).textStyle(20)
         Text(this.artists).textStyle(15)

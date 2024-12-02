@@ -68,7 +68,7 @@ struct Settings {
         Text('使用公共Cookie').LeftText()
         ExplainButton()
           .onClick(() => {
-            DialogUtil.showPrimaryDialog({title:'公共 Cookie', message:'该功能仅对非VIP用户生效\n开启后，非VIP用户将使用公共Cookie\n' +
+            DialogUtil.showConfirmDialog({title:'公共 Cookie', message:'该功能仅对非VIP用户生效\n开启后，非VIP用户将使用公共Cookie\n' +
               '获取完整的下载链接/歌曲Url'})
           })
       }

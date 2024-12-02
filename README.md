@@ -15,7 +15,10 @@ AG尝鲜：https://docs.chenlvin.cc/cloudmusic/#/
 - 网易云账号登录
 - 个人歌单获取
 - 歌曲搜索
+- 歌曲播放
 - 获取歌曲下载链接
+- 歌曲下载到本地
+- 保存音频文件至本机
 
 
 
@@ -24,7 +27,6 @@ AG尝鲜：https://docs.chenlvin.cc/cloudmusic/#/
 - [华为开发者官网指南](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides-V5/application-dev-guide-V5?catalogVersion=V5)
 - [NeteaseCloudMusicApi](https://gitlab.com/Binaryify/neteasecloudmusicapi)
 - [OH三方库 @pura/harmony-utils](https://ohpm.openharmony.cn/#/cn/detail/@pura%2Fharmony-utils)
-- [OH三方库 @pura/harmony-dialog](https://ohpm.openharmony.cn/#/cn/detail/@pura%2Fharmony-dialog)
 - [OH三方库 @yunkss/ef_audio](https://ohpm.openharmony.cn/#/cn/detail/@yunkss%2Fef_audio)
 - [Music Sharing](https://github.com/Okysu/harmony-next-music-sharing)
 

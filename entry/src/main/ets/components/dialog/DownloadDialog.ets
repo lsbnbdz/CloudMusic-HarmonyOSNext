@@ -4,6 +4,8 @@ import { Song, SongClass } from "../../common/entities/SongsResult"
 import { pasteboard } from "@kit.BasicServicesKit"
 import { promptAction } from "@kit.ArkUI"
 import { SpinKit, SpinType } from "@pura/spinkit"
+import FileDownloadUtils from "../../common/utils/FileDownloadUtils"
+import { ToastUtil } from "@pura/harmony-utils"
 
 @CustomDialog
 export struct DownloadDialog {
@@ -59,7 +61,9 @@ export struct DownloadDialog {
               })
             Button('下载到本地').ButtonStyle()
               .onClick(() => {
-                promptAction.showToast({ message: '该功能正在开发中，敬请期待。', duration: 3000 })
+                ToastUtil.showToast(`开始下载：${this.song.name}.${this.songDownload.data.type}`)
+                this.controller.close()
+                FileDownloadUtils.download(this.songDownload,this.song,this.artists)
               })
             if (!this.isValidCookie) {
               Text('你尚未登录，将无法完整获取部分会员歌曲')

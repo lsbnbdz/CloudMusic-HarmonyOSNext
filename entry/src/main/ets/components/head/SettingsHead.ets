@@ -1,6 +1,6 @@
 import { promptAction } from "@kit.ArkUI";
 import { BackButton } from "../buttons/BackButton";
-import { CommonCircleButton } from "../buttons/CommonCircleButton";
+import { CommonCircleButton } from "../buttons/CircleButton";
 
 @Component
 export struct SettingsHead {

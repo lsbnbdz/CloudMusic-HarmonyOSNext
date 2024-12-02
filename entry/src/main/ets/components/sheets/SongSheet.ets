@@ -60,28 +60,7 @@ export struct SongSheet {
         Text(`时长 ${this.duration}`).textStyle(12)
       }.width('100%')
       // 按钮
-      Column({ space:5 }) {
-        // 音质选择框
-        Select([{ value: '标准' }, { value: '高' }, { value: '极高' }, { value: '无损' }])
-          .selected(3)
-          .value('无损')
-          .onSelect((index: number) => { this.qualitySelected = index })
-        // 下载按钮
-        Button() {
-          Row({ space:5 }) {
-            Image($r('app.media.ic_public_download_filled')).width(24).fillColor($r('app.color.reverse'))
-            Text('下载').fontSize(20).fontColor($r('app.color.reverse'))
-          }.padding({ left: 15, right: 15, top: 10, bottom: 10 })
-        }
-        .type(ButtonType.Normal)
-        .borderRadius(20)
-        .backgroundColor('transparent')
-        .borderWidth(1)
-        .borderColor(Color.Gray)
-        .onClick(() => {
-          this.dialogController.open()
-          this.isShowSheet = false
-        })
+      Column({ space:15 }) {
         // 播放按钮
         Button() {
           Row({ space:5 }) {
@@ -105,6 +84,30 @@ export struct SongSheet {
             })
           } else { ToastUtil.showToast('操作过于频繁') }
         })
+
+        // 下载按钮
+        Button() {
+          Row({ space:5 }) {
+            Image($r('app.media.ic_public_download_filled')).width(24).fillColor($r('app.color.reverse'))
+            Text('下载').fontSize(20).fontColor($r('app.color.reverse'))
+          }.padding({ left: 15, right: 15, top: 10, bottom: 10 })
+        }
+        .type(ButtonType.Normal)
+        .borderRadius(20)
+        .backgroundColor('transparent')
+        .borderWidth(1)
+        .borderColor(Color.Gray)
+        .onClick(() => {
+          this.dialogController.open()
+          this.isShowSheet = false
+        })
+
+        // 音质选择框
+        Select([{ value: '标准' }, { value: '高' }, { value: '极高' }, { value: '无损' }])
+          .selected(3)
+          .value('无损')
+          .onSelect((index: number) => { this.qualitySelected = index })
+
       }.width('100%')
     }
     .width('100%')

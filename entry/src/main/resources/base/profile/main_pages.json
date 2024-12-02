@@ -5,7 +5,7 @@
     "pages/SongsListPage",
     "pages/login/LoginPage",
     "pages/login/WebLogin",
-    "pages/Downloads",
+    "pages/DownloadPage",
     "pages/PlayListPage",
     "pages/WebPage",
     "pages/login/QrCodeLogin"

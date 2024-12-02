@@ -1,4 +1,4 @@
-import { CommonCircleButton } from "../buttons/CommonCircleButton";
+import { CommonCircleButton } from "../buttons/CircleButton";
 import { MeSheet } from "../sheets/MeSheet";
 import { router } from "@kit.ArkUI";
 
@@ -42,7 +42,7 @@ export struct IndexHead {
       MenuItem({ startIcon: $r('app.media.ic_public_download_filled'), content: "下载管理" })
         .contentFontColor($r('app.color.reverse'))
         .onClick(()=>{
-          router.pushUrl({ url:'pages/Downloads' })
+          router.pushUrl({ url:'pages/DownloadPage' })
         })
     }
   }

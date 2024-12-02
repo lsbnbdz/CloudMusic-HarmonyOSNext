@@ -16,7 +16,7 @@ export struct SongCard {
 
 
   async aboutToAppear(): Promise<void> {
-    if(this.hasAnimation) { this.startWidth = '1%'}
+    if(this.hasAnimation) { this.startWidth = '30%'}
     const artistsStr = await getArtists(this.song.artists)
     this.artists = artistsStr
 
@@ -39,8 +39,8 @@ export struct SongCard {
       .width(this.startWidth)
       .onAppear( () => { this.startWidth = '100%' })
       .animation({
-        duration: 300,
-        curve: Curve.Friction,
+        duration: 600,
+        curve: Curve.LinearOutSlowIn,
       })
     }
     .backgroundColor(Color.Transparent)

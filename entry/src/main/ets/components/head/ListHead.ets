@@ -1,6 +1,6 @@
 import { ToastUtil } from "@pura/harmony-utils";
 import { BackButton } from "../buttons/BackButton";
-import { CommonCircleButton } from "../buttons/CommonCircleButton";
+import { CommonCircleButton } from "../buttons/CircleButton";
 import { PlayController } from "../main/PlayController";
 
 @Component

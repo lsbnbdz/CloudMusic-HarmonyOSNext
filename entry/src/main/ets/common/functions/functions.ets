@@ -40,7 +40,18 @@ export async function isUsePubCookie(): Promise<boolean> {
   else return false
 }
 
+/**
+ * 使用正则表达式匹配并删除所有 HTTPOnly 标记
+ * @param cookieString
+ * @returns string - cookie
+ */
 export function removeHTTPOnly(cookieString: string): string {
-  // 使用正则表达式匹配并删除所有 HTTPOnly 标记
   return cookieString.replace(/HTTPOnly;/g, "")
+}
+
+/**
+ * b -> mb
+ */
+export function changeb2Mb(b: number): number {
+  return parseFloat((b / 1000000).toFixed(2));
 }

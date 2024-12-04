@@ -5,6 +5,8 @@ import { router } from '@kit.ArkUI'
 import PreferencesUtils from '../common/utils/PreferencesUtils'
 import { ExplainButton } from '../components/buttons/ExplainButton'
 import { QualityType } from '../common/entities/SongDownload'
+import { DialogAction } from '@pura/harmony-utils/src/main/ets/entity/constraint'
+import FileUtils from '../common/utils/FileUtils'
 
 /**
  * 设置页面
@@ -25,6 +27,7 @@ struct Settings {
           ListItem() { isUsePubCookie() }
           ListItem() { setPlayQuality() }
           ListItem() { customApiUrl() }
+          ListItem() { removeCache() }
           ListItem() { Divider() }
           ListItem() { Version() }
           ListItem() { Privacy() }
@@ -143,6 +146,35 @@ struct Settings {
 }
 
 /**
+ * 清理缓存
+ */
+@Component struct removeCache {
+  build() {
+    Row() {
+      Text('清除缓存').LeftText()
+      Button('清理')
+        .backgroundColor(Color.Transparent)
+        .borderWidth(2)
+        .borderColor(Color.Gray)
+        .fontColor($r('app.color.reverse'))
+        .onClick(() => {
+          DialogUtil.showPrimaryDialog({
+            title: '确认',
+            message: '清理缓存\n请勿在下载过程中清理，否则可能导致下载内容异常',
+            primaryButton: "取消",
+            secondaryButton: "清理",
+            onAction: async (action) => {
+              if(action == DialogAction.TWO) {
+                FileUtils.removeCache()
+              }
+            }
+          })
+        })
+    }.width('100%').justifyContent(FlexAlign.SpaceBetween).padding({ left:30, right: 30})
+  }
+}
+
+/**
  * 显示版本号
  */
 @Component struct Version {
@@ -190,6 +222,9 @@ struct Settings {
   }
 }
 
+/**
+ * 底部信息
+ */
 @Component struct Bottom {
   build() {
     Column() {

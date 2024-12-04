@@ -55,8 +55,11 @@ export struct PlayLists {
         }
         .height('100%')
         .width('100%')
+        .borderRadius(20)
         .scrollBar(BarState.Auto)
       }
-    }.width('100%').height('100%')
+    }
+    .width('100%')
+    .height('100%')
   }
 }

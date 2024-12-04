@@ -35,9 +35,10 @@ export struct SearchComponent {
         PlayController()
 
       }
+      .borderRadius(20)
       .width('100%')
       .justifyContent(FlexAlign.Center)
-      .padding({ left:30, right:30 })
+      .padding({ left:30, right:30})
     }
     .backgroundColor(Color.Transparent)
   }

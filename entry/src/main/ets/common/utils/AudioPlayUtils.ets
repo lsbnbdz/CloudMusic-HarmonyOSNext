@@ -1,6 +1,8 @@
-import { LogUtil } from '@pura/harmony-utils'
+import { FileUtil, LogUtil } from '@pura/harmony-utils'
 import { EfAVPlayer } from '@yunkss/ef_audio'
 import ContinuousTask from './ContinuousTask'
+import FileUtils from './FileUtils'
+import { fileIo } from '@kit.CoreFileKit'
 
 /**
  * 音频播放工具
@@ -21,15 +23,10 @@ class AudioPlayUtils {
     }
   }
 
-  async setUrl(url: string) {
-    await this.mPlayer.setUrl(url)
-    LogUtil.info(TAG + '成功设置播放Url: ' + url)
-  }
-
   async playWithUrl(url:string) {
     try {
       await this.init()
-      await this.setUrl(url)
+      await this.mPlayer.setUrl(url)
       LogUtil.info(TAG + '开始播放: ' + url)
       this.mPlayer.play()
       AppStorage.setOrCreate('player-isplaying',true)
@@ -39,6 +36,27 @@ class AudioPlayUtils {
     } catch (e) {
       AppStorage.setOrCreate('player-isplaying',false)
       LogUtil.error(TAG + '播放失败: ' + JSON.stringify(e))
+    }
+  }
+
+  async playWithFile(fileName:string) {
+    try {
+      let path = await FileUtils.getFilesDir() + `/${fileName}`
+      LogUtil.info(TAG + 'path: ' + path)
+      let file = await fileIo.open(path)
+      let fdPath = 'fd://' + file.fd
+      LogUtil.info(TAG + 'fdPath: ' + fdPath)
+      await this.init()
+      await this.mPlayer.setUrl(fdPath)
+      this.mPlayer.play()
+      LogUtil.info(TAG + '开始播放: ' + fileName)
+      AppStorage.setOrCreate('player-isplaying',true)
+      this.mPlayer.onTimeUpdate((time) => {
+        AppStorage.setOrCreate('player-time',time)
+      })
+    } catch (e) {
+      AppStorage.setOrCreate('player-isplaying',false)
+      LogUtil.error(TAG + '播放失败 play error: ' + JSON.stringify(e))
     }
   }
 

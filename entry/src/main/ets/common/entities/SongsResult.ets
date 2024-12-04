@@ -18,9 +18,6 @@ export interface SongsData {
   result:Result
 }
 
-
-
-
 export const SongClass: Song = {
   id: 0,
   name: '',

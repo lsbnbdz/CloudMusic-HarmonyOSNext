@@ -11,6 +11,10 @@
     {
       "name": "reverse",
       "value": "#121212"
+    },
+    {
+      "name": "background",
+      "value": "#FFEAEAEA"
     }
   ]
 }

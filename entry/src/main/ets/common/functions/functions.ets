@@ -1,4 +1,5 @@
 import Constants from "../constants/Constants"
+import { Artist } from "../entities/SongsResult"
 
 /**
  * 通用函数
@@ -16,6 +17,19 @@ export async function getApiUrl(): Promise<string | undefined> {
     rootUrl = await AppStorage.get('set-customApiUrl')
   }
   return rootUrl
+}
+
+/**
+ * 转换 Artists[] 至 string
+ * @param artists
+ * @returns
+ */
+export async function getArtists(artists:Artist[]): Promise<string> {
+  let artistStr:string = ''
+  for(let artist of artists) {
+    artistStr = artistStr + artist.name + ', '
+  }
+  return artistStr.slice(0,-2)
 }
 
 /**
@@ -55,3 +69,15 @@ export function removeHTTPOnly(cookieString: string): string {
 export function changeb2Mb(b: number): number {
   return parseFloat((b / 1000000).toFixed(2));
 }
+
+/**
+ * 替换fileName的非法字符
+ * @param input
+ * @returns
+ */
+export function sanitizeFileName(input: string): string {
+  const invalidCharsPattern = /[<>:"/\\|?*]/g;
+  const sanitized = input.replace(invalidCharsPattern, ' ');
+  return sanitized;
+}
+

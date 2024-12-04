@@ -64,8 +64,8 @@ export struct DeleteCircleButton {
     .height(60)
     .onClick(async () => {
       DialogUtil.showPrimaryDialog({
-        title: '确认',
-        message:`确定要删除 ${this.fileName}`,
+        title: '删除文件',
+        message:`确定删除 "${this.fileName}" ?`,
         primaryButton: "取消",
         secondaryButton: "删除",
         onAction: async (action) => {

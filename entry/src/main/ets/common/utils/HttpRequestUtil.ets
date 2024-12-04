@@ -1,7 +1,6 @@
 import { http } from "@kit.NetworkKit"
 import { BusinessError } from "@kit.BasicServicesKit"
 import { DialogUtil, LogUtil } from "@pura/harmony-utils"
-import { router } from "@kit.ArkUI"
 import Constants from "../constants/Constants"
 
 /**

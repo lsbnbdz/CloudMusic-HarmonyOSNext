@@ -10,6 +10,8 @@ import { DownloadDialog } from "../dialog/DownloadDialog"
 @Component
 export struct PlayController {
   @StorageLink('player-isplaying') isPlaying:boolean = false
+  @StorageProp('player-mode') playmode:number = 1
+  @StorageProp('player-fileName') fileName:string = ''
   @StorageProp('player-song') song:Song = SongClass
   @StorageProp('player-artists') artists:string = ''
   @StorageProp('player-ispaused') isPaused:boolean = false
@@ -79,31 +81,45 @@ export struct PlayController {
   ControllerPopup() {
     Column({ space: 5 }) {
       Column({ space: 10 }) {
-        Text(`正在播放 [${Constants.QUALITY_NAME[this.playQuality]}]`).textStyle(12).padding({ bottom: 10 })
-        Image(this.picUrl + '?param=256y256').width(120).height(120)
-        Text(this.song.name).textStyle(20)
-        Text(this.artists).textStyle(15)
-        Text(`${changeDuration(this.time)} / ${changeDuration(this.song.duration)}`).textStyle(16)
-        Progress({ value: this.time, total: this.song.duration})
-          .width('80%')
-        Row({ space: 5 }) {
-          Select([{ value: '标准' }, { value: '高' }, { value: '极高' }, { value: '无损' }])
-            .selected(3)
-            .value('无损')
-            .height(40)
-            .onSelect((index: number) => { this.qualitySelected = index })
-          Button({ type: ButtonType.Circle }) {
-            Image($r('app.media.ic_public_download_filled'))
-              .width(40)
-              .padding({ left: 8, right: 8, top: 8, bottom: 8 })
+        if(this.playmode == 0) {
+          Text(`正在播放本地文件`).textStyle(12).padding({ bottom: 10 })
+          Text(this.fileName).textStyle(14)
+          Text(`${changeDuration(this.time)}`).textStyle(16)
+        }
+        else {
+          Text(`正在播放 [${Constants.QUALITY_NAME[this.playQuality]}]`).textStyle(12).padding({ bottom: 10 })
+          Image(this.picUrl + '?param=256y256').width(120).height(120)
+          Text(this.song.name).textStyle(20)
+          Text(this.artists).textStyle(15)
+          Text(`${changeDuration(this.time)} / ${changeDuration(this.song.duration)}`).textStyle(16)
+          Progress({ value: this.time, total: this.song.duration })
+            .width('80%')
+          Row({ space: 5 }) {
+            Select([{ value: '标准' }, { value: '高' }, { value: '极高' }, { value: '无损' }])
+              .selected(3)
+              .value('无损')
+              .height(40)
+              .onSelect((index: number) => {
+                this.qualitySelected = index
+              })
+            Button({ type: ButtonType.Circle }) {
+              Image($r('app.media.ic_public_download_filled'))
+                .width(40)
+                .padding({
+                  left: 8,
+                  right: 8,
+                  top: 8,
+                  bottom: 8
+                })
+            }
+            .backgroundColor(Color.Gray)
+            .onClick(() => {
+              this.song1 = this.song
+              this.artists1 = this.artists
+              this.picUrl1 = this.picUrl
+              this.dialogController.open()
+            })
           }
-          .backgroundColor(Color.Gray)
-          .onClick(() => {
-            this.song1 = this.song
-            this.artists1 = this.artists
-            this.picUrl1 = this.picUrl
-            this.dialogController.open()
-          })
         }
 
         Row({ space: 5 }) {

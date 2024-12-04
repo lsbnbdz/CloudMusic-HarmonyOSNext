@@ -1,9 +1,12 @@
 import { common } from '@kit.AbilityKit'
 import fileIo from '@ohos.file.fs'
-import {  FileUtil, LogUtil, ToastUtil } from '@pura/harmony-utils'
+import {  FileUtil, LogUtil, PreviewUtil, ToastUtil } from '@pura/harmony-utils'
 import fs from '@ohos.file.fs'
 import fileUri from '@ohos.file.fileuri'
 import { picker } from '@kit.CoreFileKit'
+import File from '@system.file'
+import { media } from '@kit.MediaKit'
+import { BusinessError } from '@kit.BasicServicesKit'
 
 /**
  * 文件管理
@@ -14,9 +17,19 @@ const TAG = '[FileUtils] '
 class FileUtils {
   context = getContext(this) as common.UIAbilityContext
   filesDir = this.context.filesDir
+  cacheDir = this.context.cacheDir
+
+  async getFilesDir() {
+    return this.filesDir
+  }
 
   async getFileName(): Promise<Array<string>> {
     let list = await fileIo.listFile(this.filesDir)
+    return list
+  }
+
+  async getCacheName(): Promise<Array<string>> {
+    let list = await fileIo.listFile((this.cacheDir))
     return list
   }
 
@@ -45,6 +58,17 @@ class FileUtils {
       return null
     }
   }
+
+  async moveFile(from:string, to:string) {
+    try {
+      FileUtil.moveFile(from, to).then(() => {
+        LogUtil.info(TAG + '成功移动文件')
+      })
+    } catch (e) {
+      LogUtil.error(TAG + '移动文件时出错 move file error: ' + e.message())
+    }
+  }
+
   async saveFile(fileName:string) {
     try {
       let thisFilePath = this.filesDir + `/${fileName}`
@@ -67,6 +91,27 @@ class FileUtils {
       LogUtil.error(TAG + '保存文件出错: ' + e.message())
     }
   }
+
+  async previewFile(fileName: string) {
+    let uri = FileUtil.getUriFromPath(this.filesDir + `/${fileName}`)
+    let info = PreviewUtil.generatePreviewInfo(uri)
+    PreviewUtil.openPreview(info).catch((error: BusinessError) => {
+      LogUtil.error(TAG + 'preview file error: ' + error.message)
+    })
+
+  }
+
+  async removeCache() {
+    try {
+      await FileUtil.rmdir(this.cacheDir).then(() => {
+        ToastUtil.showToast('清除缓存成功')
+      })
+    } catch (e) {
+      LogUtil.error(TAG + '清除缓存 remove cache 失败: ' + e.message())
+      ToastUtil.showToast('清除缓存失败')
+    }
+  }
+
 }
 
 const fileUtils = new FileUtils()

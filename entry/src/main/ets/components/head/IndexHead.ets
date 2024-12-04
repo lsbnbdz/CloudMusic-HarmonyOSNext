@@ -20,7 +20,10 @@ export struct IndexHead {
         })
         .onClick(() => { this.isShowSheet = !this.isShowSheet })
 
-      Text("云音汇").fontSize(20).fontColor($r('app.color.reverse'))
+      Image($r('app.media.ic_music_fill'))
+        .width(25)
+        .fillColor($r('app.color.reverse'))
+
       CommonCircleButton({ ButtonImageName:'ic_public_more_filled', BgColor:'#00cbcbcb'})
         .bindMenu(this.MoreMenu())
     }
@@ -33,7 +36,7 @@ export struct IndexHead {
   @Builder
   MoreMenu() {
     Menu() {
-      MenuItem({ startIcon: $r('app.media.ic_public_settings_filled'),content: "设置" })
+      MenuItem({ startIcon: $r('app.media.ic_public_settings_filled') ,content: "设置" })
         .contentFontColor($r('app.color.reverse'))
         .onClick(()=>{
           router.pushUrl({ url:'pages/Settings' })

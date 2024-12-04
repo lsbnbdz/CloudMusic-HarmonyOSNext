@@ -1,4 +1,3 @@
-import Constants from "../common/constants/Constants";
 import { SongDetail } from "../common/entities/SongDetail";
 import { Song } from "../common/entities/SongsResult";
 import { getApiUrl } from "../common/functions/functions";

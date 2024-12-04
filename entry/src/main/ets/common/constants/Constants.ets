@@ -4,12 +4,11 @@ import { QualityType } from "../entities/SongDownload"
  * 常量类
  */
 export default class Constants {
-  static readonly VERSION: string = '0.9.5'
-  static readonly VER_DESC: string = ' - 241203'
+  static readonly VERSION: string = '0.9.6'
+  static readonly VER_DESC: string = ' - Beta'
 
   static readonly USER_PREF: string = 'UserPreference'
   static readonly SET_PERF: string = 'Settings'
-  static readonly FILE_PREF: string = 'File'
 
   static readonly ROOT_URL: string = 'http://111.229.38.178:3000'
   static readonly EAPI_URL: string = 'https://interface.music.163.com/eapi'

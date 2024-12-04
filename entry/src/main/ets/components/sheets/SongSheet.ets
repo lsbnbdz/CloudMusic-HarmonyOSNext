@@ -2,7 +2,7 @@ import { ToastUtil } from "@pura/harmony-utils";
 import Constants from "../../common/constants/Constants";
 import { Song, SongClass } from "../../common/entities/SongsResult";
 import { changeDuration } from "../../common/functions/functions";
-import { playMusic } from "../../common/functions/playerControl";
+import { playMusicByUrl } from "../../common/functions/playerControl";
 import { DownloadDialog } from "../dialog/DownloadDialog";
 
 @Component
@@ -77,7 +77,7 @@ export struct SongSheet {
           if(!this.isPlayerLoading) {
             this.isPlayerLoading = true
             this.isShowSheet = !this.isShowSheet
-            await playMusic(this.song,this.artists,this.picUrl,this.isValidCookie).then(() => {
+            await playMusicByUrl(this.song,this.artists,this.picUrl,this.isValidCookie).then(() => {
               setTimeout(() => {
                 this.isPlayerLoading = false
               }, 3000)

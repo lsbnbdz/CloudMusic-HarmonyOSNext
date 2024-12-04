@@ -6,11 +6,15 @@
     },
     {
       "name": "main",
-      "value": "#121212"
+      "value": "#FF212121"
     },
     {
       "name": "reverse",
       "value": "#FFFFFF"
+    },
+    {
+      "name": "background",
+      "value": "#121212"
     }
   ]
 }

@@ -1,4 +1,8 @@
-import { ToastUtil } from "@pura/harmony-utils"
+/**
+ * 文件卡片
+ */
+import { playMusicWithFile } from "../../common/functions/playerControl"
+import FileUtils from "../../common/utils/FileUtils"
 
 @Component
 export struct FileCard {
@@ -7,12 +11,14 @@ export struct FileCard {
     Button() {
       Text(this.fileName)
         .width('100%')
-        .fontSize(18)
+        .maxLines(2)
+        .textOverflow({ overflow: TextOverflow.Ellipsis })
+        .fontSize(15)
         .fontColor($r('app.color.reverse'))
         .padding({ left: 10, right: 10 })
     }
     .type(ButtonType.Normal)
-    .backgroundColor(Color.Transparent)
+    .backgroundColor($r('app.color.main'))
     .borderRadius(15)
     .width('100%')
     .height(60)
@@ -22,13 +28,14 @@ export struct FileCard {
   @Builder
   ClickMenu() {
     Menu() {
-      MenuItem({ content: '播放' })
-        .onClick(async () => {
-          ToastUtil.showToast('该功能正在开发，敬请期待。')
+      MenuItem({ content: this.fileName }).width('80%')
+      MenuItem({ startIcon: $r('app.media.ic_play_fill'), content:'播放'})
+        .onClick(() => {
+          playMusicWithFile(this.fileName)
         })
-      MenuItem({ content: '预览' })
-        .onClick(async () => {
-          ToastUtil.showToast('该功能正在开发，敬请期待。')
+      MenuItem({ startIcon: $r('app.media.ic_public_app_filled'), content:'预览'})
+        .onClick(() => {
+          FileUtils.previewFile(this.fileName)
         })
     }
   }

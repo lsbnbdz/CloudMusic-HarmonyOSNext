@@ -2,7 +2,7 @@ import { BusinessError } from '@kit.BasicServicesKit';
 import { backgroundTaskManager } from '@kit.BackgroundTasksKit';
 import { WantAgent, wantAgent } from '@kit.AbilityKit';
 import { avSession } from '@kit.AVSessionKit';
-import { LogUtil } from '@pura/harmony-utils';
+import { LogUtil, ToastUtil } from '@pura/harmony-utils';
 import { Song } from '../entities/SongsResult';
 import AudioPlayUtils from './AudioPlayUtils';
 
@@ -15,7 +15,15 @@ const TAG = '[ContinuousTask] '
 class ContinuousTask {
   private context: Context = getContext(this)
 
-  startTask(song:Song, artists:string, picUrl:string ,url:string) {
+  /**
+   * 开始播放任务
+   * @param mode 0:fileUrl, 1:url
+   * @param song
+   * @param artists
+   * @param picUrl
+   * @param url
+   */
+  startPlay(mode:number, param:string) {
     let wantAgentInfo: wantAgent.WantAgentInfo = {
       wants: [
         {
@@ -34,8 +42,16 @@ class ContinuousTask {
         // 具体长时任务逻辑
         const session = await avSession.createAVSession(this.context, 'playSession', 'audio')
         await session.activate()
+        try {
+          if (mode == 0) {
+            AudioPlayUtils.playWithFile(param)
+          } else if (mode == 1) {
+            AudioPlayUtils.playWithUrl(param)
+          }
+        } catch (e) {
+          ToastUtil.showToast('播放失败: ' + e.message())
+        }
 
-        AudioPlayUtils.playWithUrl(url)
         LogUtil.info(TAG + `启动长时任务 stopBackgroundRunning.`);
         AudioPlayUtils.mPlayer.onStateChange((state) => {
           if(state == 'paused') { AppStorage.setOrCreate('player-ispaused', true) }

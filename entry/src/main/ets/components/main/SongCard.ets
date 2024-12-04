@@ -1,5 +1,6 @@
 import { getSongPicUrl } from "../../api/getSongDetails"
 import { Artist, Song, SongClass } from "../../common/entities/SongsResult"
+import { getArtists } from "../../common/functions/functions"
 import { SongSheet } from "../sheets/SongSheet"
 
 @Preview
@@ -71,13 +72,6 @@ export struct SongCard {
   .textOverflow({ overflow: TextOverflow.Ellipsis })
 }
 
-async function getArtists(artists:Artist[]): Promise<string> {
-  let artistStr:string = ''
-  for(let artist of artists) {
-    artistStr = artistStr + artist.name + ', '
-  }
-  return artistStr.slice(0,-2)
-}
 
 
 

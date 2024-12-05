@@ -25,8 +25,10 @@ struct Index {
                 .fontSize(24)
                 .fontWeight(FontWeight.Bold)
                 .textAlign(TextAlign.Center)
-                .padding({ top: 50 })
-            }.width('100%')
+                .padding({ top: 100 })
+            }
+            .width('100%')
+            .height('100%')
             .layoutWeight(1)
           }
           SearchComponent()

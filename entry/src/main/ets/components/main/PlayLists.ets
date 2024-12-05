@@ -14,7 +14,6 @@ export struct PlayLists {
   @State hasMore:boolean = false
 
   @State playLists:Array<playList> = new Array()
-  private currentOffset:number = 0
 
   async aboutToAppear(): Promise<void> {
     this.isLoading = true
@@ -23,7 +22,6 @@ export struct PlayLists {
       this.playLists = result.playlist
       LogUtil.info('Get play lists: ' + JSON.stringify(this.playLists))
       this.hasMore = result.more
-
       setTimeout(() => {
         this.isLoading = false
       }, 100)
@@ -57,35 +55,7 @@ export struct PlayLists {
               PlayListCard({playList: item})
             }
           })
-          // 添加加载更多
-          if (this.isLoadingMore) {
-            ListItem() {
-              Column() {
-                SpinKit({ spinType: SpinType.spinO, spinSize: 30, spinColor: Color.Gray }).width(30)
-              }.justifyContent(FlexAlign.Center).width('100%').height(50)
-            }
-          } else if (this.hasMore) {
-            ListItem() {
-              Text("点击加载更多")
-                .onClick(async () => {
-                  this.isLoadingMore = true
-                  let moreResult = await getPlayLists(this.currentOffset + 20)
-                  this.playLists = [...this.playLists,...moreResult.playlist]
-                  setTimeout(() => {
-                    this.isLoadingMore = false
-                  },0)
-                })
-                .padding({ top:10 })
-                .fontColor($r('app.color.reverse'))
-                .width('100%')
-                .textAlign(TextAlign.Center)
-            }
-          } else if (!this.hasMore) {
-            ListItem() {
-              Text('没有更多了~').fontSize(16).textAlign(TextAlign.Center).width('100%').height(50);
-            }
-          }
-          ListItem().height(px2vp(this.bottomRectHeight))
+          ListItem().height( px2vp(this.bottomRectHeight) + 80 )
         }
         .height('100%')
         .width('100%')

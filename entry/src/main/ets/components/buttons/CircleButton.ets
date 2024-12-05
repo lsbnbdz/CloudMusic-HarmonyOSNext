@@ -2,11 +2,12 @@
  * 圆形按钮组件
  */
 import FileUtils from "../../common/utils/FileUtils"
-import File from "@system.file"
-import { DialogUtil, PickerUtil } from "@pura/harmony-utils"
-import { ButtonOptions } from "@kit.ArkUI"
+import { DialogUtil } from "@pura/harmony-utils"
 import { DialogAction } from "@pura/harmony-utils/src/main/ets/entity/constraint"
 
+/**
+ * 圆形图标按钮
+ */
 @Component
 export struct CommonCircleButton {
   ButtonImageName: string = ''
@@ -16,7 +17,7 @@ export struct CommonCircleButton {
     Column() {
       Button({type: ButtonType.Circle}) {
         Image($r(`app.media.${this.ButtonImageName}`))
-          .width(25)
+          .width(30)
           .fillColor($r('app.color.reverse'))
       }
       .height(35)
@@ -27,6 +28,33 @@ export struct CommonCircleButton {
   }
 }
 
+/**
+ * 圆形图片按钮
+ */
+@Component
+export struct CircleImageButton {
+  imgUrl: string = ''
+  BgColor: string = 'transparent'
+
+  build() {
+    Column() {
+      Button({type: ButtonType.Circle}) {
+        Image(this.imgUrl)
+          .borderRadius(50)
+          .width(35)
+          .fillColor($r('app.color.reverse'))
+      }
+      .height(35)
+      .width(35)
+      .backgroundColor(this.BgColor)
+      .opacity(0.8)
+    }
+  }
+}
+
+/**
+ * 圆形“保存”按钮
+ */
 @Component
 export struct SaveCircleButton {
   @Link list:string[]
@@ -48,6 +76,9 @@ export struct SaveCircleButton {
   }
 }
 
+/**
+ * 圆形“删除”按钮
+ */
 @Component
 export struct DeleteCircleButton {
   @Link list:string[]

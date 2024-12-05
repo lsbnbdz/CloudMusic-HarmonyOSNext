@@ -1,6 +1,6 @@
 import { promptAction, router } from "@kit.ArkUI"
 import { ToastUtil } from "@pura/harmony-utils"
-import { PlayController } from "./PlayController"
+import { PlayController } from "../play/PlayController"
 
 @Component
 export struct SearchComponent {

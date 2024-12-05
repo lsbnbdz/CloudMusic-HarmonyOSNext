@@ -6,6 +6,7 @@ import { ListHead } from '../components/head/ListHead'
 import { SpinKit, SpinType } from '@pura/spinkit'
 import { LogUtil } from '@pura/harmony-utils'
 import { getPlayListSongs } from '../api/playListApi'
+import { BottomPlayController } from '../components/play/BottomPlayController'
 
 /**
  * 歌单二级页面
@@ -64,7 +65,7 @@ struct PlayListPage {
   }
 
   build() {
-    Stack() {
+    Stack({ alignContent: Alignment.Bottom }) {
       if (this.isLoading == true) {
         Column() {
           SpinKit({ spinType: SpinType.spinO, spinSize: 60, spinColor: Color.Gray }).width(60)
@@ -100,6 +101,7 @@ struct PlayListPage {
               ListItem() {
                 Text('没有更多了~').fontSize(16).textAlign(TextAlign.Center).width('100%').height(50);
               }
+              ListItem().height( px2vp(this.bottomRectHeight) + 80 )
             }
           }
           .height('100%')
@@ -109,11 +111,13 @@ struct PlayListPage {
         }
         .height('100%')
       }
-
+      BottomPlayController()
+      .padding({ left: 10, right: 10, bottom: px2vp(this.bottomRectHeight)})
+      .backgroundColor(Color.Transparent)
     }
     .width('100%')
     .height('100%')
     .padding({ top: px2vp(this.topRectHeight) })
-    .backgroundColor($r('app.color.main'));
+    .backgroundColor($r('app.color.background'));
   }
 }

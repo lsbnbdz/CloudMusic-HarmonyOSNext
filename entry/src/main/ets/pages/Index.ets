@@ -1,15 +1,17 @@
 import { IndexHead } from '../components/head/IndexHead'
 import { PlayLists } from '../components/main/PlayLists'
 import { SearchComponent } from '../components/main/SearchComponent'
+import { BottomPlayController } from '../components/play/BottomPlayController';
 
 @Entry
 @Component
 struct Index {
   @StorageProp("isValidCookie") isValidCookie:boolean = false
-  @StorageProp('topRectHeight') topRectHeight: number = 0;
+  @StorageProp('topRectHeight') topRectHeight: number = 0
+  @StorageProp('bottomRectHeight') bottomRectHeight: number = 0
 
   async build() {
-    Stack() {
+    Stack({ alignContent: Alignment.Bottom }) {
       Column({ space: 10 }) {
         IndexHead()
         SearchComponent()
@@ -29,10 +31,13 @@ struct Index {
           .layoutWeight(1)
         }
       }
+      BottomPlayController()
+        .padding({ left: 10, right: 10, bottom: px2vp(this.bottomRectHeight)})
+        .backgroundColor(Color.Transparent)
     }
     .padding({ top: px2vp(this.topRectHeight) })
     .width('100%')
     .height('100%')
-    .backgroundColor($r('app.color.main'))
+    .backgroundColor($r('app.color.background'))
   }
 }

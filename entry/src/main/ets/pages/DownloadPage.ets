@@ -2,6 +2,7 @@ import FileUtils from '../common/utils/FileUtils';
 import { DeleteCircleButton, SaveCircleButton } from '../components/buttons/CircleButton';
 import { ListHead } from '../components/head/ListHead';
 import { FileCard } from '../components/main/FileCard';
+import { BottomPlayController } from '../components/play/BottomPlayController';
 
 @Entry
 @Component
@@ -15,8 +16,8 @@ struct DownloadPage {
     this.fileList = await FileUtils.getFileName()
   }
   build() {
-    Stack() {
-      Column() {
+    Stack({ alignContent: Alignment.Bottom }) {
+      Column({ space: 10 }) {
         ListHead({ title: '下载管理' })
         Column() {
           List({ space: 10 }) {
@@ -45,7 +46,7 @@ struct DownloadPage {
               .swipeAction({ end: this.SwipeItem(item) })
             })
             ListItem()
-              .height(px2vp(this.bottomRectHeight))
+              .height(px2vp(this.bottomRectHeight) + 80)
           }
           .backgroundColor($r('app.color.background'))
           .height('100%')
@@ -60,6 +61,10 @@ struct DownloadPage {
       .padding({ top: px2vp(this.topRectHeight) })
       .width('100%')
       .height('100%')
+
+    BottomPlayController()
+      .padding({ left: 10, right: 10, bottom: px2vp(this.bottomRectHeight)})
+      .backgroundColor(Color.Transparent)
     }
     .backgroundColor($r('app.color.background'))
     .height('100%')

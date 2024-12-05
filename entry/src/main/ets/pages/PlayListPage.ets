@@ -101,8 +101,8 @@ struct PlayListPage {
               ListItem() {
                 Text('没有更多了~').fontSize(16).textAlign(TextAlign.Center).width('100%').height(50);
               }
-              ListItem().height( px2vp(this.bottomRectHeight) + 80 )
             }
+            ListItem().height( px2vp(this.bottomRectHeight) + 80 )
           }
           .height('100%')
           .layoutWeight(1)

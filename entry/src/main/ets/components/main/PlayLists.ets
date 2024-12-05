@@ -30,7 +30,6 @@ export struct PlayLists {
     }
   }
 
-
   @Builder
   itemLayout(playList: playList, index: number): void {
     PlayListCard({playList: playList})
@@ -50,12 +49,14 @@ export struct PlayLists {
       }
       else {
         List({ space: 10 }) {
+          ListItem()
+            .height(40)
           ForEach(this.playLists, (item: playList, index) => {
             ListItem() {
               PlayListCard({playList: item})
             }
           })
-          ListItem().height( px2vp(this.bottomRectHeight) + 80 )
+          ListItem().height( px2vp(this.bottomRectHeight) + 120 )
         }
         .height('100%')
         .width('100%')

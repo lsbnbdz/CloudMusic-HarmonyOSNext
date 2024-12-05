@@ -14,21 +14,23 @@ struct Index {
     Stack({ alignContent: Alignment.Bottom }) {
       Column({ space: 10 }) {
         IndexHead()
-        SearchComponent()
-        if (this.isValidCookie) {
-          PlayLists()
+        Stack({ alignContent: Alignment.Top }) {
+          if (this.isValidCookie) {
+            PlayLists()
+              .layoutWeight(1)
+          } else {
+            Column({ space: 5 }) {
+              Text('登录账号\n' +
+                '以显示你的歌单')
+                .fontSize(24)
+                .fontWeight(FontWeight.Bold)
+                .textAlign(TextAlign.Center)
+                .padding({ top: 50 })
+            }.width('100%')
             .layoutWeight(1)
-        }
-        else {
-          Column({ space: 5 }) {
-            Text('登录账号\n' +
-              '以显示你的歌单')
-              .fontSize(24)
-              .fontWeight(FontWeight.Bold)
-              .textAlign(TextAlign.Center)
-              .padding({top:50})
-          }.width('100%')
-          .layoutWeight(1)
+          }
+          SearchComponent()
+            .padding({ top: 5, left: 10, right: 10 })
         }
       }
       BottomPlayController()

@@ -20,12 +20,23 @@ export struct BottomPlayController {
     Row({ space: 10 }) {
       if(this.isPlaying) {
         Row() {
-          Image(this.picUrl + '?param=256y256').width(50).height(50).borderRadius(10)
-          Column() {
-            Text(this.song.name).textStyle(18)
-            Text(this.artists).textStyle(14)
+          if(this.playmode == 0) {
+            Image($r('app.media.ic_public_music')).width(50).height(50).fillColor($r('app.color.reverse'))
+            Column() {
+              Text(this.artists).textStyle(18)
+              Text('正在播放本地文件').textStyle(14)
+            }
+            .layoutWeight(1)
           }
-          .layoutWeight(1)
+          else {
+            Image(this.picUrl + '?param=256y256').width(50).height(50).borderRadius(10)
+            Column() {
+              Text(this.song.name).textStyle(18)
+              Text(this.artists).textStyle(14)
+            }
+            .layoutWeight(1)
+          }
+
           Row({ space: 5 }) {
             // 暂停、继续
             if (!this.isPaused) {

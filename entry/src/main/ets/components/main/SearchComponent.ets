@@ -36,7 +36,6 @@ export struct SearchComponent {
 
       }
       .borderRadius(20)
-      .width('100%')
       .justifyContent(FlexAlign.Center)
       .padding({ left:30, right:30})
     }

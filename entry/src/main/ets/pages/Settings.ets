@@ -34,15 +34,16 @@ struct Settings {
           ListItem() { Feedback() }
         }
         .scrollBar(BarState.Auto)
-        .width('100%').layoutWeight(1)
-
+        .width('100%')
+        .height('100%')
+        .layoutWeight(1)
         Bottom()
       }
     }
     .padding({ top: px2vp(this.topRectHeight) })
     .width('100%')
     .height('100%')
-    .backgroundColor($r('app.color.main'))
+    .backgroundColor($r('app.color.background'))
   }
 }
 
@@ -116,7 +117,18 @@ struct Settings {
   build() {
     Column({ space: 5 }) {
       Row() {
-        Text('自定义API服务器地址').LeftText()
+        Row({ space: 5 }) {
+          Text('自定义API服务器地址').LeftText()
+          ExplainButton()
+            .onClick(() => {
+              DialogUtil.showConfirmDialog({
+                title: '自定义API服务器地址', message: '使用自定义网易云音乐API地址\n' +
+                  '需要搭建NeteaseCloudMusicApi服务\n\n' +
+                  '地址格式: http://example.com:3000\n' +
+                  '(注意末尾不带\"/\")'
+              })
+            })
+        }
         Toggle({ type: ToggleType.Switch, isOn: this.isCustomApiUrl }).height(24).width(48)
           .onChange(async () => {
             this.isCustomApiUrl = !this.isCustomApiUrl;

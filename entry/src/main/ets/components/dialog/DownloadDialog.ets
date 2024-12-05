@@ -5,7 +5,7 @@ import { pasteboard } from "@kit.BasicServicesKit"
 import { promptAction } from "@kit.ArkUI"
 import { SpinKit, SpinType } from "@pura/spinkit"
 import FileDownloadUtils from "../../common/utils/FileDownloadUtils"
-import { ToastUtil } from "@pura/harmony-utils"
+import { LogUtil, ToastUtil } from "@pura/harmony-utils"
 
 @CustomDialog
 export struct DownloadDialog {
@@ -34,7 +34,7 @@ export struct DownloadDialog {
       },500)
     } catch (e) {
       this.succ = false
-      console.error('Download Dialog Error: ' + JSON.stringify(e.message))
+      LogUtil.error('Download Dialog Error: ' + JSON.stringify(e.message))
     }
   }
 
@@ -78,6 +78,8 @@ export struct DownloadDialog {
           '- 当前登录账号非会员，公共Cookie失效').textStyle(14)
       }
     }
+    .backgroundColor(Color.Transparent)
+    .backdropBlur(20)
     .margin({ left:10, right:10, top:20, bottom:20})
     .borderRadius(5)
   }

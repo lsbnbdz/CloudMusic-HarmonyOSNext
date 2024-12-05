@@ -2,7 +2,7 @@ import { LogUtil } from "@pura/harmony-utils"
 import { getPubCookie } from "../../api/getPubCookie"
 import Constants from "../constants/Constants"
 import { User, UserClass } from "../entities/User"
-import { HttpRequest } from "../utils/HttpRequestUtil"
+import { HttpRequest } from "../utils/HttpRequestUtils"
 import PreferencesUtils from "../utils/PreferencesUtils"
 import { getApiUrl } from "./functions"
 

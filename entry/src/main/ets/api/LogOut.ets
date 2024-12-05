@@ -2,7 +2,7 @@ import Constants from "../common/constants/Constants"
 import PreferencesUtils from "../common/utils/PreferencesUtils"
 import { promptAction } from "@kit.ArkUI"
 import { getApiUrl } from "../common/functions/functions"
-import { HttpRequest } from "../common/utils/HttpRequestUtil"
+import { HttpRequest } from "../common/utils/HttpRequestUtils"
 import { LogUtil, ToastUtil } from "@pura/harmony-utils"
 
 /**

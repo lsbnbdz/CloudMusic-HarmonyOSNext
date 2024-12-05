@@ -1,10 +1,10 @@
 import { router } from '@kit.ArkUI';
-import { getSongsList } from '../api/getSongsList';
 import { Song } from '../common/entities/SongsResult';
 import { SongCard } from '../components/main/SongCard';
 import { ListHead } from '../components/head/ListHead';
 import { LogUtil } from '@pura/harmony-utils';
 import { SpinKit, SpinType } from '@pura/spinkit';
+import { getSongsList } from '../api/songApi';
 
 /**
  * 歌曲列表页（搜索结果）

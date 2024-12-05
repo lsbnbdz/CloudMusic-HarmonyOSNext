@@ -3,7 +3,7 @@ import { LogUtil, ToastUtil } from "@pura/harmony-utils"
 import Constants from "../common/constants/Constants"
 import { User } from "../common/entities/User"
 import { getApiUrl } from "../common/functions/functions"
-import { HttpRequest } from "../common/utils/HttpRequestUtil"
+import { HttpRequest } from "../common/utils/HttpRequestUtils"
 import PreferencesUtils from "../common/utils/PreferencesUtils"
 
 /**

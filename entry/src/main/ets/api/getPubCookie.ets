@@ -1,7 +1,7 @@
 import { LogUtil, ToastUtil } from "@pura/harmony-utils";
 import Constants from "../common/constants/Constants";
 import { getApiUrl } from "../common/functions/functions";
-import { HttpRequest } from "../common/utils/HttpRequestUtil";
+import { HttpRequest } from "../common/utils/HttpRequestUtils";
 
 /**
  * 从API服务器获取公共Cookie

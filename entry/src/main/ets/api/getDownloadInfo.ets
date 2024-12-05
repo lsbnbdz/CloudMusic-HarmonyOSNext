@@ -1,5 +1,5 @@
 import { QualityType, SongDownload } from "../common/entities/SongDownload"
-import { HttpRequest } from "../common/utils/HttpRequestUtil"
+import { HttpRequest } from "../common/utils/HttpRequestUtils"
 import { LogUtil } from "@pura/harmony-utils"
 import { getApiUrl, isUsePubCookie } from "../common/functions/functions"
 

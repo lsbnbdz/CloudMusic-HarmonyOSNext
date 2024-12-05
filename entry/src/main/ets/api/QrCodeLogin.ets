@@ -1,6 +1,6 @@
 import { LogUtil, ToastUtil } from "@pura/harmony-utils"
 import { getApiUrl, removeHTTPOnly } from "../common/functions/functions"
-import { HttpRequest } from "../common/utils/HttpRequestUtil"
+import { HttpRequest } from "../common/utils/HttpRequestUtils"
 import { getLoginStatus } from "./getLoginStatus"
 
 /**

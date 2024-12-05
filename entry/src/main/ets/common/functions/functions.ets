@@ -1,5 +1,6 @@
 import Constants from "../constants/Constants"
 import { Artist } from "../entities/SongsResult"
+import { util } from "@kit.ArkTS"
 
 /**
  * 通用函数
@@ -81,3 +82,12 @@ export function sanitizeFileName(input: string): string {
   return sanitized;
 }
 
+/**
+ * 使用TextDecoder编码Uint8Array
+ * @param buffer
+ * @returns
+ */
+export function uint8ArrayToString(buffer: Uint8Array): string {
+  const decoder = new util.TextDecoder('utf-8');
+  return decoder.decode(buffer);
+}

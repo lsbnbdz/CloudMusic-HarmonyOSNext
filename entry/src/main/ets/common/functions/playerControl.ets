@@ -1,13 +1,10 @@
 import { FileUtil, LogUtil, ToastUtil } from "@pura/harmony-utils";
-import { getSongUrl } from "../../api/getSongUrl";
 import { Song, SongClass } from "../entities/SongsResult";
 import AudioPlayUtils from "../utils/AudioPlayUtils";
 import ContinuousTask from "../utils/ContinuousTask";
 import Constants from "../constants/Constants";
 import FileUtils from "../utils/FileUtils";
-import { getSongInfo } from "../../api/getSongInfo";
-import { getArtists } from "./functions";
-import { getSongPicUrl } from "../../api/getSongDetails";
+import { getSongUrl } from "../../api/songApi";
 
 /**
  * 音频播放控制方法

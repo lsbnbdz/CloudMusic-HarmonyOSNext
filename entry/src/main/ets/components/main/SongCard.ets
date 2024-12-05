@@ -1,5 +1,5 @@
-import { getSongPicUrl } from "../../api/getSongDetails"
-import { Artist, Song, SongClass } from "../../common/entities/SongsResult"
+import { getSongPicUrl } from "../../api/songApi"
+import { Song, SongClass } from "../../common/entities/SongsResult"
 import { getArtists } from "../../common/functions/functions"
 import { SongSheet } from "../sheets/SongSheet"
 

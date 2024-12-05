@@ -3,11 +3,9 @@ import { Song } from '../common/entities/SongsResult'
 import { SongCard } from '../components/main/SongCard'
 import { playList } from '../common/entities/PlayList'
 import { ListHead } from '../components/head/ListHead'
-import { getPlayListSongs } from '../api/getPlayListSongs'
 import { SpinKit, SpinType } from '@pura/spinkit'
 import { LogUtil } from '@pura/harmony-utils'
-import AudioPlayUtils from '../common/utils/AudioPlayUtils'
-import { PlayController } from '../components/main/PlayController'
+import { getPlayListSongs } from '../api/playListApi'
 
 /**
  * 歌单二级页面
@@ -42,7 +40,6 @@ struct PlayListPage {
 
   async loadSongs(limit: number, offset: number): Promise<void> {
     if (!this.hasMore) return // 没有更多歌曲直接返回
-
     if (offset === 0) {
       this.isLoading = true // 初次加载
     } else {
@@ -50,7 +47,7 @@ struct PlayListPage {
     }
 
     try {
-      const result = await getPlayListSongs(this.playList.id, limit, offset)
+      const result = await getPlayListSongs(this.playList.id, offset)
       this.list = [...this.list, ...result] // 合并歌曲列表
       this.currentOffset += limit
 

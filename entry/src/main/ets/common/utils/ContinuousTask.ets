@@ -5,7 +5,7 @@ import { avSession } from '@kit.AVSessionKit';
 import { LogUtil, ToastUtil } from '@pura/harmony-utils';
 import { Song } from '../entities/SongsResult';
 import AudioPlayUtils from './AudioPlayUtils';
-import { createSession } from './AVSessionUtils';
+import { createSession, sessionPause, sessionPlay } from './AVSessionUtils';
 
 /**
  * 长时任务
@@ -52,12 +52,12 @@ class ContinuousTask {
         } catch (e) {
           ToastUtil.showToast('播放失败: ' + e.message())
         }
-
         await session.activate()
 
         LogUtil.info(TAG + `启动长时任务 stopBackgroundRunning.`);
         AudioPlayUtils.mPlayer.onStateChange((state) => {
-          if(state == 'paused') { AppStorage.setOrCreate('player-ispaused', true) }
+          if(state == 'playing') { sessionPlay(session) }
+          if(state == 'paused') { AppStorage.setOrCreate('player-ispaused', true); sessionPause(session) }
           if(state == 'idle') { session.destroy() }
           if(state == 'stopped') { AppStorage.setOrCreate('player-ispaused', true); session.destroy() }
           if(state == 'completed') { AppStorage.setOrCreate('player-ispaused', true) }

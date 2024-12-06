@@ -55,6 +55,7 @@ export async function playMusicWithFile(fileName:string) {
       AppStorage.setOrCreate('player-isplaying', false)
       AppStorage.setOrCreate('player-song', song)
       AppStorage.setOrCreate('player-artists', song.artists[0].name)
+      AppStorage.setOrCreate('player-picurl','')
       await AudioPlayUtils.mPlayer.reset()
       await ContinuousTask.stopTask()
       ContinuousTask.startPlay(0, fileName)

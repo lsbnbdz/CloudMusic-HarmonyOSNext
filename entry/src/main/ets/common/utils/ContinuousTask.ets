@@ -55,8 +55,8 @@ class ContinuousTask {
         await session.activate()
 
         LogUtil.info(TAG + `启动长时任务 stopBackgroundRunning.`);
-        AudioPlayUtils.mPlayer.onStateChange((state) => {
-          if(state == 'playing') { sessionPlay(session) }
+        AudioPlayUtils.mPlayer.onStateChange(async (state) => {
+          if(state == 'playing') { await sessionPlay(session) }
           if(state == 'paused') { AppStorage.setOrCreate('player-ispaused', true); sessionPause(session) }
           if(state == 'idle') { session.destroy() }
           if(state == 'stopped') { AppStorage.setOrCreate('player-ispaused', true); session.destroy() }

@@ -32,7 +32,7 @@ export async function createSession(): Promise<avSession.AVSession> {
   let playbackState: avSession.AVPlaybackState = {
     state: avSession.PlaybackState.PLAYBACK_STATE_BUFFERING, // 确保播放状态为播放
     position: {
-      elapsedTime: getPlayTime(), // 已经播放的位置，以ms为单位，后面可以根据实际播放进度更新
+      elapsedTime: 0, // 已经播放的位置，以ms为单位，后面可以根据实际播放进度更新
       updateTime: new Date().getTime(),
     }
   }
@@ -56,31 +56,33 @@ export async function createSession(): Promise<avSession.AVSession> {
   return session
 }
 
-function getPlayTime() {
+async function getPlayTime() {
   let resTime = 0
-  let elapsedTime:number | undefined = AppStorage.get('player-time')
+  let elapsedTime:number | undefined = await AppStorage.get('player-time')
   if(elapsedTime) {
     resTime = elapsedTime
   }
   return resTime
 }
 
-export function sessionPause(session: avSession.AVSession) {
+export async function sessionPause(session: avSession.AVSession) {
+  let time = await getPlayTime()
   let pausedState: avSession.AVPlaybackState = {
     state: avSession.PlaybackState.PLAYBACK_STATE_PAUSE, // 确保播放状态为播放
     position: {
-      elapsedTime: getPlayTime(),
+      elapsedTime: time,
       updateTime: new Date().getTime()
     }
   }
   session.setAVPlaybackState(pausedState)
 }
 
-export function sessionPlay(session: avSession.AVSession) {
+export async function sessionPlay(session: avSession.AVSession) {
+  let time = await getPlayTime()
   let playbackState: avSession.AVPlaybackState = {
     state: avSession.PlaybackState.PLAYBACK_STATE_PLAY, // 确保播放状态为播放
     position: {
-      elapsedTime: getPlayTime(),
+      elapsedTime: time,
       updateTime: new Date().getTime()
     }
   }

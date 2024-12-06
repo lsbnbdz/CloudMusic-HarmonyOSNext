@@ -81,19 +81,17 @@ export struct PlayController {
   ControllerPopup() {
     Column({ space: 5 }) {
       Column({ space: 10 }) {
-        if(this.playmode == 0) {
-          Text(`正在播放本地文件`).textStyle(12).padding({ bottom: 10 })
-          Text(this.fileName).textStyle(14)
-          Text(`${changeDuration(this.time)}`).textStyle(16)
-        }
+        if(this.playmode == 0) { Text(`正在播放本地文件`).textStyle(12).padding({ bottom: 10 }) }
         else {
           Text(`正在播放 [${Constants.QUALITY_NAME[this.playQuality]}]`).textStyle(12).padding({ bottom: 10 })
           Image(this.picUrl + '?param=256y256').width(120).height(120)
-          Text(this.song.name).textStyle(20)
-          Text(this.artists).textStyle(15)
-          Text(`${changeDuration(this.time)} / ${changeDuration(this.song.duration)}`).textStyle(16)
-          Progress({ value: this.time, total: this.song.duration })
-            .width('80%')
+        }
+        Text(this.song.name).textStyle(20)
+        Text(this.artists).textStyle(15)
+        Text(`${changeDuration(this.time)} / ${changeDuration(this.song.duration)}`).textStyle(16)
+        Progress({ value: this.time, total: this.song.duration })
+          .width('80%')
+        if(this.playmode == 1) {
           Row({ space: 5 }) {
             Select([{ value: '标准' }, { value: '高' }, { value: '极高' }, { value: '无损' }])
               .selected(3)

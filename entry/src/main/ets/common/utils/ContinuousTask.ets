@@ -5,6 +5,7 @@ import { avSession } from '@kit.AVSessionKit';
 import { LogUtil, ToastUtil } from '@pura/harmony-utils';
 import { Song } from '../entities/SongsResult';
 import AudioPlayUtils from './AudioPlayUtils';
+import { createSession } from './AVSessionUtils';
 
 /**
  * 长时任务
@@ -40,8 +41,8 @@ class ContinuousTask {
       backgroundTaskManager.startBackgroundRunning(this.context,
         backgroundTaskManager.BackgroundMode.AUDIO_PLAYBACK, wantAgentObj).then(async () => {
         // 具体长时任务逻辑
-        const session = await avSession.createAVSession(this.context, 'playSession', 'audio')
-        await session.activate()
+        // const session = await avSession.createAVSession(this.context, 'playSession', 'audio')
+        const session = await createSession()
         try {
           if (mode == 0) {
             AudioPlayUtils.playWithFile(param)
@@ -51,6 +52,8 @@ class ContinuousTask {
         } catch (e) {
           ToastUtil.showToast('播放失败: ' + e.message())
         }
+
+        await session.activate()
 
         LogUtil.info(TAG + `启动长时任务 stopBackgroundRunning.`);
         AudioPlayUtils.mPlayer.onStateChange((state) => {

@@ -23,11 +23,11 @@ struct PlayListPage {
   private playList: playList = Object(router.getParams())['playList']
   private trackCount: number = Object(router.getParams())['trackCount']
 
+  @State list: Array<Song> = new Array()
+  @State hasMore: boolean = true
   @State hasLoaded: boolean = false // 判定是否已加载 避免重复加载
   @State isLoading: boolean = true
-  @State list: Array<Song> = new Array()
   @State isLoadingMore: boolean = false
-  @State hasMore: boolean = true
 
   private currentOffset: number = 0 // 歌曲偏移量
   hasAnimation:boolean | undefined = false
@@ -41,7 +41,7 @@ struct PlayListPage {
 
   async loadSongs(limit: number, offset: number): Promise<void> {
     if (!this.hasMore) return // 没有更多歌曲直接返回
-    if (offset === 0) {
+    if (offset == 0) {
       this.isLoading = true // 初次加载
     } else {
       this.isLoadingMore = true // 加载更多

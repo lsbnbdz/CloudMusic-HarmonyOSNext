@@ -1,6 +1,8 @@
 import Constants from "../constants/Constants"
-import { Artist } from "../entities/SongsResult"
+import { Artist, Song } from "../entities/SongsResult"
 import { util } from "@kit.ArkTS"
+import { media } from "@kit.MediaKit"
+import { fileIo } from "@kit.CoreFileKit"
 
 /**
  * 通用函数
@@ -18,6 +20,50 @@ export async function getApiUrl(): Promise<string | undefined> {
     rootUrl = await AppStorage.get('set-customApiUrl')
   }
   return rootUrl
+}
+
+/**
+ * 获取metadata
+ * @param fileUrl
+ * @returns
+ */
+export async function fetchMetadata(fileUrl: string) {
+  if(canIUse("SystemCapability.Multimedia.Media.AVMetadataExtractor")) {
+    let avMetadataExtractor = await media.createAVMetadataExtractor()
+    avMetadataExtractor.fdSrc = fileIo.openSync(fileUrl)
+    let metadata = await avMetadataExtractor.fetchMetadata()
+    avMetadataExtractor.release()
+    return metadata
+  } else {
+    return undefined
+  }
+}
+
+/**
+ * 根据文件名拆分歌名与歌手
+ * @param fileName
+ * @returns song:Song
+ */
+export async function fetchSongInfo(fileName: string): Promise<Song> {
+  const regex = /^(.+?) - (.+)\.\w+$/
+  const match = fileName.match(regex)
+  if (!match) { throw new Error('文件名格式错误') }
+  const artistName = match[1].trim()
+  const songName = match[2].trim()
+  const artists: Artist[] = [
+    {
+      id: -1,
+      name: artistName
+    }
+  ]
+
+  let song:Song = {
+    id: -1,
+    name: songName,
+    artists: artists,
+    duration: -1
+  }
+  return song
 }
 
 /**

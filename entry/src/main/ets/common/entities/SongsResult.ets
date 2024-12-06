@@ -12,6 +12,8 @@ export interface Song {
 
 interface Result {
   songs:Song[]
+  hasMore:boolean
+  songCount:number // 歌曲总数
 }
 
 export interface SongsData {
@@ -45,6 +47,8 @@ export const SongsDataClass: SongsData = {
         ],
         duration: 0
       }
-    ]
+    ],
+    hasMore: false,
+    songCount: 0
   }
-};
+}

@@ -5,6 +5,7 @@ import ContinuousTask from "../utils/ContinuousTask";
 import Constants from "../constants/Constants";
 import FileUtils from "../utils/FileUtils";
 import { getSongUrl } from "../../api/songApi";
+import { fetchMetadata, fetchSongInfo } from "./functions";
 
 /**
  * 音频播放控制方法
@@ -38,17 +39,22 @@ export async function playMusicByUrl(song:Song,artists:string,picUrl:string,isLo
 
 export async function playMusicWithFile(fileName:string) {
   try {
-    const fileUrl = await FileUtils.getFilesDir()
-    const url = fileUrl + `/${fileName}`
-    // const song = await getSongInfo(fileName)
-    LogUtil.info(TAG + url)
-    if(FileUtil.accessSync(url)) {
+    const rootUrl = await FileUtils.getFilesDir()
+    const fileUrl = rootUrl + `/${fileName}`
+
+    const metadata = await fetchMetadata(fileUrl)
+    let song = await fetchSongInfo(fileName)
+    if(metadata) {
+      song.duration = (metadata.duration) ? parseInt(metadata.duration) : 0
+    }
+    LogUtil.info(TAG + fileUrl)
+    if(FileUtil.accessSync(fileUrl)) {
       AppStorage.setOrCreate('player-mode', 0)
       AppStorage.setOrCreate('player-fileName',fileName)
       AppStorage.setOrCreate('player-ispaused', false)
       AppStorage.setOrCreate('player-isplaying', false)
-      AppStorage.setOrCreate('player-song', SongClass)
-      AppStorage.setOrCreate('player-artists', fileName)
+      AppStorage.setOrCreate('player-song', song)
+      AppStorage.setOrCreate('player-artists', song.artists[0].name)
       await AudioPlayUtils.mPlayer.reset()
       await ContinuousTask.stopTask()
       ContinuousTask.startPlay(0, fileName)

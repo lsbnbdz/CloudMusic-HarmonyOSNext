@@ -19,9 +19,12 @@
         "description": "$string:EntryAbility_desc",
         "icon": "$media:layered_image",
         "label": "$string:EntryAbility_label",
-        "startWindowIcon": "$media:startIcon",
+        "startWindowIcon": "$media:icon",
         "startWindowBackground": "$color:start_window_background",
         "exported": true,
+        "backgroundModes": [
+          "audioPlayback"
+        ],
         "skills": [
           {
             "entities": [
@@ -29,7 +32,7 @@
             ],
             "actions": [
               "action.system.home"
-            ]
+            ],
           }
         ]
       }
@@ -38,6 +41,10 @@
         {
           "name": "ohos.permission.INTERNET",
           "reason": '$string:REASON_INTERNET_PERMISSION'
+        },
+        {
+          "name": "ohos.permission.KEEP_BACKGROUND_RUNNING",
+          "reason": '$string:REASON_KEEP_BACKGROUND_RUNNING'
         }
       ]
 //    "extensionAbilities": [

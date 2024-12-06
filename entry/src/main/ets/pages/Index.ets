@@ -1,40 +1,47 @@
-import { HttpRequest } from '../common/utils/HttpRequestUtil'
 import { IndexHead } from '../components/head/IndexHead'
 import { PlayLists } from '../components/main/PlayLists'
 import { SearchComponent } from '../components/main/SearchComponent'
+import { BottomPlayController } from '../components/play/BottomPlayController';
 
 @Entry
 @Component
 struct Index {
-  @StorageProp("ValidCookie") isValidCookie:boolean = false
-
-  onPageShow(): void {
-    const url:string = `http://111.229.38.178:3000/song/download/url/v1?id=2155423468&level=hires`
-    const request = new HttpRequest(url)
-    request.Request().then((data) => {
-      console.log('IndexGetData: ' + JSON.stringify(data.result))
-    })
-  }
+  @StorageProp("isValidCookie") isValidCookie:boolean = false
+  @StorageProp('topRectHeight') topRectHeight: number = 0
+  @StorageProp('bottomRectHeight') bottomRectHeight: number = 0
 
   async build() {
-    Stack() {
-      Column() {
+    Stack({ alignContent: Alignment.Bottom }) {
+      Column({ space: 10 }) {
         IndexHead()
-        Column() {
-          SearchComponent()
+        Stack({ alignContent: Alignment.Top }) {
           if (this.isValidCookie) {
             PlayLists()
+              .layoutWeight(1)
           } else {
             Column({ space: 5 }) {
-              Text('登录账号').fontSize(24).fontWeight(FontWeight.Bold)
-              Text('以显示你的歌单').fontSize(24).fontWeight(FontWeight.Bold)
-            }.width('100%').justifyContent(FlexAlign.Center).padding({ top: 40 })
+              Text('登录账号\n' +
+                '以显示你的歌单')
+                .fontSize(24)
+                .fontWeight(FontWeight.Bold)
+                .textAlign(TextAlign.Center)
+                .padding({ top: 100 })
+            }
+            .width('100%')
+            .height('100%')
+            .layoutWeight(1)
           }
-        }.height('100%')
+          SearchComponent()
+            .padding({ top: 5, left: 10, right: 10 })
+        }
       }
+      BottomPlayController()
+        .padding({ left: 10, right: 10, bottom: px2vp(this.bottomRectHeight)})
+        .backgroundColor(Color.Transparent)
     }
+    .padding({ top: px2vp(this.topRectHeight) })
     .width('100%')
     .height('100%')
-    .backgroundColor($r('app.color.main'))
+    .backgroundColor($r('app.color.background'))
   }
 }

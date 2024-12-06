@@ -1,4 +1,6 @@
 import { promptAction, router } from "@kit.ArkUI"
+import { ToastUtil } from "@pura/harmony-utils"
+import { PlayController } from "../play/PlayController"
 
 @Component
 export struct SearchComponent {
@@ -9,16 +11,16 @@ export struct SearchComponent {
       // 搜索框和按钮
       Row({ space: 10 }) {
         // 搜索框
-        TextInput({ placeholder: '请输入搜索词' }).width('70%').backgroundColor('#ffb3afaf').height(40)
+        TextInput({ placeholder: '请输入搜索内容' }).layoutWeight(1).backgroundColor('#ffdbd9d9').height(40).placeholderColor(Color.Gray).fontColor(Color.Black)
           .onChange((value:string) => {
             this.searchKeyword = value
           })
 
         //搜索按钮
-        Button() {
-          Image($r('app.media.ic_public_search_filled')).fillColor(Color.White).width(30)
+        Button({type:ButtonType.Circle}) {
+          Image($r('app.media.ic_public_search_filled')).width(20).fillColor(Color.White).margin(10)
         }
-        .type(ButtonType.Circle)
+        .backgroundColor('#ff3587c8')
         .width(40)
         .height(40)
         .onClick(() => {
@@ -27,11 +29,16 @@ export struct SearchComponent {
               url: 'pages/SongsListPage',
               params: { 'searchKeyword': this.searchKeyword }
             })
-          } else { promptAction.showToast({ message: '请输入搜索词' }) }
+          } else { ToastUtil.showToast('请输入搜索内容') }
         })
-      }.width('80%').justifyContent(FlexAlign.Center)
+
+        PlayController()
+
+      }
+      .borderRadius(20)
+      .justifyContent(FlexAlign.Center)
+      .padding({ left:30, right:30})
     }
-    .backgroundColor($r('app.color.main'))
-    .padding( {bottom:20} )
+    .backgroundColor(Color.Transparent)
   }
 }

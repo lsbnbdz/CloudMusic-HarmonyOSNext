@@ -12,10 +12,9 @@ export interface playList {
 }
 
 export interface PlayListResult {
+  more:boolean
   playlist:playList[]
 }
-
-
 
 export const playListClass: playList = {
   coverImgUrl: '',
@@ -27,8 +26,8 @@ export const playListClass: playList = {
   trackCount: 0
 };
 
-
 export const PlayListClass: PlayListResult = {
+  more: false,
   playlist: [
     {
       coverImgUrl: '',

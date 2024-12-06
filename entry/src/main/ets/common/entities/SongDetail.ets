@@ -1,3 +1,6 @@
+/**
+ * 歌曲详细信息
+ */
 interface Al {
   picUrl:string
 }

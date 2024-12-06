@@ -24,5 +24,5 @@ export struct LoginHelpSheet {
 
 @Extend(Text) function textStyle(size:number) {
   .fontSize(size)
-  .fontColor($r('app.color.reverse'))
+  .fontColor($r('app.color.background'))
 }

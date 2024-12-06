@@ -1,12 +1,9 @@
 import { promptAction } from "@kit.ArkUI";
 import { BackButton } from "../buttons/BackButton";
-import { CommonCircleButton } from "../buttons/CommonCircleButton";
+import { CommonCircleButton } from "../buttons/CircleButton";
 
 @Component
 export struct SettingsHead {
-  @StorageProp('topRectHeight')
-  topRectHeight: number = 0;
-
   build() {
     Row() {
       BackButton()
@@ -17,10 +14,9 @@ export struct SettingsHead {
         })
     }
     // 避让状态栏
-    .padding({ top: px2vp(this.topRectHeight), left: 10, right: 10 })
+    .padding({ left: 10, right: 10 })
     .justifyContent(FlexAlign.SpaceBetween)
     .width('100%')
-    .height(90)
     .backgroundColor(Color.Transparent)
   }
 }

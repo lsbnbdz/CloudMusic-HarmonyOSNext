@@ -3,9 +3,11 @@
     "pages/Index",
     "pages/Settings",
     "pages/SongsListPage",
-    "pages/LoginPage",
+    "pages/login/LoginPage",
     "pages/login/WebLogin",
-    "pages/Downloads",
-    "pages/PlayListPage"
+    "pages/DownloadPage",
+    "pages/PlayListPage",
+    "pages/WebPage",
+    "pages/login/QrCodeLogin"
   ]
 }

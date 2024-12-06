@@ -4,8 +4,8 @@ interface Data {
   id: number
   url: string
   size: number
-  type: QualityType
-  level: string
+  type: string
+  level: QualityType
 }
 
 export interface SongDownload {
@@ -17,7 +17,7 @@ export const SongDownloadClass: SongDownload = {
     id: 0,
     url: '',
     size: 0,
-    type: 'hires',
-    level: '',
+    type: '',
+    level: 'lossless',
   },
 };

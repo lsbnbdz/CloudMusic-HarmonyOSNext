@@ -74,7 +74,7 @@ export struct BottomPlayController {
 
   @Builder
   Cover() {
-    PlayingCover()
+    PlayingCover({ isShow: this.isShow })
       .height('100%')
   }
 }

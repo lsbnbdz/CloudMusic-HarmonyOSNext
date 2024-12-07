@@ -36,7 +36,7 @@ export struct PlayQueueSheet {
           })
         })
       }
-      .padding({ left: 5, right: 15 })
+      .padding({ left: 5, right: 5 })
       .width('100%')
       .justifyContent(FlexAlign.SpaceBetween)
 

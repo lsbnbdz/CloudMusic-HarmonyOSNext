@@ -1,7 +1,7 @@
 import Constants from "../../common/constants/Constants"
 import { Song, SongClass } from "../../common/entities/SongsResult"
 import { changeDuration } from "../../common/functions/functions"
-import { pauseMusic, playNext, playPre, resumeMusic, stopMusic } from "../../common/functions/playerControl"
+import { pauseMusic, playNext, playPre, resumeMusic } from "../../common/functions/playerControl"
 import { PlayQueueButton } from "../buttons/PlayQueueButton"
 import { DownloadDialog } from "../dialog/DownloadDialog"
 
@@ -20,7 +20,9 @@ export struct PlayingCover {
   @StorageProp('player-picurl') picUrl:string = ''
   @StorageProp('player-time') time:number = 0
   @StorageProp('set-playQuality') playQuality:number = 0
+  @Link isShow: boolean
   @State qualitySelected:number = 3
+
   artists1:string = ''
   song1:Song = SongClass
   picUrl1:string = ''
@@ -36,22 +38,32 @@ export struct PlayingCover {
   })
 
   build() {
-   Stack() {
+   Stack({ alignContent: Alignment.Top }) {
      Column({ space: 5 }) {
+       Row() {
+         Button({ type: ButtonType.Circle }) { Image($r('app.media.ic_public_arrow_down_0')).width(40).padding(5).fillColor(Color.Gray) }
+         .backgroundColor(Color.Transparent)
+         .onClick(() => { this.isShow = false })
+       }
+       .width('100%')
+       .justifyContent(FlexAlign.End)
+
        Column({ space: 20 }) {
          if(this.playmode == 0) {
-           Text(`正在播放本地文件`).textStyle(12).padding({ bottom: 10 })
+           Text(`正在播放本地文件`)
+             .textStyle(14)
+             .padding({ bottom: 30 })
            Stack() {
              Image($r('app.media.ic_public_music')).width(100).height(100).fillColor(Color.Gray)
            }
            .width(200)
            .height(200)
-           .padding({ bottom: 50 })
+           .padding({ bottom: 30 })
          }
          else {
            Text(`正在播放 [${Constants.QUALITY_NAME[this.playQuality]}]`)
-             .textStyle(12)
-             .padding({ bottom: 10 })
+             .textStyle(14)
+             .padding({ bottom: 30 })
 
            Stack() {
              LoadingProgress().width(60)
@@ -59,7 +71,7 @@ export struct PlayingCover {
            }
            .width(200)
            .height(200)
-           .padding({ bottom: 50 })
+           .padding({ bottom: 30 })
          }
 
          Text(this.song.name)
@@ -70,11 +82,17 @@ export struct PlayingCover {
            .textStyle(18)
            .fontColor(Color.Gray)
 
-         Text(`${changeDuration(this.time)} / ${changeDuration(this.song.duration)}`)
-           .textStyle(16)
-
-         Progress({ value: this.time, total: this.song.duration })
+         Column({ space: 5 }) {
+           Row() {
+             Text(`${changeDuration(this.time)}`).fontSize(16).layoutWeight(1).textAlign(TextAlign.Start)
+             Text(`${changeDuration(this.song.duration)}`).fontSize(16).layoutWeight(1).textAlign(TextAlign.End)
+           }
            .width('80%')
+           .justifyContent(FlexAlign.SpaceAround)
+
+           Progress({ value: this.time, total: this.song.duration })
+             .width('80%')
+         }
 
          if(this.playmode == 1) {
            Row({ space: 15 }) {
@@ -118,16 +136,12 @@ export struct PlayingCover {
          }
          .padding({ top:30, bottom:30 })
          .justifyContent(FlexAlign.Center)
-
-         Text('结束播放').textStyle(10).onClick(() => { stopMusic() })
        }
      }
      .width('100%')
      .padding({left:15, right:15, top:10, bottom:10})
-     .backgroundColor(Color.Transparent)
-     .backdropBlur(1)
    }
-    .padding({ top: this.topRectHeight, bottom: this.bottomRectHeight })
+    .padding({ top: px2vp(this.topRectHeight), bottom: px2vp(this.bottomRectHeight) })
     .height('100%')
     .backgroundColor($r('app.color.background'))
   }

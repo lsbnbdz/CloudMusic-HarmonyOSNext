@@ -6,6 +6,7 @@ import { LogUtil, ToastUtil } from '@pura/harmony-utils';
 import { Song } from '../entities/SongsResult';
 import AudioPlayUtils from './AudioPlayUtils';
 import { createSession, sessionPause, sessionPlay } from './AVSessionUtils';
+import { playNext } from '../functions/playerControl';
 
 /**
  * 长时任务
@@ -59,7 +60,7 @@ class ContinuousTask {
           if(state == 'playing') { await sessionPlay(session) }
           if(state == 'paused') { AppStorage.setOrCreate('player-ispaused', true); sessionPause(session) }
           if(state == 'idle') { session.destroy() }
-          if(state == 'stopped') { AppStorage.setOrCreate('player-ispaused', true); session.destroy() }
+          if(state == 'stopped') { AppStorage.setOrCreate('player-ispaused', true); session.destroy(); playNext() }
           if(state == 'completed') { AppStorage.setOrCreate('player-ispaused', true) }
         })
       }).catch((err: BusinessError) => {

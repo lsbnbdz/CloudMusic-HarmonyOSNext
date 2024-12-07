@@ -9,6 +9,7 @@ export default class Constants {
 
   static readonly USER_PREF: string = 'UserPreference'
   static readonly SET_PERF: string = 'Settings'
+  static readonly QUEUE_PREF: string = 'PlayQueue'
 
   static readonly ROOT_URL: string = 'http://111.229.38.178:3000'
   static readonly EAPI_URL: string = 'https://interface.music.163.com/eapi'

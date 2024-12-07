@@ -1,12 +1,17 @@
 import { ToastUtil } from "@pura/harmony-utils"
 import { Song, SongClass } from "../../common/entities/SongsResult"
 import { pauseMusic, resumeMusic } from "../../common/functions/playerControl"
+import { PlayQueueButton } from "../buttons/PlayQueueButton"
+import { PlayingCover } from "../sheets/PlayingCover"
 
 /**
  * 底部播控组件
  */
 @Component
 export struct BottomPlayController {
+  @StorageProp('topRectHeight') topRectHeight: number = 0
+  @StorageProp('bottomRectHeight') bottomRectHeight: number = 0
+
   @StorageLink('player-isplaying') isPlaying:boolean = false
   @StorageProp('player-mode') playmode:number = 1
   @StorageProp('player-fileName') fileName:string = ''
@@ -15,6 +20,8 @@ export struct BottomPlayController {
   @StorageProp('player-ispaused') isPaused:boolean = true
   @StorageProp('player-picurl') picUrl:string = ''
   @StorageProp('player-time') time:number = 0
+
+  @State isShow: boolean = false
 
   build() {
     Row({ space: 10 }) {
@@ -29,15 +36,7 @@ export struct BottomPlayController {
           }
           .layoutWeight(1)
 
-          Row({ space: 5 }) {
-            // 暂停、继续
-            if (!this.isPaused) {
-              Button(){ Image($r('app.media.ic_public_pause')).fillColor(Color.Gray).buttonImgStyle() }.onClick(() => { pauseMusic() }).backgroundColor(Color.Transparent)
-            } else {
-              Button(){ Image($r('app.media.ic_play_fill')).fillColor(Color.Gray).buttonImgStyle() }.onClick(() => { resumeMusic() }).backgroundColor(Color.Transparent)
-            }
-          }
-          .justifyContent(FlexAlign.Center)
+          ControlButtons({ isPaused: this.isPaused })
         }
         .justifyContent(FlexAlign.SpaceBetween)
         .layoutWeight(1)
@@ -46,21 +45,15 @@ export struct BottomPlayController {
         Row({ space: 10 }) {
           Text('未在播放')
             .textStyle(18)
-          Row({ space: 5 }) {
-            // 暂停、继续
-            if (!this.isPaused) {
-              Button(){ Image($r('app.media.ic_public_pause')).fillColor(Color.Gray).buttonImgStyle() }.onClick(() => { pauseMusic() }).backgroundColor(Color.Transparent)
-            } else {
-              Button(){ Image($r('app.media.ic_play_fill')).fillColor(Color.Gray).buttonImgStyle() }.onClick(() => { resumeMusic() }).backgroundColor(Color.Transparent)
-            }
-          }
+          ControlButtons({ isPaused: this.isPaused })
         }
         .width('100%')
         .justifyContent(FlexAlign.SpaceBetween)
       }
     }
     .onClick(() => {
-      ToastUtil.showToast('该功能正在开发中，敬请期待！')
+      if(this.isPlaying) { this.isShow = true }
+      else { ToastUtil.showToast('暂无播放') }
     })
     .backdropBlur(30)
     .padding({ left:10, right:10 })
@@ -69,11 +62,43 @@ export struct BottomPlayController {
     .backgroundColor($r('app.color.main'))
     .opacity(0.8)
     .height(80)
+
+    .bindContentCover(this.isShow, this.Cover(), {
+      modalTransition: ModalTransition.DEFAULT,
+      backgroundColor: $r('app.color.background'),
+      onDisappear: () => {
+        this.isShow = false
+      }
+    })
+  }
+
+  @Builder
+  Cover() {
+    PlayingCover()
+      .height('100%')
+  }
+}
+
+@Component
+struct ControlButtons {
+  @Link isPaused: boolean
+  build() {
+    Row({ space: 5 }) {
+      // Button(){ Image($r('app.media.ic_public_play_last')).fillColor(Color.Gray).buttonImgStyle() }.onClick(() => { playPre() }).backgroundColor(Color.Transparent)
+      // 暂停、继续
+      if (!this.isPaused) {
+        Button(){ Image($r('app.media.ic_public_pause')).fillColor(Color.Gray).buttonImgStyle() }.onClick(() => { pauseMusic() }).backgroundColor(Color.Transparent)
+      } else {
+        Button(){ Image($r('app.media.ic_play_fill')).fillColor(Color.Gray).buttonImgStyle() }.onClick(() => { resumeMusic() }).backgroundColor(Color.Transparent)
+      }
+      PlayQueueButton()
+      // Button(){ Image($r('app.media.ic_public_play_next')).fillColor(Color.Gray).buttonImgStyle() }.onClick(() => { playNext() }).backgroundColor(Color.Transparent)
+    }
   }
 }
 
 @Extend(Image) function buttonImgStyle() {
-  .width(40)
+  .width(30)
   .fillColor($r('app.color.reverse'))
 }
 

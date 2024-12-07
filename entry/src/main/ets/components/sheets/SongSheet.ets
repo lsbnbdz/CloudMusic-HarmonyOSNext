@@ -1,8 +1,9 @@
 import { ToastUtil } from "@pura/harmony-utils";
 import Constants from "../../common/constants/Constants";
 import { Song, SongClass } from "../../common/entities/SongsResult";
-import { changeDuration } from "../../common/functions/functions";
+import { changeDuration, getArtists } from "../../common/functions/functions";
 import { playMusicByUrl } from "../../common/functions/playerControl";
+import PlayQueueUtils from "../../common/utils/PlayQueueUtils";
 import { DownloadDialog } from "../dialog/DownloadDialog";
 
 @Component
@@ -79,8 +80,10 @@ export struct SongSheet {
             this.isShowSheet = !this.isShowSheet
             await playMusicByUrl(this.song,this.artists,this.picUrl,this.isValidCookie).then(() => {
               setTimeout(() => {
+                PlayQueueUtils.queueAdd(1,this.song,this.artists,'')
+                PlayQueueUtils.setIndex(PlayQueueUtils.currentQueueIndex + 1)
                 this.isPlayerLoading = false
-              }, 3000)
+              }, 100)
             })
           } else { ToastUtil.showToast('操作过于频繁') }
         })

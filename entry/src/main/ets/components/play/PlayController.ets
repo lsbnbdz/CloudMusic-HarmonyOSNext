@@ -20,9 +20,9 @@ export struct PlayController {
   @StorageProp('set-playQuality') playQuality:number = 0
   @State isShowPopup:boolean = false
   @State qualitySelected:number = 3
-  artists1:string = 'this.artists'
+  artists1:string = ''
   song1:Song = SongClass
-  picUrl1:string = 'this.picUrl'
+  picUrl1:string = ''
 
   dialogController: CustomDialogController = new CustomDialogController({
     builder: DownloadDialog({

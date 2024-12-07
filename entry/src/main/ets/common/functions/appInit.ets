@@ -1,6 +1,6 @@
 import { LogUtil } from "@pura/harmony-utils"
 import Constants from "../constants/Constants"
-import { QualityType } from "../entities/SongDownload"
+import PlayQueueUtils from "../utils/PlayQueueUtils"
 import PreferencesUtils from "../utils/PreferencesUtils"
 
 /**
@@ -10,6 +10,7 @@ const TAG = '[appInit] '
 
 export async function appInit() {
   await initSettings()
+  await initPlayQueue()
   await audioPlayerInit()
 }
 
@@ -19,6 +20,13 @@ async function audioPlayerInit() {
   } catch (e) {
     LogUtil.error(JSON.stringify(e))
   }
+}
+
+/**
+ * 初始化播放列表
+ */
+async function initPlayQueue() {
+  await PlayQueueUtils.init()
 }
 
 /**

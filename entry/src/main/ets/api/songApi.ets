@@ -76,11 +76,16 @@ export async function getSongUrl(songId: number, quality:QualityType, isLogged:b
   try {
     const data = usePubCookie ? await request.RequestWithVipType() : await request.Request()
     LogUtil.info(TAG + JSON.stringify(data.result))
-    const dataGot: SongPlay = data.result as SongPlay
-    return dataGot
+    if(data.result["code"] == 200) {
+      const dataGot: SongPlay = data.result as SongPlay
+      return dataGot
+    } else {
+      LogUtil.info(TAG + 'code: ' + data.result["code"])
+      throw new Error(`${data.result["code"]} - ${data.result["message"]}`)
+    }
   } catch (e) {
-    LogUtil.error(TAG + '获取播放url失败: ' + JSON.stringify(e))
-    throw new Error(TAG + '获取播放Url失败')
+    LogUtil.error(TAG + '获取播放url失败: ' + e)
+    throw new Error(e)
   }
 }
 
@@ -98,8 +103,8 @@ export async function getSongPicUrl(song: Song): Promise<string> {
     const dataGot: SongDetail = data.result as SongDetail;
     const songPicUrl = dataGot.songs[0].al.picUrl;
     return songPicUrl;
-  } catch (error) {
-    console.error('Error fetching song picUrl:', error);
-    return 'NULL';
+  } catch (e) {
+    LogUtil.error(TAG + 'Error fetching song picUrl:', JSON.stringify(e));
+    throw new Error(e)
   }
 }

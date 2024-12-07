@@ -1,11 +1,12 @@
 import { FileUtil, LogUtil, ToastUtil } from "@pura/harmony-utils";
-import { Song, SongClass } from "../entities/SongsResult";
+import { Song } from "../entities/SongsResult";
 import AudioPlayUtils from "../utils/AudioPlayUtils";
 import ContinuousTask from "../utils/ContinuousTask";
 import Constants from "../constants/Constants";
 import FileUtils from "../utils/FileUtils";
-import { getSongUrl } from "../../api/songApi";
+import { getSongPicUrl, getSongUrl } from "../../api/songApi";
 import { fetchMetadata, fetchSongInfo } from "./functions";
+import PlayQueueUtils from "../utils/PlayQueueUtils";
 
 /**
  * 音频播放控制方法
@@ -32,8 +33,8 @@ export async function playMusicByUrl(song:Song,artists:string,picUrl:string,isLo
       ToastUtil.showToast('获取播放资源失败')
     }
   } catch (e) {
-    LogUtil.error(TAG + '播放歌曲失败: ' + JSON.stringify(e))
-    ToastUtil.showToast('播放失败')
+    LogUtil.error(TAG + '播放歌曲失败: ' + e)
+    ToastUtil.showToast('播放失败: ' + e)
   }
 }
 
@@ -65,7 +66,7 @@ export async function playMusicWithFile(fileName:string) {
     }
   } catch (e) {
     LogUtil.error(TAG + '播放歌曲失败: ' + JSON.stringify(e))
-    ToastUtil.showToast('播放失败')
+    ToastUtil.showToast('播放失败: ' + JSON.stringify(e))
   }
 }
 
@@ -86,4 +87,45 @@ export async function resumeMusic() {
   await AudioPlayUtils.resume().then(() => {
     AppStorage.setOrCreate('player-ispaused',false)
   })
+}
+
+export async function playQueue(index:number) {
+  LogUtil.info(TAG + '执行 playQueue: ' + index.toString())
+  const queue = PlayQueueUtils.getQueue()
+  const playqueue = queue[index]
+  const picUrl = await getSongPicUrl(playqueue.song)
+  const isLogged:boolean | undefined = AppStorage.get('isValidCookie')
+  if(playqueue.playmode == 0) { // Play with file
+
+  } else { // Play with url
+    playMusicByUrl(playqueue.song, playqueue.artists, picUrl, isLogged ? true : false).then(() => {
+      PlayQueueUtils.setIndex(index)
+    })
+  }
+}
+
+export async function playPre() {
+  let isValidCookie:boolean | undefined = await AppStorage.get('isValidCookie')
+  if(PlayQueueUtils.pre()) {
+    const res = PlayQueueUtils.getQueueElement(PlayQueueUtils.currentQueueIndex)
+    if(res.playmode == 0) {
+      playMusicWithFile(res.fileName)
+    } else {
+      let picUrl = await getSongPicUrl(res.song)
+      playMusicByUrl(res.song, res.artists, picUrl, isValidCookie?isValidCookie:false)
+    }
+  } else { ToastUtil.showToast('没有上一首了~') }
+}
+
+export async function playNext() {
+  let isValidCookie:boolean | undefined = await AppStorage.get('isValidCookie')
+  if(PlayQueueUtils.next()) {
+    const res = PlayQueueUtils.getQueueElement(PlayQueueUtils.currentQueueIndex)
+    if(res.playmode == 0) {
+      playMusicWithFile(res.fileName)
+    } else {
+      let picUrl = await getSongPicUrl(res.song)
+      playMusicByUrl(res.song, res.artists, picUrl, isValidCookie?isValidCookie:false)
+    }
+  } else { ToastUtil.showToast('没有下一首了~') }
 }

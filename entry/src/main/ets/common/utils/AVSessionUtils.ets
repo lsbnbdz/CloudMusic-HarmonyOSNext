@@ -2,7 +2,7 @@ import { avSession } from "@kit.AVSessionKit";
 import { AppUtil } from "@pura/harmony-utils";
 import { BusinessError } from "@kit.BasicServicesKit";
 import { Song } from "../entities/SongsResult";
-import { pauseMusic, resumeMusic } from "../functions/playerControl";
+import { pauseMusic, playNext, playPre, resumeMusic } from "../functions/playerControl";
 
 export async function createSession(): Promise<avSession.AVSession> {
 
@@ -51,6 +51,14 @@ export async function createSession(): Promise<avSession.AVSession> {
 
   session.on('pause', () => {
     pauseMusic()
+  })
+
+  session.on('playNext', () => {
+    playNext()
+  })
+
+  session.on('playPrevious', () => {
+    playPre()
   })
 
   return session

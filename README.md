@@ -42,12 +42,3 @@ AG尝鲜：https://docs.chenlvin.cc/cloudmusic/#/
 <img src="./images/5.jpg" width="20%" />
 
 
-
-### 界面预览：
-
-<img src="https://pic.imgdb.cn/item/6742f85d88c538a9b5bb53ee.png" style="zoom:15%;" />
-<img src="https://pic.imgdb.cn/item/6742f8f388c538a9b5bb5403.png" style="zoom:15%;" />
-<br>
-<img src="https://pic.imgdb.cn/item/6742f92988c538a9b5bb5414.png" style="zoom:15%;" />
-<img src="https://pic.imgdb.cn/item/6742f97688c538a9b5bb5433.png" style="zoom:15%;" />
-

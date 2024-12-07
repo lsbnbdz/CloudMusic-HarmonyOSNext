@@ -2,8 +2,8 @@
   "app": {
     "bundleName": "cc.chenlvin.cloudmusic",
     "vendor": "chenlvin",
-    "versionCode": 115,
-    "versionName": "0.9.7.2",
+    "versionCode": 116,
+    "versionName": "0.9.8",
     "icon": "$media:startIcon",
     "label": "$string:app_name"
   }

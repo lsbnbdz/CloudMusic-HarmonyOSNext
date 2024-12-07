@@ -4,6 +4,9 @@ import { PlayQueue } from "../../common/entities/PlayQueue"
 import { playQueue } from "../../common/functions/playerControl"
 import PlayQueueUtils from "../../common/utils/PlayQueueUtils"
 
+/**
+ * 播放列表 Sheet
+ */
 @Component
 export struct PlayQueueSheet {
   @StorageProp('PlayQueue') queue: Array<PlayQueue> = []
@@ -14,7 +17,7 @@ export struct PlayQueueSheet {
   build() {
     Column({ space: 10 }) {
       Row() {
-        Text('播放列表').fontSize(20).fontColor(Color.Gray)
+        Text('播放列表').fontSize(20).fontColor(Color.Gray).fontWeight(FontWeight.Bold)
         Button({ type: ButtonType.Circle }) {
           Image($r('app.media.ic_public_delete_filled')).width(25).fillColor($r('app.color.reverse'))
         }
@@ -40,35 +43,57 @@ export struct PlayQueueSheet {
       List({ space: 15 }) {
         ForEach(this.queue, (item: PlayQueue, index) => {
           ListItem() {
-            if(item.playmode == 0) {
-              Row() {
+            Row({ space: 10 }) {
+              // 本地文件
+              if (item.playmode == 0) {
                 if (this.currentQueueIndex == index) {
-                  Text(item.fileName).textStyle(16).fontWeight(FontWeight.Bold).fontColor(Color.Green)
+                  Text(item.fileName).textStyle(16).fontWeight(FontWeight.Bold).fontColor('#ffd25959').layoutWeight(1)
                 } else {
                   Text(item.fileName).textStyle(16)
-                    .onClick(() => { playQueue(index) })
+                    .layoutWeight(1)
+                    .onClick(() => {
+                      playQueue(index)
+                    })
+                }
+                Button({ type: ButtonType.Circle }) {
+                  Image($r('app.media.ic_public_cancel')).width(15)
                 }
               }
-            } else
-            {
-              if (this.currentQueueIndex == index) {
-                Text(`${item.song.name} - ${item.artists}`).textStyle(16).fontWeight(FontWeight.Bold).fontColor(Color.Green)
-              } else {
-                Text() {
-                  Span(`${item.song.name}`)
-                  Span(` - ${item.artists}`).fontColor(Color.Gray)
+              // 在线音乐
+              else {
+                if (this.currentQueueIndex == index) {
+                  Text(`${item.song.name} - ${item.artists}`)
+                    .layoutWeight(1)
+                    .textStyle(16)
+                    .fontWeight(FontWeight.Bold)
+                    .fontColor('#ffd25959')
+                } else {
+                  Text() {
+                    Span(`${item.song.name}`)
+                    Span(` - ${item.artists}`).fontColor(Color.Gray)
+                  }
+                  .layoutWeight(1)
+                  .textStyle(16)
+                  .onClick(() => {
+                    playQueue(index)
+                  })
                 }
-                .textStyle(16)
-                .onClick(() => { playQueue(index) })
               }
+              Button({ type: ButtonType.Circle }) { Image($r('app.media.ic_public_cancel')).width(20).fillColor(Color.Gray) }
+              .backgroundColor(Color.Transparent)
+              .onClick(() => {
+                PlayQueueUtils.queueDelete(index)
+              })
             }
+            .width('100%')
+            .justifyContent(FlexAlign.SpaceAround)
           }
         })
         ListItem().height(px2vp(this.bottomRectHeight))
       }
       .layoutWeight(1)
       .height('100%')
-      .scrollBar(BarState.On)
+      .scrollBar(BarState.Off)
     }
     .padding({ left:20, right:20, top:15 })
     .width('100%')

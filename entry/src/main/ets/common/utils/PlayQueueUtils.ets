@@ -62,6 +62,9 @@ class PlayQueueUtils {
       this.queue.splice(index,1)
       AppStorage.setOrCreate('PlayQueue',this.queue)
       await PreferencesUtils.putPreferenceValue(pref, 'queue', this.queue)
+      if(index < this.currentQueueIndex) {
+        this.setIndex(this.currentQueueIndex - 1)
+      }
       LogUtil.info(TAG + '删除成功 delete queue element success')
     } catch (e) {
       LogUtil.error(TAG + '删除失败 delete queue element error: ' + e.message())

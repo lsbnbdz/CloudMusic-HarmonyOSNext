@@ -1,8 +1,10 @@
-import { FileUtil, LogUtil } from '@pura/harmony-utils'
+import { LogUtil } from '@pura/harmony-utils'
 import { EfAVPlayer } from '@yunkss/ef_audio'
 import ContinuousTask from './ContinuousTask'
 import FileUtils from './FileUtils'
 import { fileIo } from '@kit.CoreFileKit'
+import AVSessionUtils from './AVSessionUtils'
+import { playNext } from '../functions/playerControl'
 
 /**
  * 音频播放工具
@@ -29,6 +31,7 @@ class AudioPlayUtils {
       await this.mPlayer.setUrl(url)
       LogUtil.info(TAG + '开始播放: ' + url)
       this.mPlayer.play()
+      this.onState()
       AppStorage.setOrCreate('player-isplaying',true)
       this.mPlayer.onTimeUpdate((time) => {
         AppStorage.setOrCreate('player-time',time)
@@ -49,6 +52,7 @@ class AudioPlayUtils {
       await this.init()
       await this.mPlayer.setUrl(fdPath)
       this.mPlayer.play()
+      this.onState()
       LogUtil.info(TAG + '开始播放: ' + fileName)
       AppStorage.setOrCreate('player-isplaying',true)
       this.mPlayer.onTimeUpdate((time) => {
@@ -76,6 +80,15 @@ class AudioPlayUtils {
     LogUtil.info(TAG + '继续播放')
   }
 
+  onState() {
+    this.mPlayer.onStateChange(async (state) => {
+      if(state == 'playing') { AppStorage.setOrCreate('player-isplaying', true); AVSessionUtils.playState() }
+      if(state == 'paused') { AppStorage.setOrCreate('player-ispaused', true); AVSessionUtils.pauseState() }
+      if(state == 'idle') { AVSessionUtils.deactive() }
+      if(state == 'stopped') { AppStorage.setOrCreate('player-ispaused', true); ContinuousTask.startTask(); playNext() }
+      if(state == 'completed') { AppStorage.setOrCreate('player-ispaused', true); ContinuousTask.startTask(); playNext() }
+    })
+  }
 }
 
 const audioPlayUtils = new AudioPlayUtils()

@@ -7,6 +7,7 @@ import FileUtils from "../utils/FileUtils";
 import { getSongPicUrl, getSongUrl } from "../../api/songApi";
 import { fetchMetadata, fetchSongInfo } from "./functions";
 import PlayQueueUtils from "../utils/PlayQueueUtils";
+import AVSessionUtils from "../utils/AVSessionUtils";
 
 /**
  * 音频播放控制方法
@@ -27,7 +28,12 @@ export async function playMusicByUrl(song:Song,artists:string,picUrl:string,isLo
       AppStorage.setOrCreate('player-picurl',picUrl)
       await AudioPlayUtils.mPlayer.reset()
       await ContinuousTask.stopTask()
-      ContinuousTask.startPlay(1, songPlay.data[0].url)
+      ContinuousTask.startTask()
+      AVSessionUtils.setMetadata(song,artists,picUrl)
+
+      AudioPlayUtils.playWithUrl(songPlay.data[0].url)
+      AVSessionUtils.activate()
+
       ToastUtil.showToast('开始播放歌曲: ' + song.name)
     } else {
       ToastUtil.showToast('获取播放资源失败')
@@ -56,10 +62,14 @@ export async function playMusicWithFile(fileName:string) {
       AppStorage.setOrCreate('player-isplaying', false)
       AppStorage.setOrCreate('player-song', song)
       AppStorage.setOrCreate('player-artists', song.artists[0].name)
-      AppStorage.setOrCreate('player-picurl','')
+      AppStorage.setOrCreate('player-picurl',`${$r('app.media.ic_public_music')}`)
       await AudioPlayUtils.mPlayer.reset()
       await ContinuousTask.stopTask()
-      ContinuousTask.startPlay(0, fileName)
+      ContinuousTask.startTask()
+      AVSessionUtils.setMetadata(song,song.artists[0].name,'')
+
+      AudioPlayUtils.playWithFile(fileName)
+      AVSessionUtils.activate()
       ToastUtil.showToast(`开始播放: ${fileName}`)
     } else {
       ToastUtil.showToast('未找到文件')
@@ -90,7 +100,6 @@ export async function resumeMusic() {
 }
 
 export async function playQueue(index:number) {
-  LogUtil.info(TAG + '执行 playQueue: ' + index.toString())
   const queue = PlayQueueUtils.getQueue()
   const playqueue = queue[index]
   const picUrl = await getSongPicUrl(playqueue.song)

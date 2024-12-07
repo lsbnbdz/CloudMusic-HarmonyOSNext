@@ -1,70 +1,120 @@
 import { avSession } from "@kit.AVSessionKit";
-import { AppUtil } from "@pura/harmony-utils";
-import { BusinessError } from "@kit.BasicServicesKit";
+import { AppUtil, LogUtil } from "@pura/harmony-utils";
 import { Song } from "../entities/SongsResult";
 import { pauseMusic, playNext, playPre, resumeMusic } from "../functions/playerControl";
 
-export async function createSession(): Promise<avSession.AVSession> {
+/**
+ * AVSession 播控中心工具类
+ */
+const TAG = '[AVSessionUtils] '
+class AVSessionUtils {
+  context = AppUtil.getContext()
+  session = this.createSession()
 
-  let mode: number | undefined = AppStorage.get('player-mode')
-  let song: Song | undefined = AppStorage.get('player-song')
-  let artists: string | undefined = AppStorage.get('player-artists')
-  let picUrl: string | undefined = AppStorage.get('player-picurl')
-
-  const context = AppUtil.getContext()
-  const session = await avSession.createAVSession(context, 'playSession', 'audio')
-
-  // 设置必要的媒体信息
-  let metadata: avSession.AVMetadata = {
-    assetId: '0',
-    title: song?.name,
-    mediaImage: picUrl,
-    artist: artists,
-    duration: song?.duration
-  }
-  session.setAVMetadata(metadata).then(() => {
-    console.info(`SetAVMetadata successfully`);
-  }).catch((err: BusinessError) => {
-    console.error(`Failed to set AVMetadata. Code: ${err.code}, message: ${err.message}`);
-  })
-
-  // 设置状态： 播放状态，进度位置，播放倍速，缓存的时间
-  let playbackState: avSession.AVPlaybackState = {
-    state: avSession.PlaybackState.PLAYBACK_STATE_BUFFERING, // 确保播放状态为播放
-    position: {
-      elapsedTime: 0, // 已经播放的位置，以ms为单位，后面可以根据实际播放进度更新
-      updateTime: new Date().getTime(),
+  async createSession(): Promise<avSession.AVSession> {
+    let session = await avSession.createAVSession(this.context, 'playSession', 'audio')
+    try {
+      session.on('play', () => {
+        resumeMusic()
+      });
+      session.on('pause', () => {
+        pauseMusic()
+      });
+      session.on('playNext', () => {
+        playNext()
+      });
+      session.on('playPrevious', () => {
+        playPre()
+      });
+    } catch (e) {
+      LogUtil.error(TAG + '创建session失败 / create session error: ' + JSON.stringify(e))
+    } finally {
+      return session
     }
   }
 
-  session.setAVPlaybackState(playbackState, (err) => {
-    if (err) {
-      console.error(`Failed to set AVPlaybackState. Code: ${err.code}, message: ${err.message}`);
-    } else {
-      console.info(`SetAVPlaybackState successfully`);
-    }
-  })
+  /**
+   * 设置媒体信息
+   * @param song
+   * @param artists
+   * @param picUrl
+   */
+  async setMetadata(song: Song, artists: string, picUrl: string) {
+    let metadata: avSession.AVMetadata = {
+      assetId: '0',
+      title: song?.name,
+      mediaImage: picUrl,
+      artist: artists,
+      duration: song?.duration
+    };
 
-  session.on('play', () => {
-    resumeMusic()
-  })
+    (await this.session).setAVMetadata(metadata)
+  }
 
-  session.on('pause', () => {
-    pauseMusic()
-  })
+  /**
+   * 启用
+   */
+  async activate() {
+    (await this.session).activate()
+  }
 
-  session.on('playNext', () => {
-    playNext()
-  })
+  /**
+   * 停用
+   */
+  async deactive() {
+    (await this.session).deactivate()
+  }
 
-  session.on('playPrevious', () => {
-    playPre()
-  })
+  /**
+   * 设置为播放状态
+   */
+  async playState() {
+    let time = await getPlayTime()
+    let playbackState: avSession.AVPlaybackState = {
+      state: avSession.PlaybackState.PLAYBACK_STATE_PLAY,
+      position: {
+        elapsedTime: time,
+        updateTime: new Date().getTime()
+      }
+    };
+    (await this.session).setAVPlaybackState(playbackState)
+  }
 
-  return session
+  /**
+   * 设置为暂停状态
+   */
+  async pauseState() {
+    let time = await getPlayTime()
+    let pausedState: avSession.AVPlaybackState = {
+      state: avSession.PlaybackState.PLAYBACK_STATE_PAUSE,
+      position: {
+        elapsedTime: time,
+        updateTime: new Date().getTime()
+      }
+    };
+    (await this.session).setAVPlaybackState(pausedState)
+  }
+
+  /**
+   * 设置为缓冲状态
+   */
+  async bufferingState() {
+    let playbackState: avSession.AVPlaybackState = {
+      state: avSession.PlaybackState.PLAYBACK_STATE_BUFFERING,
+      position: {
+        elapsedTime: 0,
+        updateTime: new Date().getTime(),
+      }
+    };
+    (await this.session).setAVPlaybackState(playbackState)
+  }
 }
 
-async function getPlayTime() {
+/**
+ * 获取播放时间(ms)
+ * @returns number 播放时间(ms)
+ */
+async function getPlayTime(): Promise<number> {
   let resTime = 0
   let elapsedTime:number | undefined = await AppStorage.get('player-time')
   if(elapsedTime) {
@@ -73,26 +123,5 @@ async function getPlayTime() {
   return resTime
 }
 
-export async function sessionPause(session: avSession.AVSession) {
-  let time = await getPlayTime()
-  let pausedState: avSession.AVPlaybackState = {
-    state: avSession.PlaybackState.PLAYBACK_STATE_PAUSE, // 确保播放状态为播放
-    position: {
-      elapsedTime: time,
-      updateTime: new Date().getTime()
-    }
-  }
-  session.setAVPlaybackState(pausedState)
-}
-
-export async function sessionPlay(session: avSession.AVSession) {
-  let time = await getPlayTime()
-  let playbackState: avSession.AVPlaybackState = {
-    state: avSession.PlaybackState.PLAYBACK_STATE_PLAY, // 确保播放状态为播放
-    position: {
-      elapsedTime: time,
-      updateTime: new Date().getTime()
-    }
-  }
-  session.setAVPlaybackState(playbackState)
-}
+const avSessionUtils = new AVSessionUtils()
+export default avSessionUtils as AVSessionUtils

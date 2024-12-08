@@ -46,17 +46,19 @@ export struct PlayQueueSheet {
             Row({ space: 10 }) {
               // 本地文件
               if (item.playmode == 0) {
+                Image($r('app.media.ic_public_todo')).width(20).fillColor(Color.Green)
                 if (this.currentQueueIndex == index) {
                   Text(item.fileName).textStyle(16).fontWeight(FontWeight.Bold).fontColor('#ffd25959').layoutWeight(1)
                 } else {
-                  Text(item.fileName).textStyle(16)
-                    .layoutWeight(1)
-                    .onClick(() => {
-                      playQueue(index)
-                    })
-                }
-                Button({ type: ButtonType.Circle }) {
-                  Image($r('app.media.ic_public_cancel')).width(15)
+                  Text() {
+                    Span(`${item.song.name}`)
+                    Span(` - ${item.artists}`).fontColor(Color.Gray)
+                  }
+                  .layoutWeight(1)
+                  .textStyle(16)
+                  .onClick(() => {
+                    playQueue(index)
+                  })
                 }
               }
               // 在线音乐

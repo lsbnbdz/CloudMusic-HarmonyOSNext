@@ -73,17 +73,15 @@ class PlayQueueUtils {
 
   pre(): boolean {
     if(this.currentQueueIndex > 0) {
-      this.currentQueueIndex -= 1
-      AppStorage.setOrCreate('currentQueueIndex',this.currentQueueIndex)
+      this.setIndex(this.currentQueueIndex - 1)
       return true // true 表示有上一首歌曲，并且移动currentQueueIndex
     }
     else return false
   }
 
   next(): boolean {
-		if(this.currentQueueIndex < this.queue.length) {
-      this.currentQueueIndex += 1
-      AppStorage.setOrCreate('currentQueueIndex',this.currentQueueIndex)
+		if(this.currentQueueIndex < (this.queue.length - 1)) {
+      this.setIndex(this.currentQueueIndex + 1)
       return true
     }
     else return false

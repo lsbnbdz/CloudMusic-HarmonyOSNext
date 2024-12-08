@@ -1,8 +1,10 @@
 /**
  * 文件卡片
  */
+import { fetchMetadata, fetchSongInfo } from "../../common/functions/functions"
 import { playMusicWithFile } from "../../common/functions/playerControl"
 import FileUtils from "../../common/utils/FileUtils"
+import PlayQueueUtils from "../../common/utils/PlayQueueUtils"
 
 @Component
 export struct FileCard {
@@ -30,8 +32,18 @@ export struct FileCard {
     Menu() {
       MenuItem({ content: this.fileName }).width('80%')
       MenuItem({ startIcon: $r('app.media.ic_play_fill'), content:'播放'})
-        .onClick(() => {
-          playMusicWithFile(this.fileName)
+        .onClick(async () => {
+          const rootUrl = await FileUtils.getFilesDir()
+          const fileUrl = rootUrl + `/${this.fileName}`
+          const metadata = await fetchMetadata(fileUrl)
+          let song = await fetchSongInfo(this.fileName)
+          if(metadata) {
+            song.duration = (metadata.duration) ? parseInt(metadata.duration) : 0
+          }
+          playMusicWithFile(this.fileName).then(() => {
+            PlayQueueUtils.queueAdd(0, song, song.artists[0].name, this.fileName)
+            PlayQueueUtils.setIndex(PlayQueueUtils.currentQueueIndex + 1)
+          })
         })
       MenuItem({ startIcon: $r('app.media.ic_public_app_filled'), content:'预览'})
         .onClick(() => {

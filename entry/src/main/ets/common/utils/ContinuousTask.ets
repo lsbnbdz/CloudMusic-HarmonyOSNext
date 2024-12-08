@@ -1,8 +1,7 @@
 import { BusinessError } from '@kit.BasicServicesKit';
 import { backgroundTaskManager } from '@kit.BackgroundTasksKit';
 import { WantAgent, wantAgent } from '@kit.AbilityKit';
-import { LogUtil, ToastUtil } from '@pura/harmony-utils';
-import AVSessionUtils from './AVSessionUtils';
+import { LogUtil } from '@pura/harmony-utils';
 
 /**
  * 长时任务
@@ -21,7 +20,7 @@ class ContinuousTask {
    * @param picUrl
    * @param url
    */
-  startTask() {
+  async startTask() {
     let wantAgentInfo: wantAgent.WantAgentInfo = {
       wants: [
         {

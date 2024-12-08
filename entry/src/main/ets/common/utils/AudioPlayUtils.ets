@@ -18,6 +18,7 @@ class AudioPlayUtils {
   async init() {
     try {
       await this.mPlayer.init({ immediately: true, loop: false })
+      this.onState()
       LogUtil.info(TAG + '播放器初始化完成')
     } catch (e) {
       LogUtil.error(TAG + '播放器初始化失败')
@@ -25,46 +26,21 @@ class AudioPlayUtils {
     }
   }
 
-  async playWithUrl(url:string) {
-    try {
-      await this.mPlayer.reset()
-      await this.init()
-      await this.mPlayer.setUrl(url)
-      this.onState()
-      LogUtil.info(TAG + '开始播放: ' + url)
-      this.mPlayer.play()
-      AppStorage.setOrCreate('player-isplaying',true)
-      this.mPlayer.onTimeUpdate((time) => {
-        AppStorage.setOrCreate('player-time',time)
-      })
-    } catch (e) {
-      AppStorage.setOrCreate('player-isplaying',false)
-      LogUtil.error(TAG + '播放失败: ' + JSON.stringify(e))
-    }
+  async reset() {
+    await this.mPlayer.reset()
   }
 
-  async playWithFile(fileName:string) {
-    try {
-      let path = await FileUtils.getFilesDir() + `/${fileName}`
-      LogUtil.info(TAG + 'path: ' + path)
-      let file = await fileIo.open(path)
-      let fdPath = 'fd://' + file.fd
-      LogUtil.info(TAG + 'fdPath: ' + fdPath)
-      await this.mPlayer.reset()
-      await this.init()
-      await this.mPlayer.setUrl(fdPath)
-      this.onState()
+  async setUrl(url: string) {
+    await this.reset()
+    await this.init()
+    await this.mPlayer.setUrl(url)
+  }
 
-      this.mPlayer.play()
-      LogUtil.info(TAG + '开始播放: ' + fileName)
-      AppStorage.setOrCreate('player-isplaying',true)
-      this.mPlayer.onTimeUpdate((time) => {
-        AppStorage.setOrCreate('player-time',time)
-      })
-    } catch (e) {
-      AppStorage.setOrCreate('player-isplaying',false)
-      LogUtil.error(TAG + '播放失败 play error: ' + JSON.stringify(e))
-    }
+  async play() {
+    await this.mPlayer.play()
+    this.mPlayer.onTimeUpdate((time) => {
+      AppStorage.setOrCreate('player-time',time)
+    })
   }
 
   async stop() {

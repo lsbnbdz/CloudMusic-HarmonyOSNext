@@ -10,6 +10,7 @@ import PlayQueueUtils from "../utils/PlayQueueUtils";
 import AVSessionUtils from "../utils/AVSessionUtils";
 import { promptAction } from "@kit.ArkUI";
 import PreferencesUtils from "../utils/PreferencesUtils";
+import { fileIo } from "@kit.CoreFileKit";
 
 /**
  * 音频播放控制方法
@@ -29,12 +30,16 @@ export async function playMusicByUrl(song:Song,artists:string,picUrl:string,isLo
       AppStorage.setOrCreate('player-song',song)
       AppStorage.setOrCreate('player-artists',artists)
       AppStorage.setOrCreate('player-picurl',picUrl)
-      // await AudioPlayUtils.mPlayer.reset()
-      ContinuousTask.startTask()
+      await AVSessionUtils.deactive()
+      await ContinuousTask.stopTask()
+      await AudioPlayUtils.setUrl(songPlay.data[0].url)
       AVSessionUtils.setMetadata(song,artists,picUrl)
-      AudioPlayUtils.playWithUrl(songPlay.data[0].url)
-      AVSessionUtils.activate()
-
+      ContinuousTask.startTask().then(() => {
+        AudioPlayUtils.play().then(() => {
+          AVSessionUtils.activate()
+          AppStorage.setOrCreate('player-isplaying',true)
+        })
+      })
     } else {
       ToastUtil.showToast('获取播放资源失败')
     }
@@ -48,6 +53,8 @@ export async function playMusicWithFile(fileName:string) {
   try {
     const rootUrl = await FileUtils.getFilesDir()
     const fileUrl = rootUrl + `/${fileName}`
+    let file = await fileIo.open(fileUrl)
+    let fdPath = 'fd://' + file.fd
 
     const metadata = await fetchMetadata(fileUrl)
     let song = await fetchSongInfo(fileName)
@@ -63,14 +70,16 @@ export async function playMusicWithFile(fileName:string) {
       AppStorage.setOrCreate('player-song', song)
       AppStorage.setOrCreate('player-artists', song.artists[0].name)
       AppStorage.setOrCreate('player-picurl',`$r('app.media.ic_public_music')`)
-      await AudioPlayUtils.mPlayer.reset()
-      ContinuousTask.stopTask().then(() => {
-        ContinuousTask.startTask()
-      })
+      await AVSessionUtils.deactive()
+      await ContinuousTask.stopTask()
+      await AudioPlayUtils.setUrl(fdPath)
       AVSessionUtils.setMetadata(song,song.artists[0].name,'')
-
-      AudioPlayUtils.playWithFile(fileName)
-      AVSessionUtils.activate()
+      ContinuousTask.startTask().then(() => {
+        AudioPlayUtils.play().then(() => {
+          AVSessionUtils.activate()
+          AppStorage.setOrCreate('player-isplaying',true)
+        })
+      })
     } else {
       ToastUtil.showToast('未找到文件')
     }

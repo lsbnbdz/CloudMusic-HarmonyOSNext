@@ -2,6 +2,7 @@ import Constants from "../../common/constants/Constants"
 import { Song, SongClass } from "../../common/entities/SongsResult"
 import { changeDuration } from "../../common/functions/functions"
 import { pauseMusic, playNext, playPre, resumeMusic } from "../../common/functions/playerControl"
+import { CycleModeButton } from "../buttons/CycleModeButton"
 import { PlayQueueButton } from "../buttons/PlayQueueButton"
 import { DownloadDialog } from "../dialog/DownloadDialog"
 
@@ -40,6 +41,7 @@ export struct PlayingCover {
   build() {
    Stack({ alignContent: Alignment.Top }) {
      Column({ space: 5 }) {
+       // 收起
        Row() {
          Button({ type: ButtonType.Circle }) { Image($r('app.media.ic_public_arrow_down_0')).width(40).padding(5).fillColor(Color.Gray) }
          .backgroundColor(Color.Transparent)
@@ -49,38 +51,41 @@ export struct PlayingCover {
        .justifyContent(FlexAlign.End)
 
        Column({ space: 20 }) {
-         if(this.playmode == 0) {
-           Text(`正在播放本地文件`)
-             .textStyle(14)
+         Column({ space: 20 }) {
+           if (this.playmode == 0) {
+             Text(`正在播放本地文件`)
+               .textStyle(14)
+               .padding({ bottom: 30 })
+             Stack() {
+               Image($r('app.media.ic_public_music')).width(100).height(100).fillColor(Color.Gray).borderRadius(5)
+             }
+             .width(200)
+             .height(200)
              .padding({ bottom: 30 })
-           Stack() {
-             Image($r('app.media.ic_public_music')).width(100).height(100).fillColor(Color.Gray)
-           }
-           .width(200)
-           .height(200)
-           .padding({ bottom: 30 })
-         }
-         else {
-           Text(`正在播放 [${Constants.QUALITY_NAME[this.playQuality]}]`)
-             .textStyle(14)
+           } else {
+             Text(`正在播放 [${Constants.QUALITY_NAME[this.playQuality]}]`)
+               .textStyle(14)
+               .padding({ bottom: 30 })
+
+             Stack() {
+               LoadingProgress().width(60)
+               Image(this.picUrl + '?param=512y512').width(200).height(200).borderRadius(5)
+             }
+             .width(200)
+             .height(200)
              .padding({ bottom: 30 })
-
-           Stack() {
-             LoadingProgress().width(60)
-             Image(this.picUrl + '?param=512y512').width(200).height(200)
            }
-           .width(200)
-           .height(200)
-           .padding({ bottom: 30 })
+
+           Text(this.song.name)
+             .textStyle(22)
+             .fontWeight(FontWeight.Bold)
+
+           Text(this.artists)
+             .textStyle(18)
+             .fontColor(Color.Gray)
          }
-
-         Text(this.song.name)
-           .textStyle(22)
-           .fontWeight(FontWeight.Bold)
-
-         Text(this.artists)
-           .textStyle(18)
-           .fontColor(Color.Gray)
+         .layoutWeight(1)
+         .justifyContent(FlexAlign.Center)
 
          Column({ space: 5 }) {
            Row() {
@@ -94,8 +99,8 @@ export struct PlayingCover {
              .width('80%')
          }
 
-         if(this.playmode == 1) {
-           Row({ space: 15 }) {
+         Row({ space: 20 }) {
+           if(this.playmode == 1) {
              Select([{ value: '标准' }, { value: '高' }, { value: '极高' }, { value: '无损' }])
                .selected(3)
                .value('无损')
@@ -116,9 +121,10 @@ export struct PlayingCover {
                this.picUrl1 = this.picUrl
                this.dialogController.open()
              })
-             PlayQueueButton()
            }
-         } else {
+
+           CycleModeButton()
+
            PlayQueueButton()
          }
 
@@ -134,7 +140,7 @@ export struct PlayingCover {
            // 下一首
            Button(){ Image($r('app.media.ic_public_play_next')).buttonImgStyle() }.onClick(() => { playNext() }).backgroundColor(Color.Transparent)
          }
-         .padding({ top:30, bottom:30 })
+         .padding({ top:30, bottom:50 })
          .justifyContent(FlexAlign.Center)
        }
      }

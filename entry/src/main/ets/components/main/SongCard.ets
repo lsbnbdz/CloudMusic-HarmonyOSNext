@@ -1,7 +1,9 @@
 import { getSongPicUrl } from "../../api/songApi"
 import { Song, SongClass } from "../../common/entities/SongsResult"
 import { getArtists } from "../../common/functions/functions"
+import PlayQueueUtils from "../../common/utils/PlayQueueUtils"
 import { SongSheet } from "../sheets/SongSheet"
+import { promptAction } from "@kit.ArkUI"
 
 @Preview
 @Component
@@ -28,14 +30,24 @@ export struct SongCard {
   build() {
     Button() {
       Row() {
-        Text(`${this.sid + 1}`).width(40).fontWeight(FontWeight.Bold)
-        Image(this.picUrl + '?param=100y100').width(50).padding({right:10}).borderRadius(5)
-        Column() {
-          Text(this.song.name).textStyle(16)
-          Text(this.artists).textStyle(12)
+        Row() {
+          Text(`${this.sid + 1}`).width(40).fontWeight(FontWeight.Bold)
+          Image(this.picUrl + '?param=100y100').width(50).padding({ right: 10 }).borderRadius(5)
+          Column() {
+            Text(this.song.name).textStyle(16)
+            Text(this.artists).textStyle(12)
+          }
+          .layoutWeight(1)
+          .width(`100%`)
         }
         .layoutWeight(1)
-        .width(`100%`)
+
+        Button() { Image($r('app.media.ic_public_add_norm')).fillColor($r('app.color.reverse')).width(15) }
+        .backgroundColor(Color.Transparent)
+        .onClick(() => {
+          PlayQueueUtils.queueAdd(1, this.song, this.artists, '')
+          promptAction.showToast({ message: '成功添加至播放列表' })
+        })
       }
       .width(this.startWidth)
       .onAppear( () => { this.startWidth = '100%' })

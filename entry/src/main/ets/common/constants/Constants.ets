@@ -9,7 +9,7 @@ export default class Constants {
 
   static readonly USER_PREF: string = 'UserPreference'
   static readonly SET_PERF: string = 'Settings'
-  static readonly QUEUE_PREF: string = 'PlayQueue'
+  static readonly QUEUE_PREF: string = 'Play'
 
   static readonly ROOT_URL: string = 'http://111.229.38.178:3000'
   static readonly EAPI_URL: string = 'https://interface.music.163.com/eapi'
@@ -18,8 +18,12 @@ export default class Constants {
 
   static readonly COOKIE_EXPIRY_DAYS = 7;
 
-  static readonly QUALITY: QualityType[] = ['standard','higher','exhigh','lossless']
-  static readonly QUALITY_NAME: string[] = ['标准','高','极高','无损']
+  static readonly QUALITY: QualityType[] = ['standard', 'higher', 'exhigh', 'lossless']
+  static readonly QUALITY_NAME: string[] = ['标准', '高', '极高', '无损']
+  /**
+   * 0-顺序播放, 1-顺序循环, 2-单曲循环, 3-随机播放
+   */
+  static readonly CYCLE_MODE: string[] = ['顺序播放', '顺序循环', '单曲循环', '随机播放']
 
   // Messages
   static readonly HTTP_ERROR_MSG: string = '网络请求发生错误，请检查：\n1. 网络连接是否正常\n2. API服务器是否正常'

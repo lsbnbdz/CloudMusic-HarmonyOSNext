@@ -4,7 +4,7 @@ import ContinuousTask from './ContinuousTask'
 import FileUtils from './FileUtils'
 import { fileIo } from '@kit.CoreFileKit'
 import AVSessionUtils from './AVSessionUtils'
-import { playNext } from '../functions/playerControl'
+import { completeDo, playNext } from '../functions/playerControl'
 
 /**
  * 音频播放工具
@@ -27,11 +27,12 @@ class AudioPlayUtils {
 
   async playWithUrl(url:string) {
     try {
+      await this.mPlayer.reset()
       await this.init()
       await this.mPlayer.setUrl(url)
+      this.onState()
       LogUtil.info(TAG + '开始播放: ' + url)
       this.mPlayer.play()
-      this.onState()
       AppStorage.setOrCreate('player-isplaying',true)
       this.mPlayer.onTimeUpdate((time) => {
         AppStorage.setOrCreate('player-time',time)
@@ -49,10 +50,12 @@ class AudioPlayUtils {
       let file = await fileIo.open(path)
       let fdPath = 'fd://' + file.fd
       LogUtil.info(TAG + 'fdPath: ' + fdPath)
+      await this.mPlayer.reset()
       await this.init()
       await this.mPlayer.setUrl(fdPath)
-      this.mPlayer.play()
       this.onState()
+
+      this.mPlayer.play()
       LogUtil.info(TAG + '开始播放: ' + fileName)
       AppStorage.setOrCreate('player-isplaying',true)
       this.mPlayer.onTimeUpdate((time) => {
@@ -86,7 +89,7 @@ class AudioPlayUtils {
       if(state == 'paused') { AppStorage.setOrCreate('player-ispaused', true); AVSessionUtils.pauseState() }
       if(state == 'idle') { AVSessionUtils.deactive() }
       if(state == 'stopped') { AppStorage.setOrCreate('player-ispaused', true); ContinuousTask.stopTask() }
-      if(state == 'completed') { AppStorage.setOrCreate('player-ispaused', true); ContinuousTask.stopTask(); playNext() }
+      if(state == 'completed') { AppStorage.setOrCreate('player-ispaused', true); ContinuousTask.stopTask(); completeDo() }
     })
   }
 }

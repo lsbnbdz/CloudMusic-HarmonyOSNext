@@ -1,6 +1,6 @@
 ## Cloud Music For HarmonyOS NEXT
 
-**CloudMusic (云音汇) 是鸿蒙5.0上的音乐工具App**
+**CloudMusic (云音汇) 是鸿蒙5.0上的网易云音乐三方版**
 
 使用本软件，用户可以登录网易云账号，并通过歌单、搜索，播放、下载歌曲
 

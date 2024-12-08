@@ -48,7 +48,7 @@ export struct PlayQueueSheet {
               if (item.playmode == 0) {
                 Image($r('app.media.ic_public_todo')).width(20).fillColor(Color.Green)
                 if (this.currentQueueIndex == index) {
-                  Text(item.fileName).textStyle(16).fontWeight(FontWeight.Bold).fontColor('#ffd25959').layoutWeight(1)
+                  Text(`${item.song.name} - ${item.artists}`).textStyle(16).fontWeight(FontWeight.Bold).fontColor('#ffd25959').layoutWeight(1)
                 } else {
                   Text() {
                     Span(`${item.song.name}`)

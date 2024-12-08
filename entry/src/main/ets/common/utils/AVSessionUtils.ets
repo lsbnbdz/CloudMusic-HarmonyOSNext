@@ -31,6 +31,7 @@ class AVSessionUtils {
         LogUtil.info(TAG + '播控中心点击事件: PlayPrevious')
         playPre()
       });
+
     } catch (e) {
       LogUtil.error(TAG + '创建session失败 / create session error: ' + JSON.stringify(e))
     } finally {
@@ -53,7 +54,7 @@ class AVSessionUtils {
       duration: song?.duration
     };
 
-    (await this.session).setAVMetadata(metadata)
+    (await this.session).setAVMetadata(metadata);
   }
 
   /**

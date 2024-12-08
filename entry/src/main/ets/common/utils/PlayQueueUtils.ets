@@ -25,9 +25,11 @@ class PlayQueueUtils {
     try {
       this.currentQueueIndex = -1
       let gotQueue = await PreferencesUtils.getPreferenceValue<Array<PlayQueue>>(pref, 'queue', this.queue)
+      let circleMode = await PreferencesUtils.getPreferenceValue<number>(pref, 'cycleMode', 0)
       this.queue = gotQueue
       AppStorage.setOrCreate('currentQueueIndex',this.currentQueueIndex)
       AppStorage.setOrCreate('PlayQueue',this.queue)
+      AppStorage.setOrCreate('cycleMode', circleMode)
       LogUtil.info(TAG + '初始化播放列表成功')
     } catch (e) {
       LogUtil.error(TAG + '初始化播放列表 init playqueue error: ' + e.message())

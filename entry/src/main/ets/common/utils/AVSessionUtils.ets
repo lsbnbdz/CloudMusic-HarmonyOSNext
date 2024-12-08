@@ -7,6 +7,7 @@ import { pauseMusic, playNext, playPre, resumeMusic } from "../functions/playerC
  * AVSession 播控中心工具类
  */
 const TAG = '[AVSessionUtils] '
+
 class AVSessionUtils {
   context = AppUtil.getContext()
   session = this.createSession()
@@ -15,15 +16,19 @@ class AVSessionUtils {
     let session = await avSession.createAVSession(this.context, 'playSession', 'audio')
     try {
       session.on('play', () => {
+        LogUtil.info(TAG + '播控中心点击事件: Play')
         resumeMusic()
       });
       session.on('pause', () => {
+        LogUtil.info(TAG + '播控中心点击事件: Pause')
         pauseMusic()
       });
       session.on('playNext', () => {
+        LogUtil.info(TAG + '播控中心点击事件: PlayNext')
         playNext()
       });
       session.on('playPrevious', () => {
+        LogUtil.info(TAG + '播控中心点击事件: PlayPrevious')
         playPre()
       });
     } catch (e) {
@@ -77,6 +82,7 @@ class AVSessionUtils {
         updateTime: new Date().getTime()
       }
     };
+
     (await this.session).setAVPlaybackState(playbackState)
   }
 

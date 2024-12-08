@@ -78,12 +78,10 @@ export struct SongSheet {
           if(!this.isPlayerLoading) {
             this.isPlayerLoading = true
             this.isShowSheet = !this.isShowSheet
-            await playMusicByUrl(this.song,this.artists,this.picUrl,this.isValidCookie).then(() => {
-              setTimeout(() => {
-                PlayQueueUtils.queueAdd(1,this.song,this.artists,'')
-                PlayQueueUtils.setIndex(PlayQueueUtils.currentQueueIndex + 1)
-                this.isPlayerLoading = false
-              }, 100)
+            playMusicByUrl(this.song,this.artists,this.picUrl,this.isValidCookie).then(() => {
+              PlayQueueUtils.queueAdd(1,this.song,this.artists,'')
+              PlayQueueUtils.setIndex(PlayQueueUtils.currentQueueIndex + 1)
+              this.isPlayerLoading = false
             })
           } else { ToastUtil.showToast('操作过于频繁') }
         })

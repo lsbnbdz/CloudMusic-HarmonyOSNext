@@ -85,8 +85,8 @@ class AudioPlayUtils {
       if(state == 'playing') { AppStorage.setOrCreate('player-isplaying', true); AVSessionUtils.playState() }
       if(state == 'paused') { AppStorage.setOrCreate('player-ispaused', true); AVSessionUtils.pauseState() }
       if(state == 'idle') { AVSessionUtils.deactive() }
-      if(state == 'stopped') { AppStorage.setOrCreate('player-ispaused', true); ContinuousTask.startTask(); playNext() }
-      if(state == 'completed') { AppStorage.setOrCreate('player-ispaused', true); ContinuousTask.startTask(); playNext() }
+      if(state == 'stopped') { AppStorage.setOrCreate('player-ispaused', true); ContinuousTask.stopTask() }
+      if(state == 'completed') { AppStorage.setOrCreate('player-ispaused', true); ContinuousTask.stopTask(); playNext() }
     })
   }
 }

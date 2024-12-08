@@ -27,7 +27,6 @@ export async function playMusicByUrl(song:Song,artists:string,picUrl:string,isLo
       AppStorage.setOrCreate('player-artists',artists)
       AppStorage.setOrCreate('player-picurl',picUrl)
       await AudioPlayUtils.mPlayer.reset()
-      await ContinuousTask.stopTask()
       ContinuousTask.startTask()
       AVSessionUtils.setMetadata(song,artists,picUrl)
 
@@ -64,7 +63,6 @@ export async function playMusicWithFile(fileName:string) {
       AppStorage.setOrCreate('player-artists', song.artists[0].name)
       AppStorage.setOrCreate('player-picurl',`${$r('app.media.ic_public_music')}`)
       await AudioPlayUtils.mPlayer.reset()
-      await ContinuousTask.stopTask()
       ContinuousTask.startTask()
       AVSessionUtils.setMetadata(song,song.artists[0].name,'')
 
@@ -102,11 +100,13 @@ export async function resumeMusic() {
 export async function playQueue(index:number) {
   const queue = PlayQueueUtils.getQueue()
   const playqueue = queue[index]
-  const picUrl = await getSongPicUrl(playqueue.song)
   const isLogged:boolean | undefined = AppStorage.get('isValidCookie')
   if(playqueue.playmode == 0) { // Play with file
-
+    playMusicWithFile(playqueue.fileName).then(() => {
+      PlayQueueUtils.setIndex(index)
+    })
   } else { // Play with url
+    const picUrl = await getSongPicUrl(playqueue.song)
     playMusicByUrl(playqueue.song, playqueue.artists, picUrl, isLogged ? true : false).then(() => {
       PlayQueueUtils.setIndex(index)
     })

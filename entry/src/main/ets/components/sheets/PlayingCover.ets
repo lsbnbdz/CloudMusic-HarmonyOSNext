@@ -1,8 +1,8 @@
 import Constants from "../../common/constants/Constants"
 import { Song, SongClass } from "../../common/entities/SongsResult"
 import { changeDuration } from "../../common/functions/functions"
-import { pauseMusic, playNext, playPre, resumeMusic } from "../../common/functions/playerControl"
-import { CycleModeButton } from "../buttons/CycleModeButton"
+import { pauseMusic, playNext, playPre, resumeMusic, seekMusic } from "../../common/functions/playerControl"
+import { CycleModeButton } from "../buttons/LoopModeButton"
 import { PlayQueueButton } from "../buttons/PlayQueueButton"
 import { DownloadDialog } from "../dialog/DownloadDialog"
 
@@ -23,6 +23,9 @@ export struct PlayingCover {
   @StorageProp('set-playQuality') playQuality:number = 0
   @Link isShow: boolean
   @State qualitySelected:number = 3
+  @State sliderThickness: number = 10
+  @State isMovingSlider: boolean = false
+  @State sliderMovingTime: number = 0
 
   artists1:string = ''
   song1:Song = SongClass
@@ -90,13 +93,55 @@ export struct PlayingCover {
          Column({ space: 5 }) {
            Row() {
              Text(`${changeDuration(this.time)}`).fontSize(16).layoutWeight(1).textAlign(TextAlign.Start)
+             if(this.isMovingSlider) {
+               Column() {
+                 Text(`${changeDuration(this.sliderMovingTime)}`)
+                   .fontColor(Color.White)
+                   .backgroundColor(Color.Gray)
+                   .borderRadius(15)
+                   .fontSize(16)
+                   .textAlign(TextAlign.Center)
+                   .padding({ left: 10, right: 10 })
+               }
+               .layoutWeight(1)
+             }
              Text(`${changeDuration(this.song.duration)}`).fontSize(16).layoutWeight(1).textAlign(TextAlign.End)
            }
-           .width('80%')
+           .width('90%')
            .justifyContent(FlexAlign.SpaceAround)
 
-           Progress({ value: this.time, total: this.song.duration })
-             .width('80%')
+           // Progress({ value: this.time, total: this.song.duration })
+           //   .width('90%')
+
+           Slider({
+             value: this.time,
+             max: this.song.duration,
+             style: SliderStyle.InSet
+           })
+             .blockColor(Color.White)
+             .trackColor(Color.Gray)
+             .trackThickness(this.sliderThickness)
+             .selectedColor(Color.White)
+             .showSteps(false)
+             .showTips(false)
+             .animation({
+               duration: 600,
+               curve: Curve.LinearOutSlowIn,
+             })
+             .onChange((value: number, mode: SliderChangeMode) => {
+               if(mode == SliderChangeMode.Begin) {
+                 this.isMovingSlider = true
+                 this.sliderThickness = 20
+               }
+               else if(mode == SliderChangeMode.Moving) {
+                 this.sliderMovingTime = value
+               } else if(mode == SliderChangeMode.End) {
+                 this.time = value
+                 this.isMovingSlider = false
+                 this.sliderThickness = 10
+                 seekMusic(value)
+               }
+             })
          }
 
          Row({ space: 20 }) {

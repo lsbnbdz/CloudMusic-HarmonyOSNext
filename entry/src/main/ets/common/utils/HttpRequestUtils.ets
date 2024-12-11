@@ -1,6 +1,6 @@
 import { http } from "@kit.NetworkKit"
 import { BusinessError } from "@kit.BasicServicesKit"
-import { DialogUtil, LogUtil } from "@pura/harmony-utils"
+import { LogUtil, ToastUtil } from "@pura/harmony-utils"
 import Constants from "../constants/Constants"
 import { PlayListsResult } from "../../api/playListApi"
 import { uint8ArrayToString } from "../functions/functions"
@@ -32,7 +32,7 @@ export class HttpRequest {
       httpRequest.request(
         this.url,
         {
-          method: http.RequestMethod.POST,
+          method: http.RequestMethod.GET,
           header: {
             'Content-Type': 'application/json',
             'cookie': useCookie ? cookie : '',
@@ -55,7 +55,7 @@ export class HttpRequest {
           httpRequest.destroy()
           reject(err)  // 出现错误时reject
           setTimeout(() => {
-            DialogUtil.showConfirmDialog({ title: '网络请求出错', message: Constants.HTTP_ERROR_MSG})
+            ToastUtil.showToast(`${Constants.HTTP_ERROR_MSG}`, { duration: 4000 })
           },1000)
         }
       })
@@ -99,7 +99,7 @@ export class HttpRequest {
           resolve(data)
         } catch (err) {
           setTimeout(() => {
-            DialogUtil.showConfirmDialog({ title: '网络请求出错', message: Constants.HTTP_ERROR_MSG})
+            ToastUtil.showToast(`${Constants.HTTP_ERROR_MSG}`, { duration: 4000 })
           },1000)
           reject(err)
         }
@@ -159,7 +159,7 @@ export class HttpRequest {
           httpRequest.destroy()
           reject(err)  // 出现错误时reject
           setTimeout(() => {
-            DialogUtil.showConfirmDialog({ title: '网络请求出错', message: Constants.HTTP_ERROR_MSG})
+            ToastUtil.showToast(`${Constants.HTTP_ERROR_MSG}`, { duration: 4000 })
           },1000)
         }
       })

@@ -10,8 +10,8 @@ import { promptAction } from "@kit.ArkUI"
 export struct SongCard {
   @State hasAnimation:boolean = false
   @State isShowSheet:boolean = false
-  @State startWidth:string = '100%'
-
+  @State startHeight:number = 60
+  @State startOpacity:number = 1
   @State picUrl:string = ''
   song:Song = SongClass
   sid:number = -1
@@ -19,7 +19,7 @@ export struct SongCard {
 
 
   async aboutToAppear(): Promise<void> {
-    if(this.hasAnimation) { this.startWidth = '30%'}
+    if(this.hasAnimation) { this.startHeight = 120; this.startOpacity = 0.1}
     const artistsStr = await getArtists(this.song.artists)
     this.artists = artistsStr
 
@@ -49,8 +49,12 @@ export struct SongCard {
           promptAction.showToast({ message: '成功添加至播放列表' })
         })
       }
-      .width(this.startWidth)
-      .onAppear( () => { this.startWidth = '100%' })
+      .height(this.startHeight)
+      .opacity(this.startOpacity)
+      .onAppear( () => {
+        this.startHeight = 60
+        this.startOpacity = 1
+      })
       .animation({
         duration: 600,
         curve: Curve.LinearOutSlowIn,

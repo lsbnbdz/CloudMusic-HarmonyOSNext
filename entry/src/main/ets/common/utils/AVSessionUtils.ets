@@ -1,7 +1,7 @@
 import { avSession } from "@kit.AVSessionKit";
 import { AppUtil, LogUtil } from "@pura/harmony-utils";
 import { Song } from "../entities/SongsResult";
-import { pauseMusic, playNext, playPre, resumeMusic } from "../functions/playerControl";
+import { changeCycleMode, pauseMusic, playNext, playPre, resumeMusic, seekMusic } from "../functions/playerControl";
 
 /**
  * AVSession 播控中心工具类
@@ -12,9 +12,19 @@ class AVSessionUtils {
   context = AppUtil.getContext()
   session = this.createSession()
 
+  private isActivating = false
+  private cycleMode: number = 0
+
   async createSession(): Promise<avSession.AVSession> {
+    if(this.session) {
+      return this.session
+    }
     let session = await avSession.createAVSession(this.context, 'playSession', 'audio')
     try {
+      let cycleMode: number | undefined = AppStorage.get('cycleMode')
+      if(cycleMode) this.cycleMode = this.cycleMode
+      else this.cycleMode = 0
+
       session.on('play', () => {
         LogUtil.info(TAG + '播控中心点击事件: Play')
         resumeMusic()
@@ -31,6 +41,19 @@ class AVSessionUtils {
         LogUtil.info(TAG + '播控中心点击事件: PlayPrevious')
         playPre()
       });
+      session.on('seek', (time) => {
+        seekMusic(time)
+      })
+      session.on('setLoopMode', (loopMode) => {
+        if(loopMode == 0) { changeCycleMode(1) }
+        else if(loopMode == 1) { changeCycleMode(2) }
+        else if(loopMode == 2) { changeCycleMode(3) }
+        else { changeCycleMode(0) }
+
+      })
+
+
+
     } catch (e) {
       LogUtil.error(TAG + '创建session失败 / create session error: ' + JSON.stringify(e))
     } finally {
@@ -60,23 +83,36 @@ class AVSessionUtils {
    * 启用
    */
   async activate() {
-    (await this.session).activate()
+    if (this.isActivating) return; // 防止重复调用
+    this.isActivating = true;
+    try {
+      await (await this.session).activate();
+    } finally {
+      this.isActivating = false;
+    }
   }
 
   /**
    * 停用
    */
   async deactive() {
-    (await this.session).deactivate()
+    if (this.isActivating) return; // 等待激活完成
+    try {
+      await (await this.session).deactivate();
+    } catch (e) {
+      LogUtil.error(TAG + '停用失败: ' + e);
+    }
   }
 
   /**
    * 设置为播放状态
    */
   async playState() {
+    let loopMode = await getLoopMode()
     let time = await getPlayTime()
     let playbackState: avSession.AVPlaybackState = {
       state: avSession.PlaybackState.PLAYBACK_STATE_PLAY,
+      loopMode: loopMode,
       position: {
         elapsedTime: time,
         updateTime: new Date().getTime()
@@ -127,6 +163,15 @@ async function getPlayTime(): Promise<number> {
     resTime = elapsedTime
   }
   return resTime
+}
+
+async function getLoopMode(): Promise<number> {
+  let loopMode = 0
+  let cycleMode: number | undefined = await AppStorage.get('cycleMode')
+  if(cycleMode) {
+    loopMode = cycleMode
+  }
+  return loopMode
 }
 
 const avSessionUtils = new AVSessionUtils()

@@ -2,9 +2,13 @@
   "app": {
     "bundleName": "cc.chenlvin.cloudmusic",
     "vendor": "chenlvin",
-    "versionCode": 116,
-    "versionName": "0.9.8",
+    "versionCode": 118,
+    "versionName": "0.9.9",
     "icon": "$media:startIcon",
-    "label": "$string:app_name"
+    "label": "$string:app_name",
+    "multiAppMode": {
+      "multiAppModeType": "appClone",
+      "maxCount": 2
+    }
   }
 }

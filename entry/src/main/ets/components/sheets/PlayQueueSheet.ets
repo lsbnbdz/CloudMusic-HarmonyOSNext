@@ -17,7 +17,10 @@ export struct PlayQueueSheet {
   build() {
     Column({ space: 10 }) {
       Row() {
-        Text('播放列表').fontSize(20).fontColor(Color.Gray).fontWeight(FontWeight.Bold)
+        Text() {
+          Span('播放列表').fontSize(20).fontColor(Color.Gray).fontWeight(FontWeight.Bold)
+          Span(`  (${PlayQueueUtils.getQueueLength()})`).fontSize(16).fontColor(Color.Gray)
+        }
         Button({ type: ButtonType.Circle }) {
           Image($r('app.media.ic_public_delete_filled')).width(25).fillColor(Color.Gray)
         }

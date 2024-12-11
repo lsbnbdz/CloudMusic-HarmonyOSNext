@@ -28,6 +28,23 @@ class FileUtils {
     return list
   }
 
+  async accessLocalFile(fileName: string): Promise<string> {
+    const fileUrl_flac = this.filesDir + `/${fileName}.flac`
+    const fileUrl_mp3 = this.filesDir + `/${fileName}.mp3`
+
+    if(await FileUtil.access(fileUrl_flac)) {
+      let file = await fileIo.open(fileUrl_flac)
+      let fdPath = 'fd://' + file.fd
+      return fdPath
+    } else if(await FileUtil.access(fileUrl_mp3)) {
+      let file = await fileIo.open(fileUrl_flac)
+      let fdPath = 'fd://' + file.fd
+      return fdPath
+    } else {
+      return ''
+    }
+  }
+
   async getCacheName(): Promise<Array<string>> {
     let list = await fileIo.listFile((this.cacheDir))
     return list

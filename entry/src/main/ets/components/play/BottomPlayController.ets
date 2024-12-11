@@ -21,7 +21,20 @@ export struct BottomPlayController {
   @StorageProp('player-picurl') picUrl:string = ''
   @StorageProp('player-time') time:number = 0
 
+  @State componentOpacity:number = 0
   @State isShow: boolean = false
+
+  aboutToAppear(): void {
+    setTimeout(() => {
+      this.componentOpacity = 0.8
+    },100)
+  }
+
+  aboutToDisappear(): void {
+    setTimeout(() => {
+      this.componentOpacity = 0
+    },100)
+  }
 
   build() {
     Row({ space: 10 }) {
@@ -60,9 +73,12 @@ export struct BottomPlayController {
     .width('100%')
     .borderRadius(20)
     .backgroundColor($r('app.color.main'))
-    .opacity(0.8)
+    .opacity(this.componentOpacity)
     .height(80)
-
+    .animation({
+      duration: 300,
+      curve: Curve.Linear,
+    })
     .bindContentCover(this.isShow, this.Cover(), {
       modalTransition: ModalTransition.DEFAULT,
       backgroundColor: $r('app.color.background'),

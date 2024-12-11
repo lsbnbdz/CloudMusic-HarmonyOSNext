@@ -15,6 +15,7 @@ export async function getPubCookie() {
     await request.Request().then((data) => {
       let pubCookie: string = data.result["data"]["cookie"]
       AppStorage.setOrCreate('pubCookie', pubCookie)
+      LogUtil.info('Get Public Cookie: ' + pubCookie)
     })
   } catch (e) {
     LogUtil.error('获取公共Cookie getPubCookie Error: ' + e.message())

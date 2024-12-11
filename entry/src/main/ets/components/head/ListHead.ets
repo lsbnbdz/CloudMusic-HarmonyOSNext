@@ -7,19 +7,27 @@ import { PlayController } from "../play/PlayController";
 export struct ListHead {
   title:string = ''
 
+  @BuilderParam slot: () => void = this.Slot
+
   build() {
     Row({ space: 20 }) {
       BackButton()
       Text(`${this.title}`).fontSize(18).fontColor($r('app.color.reverse')).maxLines(1)
-        .textOverflow({ overflow: TextOverflow.Ellipsis }).layoutWeight(1).textAlign(TextAlign.Center)
-      PlayController()
+        .textOverflow({ overflow: TextOverflow.Ellipsis })
+        .layoutWeight(1)
+        .textAlign(TextAlign.Center)
+      this.slot()
     }
-    .justifyContent(FlexAlign.SpaceBetween)
     .padding({ left: 10, right: 10 })
     .width('100%')
     .backgroundColor(Color.Transparent)
     .onClick(() => {
       ToastUtil.showToast(`${this.title}`)
     })
+  }
+
+  @Builder
+  Slot() {
+    CommonCircleButton()
   }
 }

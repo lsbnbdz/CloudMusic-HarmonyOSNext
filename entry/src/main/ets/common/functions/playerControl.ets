@@ -22,7 +22,6 @@ export async function playMusicByUrl(song:Song,artists:string,picUrl:string,isLo
   try {
     const quality:number | undefined = await AppStorage.get('set-playQuality')
     const songPlay = await getSongUrl(song.id, quality ? Constants.QUALITY[quality] : "standard", isLogged)
-
     if(songPlay.data[0].url) {
       AppStorage.setOrCreate('player-mode', 1)
       AppStorage.setOrCreate('player-ispaused',false)
@@ -30,9 +29,14 @@ export async function playMusicByUrl(song:Song,artists:string,picUrl:string,isLo
       AppStorage.setOrCreate('player-song',song)
       AppStorage.setOrCreate('player-artists',artists)
       AppStorage.setOrCreate('player-picurl',picUrl)
-      await AVSessionUtils.deactive()
       await ContinuousTask.stopTask()
-      await AudioPlayUtils.setUrl(songPlay.data[0].url)
+      // 是否存在本地文件
+      let localPath = await FileUtils.accessLocalFile(`${artists} - ${song.name}`)
+      if(localPath != '') {
+        ToastUtil.showToast('找到本地文件，优先播放本地文件')
+        await AudioPlayUtils.setUrl(localPath)
+      }
+      else { await AudioPlayUtils.setUrl(songPlay.data[0].url) }
       AVSessionUtils.setMetadata(song,artists,picUrl)
       ContinuousTask.startTask().then(() => {
         AudioPlayUtils.play().then(() => {
@@ -70,7 +74,6 @@ export async function playMusicWithFile(fileName:string) {
       AppStorage.setOrCreate('player-song', song)
       AppStorage.setOrCreate('player-artists', song.artists[0].name)
       AppStorage.setOrCreate('player-picurl',`$r('app.media.ic_public_music')`)
-      await AVSessionUtils.deactive()
       await ContinuousTask.stopTask()
       await AudioPlayUtils.setUrl(fdPath)
       AVSessionUtils.setMetadata(song,song.artists[0].name,'')
@@ -108,6 +111,10 @@ export async function resumeMusic() {
   })
 }
 
+export async function seekMusic(time: number) {
+  await AudioPlayUtils.seek(time)
+}
+
 export async function playQueue(index:number) {
   const queue = PlayQueueUtils.getQueue()
   const playqueue = queue[index]
@@ -126,6 +133,7 @@ export async function playQueue(index:number) {
 
 export async function playPre() {
   let isValidCookie:boolean | undefined = await AppStorage.get('isValidCookie')
+  let cycleMode = await getCycleMode()
   if(PlayQueueUtils.pre()) {
     const res = PlayQueueUtils.getQueueElement(PlayQueueUtils.currentQueueIndex)
     if(res.playmode == 0) {
@@ -134,7 +142,10 @@ export async function playPre() {
       let picUrl = await getSongPicUrl(res.song)
       playMusicByUrl(res.song, res.artists, picUrl, isValidCookie?isValidCookie:false)
     }
-  } else { ToastUtil.showToast('没有上一首了~') }
+  } else {
+    if(cycleMode == 2) { playQueue(PlayQueueUtils.getQueueLength() - 1) }
+    else { ToastUtil.showToast('没有上一首了~') }
+  }
 }
 
 /**
@@ -158,7 +169,7 @@ export async function playNext() {
       playMusicByUrl(res.song, res.artists, picUrl, isValidCookie?isValidCookie:false)
     }
   } else {
-    if(cycleMode == 1) { playQueue(0) }
+    if(cycleMode == 2) { playQueue(0) }
     else { ToastUtil.showToast('没有下一首了~') }
   }
 }
@@ -169,11 +180,11 @@ export async function playNext() {
 export async function completeDo() {
   let cycleMode = await getCycleMode()
   // 顺序播放 & 顺序循环
-  if(cycleMode == 0 || cycleMode == 1) {
+  if(cycleMode == 0 || cycleMode == 2) {
     playNext()
   }
   // 单曲循环
-  else if(cycleMode == 2) {
+  else if(cycleMode == 1) {
     let currentQueueIndex = PlayQueueUtils.currentQueueIndex
     playQueue(currentQueueIndex)
   }
@@ -187,7 +198,7 @@ export async function completeDo() {
 
 /**
  * 设置循环模式
- * 0-顺序播放, 1-顺序循环, 2-单曲循环, 3-随机播放
+ * 0-顺序播放, 1-单曲循环, 2-顺序循环, 3-随机播放
  * @param mode
  */
 export async function changeCycleMode(mode: number) {
@@ -197,6 +208,10 @@ export async function changeCycleMode(mode: number) {
   })
 }
 
+/**
+ * 获取循环模式
+ * @returns number-mode
+ */
 export async function getCycleMode(): Promise<number> {
   const mode: number | undefined = await AppStorage.get('cycleMode')
   if(mode) {

@@ -4,9 +4,12 @@ import { SongCard } from '../components/main/SongCard'
 import { playList } from '../common/entities/PlayList'
 import { ListHead } from '../components/head/ListHead'
 import { SpinKit, SpinType } from '@pura/spinkit'
-import { LogUtil } from '@pura/harmony-utils'
-import { getPlayListSongs } from '../api/playListApi'
+import { LogUtil, ToastUtil } from '@pura/harmony-utils'
+import { getPlayListSongs, putPlayListInQueue } from '../api/playListApi'
 import { BottomPlayController } from '../components/play/BottomPlayController'
+import { CommonCircleButton } from '../components/buttons/CircleButton'
+import Constants from '../common/constants/Constants'
+import { playQueue } from '../common/functions/playerControl'
 
 /**
  * 歌单二级页面
@@ -28,6 +31,7 @@ struct PlayListPage {
   @State hasLoaded: boolean = false // 判定是否已加载 避免重复加载
   @State isLoading: boolean = true
   @State isLoadingMore: boolean = false
+  @State loadingPlayList:boolean = false
 
   private currentOffset: number = 0 // 歌曲偏移量
   hasAnimation:boolean | undefined = false
@@ -66,14 +70,37 @@ struct PlayListPage {
 
   build() {
     Stack({ alignContent: Alignment.Bottom }) {
-      if (this.isLoading == true) {
+      if (this.isLoading) {
         Column() {
           SpinKit({ spinType: SpinType.spinO, spinSize: 60, spinColor: Color.Gray }).width(60)
         }.height('100%').width('100%').justifyContent(FlexAlign.Center)
       } else {
         Column({ space: 10 }) {
-          ListHead({ title: this.playList.name })
+          ListHead({
+            title: this.playList.name,
+            slot: this.HeadSlot
+          })
+
           List() {
+            ListItem() {
+              Button() {
+                Row({ space: 5 }) {
+                  Image($r('app.media.ic_play_fill')).width(15)
+                  Text('播放全部').fontSize(15)
+                }
+              }
+              .type(ButtonType.Normal)
+              .backgroundColor(Color.Transparent)
+              .borderRadius(15)
+              .onClick(async () => {
+                this.loadingPlayList = true
+                await putPlayListInQueue(this.playList.id)
+                this.loadingPlayList = false
+                playQueue(0)
+              })
+            }
+            .padding({ left: 20, bottom: 10 })
+
             ForEach(this.list, (item: Song, index) => {
               ListItem() {
                 SongCard({ song: item, sid: index, hasAnimation: this.hasAnimation })
@@ -111,13 +138,38 @@ struct PlayListPage {
         }
         .height('100%')
       }
+
       BottomPlayController()
       .padding({ left: 10, right: 10, bottom: px2vp(this.bottomRectHeight)})
       .backgroundColor(Color.Transparent)
+
+      if(this.loadingPlayList) {
+        Column() {
+          Column({ space: 10 }) {
+            SpinKit({ spinType: SpinType.spinO, spinSize: 60, spinColor: Color.Gray }).width(60)
+            Text('正在获取完整歌曲列表')
+          }
+          .padding(30)
+          .borderRadius(15)
+          .backgroundColor($r('app.color.main'))
+        }
+        .height('100%')
+        .width('100%')
+        .justifyContent(FlexAlign.Center)
+        .padding({ bottom: px2vp(this.topRectHeight) })
+      }
     }
     .width('100%')
     .height('100%')
     .padding({ top: px2vp(this.topRectHeight) })
     .backgroundColor($r('app.color.background'));
+  }
+
+  @Builder
+  HeadSlot() {
+    CommonCircleButton({ ButtonImageName: 'ic_public_more_filled' })
+      .onClick(() => {
+        ToastUtil.showToast(Constants.DEVELOPING)
+      })
   }
 }

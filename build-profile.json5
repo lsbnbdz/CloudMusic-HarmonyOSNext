@@ -1,37 +1,37 @@
 {
   "app": {
     "signingConfigs": [
-      //      {
-      //        "name": "default",
-      //        "type": "HarmonyOS",
-      //        "material": {
-      //          "certpath": "D:/Code/Key/CloudMusic.cer",
-      //          "storePassword": "0000001B1C8F3A1C527B1C85C07C0CAC0F0FF17871781F00EC747E1B6A6848F94E87934471738BFEB83181",
-      //          "keyAlias": "test",
-      //          "keyPassword": "0000001B6BB835CCF69F4105FCA1EB995443D9BAB99C30A640D431DAB34FD160AB86CBA7E051EE87BDC934",
-      //          "profile": "D:/Code/Key/cloudmusicRelease.p7b",
-      //          "signAlg": "SHA256withECDSA",
-      //          "storeFile": "D:/Code/Key/CloudMusic.p12"
-      //        }
-      //      },
+      {
+        "name": "default",
+        "type": "HarmonyOS",
+        "material": {
+          "certpath": "D:/Code/Key/CloudMusic.cer",
+          "storePassword": "0000001B1C8F3A1C527B1C85C07C0CAC0F0FF17871781F00EC747E1B6A6848F94E87934471738BFEB83181",
+          "keyAlias": "test",
+          "keyPassword": "0000001B6BB835CCF69F4105FCA1EB995443D9BAB99C30A640D431DAB34FD160AB86CBA7E051EE87BDC934",
+          "profile": "D:/Code/Key/cloudmusicRelease.p7b",
+          "signAlg": "SHA256withECDSA",
+          "storeFile": "D:/Code/Key/CloudMusic.p12"
+        }
+      },
       {
         "name": "cc",
         "type": "HarmonyOS",
         "material": {
-          "certpath": "C:\\Users\\zcy01\\.ohos\\config\\cc_CloudMusic-HMOS_j1UsVXpZ2vHK-hwnEAHgdV0Kw-IAtSJW5SinBp5I6ME=.cer",
-          "storePassword": "0000001B0FCADF03C4DF3448D3A7CA396165394CC4657A71B5107176B375F1245A7FE55046257994BD11DE",
+          "certpath": "C:\\Users\\Zhou Chenlvin\\.ohos\\config\\cc_CloudMusic-HMOS_49Cx5ZkdoyjQADe6JwU6Rz-R50i5AkaXO1mOEwbzolc=.cer",
+          "storePassword": "0000001B44D967AFA1D60A102E63C10376EEA03F32CB4B04FA7B59025EC4EC96FE433710A42E33A7ABB138",
           "keyAlias": "debugKey",
-          "keyPassword": "0000001BD41022422A0A0ECECAE3980786DEE98A98E446F582D025EFB31B3A5E5C7BF9495F3D1DFA3CBEFB",
-          "profile": "C:\\Users\\zcy01\\.ohos\\config\\cc_CloudMusic-HMOS_j1UsVXpZ2vHK-hwnEAHgdV0Kw-IAtSJW5SinBp5I6ME=.p7b",
+          "keyPassword": "0000001B229D3322308B53803D660E0025A4C68C0F77CA1A26C8C2736530F1BD222F06E7934332BBEEB9CF",
+          "profile": "C:\\Users\\Zhou Chenlvin\\.ohos\\config\\cc_CloudMusic-HMOS_49Cx5ZkdoyjQADe6JwU6Rz-R50i5AkaXO1mOEwbzolc=.p7b",
           "signAlg": "SHA256withECDSA",
-          "storeFile": "C:\\Users\\zcy01\\.ohos\\config\\cc_CloudMusic-HMOS_j1UsVXpZ2vHK-hwnEAHgdV0Kw-IAtSJW5SinBp5I6ME=.p12"
+          "storeFile": "C:\\Users\\Zhou Chenlvin\\.ohos\\config\\cc_CloudMusic-HMOS_49Cx5ZkdoyjQADe6JwU6Rz-R50i5AkaXO1mOEwbzolc=.p12"
         }
       }
     ],
     "products": [
       {
         "name": "default",
-        "signingConfig": "cc",
+        "signingConfig": "default",
         "compatibleSdkVersion": "5.0.1(13)",
         "runtimeOS": "HarmonyOS",
         "buildOption": {

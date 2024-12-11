@@ -31,9 +31,6 @@ export struct SearchComponent {
             })
           } else { ToastUtil.showToast('请输入搜索内容') }
         })
-
-        PlayController()
-
       }
       .borderRadius(20)
       .justifyContent(FlexAlign.Center)

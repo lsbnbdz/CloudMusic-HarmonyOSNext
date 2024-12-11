@@ -56,6 +56,13 @@ class PlayQueueUtils {
     }
   }
 
+  async queueAdd_array(queue:Array<PlayQueue>) {
+    this.queue = this.queue.concat(queue)
+    AppStorage.setOrCreate('PlayQueue',this.queue)
+    await PreferencesUtils.putPreferenceValue(pref, 'queue', this.queue)
+    LogUtil.info(TAG + '添加成功 add queue element success')
+    LogUtil.info(TAG + 'now queue: ' + JSON.stringify(this.queue))
+  }
   /**
    * 从播放列表中删除指定位置歌曲
    */

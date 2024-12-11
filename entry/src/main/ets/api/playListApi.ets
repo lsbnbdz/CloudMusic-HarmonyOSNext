@@ -2,10 +2,12 @@ import { LogUtil } from "@pura/harmony-utils"
 import Constants from "../common/constants/Constants"
 import { playList } from "../common/entities/PlayList"
 import { PlayListSongs } from "../common/entities/PlayListSongs"
-import { Song } from "../common/entities/SongsResult"
+import { PlayQueue } from "../common/entities/PlayQueue"
+import { Song, SongClass } from "../common/entities/SongsResult"
 import { User, UserClass } from "../common/entities/User"
-import { getApiUrl } from "../common/functions/functions"
+import { getApiUrl, getArtists } from "../common/functions/functions"
 import { HttpRequest } from "../common/utils/HttpRequestUtils"
+import PlayQueueUtils from "../common/utils/PlayQueueUtils"
 import PreferencesUtils from "../common/utils/PreferencesUtils"
 
 /**
@@ -80,4 +82,30 @@ export async function getPlayListSongs(listId:number, offset:number): Promise<Ar
   })
   console.log('getPlayListSongs: ' + JSON.stringify(list))
   return list;
+}
+
+export async function putPlayListInQueue(listId:number): Promise<void> {
+  const rootUrl = await getApiUrl()
+  const url:string = `${rootUrl}/playlist/track/all?id=${listId}`
+	const request = new HttpRequest(url)
+  let queue:Array<PlayQueue> = []
+  let data = await request.RequestInStream()
+  const dataResult:PlayListSongs = data.result as PlayListSongs
+  PlayQueueUtils.cleanQueue()
+  for(let item of dataResult.songs) {
+    let artists = await getArtists(item.ar)
+    let tempSong:Song = {
+      id: item.id,
+      name: item.name,
+      artists: item.ar,
+      duration: item.dt
+    }
+    queue.push({
+      playmode: 1,
+      song: tempSong,
+      artists: artists,
+      fileName: ''
+    })
+  }
+  await PlayQueueUtils.queueAdd_array(queue)
 }

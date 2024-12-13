@@ -3,6 +3,7 @@ import { playList } from "../../common/entities/PlayList"
 import { PlayListCard } from "./PlayListCard"
 import { SpinKit, SpinType } from '@pura/spinkit'
 import { LogUtil } from "@pura/harmony-utils";
+import { SearchComponent } from "./SearchComponent";
 
 @Component
 export struct PlayLists {
@@ -49,8 +50,10 @@ export struct PlayLists {
       }
       else {
         List({ space: 10 }) {
-          ListItem()
-            .height(40)
+
+          SearchComponent()
+            .padding({ left: 20, right: 20 })
+
           ForEach(this.playLists, (item: playList, index) => {
             ListItem() {
               PlayListCard({playList: item})

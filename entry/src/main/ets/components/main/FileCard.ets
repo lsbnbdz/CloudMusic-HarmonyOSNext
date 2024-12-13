@@ -1,6 +1,7 @@
 /**
  * 文件卡片
  */
+import { Song, SongClass } from "../../common/entities/SongsResult"
 import { fetchMetadata, fetchSongInfo } from "../../common/functions/functions"
 import { playMusicWithFile } from "../../common/functions/playerControl"
 import FileUtils from "../../common/utils/FileUtils"
@@ -9,15 +10,20 @@ import PlayQueueUtils from "../../common/utils/PlayQueueUtils"
 @Component
 export struct FileCard {
   @State fileName: string = ''
+  @State song:Song = SongClass
+
+  async aboutToAppear(): Promise<void> {
+    this.song = await fetchSongInfo(this.fileName)
+  }
+
   build() {
     Button() {
-      Text(this.fileName)
-        .width('100%')
-        .maxLines(2)
-        .textOverflow({ overflow: TextOverflow.Ellipsis })
-        .fontSize(15)
-        .fontColor($r('app.color.reverse'))
-        .padding({ left: 10, right: 10 })
+      Column({ space: 5 }) {
+        Text(this.song.name)
+          .textStyle(16)
+        Text(this.song.artists[0].name)
+          .textStyle(12)
+      }
     }
     .type(ButtonType.Normal)
     .backgroundColor($r('app.color.main'))
@@ -51,4 +57,13 @@ export struct FileCard {
         })
     }
   }
+}
+
+@Extend(Text) function textStyle(size: number) {
+  .width('100%')
+  .maxLines(1)
+  .textOverflow({ overflow: TextOverflow.Ellipsis })
+  .fontSize(size)
+  .fontColor($r('app.color.reverse'))
+  .padding({ left: 10, right: 10 })
 }

@@ -7,6 +7,7 @@ import { picker } from '@kit.CoreFileKit'
 import File from '@system.file'
 import { media } from '@kit.MediaKit'
 import { BusinessError } from '@kit.BasicServicesKit'
+import { sanitizeFileName } from '../functions/functions'
 
 /**
  * 文件管理
@@ -29,8 +30,9 @@ class FileUtils {
   }
 
   async accessLocalFile(fileName: string): Promise<string> {
-    const fileUrl_flac = this.filesDir + `/${fileName}.flac`
-    const fileUrl_mp3 = this.filesDir + `/${fileName}.mp3`
+    const fileNameFomatted = sanitizeFileName(fileName)
+    const fileUrl_flac = this.filesDir + `/${fileNameFomatted}.flac`
+    const fileUrl_mp3 = this.filesDir + `/${fileNameFomatted}.mp3`
 
     if(await FileUtil.access(fileUrl_flac)) {
       let file = await fileIo.open(fileUrl_flac)

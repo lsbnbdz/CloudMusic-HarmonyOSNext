@@ -31,8 +31,6 @@ struct Index {
             .height('100%')
             .layoutWeight(1)
           }
-          SearchComponent()
-            .padding({ top: 5, left: 10, right: 10 })
         }
       }
       BottomPlayController()

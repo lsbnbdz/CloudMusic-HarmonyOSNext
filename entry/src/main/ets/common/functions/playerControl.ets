@@ -33,7 +33,7 @@ export async function playMusicByUrl(song:Song,artists:string,picUrl:string,isLo
       // 是否存在本地文件
       let localPath = await FileUtils.accessLocalFile(`${artists} - ${song.name}`)
       if(localPath != '') {
-        ToastUtil.showToast('找到本地文件，优先播放本地文件')
+        promptAction.showToast({ message: '找到本地文件，将优先播放本地文件'})
         await AudioPlayUtils.setUrl(localPath)
       }
       else { await AudioPlayUtils.setUrl(songPlay.data[0].url) }

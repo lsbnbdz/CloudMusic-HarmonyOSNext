@@ -1,6 +1,5 @@
-import { promptAction, router } from "@kit.ArkUI"
+import { router } from "@kit.ArkUI"
 import { ToastUtil } from "@pura/harmony-utils"
-import { PlayController } from "../play/PlayController"
 
 @Component
 export struct SearchComponent {
@@ -8,34 +7,36 @@ export struct SearchComponent {
 
   build() {
     Column() {
-      // 搜索框和按钮
-      Row({ space: 10 }) {
-        // 搜索框
-        TextInput({ placeholder: '请输入搜索内容' }).layoutWeight(1).backgroundColor('#ffdbd9d9').height(40).placeholderColor(Color.Gray).fontColor(Color.Black)
-          .onChange((value:string) => {
-            this.searchKeyword = value
-          })
-
-        //搜索按钮
-        Button({type:ButtonType.Circle}) {
-          Image($r('app.media.ic_public_search_filled')).width(20).fillColor(Color.White).margin(10)
-        }
-        .backgroundColor('#ff3587c8')
-        .width(40)
-        .height(40)
+      Search({
+        placeholder: '搜索内容',
+        icon: '/resources/base/media/ic_public_search_filled.svg',
+      })
+        .focusable(false)
         .onClick(() => {
-          if(this.searchKeyword) {
-            router.pushUrl({
-              url: 'pages/SongsListPage',
-              params: { 'searchKeyword': this.searchKeyword }
-            })
-          } else { ToastUtil.showToast('请输入搜索内容') }
+          router.pushUrl({
+            url: 'pages/SongsListPage'
+          })
         })
-      }
-      .borderRadius(20)
-      .justifyContent(FlexAlign.Center)
-      .padding({ left:30, right:30})
     }
-    .backgroundColor(Color.Transparent)
+    .width('100%')
+    .justifyContent(FlexAlign.Center)
+
+    // Column() {
+    //   Row({ space: 10 }) {
+    //     Image($r('app.media.ic_public_search_filled')).width(16).fillColor(Color.Gray)
+    //     Text('搜索内容').fontSize(16).fontColor(Color.Gray)
+    //   }
+    //   .padding({ left: 15, top: 5, bottom: 5 })
+    //   .borderRadius(20)
+    //   .width('100%')
+    //   .height(40)
+    //   .backgroundColor($r('app.color.component_background'))
+    //   .onClick(() => {
+    //     router.pushUrl({
+    //       url: 'pages/SongsListPage',
+    //     })
+    //   })
+    // }
+    // .padding({ top: 10 })
   }
 }

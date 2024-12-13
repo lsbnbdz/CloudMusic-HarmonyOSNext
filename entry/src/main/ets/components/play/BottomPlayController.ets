@@ -64,11 +64,7 @@ export struct BottomPlayController {
         .justifyContent(FlexAlign.SpaceBetween)
       }
     }
-    .onClick(() => {
-      if(this.isPlaying) { this.isShow = true }
-      else { ToastUtil.showToast('暂无播放') }
-    })
-    .backdropBlur(30)
+    .backdropBlur(50)
     .padding({ left:10, right:10 })
     .width('100%')
     .borderRadius(20)
@@ -78,6 +74,10 @@ export struct BottomPlayController {
     .animation({
       duration: 300,
       curve: Curve.Linear,
+    })
+    .onClick(() => {
+      if(this.isPlaying) { this.isShow = true }
+      else { ToastUtil.showToast('暂无播放') }
     })
     .bindContentCover(this.isShow, this.Cover(), {
       modalTransition: ModalTransition.DEFAULT,

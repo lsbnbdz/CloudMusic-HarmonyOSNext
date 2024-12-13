@@ -85,7 +85,7 @@ struct PlayListPage {
             ListItem() {
               Button() {
                 Row({ space: 5 }) {
-                  Image($r('app.media.ic_play_fill')).width(15)
+                  Image($r('app.media.ic_play_fill')).width(15).fillColor(Color.Gray)
                   Text('播放全部').fontSize(15)
                 }
               }
@@ -146,7 +146,7 @@ struct PlayListPage {
       if(this.loadingPlayList) {
         Column() {
           Column({ space: 10 }) {
-            SpinKit({ spinType: SpinType.spinO, spinSize: 60, spinColor: Color.Gray }).width(60)
+            LoadingProgress().width(60)
             Text('正在获取完整歌曲列表')
           }
           .padding(30)

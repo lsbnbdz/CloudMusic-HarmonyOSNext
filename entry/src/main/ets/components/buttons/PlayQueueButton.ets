@@ -7,12 +7,14 @@ export struct PlayQueueButton {
   @StorageProp('currentQueueIndex') currentQueueIndex: number = 0
   @StorageProp('bottomRectHeight') bottomRectHeight: number = 0
   @State isShow: boolean = false
+  @State imgWidth: number = 30
+  @State imgColor: ResourceStr = $r('app.color.reverse')
 
   build() {
     Button(){
       Image($r('app.media.ic_public_view_list_filled'))
-        .width(30)
-        .fillColor($r('app.color.reverse'))
+        .width(this.imgWidth)
+        .fillColor(this.imgColor)
     }
     .backgroundColor(Color.Transparent)
     .onClick(() => { this.isShow = !this.isShow })

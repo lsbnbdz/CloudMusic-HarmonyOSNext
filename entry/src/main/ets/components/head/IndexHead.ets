@@ -40,7 +40,7 @@ export struct IndexHead {
       CommonCircleButton({ ButtonImageName:'ic_public_more_filled', BgColor:'#00cbcbcb'})
         .bindMenu(this.MoreMenu())
     }
-    .padding({ left: 10, right: 10 })
+    .padding({ left: 10, right: 10, bottom: 5 })
     .justifyContent(FlexAlign.SpaceBetween)
     .width('100%')
   }
@@ -49,18 +49,41 @@ export struct IndexHead {
   @Builder
   MoreMenu() {
     Menu() {
-      MenuItem({ startIcon: $r('app.media.ic_public_settings_filled') ,content: "设置" })
+      MenuItem(this.MenuItem($r('app.media.ic_public_search_filled'), '搜索'))
         .contentFontColor($r('app.color.reverse'))
         .onClick(()=>{
-          router.pushUrl({ url:'pages/Settings' })
+          router.pushUrl({ url:'pages/SongsListPage' })
         })
 
-      MenuItem({ startIcon: $r('app.media.ic_public_download_filled'), content: "下载管理" })
+      MenuItem(this.MenuItem($r('app.media.ic_public_download_filled'), '下载'))
         .contentFontColor($r('app.color.reverse'))
         .onClick(()=>{
           router.pushUrl({ url:'pages/DownloadPage' })
         })
+
+      MenuItem(this.MenuItem($r('app.media.ic_public_settings_filled') ,'设置'))
+        .contentFontColor($r('app.color.reverse'))
+        .onClick(()=>{
+          router.pushUrl({ url:'pages/Settings' })
+        })
     }
+  }
+
+  @Builder
+  MenuItem(image:ResourceStr, title:string) {
+    Row({ space: 10 }) {
+      Column() {
+        Image(image)
+          .fillColor($r('app.color.reverse'))
+          .width(20)
+      }
+      .width(22)
+      Text(title)
+        .fontColor($r('app.color.reverse'))
+        .fontSize(16)
+    }
+    .padding({ left: 15, right: 15, top: 5, bottom: 5 })
+    .height(40)
   }
 
   // 半模态

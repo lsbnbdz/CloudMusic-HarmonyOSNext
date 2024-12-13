@@ -5,7 +5,7 @@ import ContinuousTask from "../utils/ContinuousTask";
 import Constants from "../constants/Constants";
 import FileUtils from "../utils/FileUtils";
 import { getSongPicUrl, getSongUrl } from "../../api/songApi";
-import { fetchMetadata, fetchSongInfo } from "./functions";
+import { fetchMetadata, fetchSongInfo, sanitizeFileName } from "./functions";
 import PlayQueueUtils from "../utils/PlayQueueUtils";
 import AVSessionUtils from "../utils/AVSessionUtils";
 import { promptAction } from "@kit.ArkUI";
@@ -31,7 +31,8 @@ export async function playMusicByUrl(song:Song,artists:string,picUrl:string,isLo
       AppStorage.setOrCreate('player-picurl',picUrl)
       await ContinuousTask.stopTask()
       // 是否存在本地文件
-      let localPath = await FileUtils.accessLocalFile(`${artists} - ${song.name}`)
+      let fileNameFomatted = sanitizeFileName(`${artists} - ${song.name}`)
+      let localPath = await FileUtils.accessLocalFile(fileNameFomatted)
       if(localPath != '') {
         promptAction.showToast({ message: '找到本地文件，将优先播放本地文件'})
         await AudioPlayUtils.setUrl(localPath)
@@ -73,10 +74,10 @@ export async function playMusicWithFile(fileName:string) {
       AppStorage.setOrCreate('player-isplaying', false)
       AppStorage.setOrCreate('player-song', song)
       AppStorage.setOrCreate('player-artists', song.artists[0].name)
-      AppStorage.setOrCreate('player-picurl',`$r('app.media.ic_public_music')`)
+      AppStorage.setOrCreate('player-picurl','/resources/base/media/app.media.ic_public_music.svg')
       await ContinuousTask.stopTask()
       await AudioPlayUtils.setUrl(fdPath)
-      AVSessionUtils.setMetadata(song,song.artists[0].name,'')
+      AVSessionUtils.setMetadata(song,song.artists[0].name,`$r('app.media.ic_public_music.svg')`)
       ContinuousTask.startTask().then(() => {
         AudioPlayUtils.play().then(() => {
           AVSessionUtils.activate()

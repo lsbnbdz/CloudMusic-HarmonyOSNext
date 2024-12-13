@@ -17,15 +17,23 @@ struct SongsListPage {
   @StorageProp('bottomRectHeight') bottomRectHeight: number = 0;
   @StorageProp('topRectHeight') topRectHeight: number = 0;
 
-  @State list:Array<Song> = []
-  @State resOffset:number = 0
-  @State hasMore:boolean = true
-  @State hasLoaded:boolean = false // 判定是否已加载 避免重复加载
-  @State isLoading:boolean = false
-  @State isLoadingMore:boolean = false
+  @State list: Array<Song> = []
+  @State resOffset: number = 0
+  @State hasMore: boolean = true
+  @State hasLoaded: boolean = false // 判定是否已加载 避免重复加载
+  @State isLoading: boolean = false
+  @State isLoadingMore: boolean = false
+  @State pageOpacity: number = 1
 
-  @State searchKeyword:string = ''
-  hasAnimation:boolean | undefined = false
+  @State searchKeyword: string = ''
+  hasAnimation: boolean | undefined = false
+
+  pageTransition() {
+    PageTransitionEnter({ duration: 600, curve: Curve.Linear })
+      .onEnter((progress: number) => {
+        this.pageOpacity = progress
+      })
+  }
 
   async onPageShow(): Promise<void> {
   }
@@ -56,7 +64,6 @@ struct SongsListPage {
   build() {
     Stack({ alignContent: Alignment.Bottom }) {
         Stack({ alignContent: Alignment.Top }) {
-
           if(this.isLoading == true) {
             Column() {
               SpinKit({ spinType: SpinType.spinO, spinSize:60, spinColor:Color.Gray }).width(60)
@@ -104,7 +111,6 @@ struct SongsListPage {
             .height('100%')
           }
           this.Head()
-
         }
         .height('100%')
 
@@ -112,9 +118,9 @@ struct SongsListPage {
         .padding({ left: 10, right: 10, bottom: px2vp(this.bottomRectHeight)})
         .backgroundColor(Color.Transparent)
     }
+    .opacity(this.pageOpacity)
     .width('100%')
     .height('100%')
-    // .padding({ top: px2vp(this.topRectHeight) })
     .backgroundColor($r('app.color.background'))
   }
 
@@ -123,9 +129,13 @@ struct SongsListPage {
     Row({ space: 20 }) {
       BackButton()
       Search({
-        placeholder: '请输入搜索内容',
+        placeholder: '搜索内容',
         icon: '/resources/base/media/ic_public_search_filled.svg',
       })
+        .sharedTransition('search_component', {
+            duration: 300,
+            curve: Curve.Friction
+          })
         .defaultFocus(true)
         .layoutWeight(1)
         .searchButton('搜索')

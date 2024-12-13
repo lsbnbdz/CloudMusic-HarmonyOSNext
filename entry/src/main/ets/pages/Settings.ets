@@ -30,6 +30,7 @@ struct Settings {
           ListItem() { removeCache() }
           ListItem() { Divider() }
           ListItem() { Version() }
+          ListItem() { Help() }
           ListItem() { Privacy() }
           ListItem() { Feedback() }
         }
@@ -195,6 +196,24 @@ struct Settings {
       Text('当前版本').LeftText()
       Text(Constants.VERSION + Constants.VER_DESC).RightText()
     }.width('100%').justifyContent(FlexAlign.SpaceBetween).padding({ left:30, right: 30})
+  }
+}
+
+/**
+ * 帮助
+ */
+@Component struct Help {
+  build() {
+    Row() {
+      Text('帮助与疑难解答').LeftText()
+      Text('前往查看').RightText().textAlign(TextAlign.End).decoration({type: TextDecorationType.Underline})
+    }.width('100%').justifyContent(FlexAlign.SpaceBetween).padding({ left:30, right: 30})
+    .onClick(() => {
+      router.pushUrl({
+        url:'pages/WebPage',
+        params: {title:'建议与反馈', url:'https://docs.chenlvin.cc/cloudmusic/#/help'}
+      })
+    })
   }
 }
 

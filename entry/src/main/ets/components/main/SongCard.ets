@@ -4,6 +4,7 @@ import { getArtists } from "../../common/functions/functions"
 import PlayQueueUtils from "../../common/utils/PlayQueueUtils"
 import { SongSheet } from "../sheets/SongSheet"
 import { promptAction } from "@kit.ArkUI"
+import { playList, playListClass } from "../../common/entities/PlayList"
 
 @Preview
 @Component
@@ -13,6 +14,10 @@ export struct SongCard {
   @State startHeight:number = 60
   @State startOpacity:number = 1
   @State picUrl:string = ''
+  @State isPlayList:boolean = false
+  @State playList:playList = playListClass
+  @State index:number = 0
+
   song:Song = SongClass
   sid:number = -1
   artists:string = ''
@@ -76,7 +81,8 @@ export struct SongCard {
 
   @Builder
   Sheet() {
-    SongSheet({ song: this.song, isShowSheet: this.isShowSheet, artists:this.artists, picUrl:this.picUrl })
+    SongSheet({ song: this.song, isShowSheet: this.isShowSheet, artists:this.artists, picUrl:this.picUrl,
+      isPlayList:this.isPlayList, playList: this.playList, index: this.index})
   }
 }
 

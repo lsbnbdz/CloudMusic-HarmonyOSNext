@@ -2,7 +2,7 @@ import Constants from "../../common/constants/Constants"
 import { Song, SongClass } from "../../common/entities/SongsResult"
 import { changeDuration } from "../../common/functions/functions"
 import { pauseMusic, playNext, playPre, resumeMusic, seekMusic } from "../../common/functions/playerControl"
-import { CycleModeButton } from "../buttons/LoopModeButton"
+import { LoopModeButton } from "../buttons/LoopModeButton"
 import { PlayQueueButton } from "../buttons/PlayQueueButton"
 import { DownloadDialog } from "../dialog/DownloadDialog"
 
@@ -168,7 +168,7 @@ export struct PlayingCover {
              })
            }
 
-           CycleModeButton()
+           LoopModeButton()
 
            PlayQueueButton()
          }

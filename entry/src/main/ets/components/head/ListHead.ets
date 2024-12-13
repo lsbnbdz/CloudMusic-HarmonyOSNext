@@ -5,6 +5,7 @@ import { PlayController } from "../play/PlayController";
 
 @Component
 export struct ListHead {
+  @StorageProp('topRectHeight') topRectHeight: number = 0
   title:string = ''
 
   @BuilderParam slot: () => void = this.Slot
@@ -18,9 +19,11 @@ export struct ListHead {
         .textAlign(TextAlign.Center)
       this.slot()
     }
-    .padding({ left: 10, right: 10 })
+    .padding({ left: 10, right: 10, top: px2vp(this.topRectHeight), bottom: 5 })
     .width('100%')
     .backgroundColor(Color.Transparent)
+    .opacity(0.9)
+    .backdropBlur(50)
     .onClick(() => {
       ToastUtil.showToast(`${this.title}`)
     })

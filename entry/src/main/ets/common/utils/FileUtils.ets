@@ -30,16 +30,15 @@ class FileUtils {
   }
 
   async accessLocalFile(fileName: string): Promise<string> {
-    const fileNameFomatted = sanitizeFileName(fileName)
-    const fileUrl_flac = this.filesDir + `/${fileNameFomatted}.flac`
-    const fileUrl_mp3 = this.filesDir + `/${fileNameFomatted}.mp3`
+    const fileUrl_flac = this.filesDir + `/${fileName}.flac`
+    const fileUrl_mp3 = this.filesDir + `/${fileName}.mp3`
 
     if(await FileUtil.access(fileUrl_flac)) {
       let file = await fileIo.open(fileUrl_flac)
       let fdPath = 'fd://' + file.fd
       return fdPath
     } else if(await FileUtil.access(fileUrl_mp3)) {
-      let file = await fileIo.open(fileUrl_flac)
+      let file = await fileIo.open(fileUrl_mp3)
       let fdPath = 'fd://' + file.fd
       return fdPath
     } else {

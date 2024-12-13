@@ -17,7 +17,7 @@ struct DownloadPage {
   }
   build() {
     Stack({ alignContent: Alignment.Bottom }) {
-      Column({ space: 10 }) {
+      Column() {
         ListHead({ title: '下载管理' })
         Column() {
           List({ space: 10 }) {
@@ -58,7 +58,6 @@ struct DownloadPage {
         .layoutWeight(1)
         .width('100%')
       }
-      .padding({ top: px2vp(this.topRectHeight) })
       .width('100%')
       .height('100%')
 

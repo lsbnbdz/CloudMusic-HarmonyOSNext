@@ -3,6 +3,7 @@ import { DialogAction } from "@pura/harmony-utils/src/main/ets/entity/constraint
 import { PlayQueue } from "../../common/entities/PlayQueue"
 import { playQueue } from "../../common/functions/playerControl"
 import PlayQueueUtils from "../../common/utils/PlayQueueUtils"
+import { LoopModeButton } from "../buttons/LoopModeButton"
 
 /**
  * 播放列表 Sheet
@@ -18,20 +19,23 @@ export struct PlayQueueSheet {
 
   aboutToAppear(): void {
     setTimeout(() => {
-      this.scrollToCurrent()
+      this.scrollToCurrent(false)
     }, 100)
   }
 
   build() {
     Column({ space: 10 }) {
       Row() {
-        Row({ space: 10 }) {
+        Row({ space: 15 }) {
           Text() {
             Span('播放列表').fontSize(20).fontColor(Color.Gray).fontWeight(FontWeight.Bold)
             Span(`  (${this.queueLength})`).fontSize(16).fontColor(Color.Gray)
           }
+
+          LoopModeButton({ imgWidth:25, btnWidth: 25 })
+
           Button({ type: ButtonType.Circle }) {
-            Image($r('app.media.ic_position')).width(20).fillColor(Color.Gray)
+            Image($r('app.media.ic_position')).width(20).fillColor($r('app.color.reverse'))
           }
           .backgroundColor(Color.Transparent)
           .onClick(() => {
@@ -126,8 +130,9 @@ export struct PlayQueueSheet {
     .width('100%')
   }
 
-  scrollToCurrent() {
-    this.scroller.scrollToIndex(this.currentQueueIndex, true)
+  scrollToCurrent(animation: boolean = true) {
+    if(this.currentQueueIndex <= 3) { this.scroller.scrollToIndex(this.currentQueueIndex, animation) }
+    else { this.scroller.scrollToIndex(this.currentQueueIndex - 3 , animation) }
   }
 }
 

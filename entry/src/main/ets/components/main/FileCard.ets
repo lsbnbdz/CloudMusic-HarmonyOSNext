@@ -37,7 +37,7 @@ export struct FileCard {
   ClickMenu() {
     Menu() {
       MenuItem({ content: this.fileName }).width('80%')
-      MenuItem({ startIcon: $r('app.media.ic_play_fill'), content:'播放'})
+      MenuItem(this.MenuItem($r('app.media.ic_play_fill'), '播放'))
         .onClick(async () => {
           const rootUrl = await FileUtils.getFilesDir()
           const fileUrl = rootUrl + `/${this.fileName}`
@@ -51,12 +51,31 @@ export struct FileCard {
             PlayQueueUtils.setIndex(PlayQueueUtils.currentQueueIndex + 1)
           })
         })
-      MenuItem({ startIcon: $r('app.media.ic_public_app_filled'), content:'预览'})
+
+      MenuItem(this.MenuItem($r('app.media.ic_public_app_filled'), '预览'))
         .onClick(() => {
           FileUtils.previewFile(this.fileName)
         })
     }
   }
+
+  @Builder
+  MenuItem(image:ResourceStr, title:string) {
+    Row({ space: 10 }) {
+      Column() {
+        Image(image)
+          .fillColor($r('app.color.reverse'))
+          .width(20)
+      }
+      .width(22)
+      Text(title)
+        .fontColor($r('app.color.reverse'))
+        .fontSize(16)
+    }
+    .padding({ left: 15, right: 15, top: 5, bottom: 5 })
+    .height(40)
+  }
+
 }
 
 @Extend(Text) function textStyle(size: number) {

@@ -84,28 +84,32 @@ export async function getPlayListSongs(listId:number, offset:number): Promise<Ar
   return list;
 }
 
-export async function putPlayListInQueue(listId:number): Promise<void> {
+export async function putPlayListInQueue(listId:number, trackCount:number): Promise<void> {
+  let offset = 0
   const rootUrl = await getApiUrl()
-  const url:string = `${rootUrl}/playlist/track/all?id=${listId}`
-	const request = new HttpRequest(url)
   let queue:Array<PlayQueue> = []
-  let data = await request.RequestInStream()
-  const dataResult:PlayListSongs = data.result as PlayListSongs
-  PlayQueueUtils.cleanQueue()
-  for(let item of dataResult.songs) {
-    let artists = await getArtists(item.ar)
-    let tempSong:Song = {
-      id: item.id,
-      name: item.name,
-      artists: item.ar,
-      duration: item.dt
+  while(offset < trackCount) {
+    const url: string = `${rootUrl}/playlist/track/all?id=${listId}&limit=500&offset=${offset}`
+    const request = new HttpRequest(url)
+    let data = await request.RequestInStream()
+    let dataResult: PlayListSongs = data.result as PlayListSongs
+    for (let item of dataResult.songs) {
+      let artists = await getArtists(item.ar)
+      let tempSong: Song = {
+        id: item.id,
+        name: item.name,
+        artists: item.ar,
+        duration: item.dt
+      }
+      queue.push({
+        playmode: 1,
+        song: tempSong,
+        artists: artists,
+        fileName: ''
+      })
     }
-    queue.push({
-      playmode: 1,
-      song: tempSong,
-      artists: artists,
-      fileName: ''
-    })
+    offset += 500
   }
+  await PlayQueueUtils.cleanQueue()
   await PlayQueueUtils.queueAdd_array(queue)
 }

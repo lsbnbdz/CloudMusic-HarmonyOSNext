@@ -12,7 +12,7 @@ struct Index {
 
   async build() {
     Stack({ alignContent: Alignment.Bottom }) {
-      Column({ space: 10 }) {
+      Column() {
         IndexHead()
         Stack({ alignContent: Alignment.Top }) {
           if (this.isValidCookie) {

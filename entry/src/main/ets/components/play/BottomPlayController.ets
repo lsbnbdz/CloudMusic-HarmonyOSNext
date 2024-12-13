@@ -1,6 +1,7 @@
 import { ToastUtil } from "@pura/harmony-utils"
 import { Song, SongClass } from "../../common/entities/SongsResult"
-import { pauseMusic, resumeMusic } from "../../common/functions/playerControl"
+import { pauseMusic, playQueue, resumeMusic } from "../../common/functions/playerControl"
+import playQueueUtils from "../../common/utils/PlayQueueUtils"
 import { PlayQueueButton } from "../buttons/PlayQueueButton"
 import { PlayingCover } from "../sheets/PlayingCover"
 
@@ -21,20 +22,20 @@ export struct BottomPlayController {
   @StorageProp('player-picurl') picUrl:string = ''
   @StorageProp('player-time') time:number = 0
 
-  @State componentOpacity:number = 0
+  @State componentOpacity:number = 0.8
   @State isShow: boolean = false
 
-  aboutToAppear(): void {
-    setTimeout(() => {
-      this.componentOpacity = 0.8
-    },100)
-  }
-
-  aboutToDisappear(): void {
-    setTimeout(() => {
-      this.componentOpacity = 0
-    },100)
-  }
+  // aboutToAppear(): void {
+  //   setTimeout(() => {
+  //     this.componentOpacity = 0.8
+  //   },100)
+  // }
+  //
+  // aboutToDisappear(): void {
+  //   setTimeout(() => {
+  //     this.componentOpacity = 0
+  //   },100)
+  // }
 
   build() {
     Row({ space: 10 }) {
@@ -49,7 +50,7 @@ export struct BottomPlayController {
           }
           .layoutWeight(1)
 
-          ControlButtons({ isPaused: this.isPaused })
+          ControlButtons({ isPaused: this.isPaused, isPlaying: this.isPlaying })
         }
         .justifyContent(FlexAlign.SpaceBetween)
         .layoutWeight(1)
@@ -58,7 +59,7 @@ export struct BottomPlayController {
         Row({ space: 10 }) {
           Text('未在播放')
             .textStyle(18)
-          ControlButtons({ isPaused: this.isPaused })
+          ControlButtons({ isPaused: this.isPaused, isPlaying: this.isPlaying })
         }
         .width('100%')
         .justifyContent(FlexAlign.SpaceBetween)
@@ -71,10 +72,14 @@ export struct BottomPlayController {
     .backgroundColor($r('app.color.main'))
     .opacity(this.componentOpacity)
     .height(80)
-    .animation({
-      duration: 300,
-      curve: Curve.Linear,
+    .sharedTransition('bottom_play_controller', {
+      duration: 1,
+      curve: Curve.Friction
     })
+    // .animation({
+    //   duration: 300,
+    //   curve: Curve.Linear,
+    // })
     .onClick(() => {
       if(this.isPlaying) { this.isShow = true }
       else { ToastUtil.showToast('暂无播放') }
@@ -98,17 +103,24 @@ export struct BottomPlayController {
 @Component
 struct ControlButtons {
   @Link isPaused: boolean
+  @Link isPlaying: boolean
   build() {
     Row({ space: 5 }) {
-      // Button(){ Image($r('app.media.ic_public_play_last')).fillColor(Color.Gray).buttonImgStyle() }.onClick(() => { playPre() }).backgroundColor(Color.Transparent)
-      // 暂停、继续
       if (!this.isPaused) {
-        Button(){ Image($r('app.media.ic_public_pause')).fillColor(Color.Gray).buttonImgStyle() }.onClick(() => { pauseMusic() }).backgroundColor(Color.Transparent)
+        Button() {
+          Image($r('app.media.ic_public_pause')).fillColor(Color.Gray).buttonImgStyle()
+        }.onClick(() => {
+          pauseMusic()
+        }).backgroundColor(Color.Transparent)
       } else {
-        Button(){ Image($r('app.media.ic_play_fill')).fillColor(Color.Gray).buttonImgStyle() }.onClick(() => { resumeMusic() }).backgroundColor(Color.Transparent)
+        Button() {
+          Image($r('app.media.ic_play_fill')).fillColor(Color.Gray).buttonImgStyle()
+        }.onClick(() => {
+          if(!this.isPlaying) playQueue(0)
+          else resumeMusic()
+        }).backgroundColor(Color.Transparent)
       }
       PlayQueueButton()
-      // Button(){ Image($r('app.media.ic_public_play_next')).fillColor(Color.Gray).buttonImgStyle() }.onClick(() => { playNext() }).backgroundColor(Color.Transparent)
     }
   }
 }

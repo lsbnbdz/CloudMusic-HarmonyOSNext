@@ -5,7 +5,7 @@ import { QualityType } from "../entities/SongDownload"
  */
 export default class Constants {
   static readonly VERSION: string = '0.9.10'
-  static readonly VER_DESC: string = ' - Beta'
+  static readonly VER_DESC: string = ''
 
   static readonly USER_PREF: string = 'UserPreference'
   static readonly SET_PERF: string = 'Settings'

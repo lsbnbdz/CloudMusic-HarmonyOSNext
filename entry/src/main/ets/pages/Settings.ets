@@ -1,4 +1,4 @@
-import { DialogUtil, PasteboardUtil, ToastUtil } from '@pura/harmony-utils'
+import { DialogUtil, FileUtil, PasteboardUtil, ToastUtil } from '@pura/harmony-utils'
 import Constants from '../common/constants/Constants'
 import { SettingsHead } from '../components/head/SettingsHead'
 import { router } from '@kit.ArkUI'
@@ -162,10 +162,14 @@ struct Settings {
  * 清理缓存
  */
 @Component struct removeCache {
+  @State cacheSize: number = -1
+  aboutToAppear(): void {
+    this.cacheSize = FileUtils.getCacheSize()
+  }
   build() {
     Row() {
       Text('清除缓存').LeftText()
-      Button('清理')
+      Button(`${(this.cacheSize / (1024 * 1024)).toFixed(2)} MB`)
         .backgroundColor(Color.Transparent)
         .borderWidth(2)
         .borderColor(Color.Gray)
@@ -178,7 +182,8 @@ struct Settings {
             secondaryButton: "清理",
             onAction: async (action) => {
               if(action == DialogAction.TWO) {
-                FileUtils.removeCache()
+                await FileUtils.removeCache()
+                this.cacheSize = FileUtils.getCacheSize()
               }
             }
           })
@@ -211,7 +216,7 @@ struct Settings {
     .onClick(() => {
       router.pushUrl({
         url:'pages/WebPage',
-        params: {title:'建议与反馈', url:'https://docs.chenlvin.cc/cloudmusic/#/help'}
+        params: {title:'帮助', url:'https://docs.chenlvin.cc/cloudmusic/#/help'}
       })
     })
   }

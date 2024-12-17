@@ -33,7 +33,7 @@ export struct CommonCircleButton {
  */
 @Component
 export struct CircleImageButton {
-  imgUrl: string = ''
+  imgUrl: ResourceStr = ''
   BgColor: string = 'transparent'
 
   build() {
@@ -49,6 +49,29 @@ export struct CircleImageButton {
       .backgroundColor(this.BgColor)
       .opacity(0.8)
     }
+  }
+}
+
+/**
+ * svg 圆形图标按钮
+ */
+@Component
+export struct CircleButton {
+  @State bgColor: Color | string = Color.Transparent
+  @State imgUrl: ResourceStr = ''
+  @State btnWidth: number = 60
+  @State imgWidth: number = 40
+
+  build() {
+    Button() {
+      Image(this.imgUrl)
+        .height(this.imgWidth)
+        .padding({ top:10, bottom:10, left:10, right:10 })
+        .fillColor(Color.White)
+    }
+    .type(ButtonType.Circle)
+    .backgroundColor(this.bgColor)
+    .height(this.btnWidth)
   }
 }
 

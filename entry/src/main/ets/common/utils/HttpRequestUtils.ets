@@ -43,10 +43,6 @@ export class HttpRequest {
           readTimeout: 15000,
         }, (err: BusinessError, data: http.HttpResponse) => {
         if (!err) {
-          // 解析HTTP响应内容
-          console.info('Data Result:' + JSON.stringify(data.result))
-          console.info('code:' + JSON.stringify(data.responseCode))
-          // 调用destroy方法主动销毁
           httpRequest.destroy()
           resolve(data)  // 返回请求数据
         } else {
@@ -122,7 +118,7 @@ export class HttpRequest {
   }
 
   /**
-   * Http请求 (根据VipType)_
+   * Http请求 (根据VipType)
    * @returns
    */
   public async RequestWithVipType(): Promise<http.HttpResponse> {
@@ -146,11 +142,6 @@ export class HttpRequest {
           readTimeout: 15000,
         }, (err: BusinessError, data: http.HttpResponse) => {
         if (!err) {
-          // 解析HTTP响应内容
-          console.info('Data Result:' + JSON.stringify(data.result))
-          console.info('code:' + JSON.stringify(data.responseCode))
-          console.info('header:' + JSON.stringify(data.header))
-          // 调用destroy方法主动销毁
           httpRequest.destroy()
           resolve(data)  // 返回请求数据
         } else {

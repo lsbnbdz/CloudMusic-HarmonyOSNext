@@ -3,7 +3,7 @@ import Constants from "../common/constants/Constants"
 import { playList } from "../common/entities/PlayList"
 import { PlayListSongs } from "../common/entities/PlayListSongs"
 import { PlayQueue } from "../common/entities/PlayQueue"
-import { Song, SongClass } from "../common/entities/SongsResult"
+import { Song } from "../common/entities/SongsResult"
 import { User, UserClass } from "../common/entities/User"
 import { getApiUrl, getArtists } from "../common/functions/functions"
 import { HttpRequest } from "../common/utils/HttpRequestUtils"
@@ -13,7 +13,6 @@ import PreferencesUtils from "../common/utils/PreferencesUtils"
 /**
  * 歌单类API
  */
-
 const TAG = '[playListApi] '
 
 /**
@@ -35,7 +34,7 @@ export async function getPlayLists(offset:number): Promise<PlayListsResult> {
   const request = new HttpRequest(url)
   await request.RequestInStream().then((data) => {
     const dataGot:PlayListsResult = data.result as PlayListsResult
-    LogUtil.info('dataGot: ' + JSON.stringify(dataGot))
+    LogUtil.info(TAG + 'getPlayLists - dataGot: ' + JSON.stringify(dataGot))
     hasMore = dataGot.more
     for(let item of dataGot.playlist) {
       list.push({
@@ -80,10 +79,16 @@ export async function getPlayListSongs(listId:number, offset:number): Promise<Ar
       })
     }
   })
-  console.log('getPlayListSongs: ' + JSON.stringify(list))
+  LogUtil.info(TAG + 'getPlayListSongs - dataGot => list: ' + JSON.stringify(list))
   return list;
 }
 
+/**
+ * 将歌单歌曲添加至播放列表
+ * @param listId - 歌单ID
+ * @param trackCount - 歌单歌曲总数
+ * @returns void
+ */
 export async function putPlayListInQueue(listId:number, trackCount:number): Promise<void> {
   let offset = 0
   const rootUrl = await getApiUrl()
@@ -112,4 +117,23 @@ export async function putPlayListInQueue(listId:number, trackCount:number): Prom
   }
   await PlayQueueUtils.cleanQueue()
   await PlayQueueUtils.queueAdd_array(queue)
+}
+
+/**
+ * 向歌单添加/删除歌曲
+ * @param op - 操作 add/del
+ * @param pid - 歌单id
+ * @param tracks - 歌曲id(多个用,隔开)
+ */
+type OperationType = 'add' | 'del'
+
+async function PlayListOperation(op:OperationType, pid:number, tracks:number):Promise<boolean> {
+  const rootUrl = getApiUrl()
+  const url:string = `${rootUrl}/playlist/tracks?op=${op}&pid=${pid}&tracks=${tracks}`
+  const request = new HttpRequest(url)
+  await request.Request().then((data) => {
+    if(data.result["code"] == 200) { return true }
+    else { throw new Error(data.result["message"]) }
+  })
+  return false
 }

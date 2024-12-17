@@ -4,7 +4,7 @@ import { QualityType } from "../entities/SongDownload"
  * 常量类
  */
 export default class Constants {
-  static readonly VERSION: string = '0.9.10'
+  static readonly VERSION: string = '1.0.0'
   static readonly VER_DESC: string = ''
 
   static readonly USER_PREF: string = 'UserPreference'
@@ -27,5 +27,5 @@ export default class Constants {
 
   // Messages
   static readonly HTTP_ERROR_MSG: string = '网络请求发生错误，请检查：\n网络连接和API服务器是否正常'
-  static readonly DEVELOPING: string = '该功能正在开发中，敬请期待。'
+  static readonly DEVELOPING_MSG: string = '该功能正在开发中，敬请期待。'
 }

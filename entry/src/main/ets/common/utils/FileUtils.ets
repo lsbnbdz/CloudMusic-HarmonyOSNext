@@ -4,15 +4,11 @@ import {  FileUtil, LogUtil, PreviewUtil, ToastUtil } from '@pura/harmony-utils'
 import fs from '@ohos.file.fs'
 import fileUri from '@ohos.file.fileuri'
 import { picker } from '@kit.CoreFileKit'
-import File from '@system.file'
-import { media } from '@kit.MediaKit'
 import { BusinessError } from '@kit.BasicServicesKit'
-import { sanitizeFileName } from '../functions/functions'
 
 /**
  * 文件管理
  */
-
 const TAG = '[FileUtils] '
 
 class FileUtils {
@@ -130,6 +126,15 @@ class FileUtils {
     }
   }
 
+  getCacheSize(): number {
+    try {
+      let size = FileUtil.getFileDirSize(this.cacheDir)
+      return size
+    } catch (e) {
+      LogUtil.error(TAG + '获取缓存大小失败: ' + e.message())
+      return -1
+    }
+  }
 }
 
 const fileUtils = new FileUtils()

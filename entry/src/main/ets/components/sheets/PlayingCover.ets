@@ -55,34 +55,28 @@ export struct PlayingCover {
 
        Column({ space: 20 }) {
          Column({ space: 20 }) {
+           // 歌曲封面图片
            if (this.playmode == 0) {
-             Text(`正在播放本地文件`)
-               .textStyle(14)
-               .padding({ bottom: 30 })
              Stack() {
-               Image($r('app.media.ic_public_music')).width(100).height(100).fillColor(Color.Gray).borderRadius(5)
+               Image($r('app.media.ic_public_music')).width(150).height(150).fillColor(Color.Gray).borderRadius(5)
              }
              .width(200)
              .height(200)
              .padding({ bottom: 30 })
            } else {
-             Text(`正在播放 [${Constants.QUALITY_NAME[this.playQuality]}]`)
-               .textStyle(14)
-               .padding({ bottom: 30 })
-
              Stack() {
                LoadingProgress().width(60)
-               Image(this.picUrl + '?param=512y512').width(200).height(200).borderRadius(5)
+               Image(this.picUrl + '?param=512y512').width(150).height(150).borderRadius(5)
              }
              .width(200)
              .height(200)
              .padding({ bottom: 30 })
            }
 
+           // 歌曲名称&艺术家
            Text(this.song.name)
              .textStyle(22)
              .fontWeight(FontWeight.Bold)
-
            Text(this.artists)
              .textStyle(18)
              .fontColor(Color.Gray)
@@ -92,7 +86,13 @@ export struct PlayingCover {
 
          Column({ space: 5 }) {
            Row() {
-             Text(`${changeDuration(this.time)}`).fontSize(16).layoutWeight(1).textAlign(TextAlign.Start)
+             // 当前时间
+             Text(`${changeDuration(this.time)}`)
+               .fontSize(16)
+               .layoutWeight(1)
+               .textAlign(TextAlign.Start)
+
+             // 拖动进度条时，显示即将跳转的时间
              if(this.isMovingSlider) {
                Column() {
                  Text(`${changeDuration(this.sliderMovingTime)}`)
@@ -105,14 +105,17 @@ export struct PlayingCover {
                }
                .layoutWeight(1)
              }
-             Text(`${changeDuration(this.song.duration)}`).fontSize(16).layoutWeight(1).textAlign(TextAlign.End)
+
+             // 总时间
+             Text(`${changeDuration(this.song.duration)}`)
+               .fontSize(16)
+               .layoutWeight(1)
+               .textAlign(TextAlign.End)
            }
            .width('90%')
            .justifyContent(FlexAlign.SpaceAround)
 
-           // Progress({ value: this.time, total: this.song.duration })
-           //   .width('90%')
-
+           // 进度条
            Slider({
              value: this.time,
              max: this.song.duration,
@@ -171,6 +174,7 @@ export struct PlayingCover {
            LoopModeButton()
 
            PlayQueueButton()
+
          }
 
          Row({ space: 30 }) {

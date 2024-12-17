@@ -171,7 +171,7 @@ struct PlayListPage {
   HeadSlot() {
     CommonCircleButton({ ButtonImageName: 'ic_public_more_filled' })
       .onClick(() => {
-        ToastUtil.showToast(Constants.DEVELOPING)
+        ToastUtil.showToast(Constants.DEVELOPING_MSG)
       })
   }
 }

@@ -141,7 +141,7 @@ export async function PlayListOperation(op:OperationType, pid:number, tracks:num
         return true
       } else {
         LogUtil.info(TAG + 'PlayListOperation Error: ' + dataGot.body.message)
-        throw new Error(dataGot.body.message)
+        throw new Error(dataGot.body.message.toString())
       }
     }
     else {

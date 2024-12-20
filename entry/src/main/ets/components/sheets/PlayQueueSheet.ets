@@ -15,6 +15,7 @@ export struct PlayQueueSheet {
   @StorageProp('currentQueueIndex') currentQueueIndex: number = 0
   @StorageProp('bottomRectHeight') bottomRectHeight: number = 0
   @State queueLength: number = PlayQueueUtils.getQueueLength()
+  @State isLoading: boolean = false
   @Link isShow: boolean
 
   aboutToAppear(): void {
@@ -66,65 +67,93 @@ export struct PlayQueueSheet {
       .width('100%')
       .justifyContent(FlexAlign.SpaceBetween)
 
-      List({scroller: this.scroller, space: 15 }) {
-        ForEach(this.queue, (item: PlayQueue, index) => {
-          ListItem() {
-            Row({ space: 10 }) {
-              Text(`${index + 1}`).fontSize(12).fontColor(Color.Gray).padding({ right: 10 }).fontWeight(FontWeight.Bold).textAlign(TextAlign.End)
-              // 本地文件
-              if (item.playmode == 0) {
-                Image($r('app.media.ic_public_todo')).width(20).fillColor(Color.Green)
-                if (this.currentQueueIndex == index) {
-                  Text(`${item.song.name} - ${item.artists}`).textStyle(16).fontWeight(FontWeight.Bold).fontColor('#ffd25959').layoutWeight(1)
-                } else {
-                  Text() {
-                    Span(`${item.song.name}`)
-                    Span(` - ${item.artists}`).fontColor(Color.Gray)
-                  }
-                  .layoutWeight(1)
-                  .textStyle(16)
-                  .onClick(() => {
-                    playQueue(index)
-                  })
-                }
-              }
-              // 在线音乐
-              else {
-                if (this.currentQueueIndex == index) {
-                  Text(`${item.song.name} - ${item.artists}`)
+      Stack() {
+        List({ scroller: this.scroller, space: 15 }) {
+          ForEach(this.queue, (item: PlayQueue, index) => {
+            ListItem() {
+              Row({ space: 10 }) {
+                Text(`${index + 1}`)
+                  .fontSize(12)
+                  .fontColor(Color.Gray)
+                  .padding({ right: 10 })
+                  .fontWeight(FontWeight.Bold)
+                  .textAlign(TextAlign.End)
+                // 本地文件
+                if (item.playmode == 0) {
+                  Image($r('app.media.ic_public_todo')).width(20).fillColor(Color.Green)
+                  if (this.currentQueueIndex == index) {
+                    Text(`${item.song.name} - ${item.artists}`)
+                      .textStyle(16)
+                      .fontWeight(FontWeight.Bold)
+                      .fontColor('#ffd25959')
+                      .layoutWeight(1)
+                  } else {
+                    Text() {
+                      Span(`${item.song.name}`)
+                      Span(` - ${item.artists}`).fontColor(Color.Gray)
+                    }
                     .layoutWeight(1)
                     .textStyle(16)
-                    .fontWeight(FontWeight.Bold)
-                    .fontColor('#ffd25959')
-                } else {
-                  Text() {
-                    Span(`${item.song.name}`)
-                    Span(` - ${item.artists}`).fontColor(Color.Gray)
+                    .onClick(async () => {
+                      this.isLoading = true
+                      await playQueue(index)
+                      this.isLoading = false
+                    })
                   }
-                  .layoutWeight(1)
-                  .textStyle(16)
-                  .onClick(() => {
-                    playQueue(index)
-                  })
                 }
+                // 在线音乐
+                else {
+                  if (this.currentQueueIndex == index) {
+                    Text(`${item.song.name} - ${item.artists}`)
+                      .layoutWeight(1)
+                      .textStyle(16)
+                      .fontWeight(FontWeight.Bold)
+                      .fontColor('#ffd25959')
+                  } else {
+                    Text() {
+                      Span(`${item.song.name}`)
+                      Span(` - ${item.artists}`).fontColor(Color.Gray)
+                    }
+                    .layoutWeight(1)
+                    .textStyle(16)
+                    .onClick(async () => {
+                      this.isLoading = true
+                      await playQueue(index)
+                      this.isLoading = false
+                    })
+                  }
+                }
+                Button({ type: ButtonType.Circle }) {
+                  Image($r('app.media.ic_public_cancel')).width(20).fillColor(Color.Gray)
+                }
+                .backgroundColor(Color.Transparent)
+                .onClick(() => {
+                  PlayQueueUtils.queueDelete(index)
+                  this.queueLength = PlayQueueUtils.getQueueLength()
+                })
               }
-              Button({ type: ButtonType.Circle }) { Image($r('app.media.ic_public_cancel')).width(20).fillColor(Color.Gray) }
-              .backgroundColor(Color.Transparent)
-              .onClick(() => {
-                PlayQueueUtils.queueDelete(index)
-                this.queueLength = PlayQueueUtils.getQueueLength()
-              })
+              .width('100%')
+              .justifyContent(FlexAlign.SpaceAround)
             }
-            .width('100%')
-            .justifyContent(FlexAlign.SpaceAround)
+          })
+          ListItem().height(px2vp(this.bottomRectHeight))
+        }
+        .width('100%')
+        .height('100%')
+        .scrollBar(BarState.Off)
+
+        if(this.isLoading) {
+          Column() {
+            LoadingProgress().width(40)
           }
-        })
-        ListItem().height(px2vp(this.bottomRectHeight))
+          .justifyContent(FlexAlign.Center)
+          .height('100%')
+          .width('100%')
+        }
       }
       .width('100%')
       .layoutWeight(1)
       .height('100%')
-      .scrollBar(BarState.Off)
     }
     .padding({ left:20, right:20, top:15 })
     .width('100%')

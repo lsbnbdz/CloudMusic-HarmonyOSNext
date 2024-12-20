@@ -27,6 +27,7 @@ export struct PlayingCover {
   @State sliderThickness: number = 10
   @State isMovingSlider: boolean = false
   @State sliderMovingTime: number = 0
+  @State isDarkMode: boolean = true
 
   artists1:string = ''
   song1:Song = SongClass
@@ -44,6 +45,13 @@ export struct PlayingCover {
 
   build() {
    Stack({ alignContent: Alignment.Top }) {
+     Column() {
+     }
+     .width('100%')
+     .height('100%')
+     .opacity(0.5)
+     .backgroundColor($r('app.color.background'))
+
      Column({ space: 5 }) {
        // 收起
        Row() {
@@ -75,8 +83,7 @@ export struct PlayingCover {
              .textStyle(22)
              .fontWeight(FontWeight.Bold)
            Text(this.artists)
-             .textStyle(18)
-             .fontColor(Color.Gray)
+             .textStyle(16)
          }
          .layoutWeight(1)
          .justifyContent(FlexAlign.Center)
@@ -193,11 +200,12 @@ export struct PlayingCover {
        }
      }
      .width('100%')
-     .padding({left:15, right:15, top:10, bottom:10})
+     .padding({left:15, right:15, top:px2vp(this.topRectHeight) + 10, bottom: px2vp(this.bottomRectHeight) + 10})
    }
-    .padding({ top: px2vp(this.topRectHeight), bottom: px2vp(this.bottomRectHeight) })
-    .height('100%')
-    .backgroundColor($r('app.color.background'))
+   .height('100%')
+   .backgroundImage(this.picUrl)
+   .backgroundImageSize(ImageSize.Cover)
+   .backdropBlur(100)
   }
 }
 

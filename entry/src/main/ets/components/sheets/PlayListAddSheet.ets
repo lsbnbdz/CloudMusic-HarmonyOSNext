@@ -49,7 +49,7 @@ export struct PlayListAddSheet {
                 Row({ space:15 }) {
                   Image(`${item.coverImgUrl}?param=128y128`).width(50).borderRadius(15)
                   Column({ space: 8 }) {
-                    Text(item.name).textStyle(16).fontWeight(FontWeight.Medium)
+                    Text(item.name).textStyle(16)
                     Text(`${item.trackCount} 首歌曲`).textStyle(12)
                   }
                   .layoutWeight(1)
@@ -61,7 +61,6 @@ export struct PlayListAddSheet {
               .type(ButtonType.Normal)
               .width('100%')
               .height(60)
-              .padding({ left: 20, right: 20 })
               .onClick(async () => {
                 LogUtil.info(TAG + 'songId: ' + this.songId)
                 try {
@@ -69,8 +68,8 @@ export struct PlayListAddSheet {
                   ToastUtil.showToast('成功添加到歌单')
                   this.isShow = false
                 } catch (e) {
-                  LogUtil.info(TAG + 'Add to PlayList Error: ' + JSON.stringify(e))
-                  ToastUtil.showToast('添加到歌单失败')
+                  LogUtil.info(TAG + 'Add to PlayList Error: ' + e)
+                  ToastUtil.showToast('添加到歌单失败: ' + e)
                 }
               })
             }

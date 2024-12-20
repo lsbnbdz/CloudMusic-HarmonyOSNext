@@ -7,6 +7,9 @@ import { getSongsList } from '../api/songApi';
 import { BottomPlayController } from '../components/play/BottomPlayController';
 import { BackButton } from '../components/buttons/BackButton';
 import { CircleButton, CircleImageButton, CommonCircleButton } from '../components/buttons/CircleButton';
+import { PlayListAddSheet } from '../components/sheets/PlayListAddSheet';
+import { PlayQueueButton } from '../components/buttons/PlayQueueButton';
+import { AddToPlayListButton } from '../components/buttons/AddToPlayListButton';
 
 /**
  * 歌曲列表页（搜索结果）
@@ -25,6 +28,7 @@ struct SongsListPage {
   @State isLoading: boolean = false
   @State isLoadingMore: boolean = false
   @State pageOpacity: number = 1
+  @State isShowAddSheet: boolean = false
 
   @State searchKeyword: string = ''
   hasAnimation: boolean | undefined = false
@@ -162,17 +166,7 @@ struct SongsListPage {
 
   @Builder SwipeItem(song: Song) {
     Row({ space: 10 }) {
-      Button() {
-        Text('加到歌单')
-          .height('100%')
-          .fontColor(Color.White)
-          .padding({ left: 10, right: 10 })
-          .textAlign(TextAlign.Center)
-      }
-      .type(ButtonType.Normal)
-      .height('100%')
-      .backgroundColor('#ff176b81')
-      // CircleButton({ imgUrl: $r('app.media.ic_public_add_filled'), bgColor: '#ff176b81', btnWidth: 50, imgWidth: 40 })
+      AddToPlayListButton({ song: song })
     }
     .height('100%')
     .backgroundColor(Color.Transparent)

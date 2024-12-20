@@ -1,6 +1,6 @@
 import { LogUtil } from "@pura/harmony-utils"
 import Constants from "../common/constants/Constants"
-import { playList } from "../common/entities/PlayList"
+import { playList, PlayListOperationRes } from "../common/entities/PlayList"
 import { PlayListSongs } from "../common/entities/PlayListSongs"
 import { PlayQueue } from "../common/entities/PlayQueue"
 import { Song } from "../common/entities/SongsResult"
@@ -119,21 +119,35 @@ export async function putPlayListInQueue(listId:number, trackCount:number): Prom
   await PlayQueueUtils.queueAdd_array(queue)
 }
 
+
+type OperationType = 'add' | 'del'
 /**
  * 向歌单添加/删除歌曲
  * @param op - 操作 add/del
  * @param pid - 歌单id
  * @param tracks - 歌曲id(多个用,隔开)
  */
-type OperationType = 'add' | 'del'
-
-async function PlayListOperation(op:OperationType, pid:number, tracks:number):Promise<boolean> {
-  const rootUrl = getApiUrl()
+export async function PlayListOperation(op:OperationType, pid:number, tracks:number):Promise<boolean> {
+  const rootUrl = await getApiUrl()
   const url:string = `${rootUrl}/playlist/tracks?op=${op}&pid=${pid}&tracks=${tracks}`
   const request = new HttpRequest(url)
   await request.Request().then((data) => {
-    if(data.result["code"] == 200) { return true }
-    else { throw new Error(data.result["message"]) }
+    const dataGot:PlayListOperationRes = data.result as PlayListOperationRes
+
+    LogUtil.info(TAG + JSON.stringify(dataGot))
+    if(dataGot.body) {
+      if (dataGot.body.code == 200) {
+        LogUtil.info(TAG + 'PlayListOperation Success')
+        return true
+      } else {
+        LogUtil.info(TAG + 'PlayListOperation Error: ' + dataGot.body.message)
+        throw new Error(dataGot.body.message)
+      }
+    }
+    else {
+      LogUtil.info(TAG + 'PlayListOperation Error: ' + data.result["message"])
+      throw new Error(data.result["message"])
+    }
   })
   return false
 }

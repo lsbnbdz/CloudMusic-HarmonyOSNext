@@ -2,6 +2,7 @@ import Constants from "../../common/constants/Constants"
 import { Song, SongClass } from "../../common/entities/SongsResult"
 import { changeDuration } from "../../common/functions/functions"
 import { pauseMusic, playNext, playPre, resumeMusic, seekMusic } from "../../common/functions/playerControl"
+import { AddToPlayListCircleButton } from "../buttons/AddToPlayListButton"
 import { LoopModeButton } from "../buttons/LoopModeButton"
 import { PlayQueueButton } from "../buttons/PlayQueueButton"
 import { DownloadDialog } from "../dialog/DownloadDialog"
@@ -58,18 +59,14 @@ export struct PlayingCover {
            // 歌曲封面图片
            if (this.playmode == 0) {
              Stack() {
-               Image($r('app.media.ic_public_music')).width(150).height(150).fillColor(Color.Gray).borderRadius(5)
+               Image($r('app.media.ic_public_music')).width(250).height(250).fillColor(Color.Gray).borderRadius(5)
              }
-             .width(200)
-             .height(200)
              .padding({ bottom: 30 })
            } else {
              Stack() {
                LoadingProgress().width(60)
-               Image(this.picUrl + '?param=512y512').width(150).height(150).borderRadius(5)
+               Image(this.picUrl + '?param=512y512').width(250).height(250).borderRadius(5)
              }
-             .width(200)
-             .height(200)
              .padding({ bottom: 30 })
            }
 
@@ -170,6 +167,8 @@ export struct PlayingCover {
                this.dialogController.open()
              })
            }
+
+           AddToPlayListCircleButton({ song: this.song })
 
            LoopModeButton()
 

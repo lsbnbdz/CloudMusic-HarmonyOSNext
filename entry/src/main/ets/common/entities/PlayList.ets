@@ -41,3 +41,25 @@ export const PlayListClass: PlayListResult = {
   ]
 };
 
+/**
+ * 歌单操作类(add,del)
+ */
+interface OperationBody {
+  code: number
+  message: string
+}
+
+export interface PlayListOperationRes {
+  status: number
+  body: OperationBody
+}
+
+export const PlayListOperationClass: PlayListOperationRes = {
+  status: 200,
+  body:
+  {
+    code: -1,
+    message: ''
+  }
+}
+

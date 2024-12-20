@@ -4,12 +4,13 @@ import { SongCard } from '../components/main/SongCard'
 import { playList } from '../common/entities/PlayList'
 import { ListHead } from '../components/head/ListHead'
 import { SpinKit, SpinType } from '@pura/spinkit'
-import { LogUtil, ToastUtil } from '@pura/harmony-utils'
-import { getPlayListSongs, putPlayListInQueue } from '../api/playListApi'
+import { DialogUtil, LogUtil, ToastUtil } from '@pura/harmony-utils'
+import { getPlayListSongs, PlayListOperation, putPlayListInQueue } from '../api/playListApi'
 import { BottomPlayController } from '../components/play/BottomPlayController'
 import { CommonCircleButton } from '../components/buttons/CircleButton'
 import Constants from '../common/constants/Constants'
 import { playQueue } from '../common/functions/playerControl'
+import { DialogAction } from '@pura/harmony-utils/src/main/ets/entity/constraint'
 
 /**
  * 歌单二级页面
@@ -103,6 +104,7 @@ struct PlayListPage {
                   SongCard({ song: item, sid: index, hasAnimation: this.hasAnimation,
                     isPlayList: true, playList: this.playList, index: index })
                 }
+                .swipeAction({ end: this.SwipeItem(item, index) })
               });
               // 添加加载更多
               if (this.isLoadingMore) {
@@ -173,5 +175,39 @@ struct PlayListPage {
       .onClick(() => {
         ToastUtil.showToast(Constants.DEVELOPING_MSG)
       })
+  }
+
+  @Builder SwipeItem(song: Song, index: number) {
+    Row({ space: 10 }) {
+      Button() {
+        Text('从歌单删除')
+          .height('100%')
+          .fontColor(Color.White)
+          .padding({ left: 10, right: 10 })
+          .textAlign(TextAlign.Center)
+      }
+      .type(ButtonType.Normal)
+      .height('100%')
+      .backgroundColor('#ffee4c51')
+      .onClick(() => {
+        DialogUtil.showPrimaryDialog({
+          title: '从歌单删除歌曲',
+          message: `${song.name}`,
+          primaryButton: "取消",
+          secondaryButton: "删除",
+          onAction: async (action) => {
+            if(action == DialogAction.TWO) {
+              try {
+                await PlayListOperation('del', this.playList.id, song.id)
+                ToastUtil.showToast('删除成功')
+                this.list.splice(index, 1)
+              } catch (e) {
+                ToastUtil.showToast('删除失败: ' + e)
+              }
+            }
+          }
+        })
+      })
+    }
   }
 }

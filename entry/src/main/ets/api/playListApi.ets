@@ -1,7 +1,7 @@
 import { LogUtil } from "@pura/harmony-utils"
 import Constants from "../common/constants/Constants"
 import { playList, PlayListOperationRes } from "../common/entities/PlayList"
-import { PlayListSongs } from "../common/entities/PlayListSongs"
+import { DailyListSongs, PlayListSongs } from "../common/entities/PlayListSongs"
 import { PlayQueue } from "../common/entities/PlayQueue"
 import { Song } from "../common/entities/SongsResult"
 import { User, UserClass } from "../common/entities/User"
@@ -150,4 +150,38 @@ export async function PlayListOperation(op:OperationType, pid:number, tracks:num
     }
   })
   return false
+}
+
+export interface DailySong {
+  song:Song
+  reason:string
+}
+/**
+ * 获取每日推荐歌单内歌曲
+ * @returns
+ */
+export async function getDailySongs(): Promise<Array<DailySong>> {
+  LogUtil.info(TAG + '----- getDailySongs -----')
+  let list:Array<DailySong> = []
+  const rootUrl = await getApiUrl()
+  const url: string = `${rootUrl}/recommend/songs`
+  LogUtil.info(TAG + 'url: ' + url)
+  const request = new HttpRequest(url)
+  await request.RequestInStream().then((data) => {
+    LogUtil.info(TAG + 'data: ' + JSON.stringify(data.result))
+    const dataGot: DailyListSongs = data.result as DailyListSongs
+    for(let song of dataGot.data.dailySongs) {
+      list.push({
+        song: {
+          id: song.id,
+          name: song.name,
+          artists: song.ar,
+          duration: song.dt,
+        },
+        reason: song.reason
+      })
+    }
+  })
+  LogUtil.info(TAG + 'getDailySongs: ' + JSON.stringify(list))
+  return list;
 }

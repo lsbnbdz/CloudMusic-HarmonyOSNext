@@ -17,6 +17,7 @@ export struct SongCard {
   @State isPlayList:boolean = false
   @State playList:playList = playListClass
   @State index:number = 0
+  @State reason:string = ''
 
   song:Song = SongClass
   sid:number = -1
@@ -38,9 +39,15 @@ export struct SongCard {
         Row() {
           Text(`${this.sid + 1}`).width(40).fontWeight(FontWeight.Bold)
           Image(this.picUrl + '?param=100y100').width(50).padding({ right: 10 }).borderRadius(5)
-          Column() {
+          Column({ space: 3 }) {
             Text(this.song.name).textStyle(16)
-            Text(this.artists).textStyle(12)
+            Row({ space: 5 }) {
+              if(this.reason) {
+                Text(this.reason).reasonText()
+              }
+              Text(this.artists).textStyle(12)
+            }
+            .width('100%')
           }
           .layoutWeight(1)
           .width(`100%`)
@@ -92,6 +99,14 @@ export struct SongCard {
   .fontColor($r('app.color.reverse'))
   .maxLines(1)
   .textOverflow({ overflow: TextOverflow.Ellipsis })
+}
+
+@Extend(Text) function reasonText() {
+  .fontColor('#ffff3232')
+  .fontSize(10)
+  .padding(2)
+  .backgroundColor('#ffffd2d2')
+  .borderRadius(5)
 }
 
 

@@ -20,9 +20,9 @@ export async function logOut() {
       await PreferencesUtils.delPreferenceValue(userPref, 'user')
       await PreferencesUtils.delPreferenceValue(userPref, 'cookie')
       await PreferencesUtils.delPreferenceValue(userPref, 'signTime')
-      AppStorage.set('isValidCookie', false)
-      AppStorage.set('vipType', -1)
-      AppStorage.set('cookie', '')
+      AppStorage.setOrCreate('isValidCookie', false)
+      AppStorage.setOrCreate('vipType', -1)
+      AppStorage.setOrCreate('cookie', '')
       promptAction.showToast({ message: '成功退出登录' })
     })
   } catch (e) {

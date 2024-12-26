@@ -12,37 +12,62 @@ export struct IndexHead {
   @StorageProp('User') user: User = UserClass
 
   build() {
-    Row() {
-      if(this.isValidCookie) {
-        CircleImageButton({ imgUrl: this.user.data.profile.avatarUrl + '?param=100y100' })
-          .bindSheet(this.isShowSheet, this.Sheet(), {
-            height: '50%',
-            dragBar: false,
-            showClose: false,
-            blurStyle: BlurStyle.Thick,
-            onDisappear: () => { this.isShowSheet = false }
-          })
-          .onClick(() => { this.isShowSheet = !this.isShowSheet })
-        Text(`${this.user.data.profile.nickname} 的歌单`).textStyle()
-      } else {
-        CommonCircleButton({ ButtonImageName:'ic_public_contacts_filled', BgColor:'#00cbcbcb'})
-          .bindSheet(this.isShowSheet, this.Sheet(), {
-            height: '50%',
-            dragBar: false,
-            showClose: false,
-            blurStyle: BlurStyle.Thick,
-            onDisappear: () => { this.isShowSheet = false }
-          })
-          .onClick(() => { this.isShowSheet = !this.isShowSheet })
-        Text(`云音汇`).textStyle()
-      }
+    Stack() {
+      Row({ space: 15 }) {
+        if (this.isValidCookie) {
+          CircleImageButton({ imgUrl: this.user.data.profile.avatarUrl + '?param=100y100' })
+            .bindSheet(this.isShowSheet, this.Sheet(), {
+              height: '50%',
+              dragBar: false,
+              showClose: false,
+              blurStyle: BlurStyle.Thick,
+              onDisappear: () => {
+                this.isShowSheet = false
+              }
+            })
+            .onClick(() => {
+              this.isShowSheet = !this.isShowSheet
+            })
 
-      CommonCircleButton({ ButtonImageName:'ic_public_more_filled', BgColor:'#00cbcbcb'})
-        .bindMenu(this.MoreMenu())
+        } else {
+          CommonCircleButton({ ButtonImageName: 'ic_public_contacts_filled', BgColor: '#00cbcbcb' })
+            .bindSheet(this.isShowSheet, this.Sheet(), {
+              height: '50%',
+              dragBar: false,
+              showClose: false,
+              blurStyle: BlurStyle.Thick,
+              onDisappear: () => {
+                this.isShowSheet = false
+              }
+            })
+            .onClick(() => {
+              this.isShowSheet = !this.isShowSheet
+            })
+        }
+
+        Search({
+          placeholder: '搜索内容',
+          icon: '/resources/base/media/ic_public_search_filled.svg',
+        })
+          .sharedTransition('search_component', {
+            duration: 300,
+            curve: Curve.EaseOut
+          })
+          .focusable(false)
+          .onClick(() => {
+            router.pushUrl({
+              url: 'pages/SongsListPage'
+            })
+          })
+          .layoutWeight(1)
+
+        CommonCircleButton({ ButtonImageName: 'ic_public_more_filled', BgColor: '#00cbcbcb' })
+          .bindMenu(this.MoreMenu())
+      }
+      .padding({ left: 10, right: 10, bottom: 5 })
+      .justifyContent(FlexAlign.SpaceBetween)
+      .width('100%')
     }
-    .padding({ left: 10, right: 10, bottom: 5 })
-    .justifyContent(FlexAlign.SpaceBetween)
-    .width('100%')
   }
 
   // 更多菜单

@@ -1,4 +1,5 @@
 import { LogUtil } from "@pura/harmony-utils"
+import { DailyListSongs } from "../common/entities/PlayListSongs"
 import { SongDetail } from "../common/entities/SongDetail"
 import { QualityType } from "../common/entities/SongDownload"
 import { SongPlay } from "../common/entities/SongPlay"
@@ -96,15 +97,15 @@ export async function getSongUrl(songId: number, quality:QualityType, isLogged:b
  */
 export async function getSongPicUrl(song: Song): Promise<string> {
   const rootUrl = await getApiUrl()
-  const url: string = `${rootUrl}/song/detail?ids=${song.id}`;
-  const request = new HttpRequest(url);
+  const url: string = `${rootUrl}/song/detail?ids=${song.id}`
+  const request = new HttpRequest(url)
   try {
-    const data = await request.Request();
-    const dataGot: SongDetail = data.result as SongDetail;
-    const songPicUrl = dataGot.songs[0].al.picUrl;
-    return songPicUrl;
+    const data = await request.Request()
+    const dataGot: SongDetail = data.result as SongDetail
+    const songPicUrl = dataGot.songs[0].al.picUrl
+    return songPicUrl
   } catch (e) {
-    LogUtil.error(TAG + 'Error fetching song picUrl:', JSON.stringify(e));
+    LogUtil.error(TAG + 'Error fetching song picUrl:', JSON.stringify(e))
     throw new Error(e)
   }
 }

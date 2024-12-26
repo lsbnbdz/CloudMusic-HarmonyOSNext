@@ -41,8 +41,8 @@ export struct BottomPlayController {
     Row({ space: 10 }) {
       if(this.isPlaying) {
         Row() {
-          if(this.playmode == 0) { Image($r('app.media.ic_public_music')).width(50).height(50).fillColor($r('app.color.reverse')) }
-          else { Image(this.picUrl + '?param=256y256').width(50).height(50).borderRadius(10) }
+          if(this.playmode == 0) { Image($r('app.media.ic_public_music')).fillColor($r('app.color.reverse')).songImg() }
+          else { Image(this.picUrl + '?param=256y256').songImg() }
 
           Column() {
             Text(this.song.name).textStyle(18)
@@ -136,4 +136,14 @@ struct ControlButtons {
   .maxLines(1)
   .padding({ left:20, right:20 })
   .textOverflow({ overflow: TextOverflow.MARQUEE })
+}
+
+@Extend(Image) function songImg() {
+  .width(50)
+  .height(50)
+  .borderRadius(10)
+  // .sharedTransition('songImg', {
+  //   duration: 300,
+  //   curve: Curve.Friction
+  // })
 }

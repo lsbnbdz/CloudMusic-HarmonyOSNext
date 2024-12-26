@@ -1,15 +1,12 @@
-import { router } from '@kit.ArkUI';
 import { Song } from '../common/entities/SongsResult';
 import { SongCard } from '../components/main/SongCard';
 import { LogUtil, ToastUtil } from '@pura/harmony-utils';
 import { SpinKit, SpinType } from '@pura/spinkit';
 import { getSongsList } from '../api/songApi';
 import { BottomPlayController } from '../components/play/BottomPlayController';
-import { BackButton } from '../components/buttons/BackButton';
-import { CircleButton, CircleImageButton, CommonCircleButton } from '../components/buttons/CircleButton';
-import { PlayListAddSheet } from '../components/sheets/PlayListAddSheet';
-import { PlayQueueButton } from '../components/buttons/PlayQueueButton';
 import { AddToPlayListButton } from '../components/buttons/AddToPlayListButton';
+import { CommonCircleButton } from '../components/buttons/CircleButton';
+import { router } from '@kit.ArkUI';
 
 /**
  * 歌曲列表页（搜索结果）
@@ -34,10 +31,11 @@ struct SongsListPage {
   hasAnimation: boolean | undefined = false
 
   pageTransition() {
-    PageTransitionEnter({ duration: 600, curve: Curve.Linear })
+    PageTransitionEnter({ duration: 0, curve: Curve.Ease })
       .onEnter((progress: number) => {
         this.pageOpacity = progress
       })
+    PageTransitionExit({ duration: 0, curve: Curve.Ease })
   }
 
   async onPageShow(): Promise<void> {
@@ -133,14 +131,17 @@ struct SongsListPage {
   @Builder
   Head() {
     Row({ space: 20 }) {
-      BackButton()
+      CommonCircleButton({ ButtonImageName:'ic_public_back' })
+        .onClick(() => {
+          router.back()
+        })
       Search({
         placeholder: '搜索内容',
         icon: '/resources/base/media/ic_public_search_filled.svg',
       })
         .sharedTransition('search_component', {
             duration: 300,
-            curve: Curve.Friction
+            curve: Curve.EaseOut
           })
         .defaultFocus(true)
         .layoutWeight(1)

@@ -1,11 +1,9 @@
-import { router } from '@kit.ArkUI'
 import { Song } from '../common/entities/SongsResult'
 import { SongCard } from '../components/main/SongCard'
-import { playList } from '../common/entities/PlayList'
 import { ListHead } from '../components/head/ListHead'
 import { SpinKit, SpinType } from '@pura/spinkit'
 import { LogUtil, ToastUtil } from '@pura/harmony-utils'
-import { DailySong, getDailySongs, putPlayListInQueue } from '../api/playListApi'
+import { DailySongRes, getDailySongs, PlayDailySongs } from '../api/playListApi'
 import { BottomPlayController } from '../components/play/BottomPlayController'
 import { CommonCircleButton } from '../components/buttons/CircleButton'
 import Constants from '../common/constants/Constants'
@@ -24,14 +22,8 @@ struct DailyListPage {
   @StorageProp('bottomRectHeight') bottomRectHeight: number = 0
   @StorageProp('topRectHeight') topRectHeight: number = 0
 
-  private playList: playList = Object(router.getParams())['playList']
-  private trackCount: number = Object(router.getParams())['trackCount']
-
-  @State list: Array<DailySong> = new Array()
-  @State hasMore: boolean = true
-  @State hasLoaded: boolean = false // 判定是否已加载 避免重复加载
+  @State list: Array<DailySongRes> = new Array()
   @State isLoading: boolean = true
-  @State isLoadingMore: boolean = false
   @State loadingPlayList:boolean = false
   @State pageOpacity: number = 1
   hasAnimation:boolean | undefined = false
@@ -44,7 +36,7 @@ struct DailyListPage {
   async loadSongs(): Promise<void> {
     this.isLoading = true
     try {
-      const result:Array<DailySong> = await getDailySongs()
+      const result:Array<DailySongRes> = await getDailySongs()
       this.list = result
     } catch (e) {
       LogUtil.error(TAG + 'Error fetching songs: ', e)
@@ -75,17 +67,17 @@ struct DailyListPage {
               .borderRadius(15)
               .onClick(async () => {
                 this.loadingPlayList = true
-                await putPlayListInQueue(this.playList.id, this.trackCount)
+                await PlayDailySongs()
                 this.loadingPlayList = false
                 playQueue(0)
               })
             }
             .padding({ left: 20, bottom: 10 })
 
-            ForEach(this.list, (item: DailySong, index) => {
+            ForEach(this.list, (item: DailySongRes, index) => {
               ListItem() {
                 SongCard({ song: item.song, sid: index, hasAnimation: this.hasAnimation,
-                  isPlayList: true, playList: this.playList, index: index, reason: item.reason })
+                  isPlayList: true, index: index, reason: item.reason })
               }
               .swipeAction({ end: this.SwipeItem(item.song) })
             });

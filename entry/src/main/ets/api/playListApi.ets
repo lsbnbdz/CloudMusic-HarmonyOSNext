@@ -119,6 +119,39 @@ export async function putPlayListInQueue(listId:number, trackCount:number): Prom
   await PlayQueueUtils.queueAdd_array(queue)
 }
 
+/**
+ * 播放每日推荐歌单
+ * @param list:Array<Songs>
+ * @returns
+ */
+export async function PlayDailySongs(): Promise<void> {
+  let queue:Array<PlayQueue> = []
+  const rootUrl = await getApiUrl()
+  const url: string = `${rootUrl}/recommend/songs`
+  const request = new HttpRequest(url)
+  await request.RequestInStream().then(async (data) => {
+    const dataGot: DailyListSongs = data.result as DailyListSongs
+    for (let item of dataGot.data.dailySongs) {
+      let artists = await getArtists(item.ar)
+      let tempSong: Song = {
+        id: item.id,
+        name: item.name,
+        artists: item.ar,
+        duration: item.dt
+      }
+      queue.push({
+        playmode: 1,
+        song: tempSong,
+        artists: artists,
+        fileName: ''
+      })
+    }
+  })
+  await PlayQueueUtils.cleanQueue()
+  await PlayQueueUtils.queueAdd_array(queue)
+}
+
+
 
 type OperationType = 'add' | 'del'
 /**
@@ -152,7 +185,7 @@ export async function PlayListOperation(op:OperationType, pid:number, tracks:num
   return false
 }
 
-export interface DailySong {
+export interface DailySongRes {
   song:Song
   reason:string
 }
@@ -160,15 +193,12 @@ export interface DailySong {
  * 获取每日推荐歌单内歌曲
  * @returns
  */
-export async function getDailySongs(): Promise<Array<DailySong>> {
-  LogUtil.info(TAG + '----- getDailySongs -----')
-  let list:Array<DailySong> = []
+export async function getDailySongs(): Promise<Array<DailySongRes>> {
+  let list:Array<DailySongRes> = []
   const rootUrl = await getApiUrl()
   const url: string = `${rootUrl}/recommend/songs`
-  LogUtil.info(TAG + 'url: ' + url)
   const request = new HttpRequest(url)
   await request.RequestInStream().then((data) => {
-    LogUtil.info(TAG + 'data: ' + JSON.stringify(data.result))
     const dataGot: DailyListSongs = data.result as DailyListSongs
     for(let song of dataGot.data.dailySongs) {
       list.push({

@@ -11,6 +11,8 @@ import { playList, playListClass } from "../../common/entities/PlayList"
 export struct SongCard {
   @State hasAnimation:boolean = false
   @State isShowSheet:boolean = false
+  @State showPlayButton:boolean = true
+  @State showAddQueueButton:boolean = true
   @State startHeight:number = 60
   @State startOpacity:number = 1
   @State picUrl:string = ''
@@ -54,12 +56,21 @@ export struct SongCard {
         }
         .layoutWeight(1)
 
-        Button() { Image($r('app.media.ic_public_add_norm')).fillColor($r('app.color.reverse')).width(15) }
-        .backgroundColor(Color.Transparent)
-        .onClick(() => {
-          PlayQueueUtils.queueAdd(1, this.song, this.artists, '')
-          promptAction.showToast({ message: '成功添加至播放列表' })
-        })
+        /**
+         * 添加到播放列表
+         */
+        if(this.showAddQueueButton) {
+          Button() {
+            Image($r('app.media.ic_public_add_norm'))
+              .fillColor($r('app.color.reverse'))
+              .width(15)
+          }
+          .backgroundColor(Color.Transparent)
+          .onClick(() => {
+            PlayQueueUtils.queueAdd(1, this.song, this.artists, '')
+            promptAction.showToast({ message: '成功添加至播放列表' })
+          })
+        }
       }
       .height(this.startHeight)
       .opacity(this.startOpacity)
@@ -89,7 +100,7 @@ export struct SongCard {
   @Builder
   Sheet() {
     SongSheet({ song: this.song, isShowSheet: this.isShowSheet, artists:this.artists, picUrl:this.picUrl,
-      isPlayList:this.isPlayList, playList: this.playList, index: this.index})
+      isPlayList:this.isPlayList, playList: this.playList, index: this.index, showPlayButton: this.showPlayButton})
   }
 }
 

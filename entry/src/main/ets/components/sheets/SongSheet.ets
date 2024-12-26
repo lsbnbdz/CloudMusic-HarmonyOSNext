@@ -35,6 +35,7 @@ export struct SongSheet {
   @State isPlayList:boolean = false
   @State playList:playList = playListClass
   @State index: number = -1
+  @State showPlayButton:boolean = true
 
   aboutToAppear(): void {
     this.duration = changeDuration(this.song.duration)
@@ -77,30 +78,11 @@ export struct SongSheet {
         else {
           Row({ space: 10 }) {
             // 播放按钮
-            Button() {
-              Row({ space: 5 }) {
-                Image($r('app.media.ic_play_fill')).width(18).fillColor($r('app.color.reverse'))
-                Text('播放单首').fontSize(16).fontColor($r('app.color.reverse'))
-              }
-              .padding(15)
-            }
-            .clickButtonStyle()
-            .onClick(async () => {
-              AppStorage.setOrCreate('isPlayerLoading', true)
-              this.isShowSheet = !this.isShowSheet
-              playMusicByUrl(this.song, this.artists, this.picUrl, this.isValidCookie).then(() => {
-                PlayQueueUtils.queueAdd(1, this.song, this.artists, '')
-                PlayQueueUtils.setIndex(PlayQueueUtils.currentQueueIndex + 1)
-                AppStorage.setOrCreate('isPlayerLoading', false)
-              })
-            })
-
-            if (this.isPlayList) {
-              // 同时播放歌单
+            if(this.showPlayButton) {
               Button() {
                 Row({ space: 5 }) {
                   Image($r('app.media.ic_play_fill')).width(18).fillColor($r('app.color.reverse'))
-                  Text('播放歌单').fontSize(16).fontColor($r('app.color.reverse'))
+                  Text('播放单首').fontSize(16).fontColor($r('app.color.reverse'))
                 }
                 .padding(15)
               }
@@ -108,10 +90,31 @@ export struct SongSheet {
               .onClick(async () => {
                 AppStorage.setOrCreate('isPlayerLoading', true)
                 this.isShowSheet = !this.isShowSheet
-                await putPlayListInQueue(this.playList.id, this.playList.trackCount)
-                AppStorage.setOrCreate('isPlayerLoading', false)
-                playQueue(this.index)
+                playMusicByUrl(this.song, this.artists, this.picUrl, this.isValidCookie).then(() => {
+                  PlayQueueUtils.queueAdd(1, this.song, this.artists, '')
+                  PlayQueueUtils.setIndex(PlayQueueUtils.currentQueueIndex + 1)
+                  AppStorage.setOrCreate('isPlayerLoading', false)
+                })
               })
+
+              if (this.isPlayList) {
+                // 同时播放歌单
+                Button() {
+                  Row({ space: 5 }) {
+                    Image($r('app.media.ic_play_fill')).width(18).fillColor($r('app.color.reverse'))
+                    Text('播放歌单').fontSize(16).fontColor($r('app.color.reverse'))
+                  }
+                  .padding(15)
+                }
+                .clickButtonStyle()
+                .onClick(async () => {
+                  AppStorage.setOrCreate('isPlayerLoading', true)
+                  this.isShowSheet = !this.isShowSheet
+                  await putPlayListInQueue(this.playList.id, this.playList.trackCount)
+                  AppStorage.setOrCreate('isPlayerLoading', false)
+                  playQueue(this.index)
+                })
+              }
             }
           }
         }

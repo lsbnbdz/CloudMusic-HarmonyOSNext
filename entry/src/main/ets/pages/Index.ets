@@ -35,6 +35,7 @@ struct Index {
             .layoutWeight(1)
           }
         }
+
       }
       BottomPlayController()
         .padding({ left: 10, right: 10, bottom: px2vp(this.bottomRectHeight)})

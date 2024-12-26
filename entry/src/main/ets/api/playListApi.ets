@@ -1,7 +1,7 @@
 import { LogUtil } from "@pura/harmony-utils"
 import Constants from "../common/constants/Constants"
 import { playList, PlayListOperationRes } from "../common/entities/PlayList"
-import { DailyListSongs, PlayListSongs } from "../common/entities/PlayListSongs"
+import { CloudSongs, DailyListSongs, PlayListSongs } from "../common/entities/PlayListSongs"
 import { PlayQueue } from "../common/entities/PlayQueue"
 import { Song } from "../common/entities/SongsResult"
 import { User, UserClass } from "../common/entities/User"
@@ -9,6 +9,7 @@ import { getApiUrl, getArtists } from "../common/functions/functions"
 import { HttpRequest } from "../common/utils/HttpRequestUtils"
 import PlayQueueUtils from "../common/utils/PlayQueueUtils"
 import PreferencesUtils from "../common/utils/PreferencesUtils"
+import { JSON } from "@kit.ArkTS"
 
 /**
  * 歌单类API
@@ -213,5 +214,31 @@ export async function getDailySongs(): Promise<Array<DailySongRes>> {
     }
   })
   LogUtil.info(TAG + 'getDailySongs: ' + JSON.stringify(list))
+  return list;
+}
+
+/**
+ * 获取云盘歌曲列表
+ * @param offset 偏移
+ * @returns list 歌曲列表
+ */
+export async function getCloudList(offset:number): Promise<Array<Song>> {
+  let list:Array<Song> = new Array()
+  const rootUrl = await getApiUrl()
+  const url:string = `${rootUrl}/user/cloud?limit=20&offset=${offset}`
+  const request = new HttpRequest(url)
+  await request.Request().then((data) => {
+    LogUtil.info(TAG + 'got data: ' + JSON.stringify(data.result))
+    const dataGot:CloudSongs = data.result as CloudSongs
+    for(let song of dataGot.data) {
+      list.push({
+        id: song.simpleSong.id,
+        name: song.simpleSong.name,
+        artists: song.simpleSong.ar,
+        duration: song.simpleSong.dt,
+      })
+    }
+  })
+  LogUtil.info(TAG + 'getCloudList: ' + JSON.stringify(list))
   return list;
 }

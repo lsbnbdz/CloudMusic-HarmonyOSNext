@@ -3,49 +3,59 @@ import { SongCard } from '../components/main/SongCard'
 import { ListHead } from '../components/head/ListHead'
 import { SpinKit, SpinType } from '@pura/spinkit'
 import { LogUtil, ToastUtil } from '@pura/harmony-utils'
-import { DailySongRes, getDailySongs, PlayDailySongs } from '../api/playListApi'
+import { getCloudList } from '../api/playListApi'
 import { BottomPlayController } from '../components/play/BottomPlayController'
 import { CommonCircleButton } from '../components/buttons/CircleButton'
 import Constants from '../common/constants/Constants'
-import { playQueue } from '../common/functions/playerControl'
-import { AddToPlayListButton } from '../components/buttons/AddToPlayListButton'
 
 /**
- * 每日推荐歌单页面
+ * 云盘
  */
 
-const TAG = '[DailyListPage] '
+const TAG = '[CloudPage] '
 
 @Entry
 @Component
-struct DailyListPage {
+struct PlayListPage {
   @StorageProp('bottomRectHeight') bottomRectHeight: number = 0
   @StorageProp('topRectHeight') topRectHeight: number = 0
 
-  @State list: Array<DailySongRes> = new Array()
-  @State hasLoaded: boolean = false
+  @State list: Array<Song> = new Array()
+  @State hasMore: boolean = true
+  @State hasLoaded: boolean = false // 判定是否已加载 避免重复加载
   @State isLoading: boolean = true
+  @State isLoadingMore: boolean = false
   @State loadingPlayList:boolean = false
   @State pageOpacity: number = 1
+
+  private currentOffset: number = 0 // 歌曲偏移量
   hasAnimation:boolean | undefined = false
 
   async onPageShow(): Promise<void> {
-    if(!this.hasLoaded) {
-      this.hasAnimation = AppStorage.get('set-hasAnimation')
-      await this.loadSongs()
-      this.hasLoaded = true
+    this.hasAnimation = AppStorage.get('set-hasAnimation')
+    if (!this.hasLoaded) {
+      await this.loadSongs(20, 0)
     }
   }
 
-  async loadSongs(): Promise<void> {
-    this.isLoading = true
+  async loadSongs(limit: number, offset: number): Promise<void> {
+    if (!this.hasMore) return
+    if (offset == 0) {
+      this.isLoading = true
+    } else {
+      this.isLoadingMore = true
+    }
+
     try {
-      const result:Array<DailySongRes> = await getDailySongs()
-      this.list = result
+      const result = await getCloudList(offset)
+      this.list = [...this.list, ...result]
+      this.currentOffset += limit
     } catch (e) {
       LogUtil.error(TAG + 'Error fetching songs: ', e)
     } finally {
       this.isLoading = false
+      this.isLoadingMore = false
+      this.hasLoaded = true
     }
   }
 
@@ -60,31 +70,37 @@ struct DailyListPage {
           List() {
             ListItem().height( px2vp(this.topRectHeight) + 50 )
             ListItem() {
-              Button() {
-                Row({ space: 5 }) {
-                  Image($r('app.media.ic_play_fill')).width(15).fillColor(Color.Gray)
-                  Text('播放全部').fontSize(15)
-                }
-              }
-              .type(ButtonType.Normal)
-              .backgroundColor(Color.Transparent)
-              .borderRadius(15)
-              .onClick(async () => {
-                this.loadingPlayList = true
-                await PlayDailySongs()
-                this.loadingPlayList = false
-                playQueue(0)
-              })
+              Text('云盘内歌曲仅支持单首播放和下载').textAlign(TextAlign.Center).width('100%').fontSize(14).padding(15)
             }
-            .padding({ left: 20, bottom: 10 })
-
-            ForEach(this.list, (item: DailySongRes, index) => {
+            ForEach(this.list, (item: Song, index) => {
               ListItem() {
-                SongCard({ song: item.song, sid: index, hasAnimation: this.hasAnimation,
-                  isPlayList: true, index: index, reason: item.reason })
+                SongCard({ song: item, sid: index, hasAnimation: this.hasAnimation,
+                  isPlayList: false, index: index, showPlayButton: true, showAddQueueButton: false })
               }
-              .swipeAction({ end: this.SwipeItem(item.song) })
             });
+            // 添加加载更多
+            if (this.isLoadingMore) {
+              ListItem() {
+                Column() {
+                  SpinKit({ spinType: SpinType.spinO, spinSize: 30, spinColor: Color.Gray }).width(30)
+                }.justifyContent(FlexAlign.Center).width('100%').height(50)
+              }
+            } else if (this.hasMore) {
+              ListItem() {
+                Text("点击加载更多")
+                  .onClick(() => {
+                    this.loadSongs(30, this.currentOffset)
+                  })
+                  .padding({ top: 10, bottom: px2vp(this.bottomRectHeight) })
+                  .fontColor($r('app.color.reverse'))
+                  .width('100%')
+                  .textAlign(TextAlign.Center)
+              }
+            } else if (!this.hasMore) {
+              ListItem() {
+                Text('没有更多了~').fontSize(16).textAlign(TextAlign.Center).width('100%').height(50);
+              }
+            }
             ListItem().height(px2vp(this.bottomRectHeight) + 80)
           }
           .height('100%')
@@ -93,7 +109,7 @@ struct DailyListPage {
           .scrollBar(BarState.Auto)
         }
         ListHead({
-          title: '每日推荐',
+          title: '音乐云盘',
           slot: this.HeadSlot
         })
       }
@@ -131,13 +147,5 @@ struct DailyListPage {
       .onClick(() => {
         ToastUtil.showToast(Constants.DEVELOPING_MSG)
       })
-  }
-
-  @Builder SwipeItem(song: Song) {
-    Row({ space: 10 }) {
-      AddToPlayListButton({ song: song })
-    }
-    .height('100%')
-    .backgroundColor(Color.Transparent)
   }
 }

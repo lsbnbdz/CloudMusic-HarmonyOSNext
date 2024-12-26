@@ -39,3 +39,14 @@ interface Data {
 export interface DailyListSongs {
   data: Data
 }
+
+/**
+ * 云盘歌单内歌曲
+ */
+interface CloudData {
+  simpleSong: Song
+}
+
+export interface CloudSongs {
+  data: CloudData[]
+}

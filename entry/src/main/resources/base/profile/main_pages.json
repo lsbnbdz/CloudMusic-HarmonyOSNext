@@ -9,6 +9,7 @@
     "pages/PlayListPage",
     "pages/WebPage",
     "pages/login/QrCodeLogin",
-    "pages/DailyListPage"
+    "pages/DailyListPage",
+    "pages/CloudPage"
   ]
 }

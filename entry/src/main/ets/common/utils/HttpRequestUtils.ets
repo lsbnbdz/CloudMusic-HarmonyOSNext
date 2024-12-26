@@ -43,10 +43,11 @@ export class HttpRequest {
           readTimeout: 15000,
         }, (err: BusinessError, data: http.HttpResponse) => {
         if (!err) {
+          LogUtil.info(TAG + '[RESULT] ' + JSON.stringify(data.result))
           httpRequest.destroy()
           resolve(data)  // 返回请求数据
         } else {
-          LogUtil.error(TAG + 'HttpRequest Error: ' + JSON.stringify(err))
+          LogUtil.error(TAG + 'HttpRequest Error: '+ `Url: ${this.url}` + JSON.stringify(err))
           httpRequest.off('headersReceive')
           httpRequest.destroy()
           reject(err)  // 出现错误时reject
@@ -145,7 +146,7 @@ export class HttpRequest {
           httpRequest.destroy()
           resolve(data)  // 返回请求数据
         } else {
-          LogUtil.error(TAG + 'HttpRequest Error: ' + JSON.stringify(err))
+          LogUtil.error(TAG + 'HttpRequest Error: '+ `Url: ${this.url}` + JSON.stringify(err))
           httpRequest.off('headersReceive')
           httpRequest.destroy()
           reject(err)  // 出现错误时reject

@@ -16,7 +16,7 @@ class AudioPlayUtils {
 
   async init() {
     try {
-      await this.mPlayer.init({ immediately: true, loop: false })
+      await this.mPlayer.init({ immediately: false, loop: false })
       this.onState()
       LogUtil.info(TAG + '播放器初始化完成')
     } catch (e) {
@@ -37,8 +37,8 @@ class AudioPlayUtils {
 
   async play() {
     await this.mPlayer.play()
+    AVSessionUtils.playState(this.mPlayer.currentTime)
     this.mPlayer.onTimeUpdate((time) => {
-      AVSessionUtils.playState()
       AppStorage.setOrCreate('player-time',time)
     })
   }
@@ -55,22 +55,21 @@ class AudioPlayUtils {
   }
 
   async resume() {
-    await this.mPlayer.play()
+    await this.play()
     LogUtil.info(TAG + '继续播放')
   }
 
   async seek(time: number) {
     await this.mPlayer.seek(time)
+    AVSessionUtils.playState(time)
     LogUtil.info(TAG + `跳转至 ${time} ( ${changeDuration(time)} )`)
   }
 
-
-
   onState() {
     this.mPlayer.onStateChange(async (state) => {
-      if(state == 'prepared') { AVSessionUtils.bufferingState() }
-      if(state == 'playing') { AppStorage.setOrCreate('player-isplaying', true); AVSessionUtils.playState() }
-      if(state == 'paused') { AppStorage.setOrCreate('playerw-ispaused', true); AVSessionUtils.pauseState() }
+      if(state == 'prepared') { this.play(); ContinuousTask.startTask() }
+      if(state == 'playing') { AppStorage.setOrCreate('player-isplaying', true) }
+      if(state == 'paused') { AppStorage.setOrCreate('player-ispaused', true); AVSessionUtils.pauseState(this.mPlayer.currentTime) }
       if(state == 'idle') { AVSessionUtils.deactive() }
       if(state == 'stopped') { AppStorage.setOrCreate('player-ispaused', true); ContinuousTask.stopTask() }
       if(state == 'completed') { AppStorage.setOrCreate('player-ispaused', true); ContinuousTask.stopTask(); completeDo() }

@@ -2,6 +2,7 @@ import Constants from "../../common/constants/Constants"
 import { Song, SongClass } from "../../common/entities/SongsResult"
 import { changeDuration } from "../../common/functions/functions"
 import { pauseMusic, playNext, playPre, resumeMusic, seekMusic } from "../../common/functions/playerControl"
+import AudioPlayUtils from "../../common/utils/AudioPlayUtils"
 import { AddToPlayListCircleButton } from "../buttons/AddToPlayListButton"
 import { LoopModeButton } from "../buttons/LoopModeButton"
 import { PlayQueueButton } from "../buttons/PlayQueueButton"
@@ -55,7 +56,7 @@ export struct PlayingCover {
      Column({ space: 5 }) {
        // 收起
        Row() {
-         Button({ type: ButtonType.Circle }) { Image($r('app.media.ic_public_arrow_down_0')).width(40).padding(5).fillColor(Color.Gray) }
+         Button({ type: ButtonType.Circle }) { Image($r('app.media.ic_public_arrow_down_0')).width(40).padding(5).fillColor(Color.White) }
          .backgroundColor(Color.Transparent)
          .onClick(() => { this.isShow = false })
        }
@@ -63,30 +64,40 @@ export struct PlayingCover {
        .justifyContent(FlexAlign.End)
 
        Column({ space: 20 }) {
-         Column({ space: 20 }) {
-           // 歌曲封面图片
-           if (this.playmode == 0) {
-             Stack() {
-               Image($r('app.media.ic_public_music')).width(250).height(250).fillColor(Color.Gray).borderRadius(5)
+         Tabs(){
+           TabContent() {
+             Column({ space: 20 }) {
+               // 歌曲封面图片
+               if (this.playmode == 0) {
+                 Stack() {
+                   Image($r('app.media.ic_public_music')).width(250).height(250).fillColor(Color.Gray).borderRadius(5)
+                 }
+                 .padding({ bottom: 30 })
+               } else {
+                 Stack() {
+                   LoadingProgress().width(60)
+                   Image(this.picUrl + '?param=512y512').width(250).height(250).borderRadius(5)
+                 }
+                 .padding({ bottom: 30 })
+               }
+
+               // 歌曲名称&艺术家
+               Text(this.song.name)
+                 .textStyle(22)
+                 .fontWeight(FontWeight.Bold)
+               Text(this.artists)
+                 .textStyle(16)
              }
-             .padding({ bottom: 30 })
-           } else {
-             Stack() {
-               LoadingProgress().width(60)
-               Image(this.picUrl + '?param=512y512').width(250).height(250).borderRadius(5)
-             }
-             .padding({ bottom: 30 })
+             .height('100%')
+             .justifyContent(FlexAlign.Center)
            }
 
-           // 歌曲名称&艺术家
-           Text(this.song.name)
-             .textStyle(22)
-             .fontWeight(FontWeight.Bold)
-           Text(this.artists)
-             .textStyle(16)
+           TabContent() {
+             Text('暂无歌词')
+           }
+           .height('100%')
          }
          .layoutWeight(1)
-         .justifyContent(FlexAlign.Center)
 
          Column({ space: 5 }) {
            Row() {

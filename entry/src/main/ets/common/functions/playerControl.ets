@@ -11,6 +11,7 @@ import AVSessionUtils from "../utils/AVSessionUtils";
 import { promptAction } from "@kit.ArkUI";
 import PreferencesUtils from "../utils/PreferencesUtils";
 import { fileIo } from "@kit.CoreFileKit";
+import { SongPlay } from "../entities/SongPlay";
 
 /**
  * 音频播放控制方法
@@ -20,16 +21,17 @@ const pref = Constants.QUEUE_PREF
 
 export async function playMusicByUrl(song:Song,artists:string,picUrl:string,isLogged:boolean) {
   try {
+    LogUtil.info(TAG + 'Play Music By Url: ' + `Song: ${JSON.stringify(song)}` + '\n' + `artists: ${JSON.stringify(artists)}`)
     const quality:number | undefined = await AppStorage.get('set-playQuality')
-    const songPlay = await getSongUrl(song.id, quality ? Constants.QUALITY[quality] : "standard", isLogged)
+    const songPlay:SongPlay = await getSongUrl(song.id, quality ? Constants.QUALITY[quality] : "standard", isLogged)
+    LogUtil.info(TAG + 'Play Music By Url: ' + JSON.stringify(songPlay))
     if(songPlay.data[0].url) {
       AppStorage.setOrCreate('player-mode', 1)
       AppStorage.setOrCreate('player-ispaused',false)
-      AppStorage.setOrCreate('player-isplaying',false)
+      // AppStorage.setOrCreate('player-isplaying', false)
       AppStorage.setOrCreate('player-song',song)
       AppStorage.setOrCreate('player-artists',artists)
       AppStorage.setOrCreate('player-picurl',picUrl)
-      await ContinuousTask.stopTask()
       // 是否存在本地文件
       let fileNameFomatted = sanitizeFileName(`${artists} - ${song.name}`)
       let localPath = await FileUtils.accessLocalFile(fileNameFomatted)
@@ -39,12 +41,15 @@ export async function playMusicByUrl(song:Song,artists:string,picUrl:string,isLo
       }
       else { await AudioPlayUtils.setUrl(songPlay.data[0].url) }
       AVSessionUtils.setMetadata(song,artists,picUrl)
-      ContinuousTask.startTask().then(() => {
-        AudioPlayUtils.play().then(() => {
-          AVSessionUtils.activate()
-          AppStorage.setOrCreate('player-isplaying',true)
-        })
-      })
+      AVSessionUtils.activate()
+      AppStorage.setOrCreate('player-isplaying',true)
+
+      // ContinuousTask.startTask().then(() => {
+      //   AudioPlayUtils.play().then(() => {
+      //     AVSessionUtils.activate()
+      //     AppStorage.setOrCreate('player-isplaying',true)
+      //   })
+      // })
     } else {
       ToastUtil.showToast('获取播放资源失败')
     }
@@ -71,19 +76,21 @@ export async function playMusicWithFile(fileName:string) {
       AppStorage.setOrCreate('player-mode', 0)
       AppStorage.setOrCreate('player-fileName',fileName)
       AppStorage.setOrCreate('player-ispaused', false)
-      AppStorage.setOrCreate('player-isplaying', false)
+      // AppStorage.setOrCreate('player-isplaying', false)
       AppStorage.setOrCreate('player-song', song)
       AppStorage.setOrCreate('player-artists', song.artists[0].name)
       AppStorage.setOrCreate('player-picurl','/resources/base/media/app.media.ic_public_music.svg')
       await ContinuousTask.stopTask()
       await AudioPlayUtils.setUrl(fdPath)
       AVSessionUtils.setMetadata(song,song.artists[0].name,`$r('app.media.ic_public_music.svg')`)
-      ContinuousTask.startTask().then(() => {
-        AudioPlayUtils.play().then(() => {
-          AVSessionUtils.activate()
-          AppStorage.setOrCreate('player-isplaying',true)
-        })
-      })
+      AVSessionUtils.activate()
+      AppStorage.setOrCreate('player-isplaying',true)
+      // ContinuousTask.startTask().then(() => {
+      //   AudioPlayUtils.play().then(() => {
+      //     AVSessionUtils.activate()
+      //     AppStorage.setOrCreate('player-isplaying',true)
+      //   })
+      // })
     } else {
       ToastUtil.showToast('未找到文件')
     }
@@ -101,15 +108,13 @@ export async function stopMusic() {
 }
 
 export async function pauseMusic() {
-  await AudioPlayUtils.pause().then(() => {
-    AppStorage.setOrCreate('player-ispaused',true)
-  })
+  AudioPlayUtils.pause()
+  AppStorage.setOrCreate('player-ispaused',true)
 }
 
 export async function resumeMusic() {
-  await AudioPlayUtils.resume().then(() => {
-    AppStorage.setOrCreate('player-ispaused',false)
-  })
+  AudioPlayUtils.resume()
+  AppStorage.setOrCreate('player-ispaused',false)
 }
 
 export async function seekMusic(time: number) {

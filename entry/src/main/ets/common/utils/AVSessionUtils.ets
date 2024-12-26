@@ -1,7 +1,8 @@
 import { avSession } from "@kit.AVSessionKit";
-import { AppUtil, LogUtil } from "@pura/harmony-utils";
+import { AppUtil, LogUtil, ToastUtil } from "@pura/harmony-utils";
 import { Song } from "../entities/SongsResult";
 import { changeCycleMode, pauseMusic, playNext, playPre, resumeMusic, seekMusic } from "../functions/playerControl";
+import AudioPlayUtils from "./AudioPlayUtils";
 
 /**
  * AVSession 播控中心工具类
@@ -49,10 +50,7 @@ class AVSessionUtils {
         else if(loopMode == 1) { changeCycleMode(2) }
         else if(loopMode == 2) { changeCycleMode(3) }
         else { changeCycleMode(0) }
-
       })
-
-
 
     } catch (e) {
       LogUtil.error(TAG + '创建session失败 / create session error: ' + JSON.stringify(e))
@@ -69,11 +67,11 @@ class AVSessionUtils {
    */
   async setMetadata(song: Song, artists: string, picUrl: string) {
     let metadata: avSession.AVMetadata = {
-      assetId: '0',
-      title: song?.name,
+      assetId: `${song.id}`,
+      title: song.name,
       mediaImage: picUrl,
-      artist: artists,
-      duration: song?.duration
+      artist: artists != 'null' ? artists : '未知',
+      duration: song.duration
     };
 
     (await this.session).setAVMetadata(metadata);
@@ -107,9 +105,8 @@ class AVSessionUtils {
   /**
    * 设置为播放状态
    */
-  async playState() {
+  async playState(time: number) {
     let loopMode = await getLoopMode()
-    let time = await getPlayTime()
     let playbackState: avSession.AVPlaybackState = {
       state: avSession.PlaybackState.PLAYBACK_STATE_PLAY,
       loopMode: loopMode,
@@ -125,8 +122,7 @@ class AVSessionUtils {
   /**
    * 设置为暂停状态
    */
-  async pauseState() {
-    let time = await getPlayTime()
+  async pauseState(time:number) {
     let pausedState: avSession.AVPlaybackState = {
       state: avSession.PlaybackState.PLAYBACK_STATE_PAUSE,
       position: {

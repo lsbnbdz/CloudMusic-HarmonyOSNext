@@ -9,6 +9,9 @@ import { CommonCircleButton } from '../components/buttons/CircleButton'
 import Constants from '../common/constants/Constants'
 import { playQueue } from '../common/functions/playerControl'
 import { AddToPlayListButton } from '../components/buttons/AddToPlayListButton'
+import { getApiUrl } from '../common/functions/functions'
+import { HttpRequest } from '../common/utils/HttpRequestUtils'
+import { DailyListSongs } from '../common/entities/PlayListSongs'
 
 /**
  * 每日推荐歌单页面
@@ -27,6 +30,7 @@ struct DailyListPage {
   @State isLoading: boolean = true
   @State loadingPlayList:boolean = false
   @State pageOpacity: number = 1
+  @State ResData: string = ''
   hasAnimation:boolean | undefined = false
 
   async onPageShow(): Promise<void> {
@@ -40,7 +44,7 @@ struct DailyListPage {
   async loadSongs(): Promise<void> {
     this.isLoading = true
     try {
-      const result:Array<DailySongRes> = await getDailySongs()
+      const result:Array<DailySongRes> = await this.getDailySongs()
       this.list = result
     } catch (e) {
       LogUtil.error(TAG + 'Error fetching songs: ', e)
@@ -57,40 +61,61 @@ struct DailyListPage {
             SpinKit({ spinType: SpinType.spinO, spinSize: 60, spinColor: Color.Gray }).width(60)
           }.height('100%').width('100%').justifyContent(FlexAlign.Center)
         } else {
-          List() {
-            ListItem().height( px2vp(this.topRectHeight) + 50 )
-            ListItem() {
-              Button() {
-                Row({ space: 5 }) {
-                  Image($r('app.media.ic_play_fill')).width(15).fillColor(Color.Gray)
-                  Text('播放全部').fontSize(15)
-                }
-              }
-              .type(ButtonType.Normal)
-              .backgroundColor(Color.Transparent)
-              .borderRadius(15)
-              .onClick(async () => {
-                this.loadingPlayList = true
-                await PlayDailySongs()
-                this.loadingPlayList = false
-                playQueue(0)
-              })
+          // debug
+          Stack({ alignContent: Alignment.Top}) {
+            Column() {
+            if(this.list.length < 3) {
+              Text('加载列表可能出错，请反馈下方debug信息：').fontSize(16)
+              Text(this.ResData)
+                .fontSize(12)
             }
-            .padding({ left: 20, bottom: 10 })
+            }
+            .padding({ top: px2vp(this.topRectHeight) + 50, left: 20, right: 20 })
 
-            ForEach(this.list, (item: DailySongRes, index) => {
+            List() {
+              ListItem().height(px2vp(this.topRectHeight) + 50)
               ListItem() {
-                SongCard({ song: item.song, sid: index, hasAnimation: this.hasAnimation,
-                  isPlayList: true, index: index, reason: item.reason })
+                Button() {
+                  Row({ space: 5 }) {
+                    Image($r('app.media.ic_play_fill')).width(15).fillColor(Color.Gray)
+                    Text('播放全部').fontSize(15)
+                  }
+                }
+                .type(ButtonType.Normal)
+                .backgroundColor(Color.Transparent)
+                .borderRadius(15)
+                .onClick(async () => {
+                  this.loadingPlayList = true
+                  await PlayDailySongs()
+                  this.loadingPlayList = false
+                  playQueue(0)
+                })
               }
-              .swipeAction({ end: this.SwipeItem(item.song) })
-            });
-            ListItem().height(px2vp(this.bottomRectHeight) + 80)
+              .padding({ left: 20, bottom: 10 })
+
+              ForEach(this.list, (item: DailySongRes, index) => {
+                ListItem() {
+                  SongCard({
+                    song: item.song,
+                    sid: index,
+                    hasAnimation: this.hasAnimation,
+                    isPlayList: true,
+                    index: index,
+                    reason: item.reason
+                  })
+                }
+                .swipeAction({ end: this.SwipeItem(item.song) })
+              });
+              ListItem().height(px2vp(this.bottomRectHeight) + 80)
+            }
+            .height('100%')
+            .layoutWeight(1)
+            .width('100%')
+            .scrollBar(BarState.Auto)
           }
           .height('100%')
           .layoutWeight(1)
           .width('100%')
-          .scrollBar(BarState.Auto)
         }
         ListHead({
           title: '每日推荐',
@@ -140,4 +165,28 @@ struct DailyListPage {
     .height('100%')
     .backgroundColor(Color.Transparent)
   }
+
+  async getDailySongs(): Promise<Array<DailySongRes>> {
+  let list:Array<DailySongRes> = []
+  const rootUrl = await getApiUrl()
+  const url: string = `${rootUrl}/recommend/songs`
+  const request = new HttpRequest(url)
+  await request.RequestInStream().then((data) => {
+    this.ResData = JSON.stringify(data.result)
+    const dataGot: DailyListSongs = data.result as DailyListSongs
+    for(let song of dataGot.data.dailySongs) {
+      list.push({
+        song: {
+          id: song.id,
+          name: song.name,
+          artists: song.ar,
+          duration: song.dt,
+        },
+        reason: song.reason
+      })
+    }
+  })
+  return list;
+}
+
 }

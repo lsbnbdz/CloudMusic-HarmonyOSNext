@@ -17,10 +17,10 @@ export struct IndexHead {
         if (this.isValidCookie) {
           CircleImageButton({ imgUrl: this.user.data.profile.avatarUrl + '?param=100y100' })
             .bindSheet(this.isShowSheet, this.Sheet(), {
+              backgroundColor: $r('app.color.background'),
               height: '50%',
               dragBar: false,
               showClose: false,
-              blurStyle: BlurStyle.Thick,
               onDisappear: () => {
                 this.isShowSheet = false
               }
@@ -32,10 +32,10 @@ export struct IndexHead {
         } else {
           CommonCircleButton({ ButtonImageName: 'ic_public_contacts_filled', BgColor: '#00cbcbcb' })
             .bindSheet(this.isShowSheet, this.Sheet(), {
+              backgroundColor: $r('app.color.background'),
               height: '50%',
               dragBar: false,
               showClose: false,
-              blurStyle: BlurStyle.Thick,
               onDisappear: () => {
                 this.isShowSheet = false
               }

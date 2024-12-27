@@ -184,9 +184,10 @@ export struct PlayingCover {
                this.picUrl1 = this.picUrl
                this.dialogController.open()
              })
-           }
 
-           AddToPlayListCircleButton({ song: this.song })
+             AddToPlayListCircleButton({ song: this.song })
+
+           }
 
            LoopModeButton()
 

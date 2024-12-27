@@ -12,7 +12,7 @@ export struct RecommendCards {
        * 每日推荐卡片
        */
       ListItem() {
-        this.ContentButton(`每日推荐`,'符合你口味的\n新鲜好歌',$r('app.media.bg1'),() => {
+        this.ContentButton(`每日推荐`,'符合你口味的\n新鲜好歌',$r('app.media.bg3'),() => {
           router.pushUrl({
             url: 'pages/DailyListPage',
           })
@@ -35,7 +35,7 @@ export struct RecommendCards {
        * 音乐云盘卡片
        */
       ListItem() {
-        this.ContentButton(`我的音乐云盘`,`随时随地畅听`,$r('app.media.bg3'),() => {
+        this.ContentButton(`我的音乐云盘`,`随时随地畅听`,$r('app.media.bg1'),() => {
           router.pushUrl({
             url: 'pages/CloudPage',
           })
@@ -81,7 +81,7 @@ export struct RecommendCards {
   .width('100%')
   .borderRadius(15)
   .backgroundColor(Color.Transparent)
-  .backgroundBlurStyle(BlurStyle.Thin)
+  .backgroundBlurStyle(BlurStyle.BACKGROUND_THIN)
 }
 
 @Extend(Text) function textStyle(size: number, isBold: boolean = false) {

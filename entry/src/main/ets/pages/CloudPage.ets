@@ -2,11 +2,11 @@ import { Song } from '../common/entities/SongsResult'
 import { SongCard } from '../components/main/SongCard'
 import { ListHead } from '../components/head/ListHead'
 import { SpinKit, SpinType } from '@pura/spinkit'
-import { LogUtil, ToastUtil } from '@pura/harmony-utils'
+import { DialogUtil, LogUtil } from '@pura/harmony-utils'
 import { getCloudList } from '../api/playListApi'
 import { BottomPlayController } from '../components/play/BottomPlayController'
+import { ExplainButton } from '../components/buttons/ExplainButton'
 import { CommonCircleButton } from '../components/buttons/CircleButton'
-import Constants from '../common/constants/Constants'
 
 /**
  * 云盘
@@ -21,14 +21,14 @@ struct PlayListPage {
   @StorageProp('topRectHeight') topRectHeight: number = 0
 
   @State list: Array<Song> = new Array()
-  @State hasMore: boolean = true
-  @State hasLoaded: boolean = false // 判定是否已加载 避免重复加载
-  @State isLoading: boolean = true
-  @State isLoadingMore: boolean = false
-  @State loadingPlayList:boolean = false
   @State pageOpacity: number = 1
 
-  private currentOffset: number = 0 // 歌曲偏移量
+  @State hasMore: boolean = true
+  @State hasLoaded: boolean = false
+  @State isLoading: boolean = true
+  @State isLoadingMore: boolean = false
+
+  private currentOffset: number = 0
   hasAnimation:boolean | undefined = false
 
   async onPageShow(): Promise<void> {
@@ -69,13 +69,10 @@ struct PlayListPage {
         } else {
           List() {
             ListItem().height( px2vp(this.topRectHeight) + 50 )
-            ListItem() {
-              Text('云盘内歌曲仅支持单首播放和下载').textAlign(TextAlign.Center).width('100%').fontSize(14).padding(15)
-            }
             ForEach(this.list, (item: Song, index) => {
               ListItem() {
                 SongCard({ song: item, sid: index, hasAnimation: this.hasAnimation,
-                  isPlayList: false, index: index, showPlayButton: true, showAddQueueButton: false })
+                  isPlayList: false, index: index })
               }
             });
             // 添加加载更多
@@ -118,22 +115,6 @@ struct PlayListPage {
       BottomPlayController()
         .padding({ left: 10, right: 10, bottom: px2vp(this.bottomRectHeight)})
         .backgroundColor(Color.Transparent)
-
-      if(this.loadingPlayList) {
-        Column() {
-          Column({ space: 10 }) {
-            LoadingProgress().width(60)
-            Text('正在获取完整歌曲列表')
-          }
-          .padding(30)
-          .borderRadius(15)
-          .backgroundColor($r('app.color.main'))
-        }
-        .height('100%')
-        .width('100%')
-        .justifyContent(FlexAlign.Center)
-        .padding({ bottom: px2vp(this.topRectHeight) })
-      }
     }
     .opacity(this.pageOpacity)
     .width('100%')
@@ -143,9 +124,14 @@ struct PlayListPage {
 
   @Builder
   HeadSlot() {
-    CommonCircleButton({ ButtonImageName: 'ic_public_more_filled' })
+    CommonCircleButton({
+      ButtonImageName: 'app.media.ic_public_help'
+    })
       .onClick(() => {
-        ToastUtil.showToast(Constants.DEVELOPING_MSG)
+        DialogUtil.showConfirmDialog({
+          title: '云盘',
+          message: '音乐云盘内歌曲仅支持单首播放、下载'
+        })
       })
   }
 }

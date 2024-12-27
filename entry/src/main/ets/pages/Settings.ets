@@ -71,11 +71,11 @@ struct Settings {
     Row() {
       Row({ space: 5 }) {
         Text('使用公共Cookie').LeftText()
-        ExplainButton()
-          .onClick(() => {
-            DialogUtil.showConfirmDialog({title:'公共 Cookie', message:'该功能仅对非VIP用户生效\n开启后，非VIP用户将使用公共Cookie\n' +
-              '获取完整的下载链接/歌曲Url'})
-          })
+        ExplainButton({
+          title:'公共 Cookie',
+          msg:'该功能仅对非VIP用户生效\n开启后，非VIP用户将使用公共Cookie\n' +
+          '获取完整的下载链接/歌曲Url'
+        })
       }
       Toggle({ type: ToggleType.Switch, isOn:this.isUsePubCookie }).height(24).width(48)
         .onChange(async () => { this.isUsePubCookie = !this.isUsePubCookie; AppStorage.setOrCreate('set-isUsePubCookie',this.isUsePubCookie); await PreferencesUtils.putPreferenceValue('Settings','isUsePubCookie',this.isUsePubCookie)})
@@ -120,15 +120,12 @@ struct Settings {
       Row() {
         Row({ space: 5 }) {
           Text('自定义API服务器地址').LeftText()
-          ExplainButton()
-            .onClick(() => {
-              DialogUtil.showConfirmDialog({
-                title: '自定义API服务器地址', message: '使用自定义网易云音乐API地址\n' +
-                  '需要搭建NeteaseCloudMusicApi服务\n\n' +
-                  '地址格式: http://example.com:3000\n' +
-                  '(注意末尾不带\"/\")'
-              })
-            })
+          ExplainButton({ title: '自定义API服务器地址',
+            msg: '使用自定义网易云音乐API地址\n' +
+            '需要搭建NeteaseCloudMusicApi服务\n\n' +
+            '地址格式: http://example.com:3000\n' +
+            '(注意末尾不带\"/\")'
+          })
         }
         Toggle({ type: ToggleType.Switch, isOn: this.isCustomApiUrl }).height(24).width(48)
           .onChange(async () => {
@@ -168,7 +165,7 @@ struct Settings {
   }
   build() {
     Row() {
-      Text('清除缓存').LeftText()
+      Text('清除缓存目录').LeftText()
       Button(`${(this.cacheSize / (1024 * 1024)).toFixed(2)} MB`)
         .backgroundColor(Color.Transparent)
         .borderWidth(2)

@@ -4,7 +4,7 @@ import { QualityType } from "../entities/SongDownload"
  * 常量类
  */
 export default class Constants {
-  static readonly VERSION: string = '1.0.2'
+  static readonly VERSION: string = '1.1.0'
   static readonly VER_DESC: string = ''
 
   static readonly USER_PREF: string = 'UserPreference'
@@ -26,6 +26,6 @@ export default class Constants {
   static readonly CYCLE_MODE: string[] = ['顺序播放', '单曲循环', '顺序循环', '随机播放']
 
   // Messages
-  static readonly HTTP_ERROR_MSG: string = '网络请求发生错误，请检查：\n网络连接和API服务器是否正常'
+  static readonly HTTP_ERROR_MSG: string = '网络请求发生错误，请检查\n网络连接和API服务器是否正常'
   static readonly DEVELOPING_MSG: string = '该功能正在开发中，敬请期待。'
 }

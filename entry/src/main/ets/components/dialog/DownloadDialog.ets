@@ -27,8 +27,8 @@ export struct DownloadDialog {
     try {
       const gotDownloadData: SongDownload = await getDownloadInfo(this.song.id, this.quality, this.isValidCookie)
       this.songDownload = gotDownloadData
-      if(this.songDownload.data.url == null) { this.succ = false }
-      this.fileSize = await convertSize(this.songDownload.data.size)
+      if(this.songDownload.data[0].url == null) { this.succ = false }
+      this.fileSize = await convertSize(this.songDownload.data[0].size)
       setTimeout(() => {
         this.isLoading = false
       },500)
@@ -53,15 +53,15 @@ export struct DownloadDialog {
             Text(this.artists).textStyle(14)
             Divider()
             Text(`时长 ${this.duration}`).textStyle(12)
-            Text(`音质: ${this.songDownload.data.level}     格式: ${this.songDownload.data.type}     大小: ${this.fileSize}MB`)
+            Text(`音质: ${this.songDownload.data[0].level}     格式: ${this.songDownload.data[0].type}     大小: ${this.fileSize}MB`)
               .textStyle(12)
             Button('获取下载地址').ButtonStyle()
               .onClick(() => {
-                copyDownloadUrl(this.songDownload.data.url)
+                copyDownloadUrl(this.songDownload.data[0].url)
               })
             Button('下载到本地').ButtonStyle()
               .onClick(() => {
-                ToastUtil.showToast(`开始下载：${this.song.name}.${this.songDownload.data.type}`)
+                ToastUtil.showToast(`开始下载：${this.song.name}.${this.songDownload.data[0].type}`)
                 this.controller.close()
                 FileDownloadUtils.download(this.songDownload,this.song,this.artists)
               })

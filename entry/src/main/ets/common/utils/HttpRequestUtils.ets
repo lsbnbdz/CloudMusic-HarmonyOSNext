@@ -52,7 +52,7 @@ export class HttpRequest {
           httpRequest.destroy()
           reject(err)  // 出现错误时reject
           setTimeout(() => {
-            ToastUtil.showToast(`${Constants.HTTP_ERROR_MSG}`, { duration: 4000 })
+            ToastUtil.showToast(`${Constants.HTTP_ERROR_MSG} ${this.url}`, { duration: 4000 })
           },1000)
         }
       })
@@ -95,8 +95,9 @@ export class HttpRequest {
           }
           resolve(data)
         } catch (err) {
+          LogUtil.error(TAG + 'Error: ' + this.url)
           setTimeout(() => {
-            ToastUtil.showToast(`${Constants.HTTP_ERROR_MSG}`, { duration: 4000 })
+            ToastUtil.showToast(`${Constants.HTTP_ERROR_MSG} ${this.url}`, { duration: 4000 })
           },1000)
           reject(err)
         }

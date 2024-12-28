@@ -1,4 +1,4 @@
-import { FileUtil, LogUtil, RandomUtil, ToastUtil } from "@pura/harmony-utils";
+import { EmitterUtil, FileUtil, LogUtil, RandomUtil, ToastUtil } from "@pura/harmony-utils";
 import { Song } from "../entities/SongsResult";
 import AudioPlayUtils from "../utils/AudioPlayUtils";
 import ContinuousTask from "../utils/ContinuousTask";
@@ -12,6 +12,7 @@ import { promptAction } from "@kit.ArkUI";
 import PreferencesUtils from "../utils/PreferencesUtils";
 import { fileIo } from "@kit.CoreFileKit";
 import { SongPlay } from "../entities/SongPlay";
+import { getLyric } from "../../api/LyricApi";
 
 /**
  * 音频播放控制方法
@@ -24,14 +25,15 @@ export async function playMusicByUrl(song:Song,artists:string,picUrl:string,isLo
     LogUtil.info(TAG + 'Play Music By Url: ' + `Song: ${JSON.stringify(song)}` + '\n' + `artists: ${JSON.stringify(artists)}`)
     const quality:number | undefined = await AppStorage.get('set-playQuality')
     const songPlay:SongPlay = await getSongUrl(song.id, quality ? Constants.QUALITY[quality] : "standard", isLogged)
-    LogUtil.info(TAG + 'Play Music By Url: ' + JSON.stringify(songPlay))
+    let lyricArr:string[] = await getLyric(song.id)
+    EmitterUtil.post('1','Lyric Updated')
     if(songPlay.data[0].url) {
       AppStorage.setOrCreate('player-mode', 1)
       AppStorage.setOrCreate('player-ispaused',false)
-      // AppStorage.setOrCreate('player-isplaying', false)
       AppStorage.setOrCreate('player-song',song)
       AppStorage.setOrCreate('player-artists',artists)
       AppStorage.setOrCreate('player-picurl',picUrl)
+      AppStorage.setOrCreate('player-lyric',lyricArr)
       // 是否存在本地文件
       let fileNameFomatted = sanitizeFileName(`${artists} - ${song.name}`)
       let localPath = await FileUtils.accessLocalFile(fileNameFomatted)
@@ -43,13 +45,7 @@ export async function playMusicByUrl(song:Song,artists:string,picUrl:string,isLo
       AVSessionUtils.setMetadata(song,artists,picUrl)
       AVSessionUtils.activate()
       AppStorage.setOrCreate('player-isplaying',true)
-
-      // ContinuousTask.startTask().then(() => {
-      //   AudioPlayUtils.play().then(() => {
-      //     AVSessionUtils.activate()
-      //     AppStorage.setOrCreate('player-isplaying',true)
-      //   })
-      // })
+      saveCurrentSongInfo(1, song, artists, picUrl)
     } else {
       ToastUtil.showToast('获取播放资源失败')
     }
@@ -76,21 +72,16 @@ export async function playMusicWithFile(fileName:string) {
       AppStorage.setOrCreate('player-mode', 0)
       AppStorage.setOrCreate('player-fileName',fileName)
       AppStorage.setOrCreate('player-ispaused', false)
-      // AppStorage.setOrCreate('player-isplaying', false)
       AppStorage.setOrCreate('player-song', song)
       AppStorage.setOrCreate('player-artists', song.artists[0].name)
       AppStorage.setOrCreate('player-picurl','/resources/base/media/app.media.ic_public_music.svg')
+      AppStorage.setOrCreate('player-lyric',[])
       await ContinuousTask.stopTask()
       await AudioPlayUtils.setUrl(fdPath)
       AVSessionUtils.setMetadata(song,song.artists[0].name,`$r('app.media.ic_public_music.svg')`)
       AVSessionUtils.activate()
       AppStorage.setOrCreate('player-isplaying',true)
-      // ContinuousTask.startTask().then(() => {
-      //   AudioPlayUtils.play().then(() => {
-      //     AVSessionUtils.activate()
-      //     AppStorage.setOrCreate('player-isplaying',true)
-      //   })
-      // })
+      saveCurrentSongInfo(0, song, song.artists[0].name, '/resources/base/media/app.media.ic_public_music.svg')
     } else {
       ToastUtil.showToast('未找到文件')
     }
@@ -223,4 +214,16 @@ export async function getCycleMode(): Promise<number> {
   if(mode) {
     return mode
   } else return 0
+}
+
+/**
+ * 保存当前播放的歌曲信息
+ */
+export async function saveCurrentSongInfo(playMode: number, song: Song, artists: string, imgUrl: string) {
+  await PreferencesUtils.putPreferenceValue('Play','hasCurrentSong', true)
+  await PreferencesUtils.putPreferenceValue('Play','PlayMode', playMode)
+  await PreferencesUtils.putPreferenceValue('Play','CurrentSong', song)
+  await PreferencesUtils.putPreferenceValue('Play','CurrentArtists', artists)
+  await PreferencesUtils.putPreferenceValue('Play','CurrentImage', imgUrl)
+  await PreferencesUtils.putPreferenceValue('Play','CurrentQueueIndex', PlayQueueUtils.currentQueueIndex)
 }

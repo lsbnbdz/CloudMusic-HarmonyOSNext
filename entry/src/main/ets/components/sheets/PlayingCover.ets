@@ -1,38 +1,46 @@
+import { EmitterUtil } from "@pura/harmony-utils"
 import Constants from "../../common/constants/Constants"
 import { Song, SongClass } from "../../common/entities/SongsResult"
 import { changeDuration } from "../../common/functions/functions"
 import { pauseMusic, playNext, playPre, resumeMusic, seekMusic } from "../../common/functions/playerControl"
-import AudioPlayUtils from "../../common/utils/AudioPlayUtils"
 import { AddToPlayListCircleButton } from "../buttons/AddToPlayListButton"
 import { LoopModeButton } from "../buttons/LoopModeButton"
 import { PlayQueueButton } from "../buttons/PlayQueueButton"
 import { DownloadDialog } from "../dialog/DownloadDialog"
 
+const TAG = '[PlayingCover] '
+export interface Lyric {
+  time: number;
+  content: string;
+}
 @Component
 export struct PlayingCover {
 
   @StorageProp('topRectHeight') topRectHeight: number = 0
   @StorageProp('bottomRectHeight') bottomRectHeight: number = 0
 
-  @StorageLink('player-isplaying') isPlaying:boolean = false
   @StorageProp('player-mode') playmode:number = 1
-  @StorageProp('player-fileName') fileName:string = ''
   @StorageProp('player-song') song:Song = SongClass
   @StorageProp('player-artists') artists:string = ''
   @StorageProp('player-ispaused') isPaused:boolean = false
   @StorageProp('player-picurl') picUrl:string = ''
   @StorageProp('player-time') time:number = 0
-  @StorageProp('set-playQuality') playQuality:number = 0
+  @StorageProp('player-lyric') lyricArr: string[] = []
+
   @Link isShow: boolean
+  @State hasLoaded: boolean = false
   @State qualitySelected:number = 3
   @State sliderThickness: number = 10
   @State isMovingSlider: boolean = false
   @State sliderMovingTime: number = 0
-  @State isDarkMode: boolean = true
+  @State isAutoScrolling: boolean = false
+  @State isUserScrolling: boolean = false
 
   artists1:string = ''
   song1:Song = SongClass
   picUrl1:string = ''
+
+  private scroller: Scroller = new Scroller()
 
   dialogController: CustomDialogController = new CustomDialogController({
     builder: DownloadDialog({
@@ -44,61 +52,42 @@ export struct PlayingCover {
     }),
   })
 
+  @State currentLyricIndex: number = 0;
+  @State lyricObjects: Lyric[] = []
+
+  aboutToAppear(): void {
+    EmitterUtil.onSubscribe('1', () => {
+      this.time = 0
+      this.scroller.scrollToIndex(0, false, ScrollAlign.CENTER)
+      this.parseLyricArray()
+    })
+    if (!this.hasLoaded) {
+      this.parseLyricArray()
+      this.updateCurrentLyric()
+      setInterval(() => {
+        this.updateCurrentLyric()
+      }, 500)
+      this.hasLoaded = true
+    }
+  }
+
   build() {
    Stack({ alignContent: Alignment.Top }) {
-     Column() {
-     }
+     Column()
      .width('100%')
      .height('100%')
      .opacity(0.5)
      .backgroundColor($r('app.color.background'))
 
-     Column({ space: 5 }) {
-       // 收起
-       Row() {
-         Button({ type: ButtonType.Circle }) { Image($r('app.media.ic_public_arrow_down_0')).width(40).padding(5).fillColor(Color.White) }
-         .backgroundColor(Color.Transparent)
-         .onClick(() => { this.isShow = false })
+     Column({ space: 10 }) {
+       Tabs() {
+         TabContent() { this.SongInfo() }
+         TabContent() { this.LyricComponent() }.height('100%')
        }
-       .width('100%')
-       .justifyContent(FlexAlign.End)
+       .barHeight(0)
+       .layoutWeight(1)
 
        Column({ space: 20 }) {
-         Tabs(){
-           TabContent() {
-             Column({ space: 20 }) {
-               // 歌曲封面图片
-               if (this.playmode == 0) {
-                 Stack() {
-                   Image($r('app.media.ic_public_music')).width(250).height(250).fillColor(Color.Gray).borderRadius(5)
-                 }
-                 .padding({ bottom: 30 })
-               } else {
-                 Stack() {
-                   LoadingProgress().width(60)
-                   Image(this.picUrl + '?param=512y512').width(250).height(250).borderRadius(5)
-                 }
-                 .padding({ bottom: 30 })
-               }
-
-               // 歌曲名称&艺术家
-               Text(this.song.name)
-                 .textStyle(22)
-                 .fontWeight(FontWeight.Bold)
-               Text(this.artists)
-                 .textStyle(16)
-             }
-             .height('100%')
-             .justifyContent(FlexAlign.Center)
-           }
-
-           TabContent() {
-             Text('暂无歌词')
-           }
-           .height('100%')
-         }
-         .layoutWeight(1)
-
          Column({ space: 5 }) {
            Row() {
              // 当前时间
@@ -136,6 +125,7 @@ export struct PlayingCover {
              max: this.song.duration,
              style: SliderStyle.InSet
            })
+             .width('90%')
              .blockColor(Color.White)
              .trackColor(Color.Gray)
              .trackThickness(this.sliderThickness)
@@ -205,20 +195,155 @@ export struct PlayingCover {
              Button(){ Image($r('app.media.ic_play_fill')).buttonImgStyle() }.onClick(() => { resumeMusic() }).backgroundColor(Color.Transparent)
            }
            // 下一首
-           Button(){ Image($r('app.media.ic_public_play_next')).buttonImgStyle() }.onClick(() => { playNext() }).backgroundColor(Color.Transparent)
+           Button(){ Image($r('app.media.ic_public_play_next')).buttonImgStyle() }.onClick(async () => { await playNext() }).backgroundColor(Color.Transparent)
          }
          .padding({ top:30, bottom:50 })
          .justifyContent(FlexAlign.Center)
        }
      }
+     .height('100%')
+
+     // 收起
+     Row() {
+       // Text(`isAuto: ${this.isAutoScrolling}; isUser: ${this.isUserScrolling}`)
+       Button({ type: ButtonType.Circle }) { Image($r('app.media.ic_public_arrow_down_0')).width(40).padding(5).fillColor(Color.White) }
+       .backgroundColor(Color.Transparent)
+       .onClick(() => { this.isShow = false })
+     }
      .width('100%')
-     .padding({left:15, right:15, top:px2vp(this.topRectHeight) + 10, bottom: px2vp(this.bottomRectHeight) + 10})
+     .justifyContent(FlexAlign.End)
+     .backdropBlur(50)
+     .padding({ top:px2vp(this.topRectHeight), left: 10, right: 10 })
+
    }
    .height('100%')
    .backgroundImage(this.picUrl)
    .backgroundImageSize(ImageSize.Cover)
    .backdropBlur(100)
   }
+
+  /**
+   * Information
+   */
+  @Builder
+  SongInfo() {
+    Column({ space: 20 }) {
+      // 歌曲封面图片
+      if (this.playmode == 0) {
+        Stack() {
+          Image($r('app.media.ic_public_music')).width('80%').fillColor(Color.Gray).borderRadius(5).aspectRatio(1)
+        }
+        .padding({ bottom: 30 })
+      } else {
+        Stack() {
+          LoadingProgress().width(60)
+          Image(this.picUrl + '?param=512y512').width('80%').height(250).borderRadius(5).aspectRatio(1)
+        }
+        .padding({ bottom: 30 })
+      }
+
+      // 歌曲名称&艺术家
+      Text(this.song.name)
+        .textStyle(24)
+        .fontWeight(FontWeight.Bold)
+      Text(this.artists)
+        .textStyle(16)
+    }
+    .padding({ left: 15, right: 15, top:px2vp(this.topRectHeight) + 40 })
+    .height('100%')
+    .justifyContent(FlexAlign.Center)
+  }
+
+  /**
+   * Lyric
+   */
+  @Builder
+  LyricComponent() {
+    Column() {
+      if(this.playmode == 1) {
+        List({ scroller: this.scroller, space: 30 }) {
+          ListItem().height('50%')
+          ForEach(this.lyricObjects, (item: Lyric, index) => {
+            ListItem() {
+              Text(item.content)
+                .width('100%')
+                .textAlign(TextAlign.Center)
+                .fontSize(20)
+                .fontColor(index === this.currentLyricIndex ? '#ffd05f5f' : Color.White)
+                .fontWeight(FontWeight.Bold)
+                .textAlign(TextAlign.Center)
+                .onClick(() => {
+                  seekMusic(item.time)
+                })
+            }
+          })
+          ListItem().height('50%')
+        }
+        .scrollBar(BarState.Off)
+        .width('90%')
+        .height('100%')
+        .onScrollStart(() => {
+          if(!this.isAutoScrolling) {
+            this.isUserScrolling = true
+          }
+        })
+        .onScrollStop(() => {
+          if(!this.isAutoScrolling) {
+            setTimeout(() => {
+              this.isUserScrolling = false
+            }, 3000)
+          }
+        })
+      }
+      else {
+        Text('正在播放本地文件')
+      }
+    }
+    .padding({ left: 20, right: 20 })
+    .width('100%')
+    .height('100%')
+    .justifyContent(FlexAlign.Center);
+  }
+
+  /**
+   * 转换歌词 String Array
+   */
+  private parseLyricArray() {
+    this.lyricObjects = this.lyricArr.map(item => {
+      const match = item.match(/\[(\d+):(\d+)[.:](\d+)\](.*)/)
+      if (match) {
+        const minutes = parseInt(match[1], 10) * 60 * 1000
+        const seconds = parseInt(match[2], 10) * 1000
+        const milliseconds = parseInt(match[3], 10)
+        const content = match[4]?.trim() || ""
+        return { time: minutes + seconds + milliseconds, content } as Lyric
+      }
+      return { time: 0, content: "" }
+    }).filter(lyric => lyric.content)
+  }
+
+  /**
+   * 更新当前歌词位置
+   */
+  private updateCurrentLyric() {
+    for (let i = 0; i < this.lyricObjects.length; i++) {
+      if (this.time >= this.lyricObjects[i].time &&
+        (i === this.lyricObjects.length - 1 || this.time < this.lyricObjects[i + 1].time)) {
+        if(this.currentLyricIndex != i) {
+          this.currentLyricIndex = i
+          if(!this.isUserScrolling) {
+            this.isAutoScrolling = true
+            this.scroller.scrollToIndex(i, true, ScrollAlign.CENTER)
+          }
+        }
+        setTimeout(() => {
+          this.isAutoScrolling = false
+        }, 100)
+        break
+      }
+    }
+  }
+
 }
 
 @Extend(Text) function textStyle(size:number) {

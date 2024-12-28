@@ -1,5 +1,6 @@
 import { LogUtil } from "@pura/harmony-utils"
 import Constants from "../constants/Constants"
+import { Song, SongClass } from "../entities/SongsResult"
 import PlayQueueUtils from "../utils/PlayQueueUtils"
 import PreferencesUtils from "../utils/PreferencesUtils"
 
@@ -12,6 +13,7 @@ export async function appInit() {
   await initSettings()
   await initPlayQueue()
   await audioPlayerInit()
+  await loadSavedSong()
 }
 
 async function audioPlayerInit() {
@@ -79,4 +81,33 @@ async function initSettings() {
     const playQuality:number = await PreferencesUtils.getPreferenceValue(SetPerf, 'playQuality', 0)
     AppStorage.setOrCreate('set-playQuality', playQuality)
   }
+}
+
+/**
+ * 加载上一次的播放内容
+ */
+async function loadSavedSong() {
+  let has = await PreferencesUtils.getPreferenceValue<boolean>('Play','hasCurrentSong', false)
+  let song:Song = {
+    id: 0,
+    name: "暂无播放",
+    artists: [],
+    duration: 0
+  }
+  let artists = '选择一首歌曲播放吧'
+  let picUrl: string = ''
+  let playMode: number = 0
+
+  if(has) {
+    song = await PreferencesUtils.getPreferenceValue<Song>('Play', 'CurrentSong', SongClass)
+    playMode = await PreferencesUtils.getPreferenceValue<number>('Play', 'PlayMode', 1)
+    artists = await PreferencesUtils.getPreferenceValue<string>('Play', 'CurrentArtists', '')
+    picUrl = await PreferencesUtils.getPreferenceValue<string>('Play', 'CurrentImage', '')
+    let currentIndex = await PreferencesUtils.getPreferenceValue<number>('Play', 'CurrentQueueIndex', 0)
+    await PlayQueueUtils.setIndex(currentIndex)
+  }
+  AppStorage.setOrCreate('player-mode', playMode)
+  AppStorage.setOrCreate('player-song',song)
+  AppStorage.setOrCreate('player-artists',artists)
+  AppStorage.setOrCreate('player-picurl',picUrl)
 }

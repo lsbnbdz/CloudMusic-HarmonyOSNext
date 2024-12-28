@@ -1,5 +1,4 @@
 import { LogUtil } from "@pura/harmony-utils"
-import { DailyListSongs } from "../common/entities/PlayListSongs"
 import { SongDetail } from "../common/entities/SongDetail"
 import { QualityType } from "../common/entities/SongDownload"
 import { SongPlay } from "../common/entities/SongPlay"

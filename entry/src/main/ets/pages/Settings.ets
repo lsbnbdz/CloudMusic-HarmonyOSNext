@@ -213,7 +213,7 @@ struct Settings {
     .onClick(() => {
       router.pushUrl({
         url:'pages/WebPage',
-        params: {title:'帮助', url:'https://docs.chenlvin.cc/cloudmusic/#/help'}
+        params: {title:'帮助', url:`https://docs.chenlvin.cc/cloudmusic/#/help?timestamp=${new Date().getTime()}`}
       })
     })
   }

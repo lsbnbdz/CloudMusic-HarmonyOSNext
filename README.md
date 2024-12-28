@@ -1,25 +1,20 @@
 ## Cloud Music For HarmonyOS NEXT
 
-**CloudMusic (云音汇) 是鸿蒙5.0上的网易云音乐三方版**
+**CloudMusic (云音汇) 是鸿蒙5.0上的网易云音乐三方客户端**
 
-使用本软件，用户可以登录网易云账号，并通过歌单、搜索，播放、下载歌曲
+该项目基于API 13，支持 HarmonyOS NEXT 5.0
 
-该项目基于API 13，适用于 HarmonyOS NEXT
-
-该项目当前为测试版本，更多功能敬请期待。
-
-AG尝鲜：https://docs.chenlvin.cc/cloudmusic/#/
+AppGallery 邀请尝鲜：https://docs.chenlvin.cc/cloudmusic/#/
 
 ### 当前支持功能：
 
-- 网易云账号登录
+- 云音乐账号登录
 - 个人歌单获取
+- 音乐云盘
+- 每日推荐
 - 歌曲搜索
 - 歌曲播放
-- 获取歌曲下载链接
-- 歌曲下载到本地
-- 保存音频文件至本机
-
+- 歌曲下载
 
 
 ### 开发参考：
@@ -40,5 +35,7 @@ AG尝鲜：https://docs.chenlvin.cc/cloudmusic/#/
 <img src="./images/3.jpg" width="20%" />
 <img src="./images/4.jpg" width="20%" />
 <img src="./images/5.jpg" width="20%" />
+<img src="./images/6.jpg" width="20%" />
+<img src="./images/7.jpg" width="20%" />
 
 

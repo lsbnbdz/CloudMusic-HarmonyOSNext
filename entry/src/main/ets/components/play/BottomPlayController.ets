@@ -25,61 +25,34 @@ export struct BottomPlayController {
   @State componentOpacity:number = 0.8
   @State isShow: boolean = false
 
-  // aboutToAppear(): void {
-  //   setTimeout(() => {
-  //     this.componentOpacity = 0.8
-  //   },100)
-  // }
-  //
-  // aboutToDisappear(): void {
-  //   setTimeout(() => {
-  //     this.componentOpacity = 0
-  //   },100)
-  // }
-
   build() {
     Row({ space: 10 }) {
-      if(this.isPlaying) {
-        Row() {
-          if(this.playmode == 0) { Image($r('app.media.ic_public_music')).fillColor($r('app.color.reverse')).songImg() }
-          else { Image(this.picUrl + '?param=256y256').songImg() }
+      Row() {
+        if(this.playmode == 0) { Image($r('app.media.ic_public_music')).fillColor($r('app.color.reverse')).songImg() }
+        else { Image(this.picUrl + '?param=256y256').songImg() }
 
-          Column() {
-            Text(this.song.name).textStyle(18)
-            Text(this.artists).textStyle(14)
-          }
-          .layoutWeight(1)
-
-          ControlButtons({ isPaused: this.isPaused, isPlaying: this.isPlaying })
+        Column() {
+          Text(this.song.name).textStyle(18)
+          Text(this.artists).textStyle(14)
         }
-        .justifyContent(FlexAlign.SpaceBetween)
         .layoutWeight(1)
+
+        ControlButtons({ isPaused: this.isPaused, isPlaying: this.isPlaying })
       }
-      else {
-        Row({ space: 10 }) {
-          Text('未在播放')
-            .textStyle(18)
-          ControlButtons({ isPaused: this.isPaused, isPlaying: this.isPlaying })
-        }
-        .width('100%')
-        .justifyContent(FlexAlign.SpaceBetween)
-      }
+      .justifyContent(FlexAlign.SpaceBetween)
+      .layoutWeight(1)
     }
     .backdropBlur(50)
     .padding({ left:10, right:10 })
     .width('100%')
     .borderRadius(20)
     .backgroundColor($r('app.color.main'))
-    .opacity(this.componentOpacity)
+    .opacity(this.isShow ? this.componentOpacity : this.componentOpacity)
     .height(80)
     .sharedTransition('bottom_play_controller', {
       duration: 1,
       curve: Curve.Friction
     })
-    // .animation({
-    //   duration: 300,
-    //   curve: Curve.Linear,
-    // })
     .onClick(() => {
       if(this.isPlaying) { this.isShow = true }
       else { ToastUtil.showToast('暂无播放') }
@@ -115,10 +88,12 @@ struct ControlButtons {
       } else {
         Button() {
           Image($r('app.media.ic_play_fill')).fillColor(Color.Gray).buttonImgStyle()
-        }.onClick(() => {
-          if(!this.isPlaying) playQueue(0)
+        }
+        .onClick(() => {
+          if(!this.isPlaying) playQueue(playQueueUtils.currentQueueIndex)
           else resumeMusic()
-        }).backgroundColor(Color.Transparent)
+        })
+        .backgroundColor(Color.Transparent)
       }
       PlayQueueButton()
     }

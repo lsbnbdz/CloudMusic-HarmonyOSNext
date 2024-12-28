@@ -9,15 +9,15 @@ interface Data {
 }
 
 export interface SongDownload {
-  data: Data
+  data: Data[]
 }
 
 export const SongDownloadClass: SongDownload = {
-  data: {
+  data: [{
     id: 0,
     url: '',
     size: 0,
     type: '',
     level: 'lossless',
-  },
+  }],
 };

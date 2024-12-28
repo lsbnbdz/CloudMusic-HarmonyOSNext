@@ -65,12 +65,12 @@ struct DailyListPage {
           Stack({ alignContent: Alignment.Top}) {
             Column() {
             if(this.list.length < 3) {
-              Text('加载列表可能出错，请反馈下方debug信息：').fontSize(16)
+              Text('加载每日推荐列表出错，\n请尝试重新登录网易云账号:').fontSize(16).textAlign(TextAlign.Center)
               Text(this.ResData)
                 .fontSize(12)
             }
             }
-            .padding({ top: px2vp(this.topRectHeight) + 50, left: 20, right: 20 })
+            .padding({ top: px2vp(this.topRectHeight) + 150, left: 20, right: 20 })
 
             List() {
               ListItem().height(px2vp(this.topRectHeight) + 50)
@@ -99,7 +99,7 @@ struct DailyListPage {
                     song: item.song,
                     sid: index,
                     hasAnimation: this.hasAnimation,
-                    isPlayList: true,
+                    isPlayList: false,
                     index: index,
                     reason: item.reason
                   })

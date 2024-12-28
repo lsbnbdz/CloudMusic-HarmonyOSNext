@@ -161,7 +161,7 @@ export struct PlayQueueSheet {
 
   scrollToCurrent(animation: boolean = true) {
     if(this.currentQueueIndex <= 3) { this.scroller.scrollToIndex(this.currentQueueIndex, animation) }
-    else { this.scroller.scrollToIndex(this.currentQueueIndex - 3 , animation) }
+    else { this.scroller.scrollToIndex(this.currentQueueIndex, animation, ScrollAlign.CENTER) }
   }
 }
 

@@ -12,14 +12,14 @@ import { getApiUrl, isUsePubCookie } from "../common/functions/functions"
  */
 export async function getDownloadInfo(songId: number, quality:QualityType, isLogged:boolean): Promise<SongDownload> {
   const rootUrl = await getApiUrl()
-  const url:string = isLogged ? `${rootUrl}/song/download/url/v1?id=${songId}&level=${quality}` :
+  const url:string = isLogged ? `${rootUrl}/song/url/v1?id=${songId}&level=${quality}` :
     `${rootUrl}/song/url?id=${songId}`
   const request = new HttpRequest(url)
   try {
     let usePubCookie:boolean = await isUsePubCookie()
     const data = usePubCookie ? await request.RequestWithVipType() : await request.Request()
     const dataGot: SongDownload = isLogged ? data.result as SongDownload :
-      { data: data.result["data"][0] }
+      { data: data.result["data"] }
     return dataGot
   } catch (e) {
     LogUtil.error('Error fetching download info: ' + JSON.stringify(e))

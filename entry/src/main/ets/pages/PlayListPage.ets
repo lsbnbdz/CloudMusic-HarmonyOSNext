@@ -1,7 +1,7 @@
 import { router } from '@kit.ArkUI'
 import { Song } from '../common/entities/SongsResult'
 import { SongCard } from '../components/main/SongCard'
-import { playList } from '../common/entities/PlayList'
+import { PlayList } from '../common/entities/PlayList'
 import { ListHead } from '../components/head/ListHead'
 import { SpinKit, SpinType } from '@pura/spinkit'
 import { DialogUtil, LogUtil, ToastUtil } from '@pura/harmony-utils'
@@ -11,6 +11,7 @@ import { CommonCircleButton } from '../components/buttons/CircleButton'
 import Constants from '../common/constants/Constants'
 import { playQueue } from '../common/functions/playerControl'
 import { DialogAction } from '@pura/harmony-utils/src/main/ets/entity/constraint'
+import { formatNumber } from '../common/functions/functions'
 
 /**
  * 歌单二级页面
@@ -24,7 +25,7 @@ struct PlayListPage {
   @StorageProp('bottomRectHeight') bottomRectHeight: number = 0
   @StorageProp('topRectHeight') topRectHeight: number = 0
 
-  private playList: playList = Object(router.getParams())['playList']
+  private playList: PlayList = Object(router.getParams())['playList']
   private trackCount: number = Object(router.getParams())['trackCount']
 
   @State list: Array<Song> = new Array()
@@ -80,6 +81,10 @@ struct PlayListPage {
           } else {
             List() {
               ListItem().height( px2vp(this.topRectHeight) + 50 )
+              ListItem() {
+                this.PlayListInfo()
+              }
+              .padding({ bottom: 15 })
               ListItem() {
                 Button() {
                   Row({ space: 5 }) {
@@ -175,6 +180,49 @@ struct PlayListPage {
       .onClick(() => {
         ToastUtil.showToast(Constants.DEVELOPING_MSG)
       })
+  }
+
+  @Builder PlayListInfo() {
+    Column() {
+      Row({ space: 15 }) {
+        Column() {
+          Stack() {
+            Image($r('app.media.ic_public_music'))
+              .width('100%')
+              .borderRadius(10)
+            Image(`${this.playList.coverImgUrl}?parm=256y256`)
+              .width('100%')
+              .borderRadius(10)
+          }
+          .height('100%')
+          .width('100%')
+        }
+        .height(80)
+        .width(80)
+
+        Column({ space: 5 }) {
+          Text(this.playList.name)
+            .fontSize(18)
+            .fontWeight(FontWeight.Medium)
+            .width('100%')
+            .padding({ bottom: 5 })
+          Text(`由 ${this.playList.creator.nickname} 创建`)
+            .fontSize(12)
+            .width('100%')
+            .textAlign(TextAlign.Start)
+          Text(`${formatNumber(this.playList.playCount)}次播放`)
+            .fontSize(12)
+            .width('100%')
+            .textAlign(TextAlign.Start)
+        }
+        .layoutWeight(1)
+        .justifyContent(FlexAlign.Start)
+      }
+      .width('90%')
+      .justifyContent(FlexAlign.Center)
+    }
+    .width('100%')
+    .justifyContent(FlexAlign.Center)
   }
 
   @Builder SwipeItem(song: Song, index: number) {

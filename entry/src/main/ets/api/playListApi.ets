@@ -1,6 +1,6 @@
 import { LogUtil } from "@pura/harmony-utils"
 import Constants from "../common/constants/Constants"
-import { playList, PlayListOperationRes } from "../common/entities/PlayList"
+import { PlayList, PlayListOperationRes } from "../common/entities/PlayList"
 import { CloudSongs, DailyListSongs, PlayListSongs } from "../common/entities/PlayListSongs"
 import { PlayQueue } from "../common/entities/PlayQueue"
 import { Song } from "../common/entities/SongsResult"
@@ -23,11 +23,11 @@ const TAG = '[playListApi] '
  */
 export interface PlayListsResult {
   more:boolean
-  playlist:playList[]
+  playlist:PlayList[]
 }
 
 export async function getPlayLists(offset:number): Promise<PlayListsResult> {
-  let list:Array<playList> = new Array()
+  let list:Array<PlayList> = new Array()
   let hasMore:boolean = false
   const user = await PreferencesUtils.getPreferenceValue<User>(Constants.USER_PREF,'user',UserClass)
   const rootUrl = await getApiUrl()
@@ -45,7 +45,11 @@ export async function getPlayLists(offset:number): Promise<PlayListsResult> {
         playCount: item.playCount,
         subscribedCount: item.subscribedCount,
         userId: item.userId,
-        trackCount: item.trackCount
+        trackCount: item.trackCount,
+        creator: {
+          userId: item.creator.userId,
+          nickname: item.creator.nickname
+        }
       })
     }
   })

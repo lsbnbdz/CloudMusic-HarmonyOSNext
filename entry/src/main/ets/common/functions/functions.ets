@@ -137,3 +137,18 @@ export function uint8ArrayToString(buffer: Uint8Array): string {
   const decoder = new util.TextDecoder('utf-8');
   return decoder.decode(buffer);
 }
+
+/**
+ * 格式化数字为带中文单位的字符串
+ * @param num 需要格式化的数字
+ * @returns 格式化后的字符串
+ */
+export function formatNumber(num: number): string {
+  if (num >= 100_000_000) {
+    return (num / 100_000_000).toFixed(1).replace(/\.0$/, '') + '亿'
+  }
+  else if (num >= 10_000) {
+    return (num / 10_000).toFixed(1).replace(/\.0$/, '') + '万'
+  }
+  return num.toString()
+}

@@ -1,7 +1,12 @@
 /**
  * 歌单类
  */
-export interface playList {
+interface Creator {
+  userId: number
+  nickname: string
+}
+
+export interface PlayList {
   coverImgUrl:string
   name:string
   id:number
@@ -9,21 +14,26 @@ export interface playList {
   subscribedCount:number
   userId:number
   trackCount:number // 歌曲数量
+  creator: Creator
 }
 
 export interface PlayListResult {
   more:boolean
-  playlist:playList[]
+  playlist:PlayList[]
 }
 
-export const playListClass: playList = {
+export const playListClass: PlayList = {
   coverImgUrl: '',
   name: '',
   id: 0,
   playCount: 0,
   subscribedCount: 0,
   userId: 0,
-  trackCount: 0
+  trackCount: 0,
+  creator: {
+    userId: -1,
+    nickname: ''
+  }
 };
 
 export const PlayListClass: PlayListResult = {
@@ -36,7 +46,11 @@ export const PlayListClass: PlayListResult = {
       playCount: 0,
       subscribedCount: 0,
       userId: 0,
-      trackCount: 0
+      trackCount: 0,
+      creator: {
+        userId: -1,
+        nickname: ''
+      }
     }
   ]
 };

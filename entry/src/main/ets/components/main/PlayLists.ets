@@ -1,5 +1,5 @@
 import { getPlayLists } from "../../api/playListApi"
-import { playList, playListClass } from "../../common/entities/PlayList"
+import { PlayList, playListClass } from "../../common/entities/PlayList"
 import { PlayListCard } from "./PlayListCard"
 import { SpinKit, SpinType } from '@pura/spinkit'
 import { LogUtil } from "@pura/harmony-utils";
@@ -14,8 +14,8 @@ export struct PlayLists {
   @State isLoadingMore:boolean = false
   @State hasMore:boolean = false
 
-  @State playLists:Array<playList> = new Array()
-  @State LikeList:playList = playListClass
+  @State playLists:Array<PlayList> = new Array()
+  @State LikeList:PlayList = playListClass
   async aboutToAppear(): Promise<void> {
     this.isLoading = true
     try {
@@ -35,7 +35,7 @@ export struct PlayLists {
   }
 
   @Builder
-  itemLayout(playList: playList, index: number): void {
+  itemLayout(playList: PlayList, index: number): void {
     PlayListCard({playList: playList})
   }
 
@@ -56,7 +56,7 @@ export struct PlayLists {
           ListItem() {
             RecommendCards({ LikeList: this.LikeList })
           }
-          ForEach(this.playLists, (item: playList, index) => {
+          ForEach(this.playLists, (item: PlayList, index) => {
             ListItem() {
               PlayListCard({playList: item})
             }

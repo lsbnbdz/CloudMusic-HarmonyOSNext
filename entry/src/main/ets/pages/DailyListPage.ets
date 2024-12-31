@@ -44,7 +44,8 @@ struct DailyListPage {
   async loadSongs(): Promise<void> {
     this.isLoading = true
     try {
-      const result:Array<DailySongRes> = await this.getDailySongs()
+      let result:Array<DailySongRes> = await this.getDailySongs()
+      if(result.length < 3) { result = await this.getDailySongs(false) }
       this.list = result
     } catch (e) {
       LogUtil.error(TAG + 'Error fetching songs: ', e)
@@ -65,7 +66,7 @@ struct DailyListPage {
           Stack({ alignContent: Alignment.Top}) {
             Column() {
             if(this.list.length < 3) {
-              Text('加载每日推荐列表出错，\n请尝试重新登录网易云账号:').fontSize(16).textAlign(TextAlign.Center)
+              Text('当前账号异常，\n无法获取每日推荐歌单:').fontSize(16).textAlign(TextAlign.Center)
               Text(this.ResData)
                 .fontSize(12)
             }
@@ -166,12 +167,12 @@ struct DailyListPage {
     .backgroundColor(Color.Transparent)
   }
 
-  async getDailySongs(): Promise<Array<DailySongRes>> {
+  async getDailySongs(useCookie: boolean = true): Promise<Array<DailySongRes>> {
   let list:Array<DailySongRes> = []
   const rootUrl = await getApiUrl()
   const url: string = `${rootUrl}/recommend/songs`
   const request = new HttpRequest(url)
-  await request.RequestInStream().then((data) => {
+  await request.RequestInStream(useCookie).then((data) => {
     this.ResData = JSON.stringify(data.result)
     const dataGot: DailyListSongs = data.result as DailyListSongs
     for(let song of dataGot.data.dailySongs) {

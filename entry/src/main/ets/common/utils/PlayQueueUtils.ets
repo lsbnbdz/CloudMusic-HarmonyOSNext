@@ -37,6 +37,13 @@ class PlayQueueUtils {
   }
 
   /**
+   * 同步存储
+   */
+  private async syncQueueToStorage() {
+    AppStorage.setOrCreate('PlayQueue',this.queue)
+    await PreferencesUtils.putPreferenceValue(pref, 'queue', this.queue)
+  }
+  /**
    * 添加歌曲至播放列表
    */
   async queueAdd(playmode:number, song:Song = SongClass, artists:string = '', fileName:string = '') {
@@ -47,10 +54,7 @@ class PlayQueueUtils {
         artists: artists,
         fileName: fileName
       })
-      AppStorage.setOrCreate('PlayQueue',this.queue)
-      await PreferencesUtils.putPreferenceValue(pref, 'queue', this.queue)
-      LogUtil.info(TAG + '添加成功 add queue element success')
-      LogUtil.info(TAG + 'now queue: ' + JSON.stringify(this.queue))
+      await this.syncQueueToStorage()
     } catch (e) {
       LogUtil.error(TAG + '添加失败 add queue element error: ' + e.message())
     }

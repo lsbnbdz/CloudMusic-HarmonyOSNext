@@ -7,6 +7,7 @@ import { AddToPlayListCircleButton } from "../buttons/AddToPlayListButton"
 import { LoopModeButton } from "../buttons/LoopModeButton"
 import { PlayQueueButton } from "../buttons/PlayQueueButton"
 import { DownloadDialog } from "../dialog/DownloadDialog"
+import { LyricComponent } from "../main/LyricComponent"
 
 const TAG = '[PlayingCover] '
 export interface Lyric {
@@ -33,14 +34,10 @@ export struct PlayingCover {
   @State sliderThickness: number = 10
   @State isMovingSlider: boolean = false
   @State sliderMovingTime: number = 0
-  @State isAutoScrolling: boolean = false
-  @State isUserScrolling: boolean = false
 
   artists1:string = ''
   song1:Song = SongClass
   picUrl1:string = ''
-
-  private scroller: Scroller = new Scroller()
 
   dialogController: CustomDialogController = new CustomDialogController({
     builder: DownloadDialog({
@@ -51,25 +48,6 @@ export struct PlayingCover {
       duration: changeDuration(this.song.duration)
     }),
   })
-
-  @State currentLyricIndex: number = 0;
-  @State lyricObjects: Lyric[] = []
-
-  aboutToAppear(): void {
-    EmitterUtil.onSubscribe('1', () => {
-      this.time = 0
-      this.scroller.scrollToIndex(0, false, ScrollAlign.CENTER)
-      this.parseLyricArray()
-    })
-    if (!this.hasLoaded) {
-      this.parseLyricArray()
-      this.updateCurrentLyric()
-      setInterval(() => {
-        this.updateCurrentLyric()
-      }, 500)
-      this.hasLoaded = true
-    }
-  }
 
   build() {
    Stack({ alignContent: Alignment.Top }) {
@@ -82,7 +60,7 @@ export struct PlayingCover {
      Column({ space: 10 }) {
        Tabs() {
          TabContent() { this.SongInfo() }
-         TabContent() { this.LyricComponent() }.height('100%')
+         TabContent() { LyricComponent() }.height('100%')
        }
        .barHeight(0)
        .layoutWeight(1)
@@ -253,97 +231,6 @@ export struct PlayingCover {
     .height('100%')
     .justifyContent(FlexAlign.Center)
   }
-
-  /**
-   * Lyric
-   */
-  @Builder
-  LyricComponent() {
-    Column() {
-      if(this.playmode == 1) {
-        List({ scroller: this.scroller, space: 30 }) {
-          ListItem().height('50%')
-          ForEach(this.lyricObjects, (item: Lyric, index) => {
-            ListItem() {
-              Text(item.content)
-                .width('100%')
-                .textAlign(TextAlign.Center)
-                .fontSize(20)
-                .fontColor(index === this.currentLyricIndex ? '#ffd05f5f' : Color.White)
-                .fontWeight(FontWeight.Bold)
-                .textAlign(TextAlign.Center)
-                .onClick(() => {
-                  seekMusic(item.time)
-                })
-            }
-          })
-          ListItem().height('50%')
-        }
-        .scrollBar(BarState.Off)
-        .width('90%')
-        .height('100%')
-        .onScrollStart(() => {
-          if(!this.isAutoScrolling) {
-            this.isUserScrolling = true
-          }
-        })
-        .onScrollStop(() => {
-          if(!this.isAutoScrolling) {
-            setTimeout(() => {
-              this.isUserScrolling = false
-            }, 3000)
-          }
-        })
-      }
-      else {
-        Text('正在播放本地文件')
-      }
-    }
-    .padding({ left: 20, right: 20 })
-    .width('100%')
-    .height('100%')
-    .justifyContent(FlexAlign.Center);
-  }
-
-  /**
-   * 转换歌词 String Array
-   */
-  private parseLyricArray() {
-    this.lyricObjects = this.lyricArr.map(item => {
-      const match = item.match(/\[(\d+):(\d+)[.:](\d+)\](.*)/)
-      if (match) {
-        const minutes = parseInt(match[1], 10) * 60 * 1000
-        const seconds = parseInt(match[2], 10) * 1000
-        const milliseconds = parseInt(match[3], 10)
-        const content = match[4]?.trim() || ""
-        return { time: minutes + seconds + milliseconds, content } as Lyric
-      }
-      return { time: 0, content: "" }
-    }).filter(lyric => lyric.content)
-  }
-
-  /**
-   * 更新当前歌词位置
-   */
-  private updateCurrentLyric() {
-    for (let i = 0; i < this.lyricObjects.length; i++) {
-      if (this.time >= this.lyricObjects[i].time &&
-        (i === this.lyricObjects.length - 1 || this.time < this.lyricObjects[i + 1].time)) {
-        if(this.currentLyricIndex != i) {
-          this.currentLyricIndex = i
-          if(!this.isUserScrolling) {
-            this.isAutoScrolling = true
-            this.scroller.scrollToIndex(i, true, ScrollAlign.CENTER)
-          }
-        }
-        setTimeout(() => {
-          this.isAutoScrolling = false
-        }, 100)
-        break
-      }
-    }
-  }
-
 }
 
 @Extend(Text) function textStyle(size:number) {

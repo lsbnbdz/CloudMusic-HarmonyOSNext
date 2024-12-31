@@ -1,6 +1,6 @@
 import { LogUtil, ToastUtil } from "@pura/harmony-utils"
 import { getPlayLists, PlayListOperation } from "../../api/playListApi"
-import { playList } from "../../common/entities/PlayList"
+import { PlayList } from "../../common/entities/PlayList"
 import { Song } from "../../common/entities/SongsResult"
 import { PlayQueueButton } from "../buttons/PlayQueueButton"
 import { PlayListCard } from "../main/PlayListCard"
@@ -15,7 +15,7 @@ export struct PlayListAddSheet {
   @StorageProp('currentQueueIndex') currentQueueIndex: number = 0
   @StorageProp('bottomRectHeight') bottomRectHeight: number = 0
   @State isLoading: boolean = false
-  @State playLists: Array<playList> = new Array()
+  @State playLists: Array<PlayList> = new Array()
   @State songId: number = -1
   @Link isShow: boolean
 
@@ -43,7 +43,7 @@ export struct PlayListAddSheet {
       }
       else {
         List() {
-          ForEach(this.playLists, (item: playList, index) => {
+          ForEach(this.playLists, (item: PlayList, index) => {
             ListItem() {
               Button() {
                 Row({ space:15 }) {

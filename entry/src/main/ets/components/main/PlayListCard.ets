@@ -1,13 +1,14 @@
 import { router } from "@kit.ArkUI"
-import { playList } from "../../common/entities/PlayList"
+import { PlayList } from "../../common/entities/PlayList"
 import { playListClass } from "../../common/entities/PlayList"
+import { formatNumber } from "../../common/functions/functions"
 
 @Preview
 @Component
 export struct PlayListCard {
   @State isShowSheet:boolean = false
 
-  playList:playList = playListClass
+  playList:PlayList = playListClass
 
   build() {
     Button() {
@@ -15,7 +16,7 @@ export struct PlayListCard {
         Image(`${this.playList.coverImgUrl}?param=128y128`).width(50).borderRadius(15)
         Column({ space: 8 }) {
           Text(this.playList.name).textStyle(16).fontWeight(FontWeight.Medium)
-          Text(`歌单 · ${this.playList.trackCount} 首 · ${this.playList.playCount} 次播放`).textStyle(12)
+          Text(`歌单 · ${this.playList.trackCount} 首 · ${this.playList.creator.nickname}`).textStyle(12)
         }
         .layoutWeight(1)
       }

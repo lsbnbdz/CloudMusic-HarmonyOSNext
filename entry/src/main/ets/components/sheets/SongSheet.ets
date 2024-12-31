@@ -1,7 +1,7 @@
 import { ToastUtil } from "@pura/harmony-utils";
 import { putPlayListInQueue } from "../../api/playListApi";
 import Constants from "../../common/constants/Constants";
-import { playList, playListClass } from "../../common/entities/PlayList";
+import { PlayList, playListClass } from "../../common/entities/PlayList";
 import { Song, SongClass } from "../../common/entities/SongsResult";
 import { changeDuration, getArtists } from "../../common/functions/functions";
 import { playMusicByUrl, playQueue } from "../../common/functions/playerControl";
@@ -33,7 +33,7 @@ export struct SongSheet {
   @Link isShowSheet:boolean
   @State isPicLoading:boolean = true
   @State isPlayList:boolean = false
-  @State playList:playList = playListClass
+  @State playList:PlayList = playListClass
   @State index: number = -1
   @State showPlayButton:boolean = true
 

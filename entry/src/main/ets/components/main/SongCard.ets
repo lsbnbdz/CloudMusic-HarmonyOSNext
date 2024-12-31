@@ -4,7 +4,7 @@ import { getArtists } from "../../common/functions/functions"
 import PlayQueueUtils from "../../common/utils/PlayQueueUtils"
 import { SongSheet } from "../sheets/SongSheet"
 import { promptAction } from "@kit.ArkUI"
-import { playList, playListClass } from "../../common/entities/PlayList"
+import { PlayList, playListClass } from "../../common/entities/PlayList"
 
 @Preview
 @Component
@@ -17,7 +17,7 @@ export struct SongCard {
   @State startOpacity:number = 1
   @State picUrl:string = ''
   @State isPlayList:boolean = false
-  @State playList:playList = playListClass
+  @State playList:PlayList = playListClass
   @State index:number = 0
   @State reason:string = ''
 

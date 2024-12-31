@@ -1,9 +1,9 @@
 import { router } from "@kit.ArkUI"
-import { playList, playListClass } from "../../common/entities/PlayList"
+import { PlayList, playListClass } from "../../common/entities/PlayList"
 
 @Component
 export struct RecommendCards {
-  @State LikeList:playList = playListClass
+  @State LikeList:PlayList = playListClass
 
   build() {
     List({ space: 15 }) {

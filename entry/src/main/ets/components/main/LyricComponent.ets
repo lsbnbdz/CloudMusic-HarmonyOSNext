@@ -1,7 +1,9 @@
-import { EmitterUtil, ToastUtil } from "@pura/harmony-utils"
+import { EmitterUtil } from "@pura/harmony-utils"
+import Constants from "../../common/constants/Constants"
 import { Song, SongClass } from "../../common/entities/SongsResult"
 import { seekMusic } from "../../common/functions/playerControl"
 import { Lyric } from "../sheets/PlayingCover"
+import { CircleShape } from "@kit.ArkUI"
 
 @Component
 export struct LyricComponent {
@@ -23,16 +25,23 @@ export struct LyricComponent {
   private scroller: Scroller = new Scroller()
 
   async aboutToAppear(): Promise<void> {
-    EmitterUtil.onSubscribe('1', () => {
+    EmitterUtil.onSubscribe(Constants.EMITTER_LYRIC_UPDATE, () => {
       this.time = 0
-      this.parseLyricArray()
+      if(this.playmode == 1) {
+        this.parseLyricArray()
+      }
+      else { this.lyricObjects = [{ time: 0, content:'正在播放本地文件' }] }
     })
     if (!this.hasLoaded) {
-      this.parseLyricArray()
-      await this.updateCurrentLyric()
-      this.updateLyricInterval = setInterval(() => {
-        this.updateCurrentLyric()
-      }, 500)
+      if(this.playmode == 1) {
+        this.parseLyricArray()
+        await this.updateCurrentLyric()
+        this.updateLyricInterval = setInterval(() => {
+          this.updateCurrentLyric()
+        }, 500)
+      } else {
+        this.lyricObjects = [{ time: 0, content:'正在播放本地文件' }]
+      }
       this.hasLoaded = true
     }
   }
@@ -42,50 +51,51 @@ export struct LyricComponent {
   }
 
   build() {
-    Column() {
-      if(this.playmode == 1) {
-        List({ scroller: this.scroller, space: 30 }) {
-          ListItem().height('50%')
-          ForEach(this.lyricObjects, (item: Lyric, index) => {
-            ListItem() {
-              Text(item.content)
-                .width('100%')
-                .textAlign(TextAlign.Center)
-                .fontSize(20)
-                .fontColor(index === this.currentLyricIndex ? '#ffd05f5f' : Color.White)
-                .fontWeight(FontWeight.Bold)
-                .textAlign(TextAlign.Center)
-                .onClick(() => {
-                  seekMusic(item.time)
-                })
-            }
-          })
-          ListItem().height('50%')
+    Stack() {
+      List({ scroller: this.scroller, space: 30 }) {
+        ListItem().height('50%')
+        ForEach(this.lyricObjects, (item: Lyric, index) => {
+          ListItem() {
+            Text(item.content)
+              .width('100%')
+              .textAlign(TextAlign.Center)
+              .fontSize(20)
+              .fontColor(index === this.currentLyricIndex ? '#ffd05f5f' : Color.White)
+              .fontWeight(FontWeight.Bold)
+              .textAlign(TextAlign.Center)
+              .onClick(() => {
+                seekMusic(item.time)
+              })
+          }
+        })
+        ListItem().height('50%')
+      }
+      .padding({ left: 20, right: 20 })
+      .scrollBar(BarState.Off)
+      .width('90%')
+      .height('100%')
+      .onScrollStart(() => {
+        if(!this.isAutoScrolling) {
+          this.isUserScrolling = true
         }
-        .scrollBar(BarState.Off)
-        .width('90%')
-        .height('100%')
-        .onScrollStart(() => {
-          if(!this.isAutoScrolling) {
-            this.isUserScrolling = true
-          }
-        })
-        .onScrollStop(() => {
-          if(!this.isAutoScrolling) {
-            setTimeout(() => {
-              this.isUserScrolling = false
-            }, 3000)
-          }
-        })
+      })
+      .onScrollStop(() => {
+        if(!this.isAutoScrolling) {
+          setTimeout(() => {
+            this.isUserScrolling = false
+          }, 3000)
+        }
+      })
+
+      Column() {
+
       }
-      else {
-        Text('正在播放本地文件')
-      }
+      .width('100%')
+      .height(50)
     }
-    .padding({ left: 20, right: 20 })
     .width('100%')
     .height('100%')
-    .justifyContent(FlexAlign.Center);
+
   }
 
   /**

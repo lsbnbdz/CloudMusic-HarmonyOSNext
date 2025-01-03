@@ -1,13 +1,10 @@
 import { router } from "@kit.ArkUI"
 import { PlayList } from "../../common/entities/PlayList"
 import { playListClass } from "../../common/entities/PlayList"
-import { formatNumber } from "../../common/functions/functions"
 
-@Preview
 @Component
 export struct PlayListCard {
-  @State isShowSheet:boolean = false
-
+  @State isShowHeart: boolean = true
   playList:PlayList = playListClass
 
   build() {
@@ -31,7 +28,7 @@ export struct PlayListCard {
     .onClick(() => {
       router.pushUrl({
         url: 'pages/PlayListPage',
-        params: { 'playList': this.playList, 'trackCount': this.playList.trackCount }
+        params: { 'playList': this.playList, 'trackCount': this.playList.trackCount, 'isShowHeart': this.isShowHeart }
       })
     })
   }

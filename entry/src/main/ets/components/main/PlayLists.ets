@@ -2,13 +2,19 @@ import { getPlayLists } from "../../api/playListApi"
 import { PlayList, playListClass } from "../../common/entities/PlayList"
 import { PlayListCard } from "./PlayListCard"
 import { SpinKit, SpinType } from '@pura/spinkit'
-import { LogUtil } from "@pura/harmony-utils";
+import { DialogUtil, LogUtil } from "@pura/harmony-utils";
 import { RecommendCards } from "./RecommendCards";
+import { Announcement } from "../../common/entities/Announcement";
 
 @Component
 export struct PlayLists {
   @StorageProp('bottomRectHeight') bottomRectHeight: number = 0;
   @StorageProp('topRectHeight') topRectHeight: number = 0;
+  @StorageProp('Announcement') announcement: Announcement = {
+    code: -1,
+    data: { title:'', content: '' },
+    visible: false
+  }
 
   @State isLoading:boolean = false
   @State isLoadingMore:boolean = false
@@ -17,6 +23,7 @@ export struct PlayLists {
   @State playLists:Array<PlayList> = new Array()
   @State LikeList:PlayList = playListClass
   async aboutToAppear(): Promise<void> {
+    LogUtil.info('Announcement: ' + JSON.stringify(this.announcement))
     this.isLoading = true
     try {
       const result = await getPlayLists(0)
@@ -39,6 +46,27 @@ export struct PlayLists {
     PlayListCard({playList: playList})
   }
 
+  @Builder
+  Announcement() {
+    Row() {
+      Text(this.announcement.data.content)
+        .width('100%')
+        .textAlign(TextAlign.Center)
+        .fontColor($r('app.color.main'))
+        .fontSize(16)
+        .padding({ top: 5, bottom: 5 })
+        .layoutWeight(1)
+        .textOverflow({ overflow: TextOverflow.MARQUEE })
+        .onClick(() => {
+          DialogUtil.showConfirmDialog({
+            title: this.announcement.data.title,
+            message: this.announcement.data.content + '\n\n(首页横幅消息支持在【设置】中关闭)'
+          })
+        })
+    }
+    .backgroundColor('#fff8b8b8')
+  }
+
   build() {
     Column() {
       if(this.isLoading == true) {
@@ -53,6 +81,11 @@ export struct PlayLists {
       }
       else {
         List({ space: 10 }) {
+          if(this.announcement.visible) {
+            ListItem() {
+              this.Announcement()
+            }
+          }
           ListItem() {
             RecommendCards({ LikeList: this.LikeList })
           }

@@ -1,4 +1,4 @@
-import { EmitterUtil } from "@pura/harmony-utils"
+import { EmitterUtil, ToastUtil } from "@pura/harmony-utils"
 import Constants from "../../common/constants/Constants"
 import { Song, SongClass } from "../../common/entities/SongsResult"
 import { changeDuration } from "../../common/functions/functions"
@@ -8,6 +8,7 @@ import { LoopModeButton } from "../buttons/LoopModeButton"
 import { PlayQueueButton } from "../buttons/PlayQueueButton"
 import { DownloadDialog } from "../dialog/DownloadDialog"
 import { LyricComponent } from "../main/LyricComponent"
+import { AVCastPicker, AVCastPickerState } from "@kit.AVSessionKit"
 
 const TAG = '[PlayingCover] '
 export interface Lyric {
@@ -34,12 +35,16 @@ export struct PlayingCover {
   @State sliderThickness: number = 10
   @State isMovingSlider: boolean = false
   @State sliderMovingTime: number = 0
+  @State tabPageIndex: number = 0
+  @State totalOpacity: number = 0
 
   artists1:string = ''
   song1:Song = SongClass
   picUrl1:string = ''
 
-  dialogController: CustomDialogController = new CustomDialogController({
+  private tabsController: TabsController = new TabsController();
+
+  private dialogController: CustomDialogController = new CustomDialogController({
     builder: DownloadDialog({
       song: this.song1,
       picUrl: this.picUrl1,
@@ -49,21 +54,32 @@ export struct PlayingCover {
     }),
   })
 
+  aboutToAppear(): void {
+    setTimeout(() => {
+      this.totalOpacity = 1
+    }, 500)
+  }
+
   build() {
-   Stack({ alignContent: Alignment.Top }) {
+   Stack() {
      Column()
      .width('100%')
      .height('100%')
      .opacity(0.5)
      .backgroundColor($r('app.color.background'))
 
-     Column({ space: 10 }) {
-       Tabs() {
-         TabContent() { this.SongInfo() }
-         TabContent() { LyricComponent() }.height('100%')
+     Column() {
+       Tabs({ controller: this.tabsController }) {
+         TabContent() {
+           this.SongInfo()
+         }
+         TabContent() {
+           LyricComponent()
+         }.height('100%')
        }
-       .barHeight(0)
+       .onChange((index) => { this.tabPageIndex = index })
        .layoutWeight(1)
+       .barHeight(0)
 
        Column({ space: 20 }) {
          Column({ space: 5 }) {
@@ -75,7 +91,7 @@ export struct PlayingCover {
                .textAlign(TextAlign.Start)
 
              // 拖动进度条时，显示即将跳转的时间
-             if(this.isMovingSlider) {
+             if (this.isMovingSlider) {
                Column() {
                  Text(`${changeDuration(this.sliderMovingTime)}`)
                    .fontColor(Color.White)
@@ -115,13 +131,12 @@ export struct PlayingCover {
                curve: Curve.LinearOutSlowIn,
              })
              .onChange((value: number, mode: SliderChangeMode) => {
-               if(mode == SliderChangeMode.Begin) {
+               if (mode == SliderChangeMode.Begin) {
                  this.isMovingSlider = true
                  this.sliderThickness = 20
-               }
-               else if(mode == SliderChangeMode.Moving) {
+               } else if (mode == SliderChangeMode.Moving) {
                  this.sliderMovingTime = value
-               } else if(mode == SliderChangeMode.End) {
+               } else if (mode == SliderChangeMode.End) {
                  this.time = value
                  this.isMovingSlider = false
                  this.sliderThickness = 10
@@ -131,7 +146,7 @@ export struct PlayingCover {
          }
 
          Row({ space: 20 }) {
-           if(this.playmode == 1) {
+           if (this.playmode == 1) {
              Select([{ value: '标准' }, { value: '高' }, { value: '极高' }, { value: '无损' }])
                .selected(3)
                .value('无损')
@@ -165,33 +180,79 @@ export struct PlayingCover {
 
          Row({ space: 30 }) {
            // 上一首
-           Button(){ Image($r('app.media.ic_public_play_last')).buttonImgStyle() }.onClick(() => { playPre() }).backgroundColor(Color.Transparent)
+           Button() {
+             Image($r('app.media.ic_public_play_last')).buttonImgStyle()
+           }.onClick(() => {
+             playPre()
+           }).backgroundColor(Color.Transparent)
+
            // 暂停、继续
            if (!this.isPaused) {
-             Button(){ Image($r('app.media.ic_public_pause')).buttonImgStyle() }.onClick(() => { pauseMusic() }).backgroundColor(Color.Transparent)
+             Button() {
+               Image($r('app.media.ic_public_pause')).buttonImgStyle()
+             }.onClick(() => {
+               pauseMusic()
+             }).backgroundColor(Color.Transparent)
            } else {
-             Button(){ Image($r('app.media.ic_play_fill')).buttonImgStyle() }.onClick(() => { resumeMusic() }).backgroundColor(Color.Transparent)
+             Button() {
+               Image($r('app.media.ic_play_fill')).buttonImgStyle()
+             }.onClick(() => {
+               resumeMusic()
+             }).backgroundColor(Color.Transparent)
            }
            // 下一首
-           Button(){ Image($r('app.media.ic_public_play_next')).buttonImgStyle() }.onClick(async () => { await playNext() }).backgroundColor(Color.Transparent)
+           Button() {
+             Image($r('app.media.ic_public_play_next')).buttonImgStyle()
+           }.onClick(async () => {
+             await playNext()
+           }).backgroundColor(Color.Transparent)
          }
-         .padding({ top:30, bottom:50 })
+         .padding({ top: 30, bottom: 50 })
          .justifyContent(FlexAlign.Center)
        }
+       .opacity(this.totalOpacity)
+       .animation({
+         duration: 200
+       })
+       .width('100%')
      }
      .height('100%')
 
-     // 收起
+
+     // Head
      Row() {
-       // Text(`isAuto: ${this.isAutoScrolling}; isUser: ${this.isUserScrolling}`)
-       Button({ type: ButtonType.Circle }) { Image($r('app.media.ic_public_arrow_down_0')).width(40).padding(5).fillColor(Color.White) }
+       Button({ type: ButtonType.Circle }) { Image($r('app.media.ic_public_arrow_down_0')).fillColor($r('app.color.reverse')).width(35).height(35) }
        .backgroundColor(Color.Transparent)
+       .opacity(this.totalOpacity)
+       .animation({
+         duration: 200
+       })
        .onClick(() => { this.isShow = false })
+
+       this.TabBar()
+
+       Stack() {
+         AVCastPicker()
+           .opacity(this.totalOpacity)
+           .animation({
+             duration: 200
+           })
+           .width(30)
+           .height(30)
+           .backgroundColor(Color.Transparent)
+       }
+       .width(30)
+       .height(30)
      }
+     .backdropBlur(20)
+     .position({ top: 0 })
      .width('100%')
-     .justifyContent(FlexAlign.End)
-     .backdropBlur(50)
-     .padding({ top:px2vp(this.topRectHeight), left: 10, right: 10 })
+     .justifyContent(FlexAlign.SpaceBetween)
+     .linearGradientBlur(100, {
+       fractionStops: [[0, 0],[1, 1]],
+       direction: GradientDirection.Top
+     })
+     .padding({ top:px2vp(this.topRectHeight), left: 10, right: 10, bottom: 5 })
 
    }
    .height('100%')
@@ -231,7 +292,35 @@ export struct PlayingCover {
     .height('100%')
     .justifyContent(FlexAlign.Center)
   }
+
+  /**
+   * TabBar
+   */
+  @Builder
+  TabBar() {
+    Row({ space: 5 }) {
+      Button()
+        .width(15)
+        .height(8)
+        .opacity(this.tabPageIndex == 0 ? 1.0 : 0.3)
+        .animation({
+          duration: 200
+        })
+        .backgroundColor($r('app.color.reverse'))
+        .onClick(() => this.tabsController.changeIndex(0))
+      Button()
+        .width(15)
+        .height(8)
+        .opacity(this.tabPageIndex == 1 ? 1.0 : 0.3)
+        .animation({
+          duration: 200
+        })
+        .backgroundColor($r('app.color.reverse'))
+        .onClick(() => this.tabsController.changeIndex(1))
+    }
+  }
 }
+
 
 @Extend(Text) function textStyle(size:number) {
   .fontSize(size)

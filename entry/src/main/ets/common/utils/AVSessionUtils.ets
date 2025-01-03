@@ -148,19 +148,6 @@ class AVSessionUtils {
   }
 }
 
-/**
- * 获取播放时间(ms)
- * @returns number 播放时间(ms)
- */
-async function getPlayTime(): Promise<number> {
-  let resTime = 0
-  let elapsedTime:number | undefined = await AppStorage.get('player-time')
-  if(elapsedTime) {
-    resTime = elapsedTime
-  }
-  return resTime
-}
-
 async function getLoopMode(): Promise<number> {
   let loopMode = 0
   let cycleMode: number | undefined = await AppStorage.get('cycleMode')

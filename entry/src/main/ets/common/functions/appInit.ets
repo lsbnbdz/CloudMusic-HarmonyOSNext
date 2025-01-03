@@ -1,4 +1,5 @@
 import { LogUtil } from "@pura/harmony-utils"
+import { getAnnouncement } from "../../api/chenlvinApi"
 import Constants from "../constants/Constants"
 import { Song, SongClass } from "../entities/SongsResult"
 import PlayQueueUtils from "../utils/PlayQueueUtils"
@@ -14,6 +15,7 @@ export async function appInit() {
   await initPlayQueue()
   await audioPlayerInit()
   await loadSavedSong()
+  await getAnnouncement()
 }
 
 async function audioPlayerInit() {

@@ -3,15 +3,13 @@ import { SongCard } from '../components/main/SongCard'
 import { ListHead } from '../components/head/ListHead'
 import { SpinKit, SpinType } from '@pura/spinkit'
 import { LogUtil, ToastUtil } from '@pura/harmony-utils'
-import { DailySongRes, getDailySongs, PlayDailySongs } from '../api/playListApi'
+import { DailySongRes, PlayDailySongs } from '../api/playListApi'
 import { BottomPlayController } from '../components/play/BottomPlayController'
 import { CommonCircleButton } from '../components/buttons/CircleButton'
 import Constants from '../common/constants/Constants'
 import { playQueue } from '../common/functions/playerControl'
 import { AddToPlayListButton } from '../components/buttons/AddToPlayListButton'
-import { getApiUrl } from '../common/functions/functions'
-import { HttpRequest } from '../common/utils/HttpRequestUtils'
-import { DailyListSongs } from '../common/entities/PlayListSongs'
+import { getDailySongs } from '../api/songApi'
 
 /**
  * 每日推荐歌单页面
@@ -30,7 +28,6 @@ struct DailyListPage {
   @State isLoading: boolean = true
   @State loadingPlayList:boolean = false
   @State pageOpacity: number = 1
-  @State ResData: string = ''
   hasAnimation:boolean | undefined = false
 
   async onPageShow(): Promise<void> {
@@ -44,8 +41,8 @@ struct DailyListPage {
   async loadSongs(): Promise<void> {
     this.isLoading = true
     try {
-      let result:Array<DailySongRes> = await this.getDailySongs()
-      if(result.length < 3) { result = await this.getDailySongs(false) }
+      let result:Array<DailySongRes> = await getDailySongs()
+      if(result.length < 3) { result = await getDailySongs(false) }
       this.list = result
     } catch (e) {
       LogUtil.error(TAG + 'Error fetching songs: ', e)
@@ -66,9 +63,7 @@ struct DailyListPage {
           Stack({ alignContent: Alignment.Top}) {
             Column() {
             if(this.list.length < 3) {
-              Text('当前账号异常，\n无法获取每日推荐歌单:').fontSize(16).textAlign(TextAlign.Center)
-              Text(this.ResData)
-                .fontSize(12)
+              Text('当前环境无法获取每日推荐歌单。').fontSize(16).textAlign(TextAlign.Center)
             }
             }
             .padding({ top: px2vp(this.topRectHeight) + 150, left: 20, right: 20 })
@@ -166,28 +161,5 @@ struct DailyListPage {
     .height('100%')
     .backgroundColor(Color.Transparent)
   }
-
-  async getDailySongs(useCookie: boolean = true): Promise<Array<DailySongRes>> {
-  let list:Array<DailySongRes> = []
-  const rootUrl = await getApiUrl()
-  const url: string = `${rootUrl}/recommend/songs`
-  const request = new HttpRequest(url)
-  await request.RequestInStream(useCookie).then((data) => {
-    this.ResData = JSON.stringify(data.result)
-    const dataGot: DailyListSongs = data.result as DailyListSongs
-    for(let song of dataGot.data.dailySongs) {
-      list.push({
-        song: {
-          id: song.id,
-          name: song.name,
-          artists: song.ar,
-          duration: song.dt,
-        },
-        reason: song.reason
-      })
-    }
-  })
-  return list;
-}
 
 }

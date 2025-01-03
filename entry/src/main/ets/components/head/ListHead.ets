@@ -1,7 +1,6 @@
 import { ToastUtil } from "@pura/harmony-utils";
 import { BackButton } from "../buttons/BackButton";
 import { CommonCircleButton } from "../buttons/CircleButton";
-import { PlayController } from "../play/PlayController";
 
 @Component
 export struct ListHead {
@@ -22,7 +21,6 @@ export struct ListHead {
     .padding({ left: 10, right: 10, top: px2vp(this.topRectHeight), bottom: 5 })
     .width('100%')
     .backgroundColor(Color.Transparent)
-    .opacity(0.9)
     .backdropBlur(50)
     .onClick(() => {
       ToastUtil.showToast(`${this.title}`)

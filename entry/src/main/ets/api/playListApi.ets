@@ -1,6 +1,6 @@
-import { LogUtil } from "@pura/harmony-utils"
+import { LogUtil, ToastUtil } from "@pura/harmony-utils"
 import Constants from "../common/constants/Constants"
-import { PlayList, PlayListOperationRes } from "../common/entities/PlayList"
+import { PlayList, PlayListOperationRes, PlayListSearchResult } from "../common/entities/PlayList"
 import { CloudSongs, DailyListSongs, PlayListSongs } from "../common/entities/PlayListSongs"
 import { PlayQueue } from "../common/entities/PlayQueue"
 import { Song } from "../common/entities/SongsResult"
@@ -17,41 +17,29 @@ import { JSON } from "@kit.ArkTS"
 const TAG = '[playListApi] '
 
 /**
- * 获取歌单列表
- * @param usingCache 是否缓存
- * @returns list
+ * 歌单列表返回类
  */
 export interface PlayListsResult {
   more:boolean
   playlist:PlayList[]
 }
-
+/**
+ * 获取歌单列表
+ * @param offset - 偏移量
+ * @returns list
+ */
 export async function getPlayLists(offset:number): Promise<PlayListsResult> {
   let list:Array<PlayList> = new Array()
   let hasMore:boolean = false
   const user = await PreferencesUtils.getPreferenceValue<User>(Constants.USER_PREF,'user',UserClass)
   const rootUrl = await getApiUrl()
-  const url:string = `${rootUrl}/user/playlist?uid=${user.data.account.id}&limit=10&offset=${offset}`
+  const url:string = `${rootUrl}/user/playlist?uid=${user.data.account.id}&limit=10&offset=${offset}&timestamp=${new Date().getTime()}`
   const request = new HttpRequest(url)
   await request.RequestInStream().then((data) => {
     const dataGot:PlayListsResult = data.result as PlayListsResult
     LogUtil.info(TAG + 'getPlayLists - dataGot: ' + JSON.stringify(dataGot))
     hasMore = dataGot.more
-    for(let item of dataGot.playlist) {
-      list.push({
-        coverImgUrl: item.coverImgUrl,
-        name: item.name,
-        id: item.id,
-        playCount: item.playCount,
-        subscribedCount: item.subscribedCount,
-        userId: item.userId,
-        trackCount: item.trackCount,
-        creator: {
-          userId: item.creator.userId,
-          nickname: item.creator.nickname
-        }
-      })
-    }
+    list = dataGot.playlist
   })
 
   const result: PlayListsResult = {
@@ -71,7 +59,7 @@ export async function getPlayLists(offset:number): Promise<PlayListsResult> {
 export async function getPlayListSongs(listId:number, offset:number): Promise<Array<Song>> {
   let list:Array<Song> = new Array()
   const rootUrl = await getApiUrl()
-  const url:string = `${rootUrl}/playlist/track/all?id=${listId}&limit=30&offset=${offset}`
+  const url:string = `${rootUrl}/playlist/track/all?id=${listId}&limit=30&offset=${offset}&timestamp=${new Date().getTime()}`
   const request = new HttpRequest(url)
   await request.Request().then((data) => {
     const dataGot:PlayListSongs = data.result as PlayListSongs
@@ -85,7 +73,7 @@ export async function getPlayListSongs(listId:number, offset:number): Promise<Ar
     }
   })
   LogUtil.info(TAG + 'getPlayListSongs - dataGot => list: ' + JSON.stringify(list))
-  return list;
+  return list
 }
 
 /**
@@ -156,8 +144,9 @@ export async function PlayDailySongs(): Promise<void> {
   await PlayQueueUtils.queueAdd_array(queue)
 }
 
-
-
+/**
+ * 歌单操作
+ */
 type OperationType = 'add' | 'del'
 /**
  * 向歌单添加/删除歌曲
@@ -167,7 +156,7 @@ type OperationType = 'add' | 'del'
  */
 export async function PlayListOperation(op:OperationType, pid:number, tracks:number):Promise<boolean> {
   const rootUrl = await getApiUrl()
-  const url:string = `${rootUrl}/playlist/tracks?op=${op}&pid=${pid}&tracks=${tracks}`
+  const url:string = `${rootUrl}/playlist/tracks?op=${op}&pid=${pid}&tracks=${tracks}&timestamp=${new Date().getTime()}`
   const request = new HttpRequest(url)
   await request.Request().then((data) => {
     const dataGot:PlayListOperationRes = data.result as PlayListOperationRes
@@ -194,32 +183,6 @@ export interface DailySongRes {
   song:Song
   reason:string
 }
-/**
- * 获取每日推荐歌单内歌曲
- * @returns
- */
-export async function getDailySongs(): Promise<Array<DailySongRes>> {
-  let list:Array<DailySongRes> = []
-  const rootUrl = await getApiUrl()
-  const url: string = `${rootUrl}/recommend/songs`
-  const request = new HttpRequest(url)
-  await request.RequestInStream().then((data) => {
-    const dataGot: DailyListSongs = data.result as DailyListSongs
-    for(let song of dataGot.data.dailySongs) {
-      list.push({
-        song: {
-          id: song.id,
-          name: song.name,
-          artists: song.ar,
-          duration: song.dt,
-        },
-        reason: song.reason
-      })
-    }
-  })
-  LogUtil.info(TAG + 'getDailySongs: ' + JSON.stringify(list))
-  return list;
-}
 
 /**
  * 获取云盘歌曲列表
@@ -245,4 +208,50 @@ export async function getCloudList(offset:number): Promise<Array<Song>> {
   })
   LogUtil.info(TAG + 'getCloudList: ' + JSON.stringify(list))
   return list;
+}
+
+/**
+ * 搜索歌单
+ * @returns list
+ */
+export async function searchPlayLists(keyword: string, offset:number): Promise<PlayListsResult> {
+  let list:Array<PlayList> = new Array()
+  let hasMore:boolean = false
+  const rootUrl = await getApiUrl()
+  const url:string = `${rootUrl}/search?type=1000&keywords=${encodeURIComponent(keyword)}&limit=10&offset=${offset}`
+  const request = new HttpRequest(url)
+  await request.RequestInStream().then((data) => {
+    const dataGot:PlayListSearchResult = data.result as PlayListSearchResult
+    LogUtil.info(TAG + 'searchPlayLists - dataGot: ' + JSON.stringify(dataGot))
+    hasMore = dataGot.result.hasMore
+    list = dataGot.result.playlists
+  })
+  const result: PlayListsResult = {
+    more: hasMore,
+    playlist: list
+  }
+  return result
+}
+
+/**
+ * 收藏/取消收藏歌单
+ * @param mode - 1:收藏, 2:取消收藏
+ * @returns
+ */
+export async function subscribePlayList(id: number, mode: number): Promise<boolean> {
+  let res: boolean = false
+  const rootUrl = await getApiUrl()
+  const url: string = `${rootUrl}/playlist/subscribe?t=${mode}&id=${id}&timestamps=${new Date().getTime()}`
+  const request = new HttpRequest(url)
+  await request.Request(true).then((data) => {
+    LogUtil.info(TAG + 'subscribe playlist result: ' + JSON.stringify(data.result))
+    if(data.responseCode == 200) {
+      res = true
+    } else if(data.responseCode == 401) {
+      ToastUtil.showToast('无法操作当前歌单')
+    } else {
+      ToastUtil.showToast('操作失败')
+    }
+  })
+  return res
 }

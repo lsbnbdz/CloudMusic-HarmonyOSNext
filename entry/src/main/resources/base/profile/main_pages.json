@@ -2,7 +2,7 @@
   "src": [
     "pages/Index",
     "pages/Settings",
-    "pages/SongsListPage",
+    "pages/SearchPage",
     "pages/login/LoginPage",
     "pages/login/WebLogin",
     "pages/DownloadPage",

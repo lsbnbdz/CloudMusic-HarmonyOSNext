@@ -2,7 +2,6 @@ import { http } from "@kit.NetworkKit"
 import { BusinessError } from "@kit.BasicServicesKit"
 import { LogUtil, ToastUtil } from "@pura/harmony-utils"
 import Constants from "../constants/Constants"
-import { PlayListsResult } from "../../api/playListApi"
 import { uint8ArrayToString } from "../functions/functions"
 
 /**
@@ -84,7 +83,7 @@ export class HttpRequest {
       httpRequest.on('dataEnd', () => {
         let resultString = uint8ArrayToString(resView)
         try {
-          const result:PlayListsResult = JSON.parse(resultString);
+          const result:string = JSON.parse(resultString);
           const data: http.HttpResponse = {
             result: result,
             responseCode: 200,
@@ -95,7 +94,7 @@ export class HttpRequest {
           }
           resolve(data)
         } catch (err) {
-          LogUtil.error(TAG + 'Error: ' + this.url)
+          LogUtil.error(TAG + 'Error: ' + this.url + '\nerr: ' + err)
           setTimeout(() => {
             ToastUtil.showToast(`${Constants.HTTP_ERROR_MSG} ${this.url}`, { duration: 4000 })
           },1000)

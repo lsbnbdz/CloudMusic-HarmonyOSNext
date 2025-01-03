@@ -1,23 +1,25 @@
 import { LogUtil } from "@pura/harmony-utils"
+import { DailyListSongs } from "../common/entities/PlayListSongs"
 import { SongDetail } from "../common/entities/SongDetail"
 import { QualityType } from "../common/entities/SongDownload"
 import { SongPlay } from "../common/entities/SongPlay"
 import { Song, SongClass, SongsData } from "../common/entities/SongsResult"
 import { getApiUrl, isUsePubCookie } from "../common/functions/functions"
 import { HttpRequest } from "../common/utils/HttpRequestUtils"
+import { DailySongRes } from "./playListApi"
 
 const TAG = '[Song API - songApi] '
-/**
- * 搜素歌曲列表
- * @param searchKeyword 搜索词
- * @returns SearchReturn
- */
+
 export interface SearchReturn {
   list: Array<Song>
   hasMore: boolean
   songCount: number
 }
-
+/**
+ * 搜素歌曲列表
+ * @param searchKeyword 搜索词
+ * @returns SearchReturn
+ */
 export async function getSongsList(searchKeyword:string, offset:number): Promise<SearchReturn> {
   let list:Array<Song> = new Array()
   let hasMore:boolean = false
@@ -107,4 +109,33 @@ export async function getSongPicUrl(song: Song): Promise<string> {
     LogUtil.error(TAG + 'Error fetching song picUrl:', JSON.stringify(e))
     throw new Error(e)
   }
+}
+
+/**
+ * 获取每日推荐歌单
+ * @param useCookie
+ * @returns
+ */
+export async function getDailySongs(useCookie: boolean = true): Promise<Array<DailySongRes>> {
+  let list:Array<DailySongRes> = []
+  const rootUrl = await getApiUrl()
+  const url: string = `${rootUrl}/recommend/songs`
+  const request = new HttpRequest(url)
+  await request.RequestInStream(useCookie).then((data) => {
+    const dataGot: DailyListSongs = data.result as DailyListSongs
+    if(dataGot.data) {
+      for (let song of dataGot.data.dailySongs) {
+        list.push({
+          song: {
+            id: song.id,
+            name: song.name,
+            artists: song.ar,
+            duration: song.dt,
+          },
+          reason: song.reason
+        })
+      }
+    }
+  })
+  return list;
 }

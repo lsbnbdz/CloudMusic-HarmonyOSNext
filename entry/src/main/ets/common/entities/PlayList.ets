@@ -7,13 +7,14 @@ interface Creator {
 }
 
 export interface PlayList {
-  coverImgUrl:string
-  name:string
-  id:number
-  playCount:number
-  subscribedCount:number
-  userId:number
-  trackCount:number // 歌曲数量
+  coverImgUrl: string
+  name: string
+  id: number
+  playCount: number
+  subscribedCount: number
+  userId: number
+  trackCount: number
+  subscribed: boolean
   creator: Creator
 }
 
@@ -30,6 +31,7 @@ export const playListClass: PlayList = {
   subscribedCount: 0,
   userId: 0,
   trackCount: 0,
+  subscribed: false,
   creator: {
     userId: -1,
     nickname: ''
@@ -47,6 +49,7 @@ export const PlayListClass: PlayListResult = {
       subscribedCount: 0,
       userId: 0,
       trackCount: 0,
+      subscribed: false,
       creator: {
         userId: -1,
         nickname: ''
@@ -75,5 +78,26 @@ export const PlayListOperationClass: PlayListOperationRes = {
     code: -1,
     message: ''
   }
+}
+
+/**
+ * 歌单列表返回类
+ */
+export interface PlayListsResult {
+  more:boolean
+  playlist:PlayList[]
+}
+
+/**
+ * 搜索歌单返回类
+ */
+interface SearchBody {
+  hasMore: boolean
+  playlists: Array<PlayList>
+}
+
+export interface PlayListSearchResult {
+  code: number
+  result: SearchBody
 }
 

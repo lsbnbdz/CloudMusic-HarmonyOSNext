@@ -56,7 +56,7 @@ export struct IndexHead {
           .focusable(false)
           .onClick(() => {
             router.pushUrl({
-              url: 'pages/SongsListPage'
+              url: 'pages/SearchPage'
             })
           })
           .layoutWeight(1)
@@ -74,12 +74,6 @@ export struct IndexHead {
   @Builder
   MoreMenu() {
     Menu() {
-      MenuItem(this.MenuItem($r('app.media.ic_public_search_filled'), '搜索'))
-        .contentFontColor($r('app.color.reverse'))
-        .onClick(()=>{
-          router.pushUrl({ url:'pages/SongsListPage' })
-        })
-
       MenuItem(this.MenuItem($r('app.media.ic_public_download_filled'), '下载'))
         .contentFontColor($r('app.color.reverse'))
         .onClick(()=>{

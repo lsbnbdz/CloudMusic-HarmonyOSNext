@@ -22,11 +22,16 @@ const pref = Constants.QUEUE_PREF
 
 export async function playMusicByUrl(song:Song,artists:string,picUrl:string,isLogged:boolean) {
   try {
+    let lyricArr: string[] = []
     LogUtil.info(TAG + 'Play Music By Url: ' + `Song: ${JSON.stringify(song)}` + '\n' + `artists: ${JSON.stringify(artists)}`)
     const quality:number | undefined = await AppStorage.get('set-playQuality')
     const songPlay:SongPlay = await getSongUrl(song.id, quality ? Constants.QUALITY[quality] : "standard", isLogged)
-    let lyricArr:string[] = await getLyric(song.id)
-    EmitterUtil.post('1','Lyric Updated')
+    try {
+      lyricArr = await getLyric(song.id)
+    } catch (e) {
+
+    }
+
     if(songPlay.data[0].url) {
       AppStorage.setOrCreate('player-mode', 1)
       AppStorage.setOrCreate('player-ispaused',false)
@@ -46,6 +51,7 @@ export async function playMusicByUrl(song:Song,artists:string,picUrl:string,isLo
       AVSessionUtils.activate()
       AppStorage.setOrCreate('player-isplaying',true)
       saveCurrentSongInfo(1, song, artists, picUrl)
+      EmitterUtil.post(Constants.EMITTER_LYRIC_UPDATE,'Lyric Updated')
     } else {
       ToastUtil.showToast('获取播放资源失败')
     }
@@ -82,6 +88,7 @@ export async function playMusicWithFile(fileName:string) {
       AVSessionUtils.activate()
       AppStorage.setOrCreate('player-isplaying',true)
       saveCurrentSongInfo(0, song, song.artists[0].name, '/resources/base/media/app.media.ic_public_music.svg')
+      EmitterUtil.post(Constants.EMITTER_LYRIC_UPDATE,'Lyric Updated')
     } else {
       ToastUtil.showToast('未找到文件')
     }
@@ -92,7 +99,7 @@ export async function playMusicWithFile(fileName:string) {
 }
 
 export async function stopMusic() {
-  await AudioPlayUtils.stop().then(() => {
+  AudioPlayUtils.stop().then(() => {
     AppStorage.setOrCreate('player-isplaying',false)
     AudioPlayUtils.mPlayer.release()
   })
@@ -109,7 +116,8 @@ export async function resumeMusic() {
 }
 
 export async function seekMusic(time: number) {
-  await AudioPlayUtils.seek(time)
+  AudioPlayUtils.play()
+  AudioPlayUtils.seek(time)
 }
 
 export async function playQueue(index:number) {
@@ -200,8 +208,9 @@ export async function completeDo() {
  */
 export async function changeCycleMode(mode: number) {
   AppStorage.setOrCreate('cycleMode', mode)
-  PreferencesUtils.putPreferenceValue(pref,'cycleMode', mode).then(() => {
+  PreferencesUtils.putPreferenceValue(pref,'cycleMode', mode).then(async () => {
     promptAction.showToast({ message: `${Constants.CYCLE_MODE[mode]}` })
+    AVSessionUtils.playState(await getPlayTime())
   })
 }
 
@@ -226,4 +235,17 @@ export async function saveCurrentSongInfo(playMode: number, song: Song, artists:
   await PreferencesUtils.putPreferenceValue('Play','CurrentArtists', artists)
   await PreferencesUtils.putPreferenceValue('Play','CurrentImage', imgUrl)
   await PreferencesUtils.putPreferenceValue('Play','CurrentQueueIndex', PlayQueueUtils.currentQueueIndex)
+}
+
+/**
+ * 获取播放时间(ms)
+ * @returns number 播放时间(ms)
+ */
+async function getPlayTime(): Promise<number> {
+  let resTime = 0
+  let elapsedTime:number | undefined = await AppStorage.get('player-time')
+  if(elapsedTime) {
+    resTime = elapsedTime
+  }
+  return resTime
 }

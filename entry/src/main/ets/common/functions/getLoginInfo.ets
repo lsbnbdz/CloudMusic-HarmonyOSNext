@@ -1,5 +1,5 @@
 import { LogUtil } from "@pura/harmony-utils"
-import { getPubCookie } from "../../api/getPubCookie"
+import { getPubCookie } from "../../api/chenlvinApi"
 import Constants from "../constants/Constants"
 import { User, UserClass } from "../entities/User"
 import { HttpRequest } from "../utils/HttpRequestUtils"

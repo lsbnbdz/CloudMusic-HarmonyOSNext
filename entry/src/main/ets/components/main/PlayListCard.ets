@@ -4,8 +4,15 @@ import { playListClass } from "../../common/entities/PlayList"
 
 @Component
 export struct PlayListCard {
+  @State hasAnimation: boolean = false
+  @State startOpacity:number = 1
+  @State startHeight:number = 60
   @State isShowHeart: boolean = true
   playList:PlayList = playListClass
+
+  aboutToAppear(): void {
+    if(this.hasAnimation) { this.startHeight = 120; this.startOpacity = 0.1}
+  }
 
   build() {
     Button() {
@@ -18,6 +25,16 @@ export struct PlayListCard {
         .layoutWeight(1)
       }
       .width('100%')
+      .height(this.startHeight)
+      .opacity(this.startOpacity)
+      .onAppear( () => {
+        this.startHeight = 60
+        this.startOpacity = 1
+      })
+      .animation({
+        duration: 600,
+        curve: Curve.LinearOutSlowIn,
+      })
     }
     .backgroundColor(Color.Transparent)
     .borderRadius(5)

@@ -40,12 +40,13 @@ export struct AddToPlayListButton {
 export struct AddToPlayListCircleButton {
   @State isShowAddSheet: boolean = false
   @State song: Song = SongClass
+  @State imgColor: Color | ResourceStr = $r('app.color.reverse')
 
   build() {
     Button(){
       Image($r('app.media.ic_files_new_folder'))
         .width(30)
-        .fillColor($r('app.color.reverse'))
+        .fillColor(this.imgColor)
     }
     .backgroundColor(Color.Transparent)
     .onClick(() => { this.isShowAddSheet = !this.isShowAddSheet })

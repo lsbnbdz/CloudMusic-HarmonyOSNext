@@ -67,8 +67,8 @@ async function initSettings() {
   // usePublicCookie
   const isUsePubCookieExist = await PreferencesUtils.hasPreferenceValue(SetPerf, 'isUsePubCookie')
   if (!isUsePubCookieExist) {
-    await PreferencesUtils.putPreferenceValue(SetPerf, 'isUsePubCookie', true)
-    AppStorage.setOrCreate('set-isUsePubCookie', true)
+    await PreferencesUtils.putPreferenceValue(SetPerf, 'isUsePubCookie', false)
+    AppStorage.setOrCreate('set-isUsePubCookie', false)
   } else {
     const isUsePubCookie = await PreferencesUtils.getPreferenceValue(SetPerf, 'isUsePubCookie', true)
     AppStorage.setOrCreate('set-isUsePubCookie', isUsePubCookie)

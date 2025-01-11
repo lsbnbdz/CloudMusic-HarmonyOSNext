@@ -38,6 +38,7 @@ class AudioPlayUtils {
   }
 
   async play() {
+    ContinuousTask.startTask()
     await this.mPlayer.play()
     AVSessionUtils.playState(this.mPlayer.currentTime)
 
@@ -79,8 +80,8 @@ class AudioPlayUtils {
 
   onState() {
     this.mPlayer.onStateChange(async (state) => {
-      if(state == 'prepared') { this.play(); ContinuousTask.startTask() }
-      if(state == 'playing') { AppStorage.setOrCreate('player-isplaying', true) }
+      if(state == 'prepared') { this.play(); }
+      if(state == 'playing') { AppStorage.setOrCreate('player-isplaying', true); AppStorage.setOrCreate('player-ispaused', false) }
       if(state == 'paused') { clearInterval(this.updateAvSession); AppStorage.setOrCreate('player-ispaused', true); AVSessionUtils.pauseState(this.mPlayer.currentTime) }
       if(state == 'idle') { clearInterval(this.updateAvSession); AVSessionUtils.deactive() }
       if(state == 'stopped') { clearInterval(this.updateAvSession); AppStorage.setOrCreate('player-ispaused', true); ContinuousTask.stopTask() }

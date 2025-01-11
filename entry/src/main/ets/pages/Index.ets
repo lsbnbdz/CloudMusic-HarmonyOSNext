@@ -1,5 +1,5 @@
 import { IndexHead } from '../components/head/IndexHead'
-import { PlayLists } from '../components/main/PlayLists'
+import { UserPlayLists } from '../components/lists/UserPlayLists'
 import { BottomPlayController } from '../components/play/BottomPlayController';
 
 @Entry
@@ -8,6 +8,7 @@ struct Index {
   @StorageProp("isValidCookie") isValidCookie:boolean = false
   @StorageProp('topRectHeight') topRectHeight: number = 0
   @StorageProp('bottomRectHeight') bottomRectHeight: number = 0
+  @State isShowSearchButton: boolean = false
 
   pageTransition() {
     PageTransitionEnter({ duration: 100, curve: Curve.Ease })
@@ -16,10 +17,10 @@ struct Index {
   async build() {
     Stack({ alignContent: Alignment.Bottom }) {
       Column() {
-        IndexHead()
+        IndexHead({ isShowSearchButton: this.isShowSearchButton })
         Stack({ alignContent: Alignment.Top }) {
           if (this.isValidCookie) {
-            PlayLists()
+            UserPlayLists({ isShowSearchButton: this.isShowSearchButton })
               .layoutWeight(1)
           } else {
             Column({ space: 5 }) {

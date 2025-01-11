@@ -25,49 +25,49 @@ export struct PlayQueueSheet {
   }
 
   build() {
-    Column({ space: 10 }) {
-      Row() {
-        Row({ space: 15 }) {
-          Text() {
-            Span('播放列表').fontSize(20).fontColor(Color.Gray).fontWeight(FontWeight.Bold)
-            Span(`  (${this.queueLength})`).fontSize(16).fontColor(Color.Gray)
+    Stack({ alignContent: Alignment.Top }) {
+      Column({ space: 10 }) {
+        Row() {
+          Row({ space: 15 }) {
+            Text() {
+              Span('播放列表').fontSize(20).fontColor(Color.Gray).fontWeight(FontWeight.Bold)
+              Span(`  (${this.queueLength})`).fontSize(16).fontColor(Color.Gray)
+            }
+
+            LoopModeButton({ imgWidth: 25, btnWidth: 25 })
+
+            Button({ type: ButtonType.Circle }) {
+              Image($r('app.media.ic_position')).width(20).fillColor($r('app.color.reverse'))
+            }
+            .backgroundColor(Color.Transparent)
+            .onClick(() => {
+              this.scrollToCurrent()
+            })
           }
 
-          LoopModeButton({ imgWidth:25, btnWidth: 25 })
-
           Button({ type: ButtonType.Circle }) {
-            Image($r('app.media.ic_position')).width(20).fillColor($r('app.color.reverse'))
+            Image($r('app.media.ic_public_delete_filled')).width(25).fillColor(Color.Gray)
           }
           .backgroundColor(Color.Transparent)
           .onClick(() => {
-            this.scrollToCurrent()
-          })
-        }
-
-        Button({ type: ButtonType.Circle }) {
-          Image($r('app.media.ic_public_delete_filled')).width(25).fillColor(Color.Gray)
-        }
-        .backgroundColor(Color.Transparent)
-        .onClick(() => {
-          DialogUtil.showPrimaryDialog({
-            title: '确认',
-            message: '清空播放列表',
-            primaryButton: "取消",
-            secondaryButton: "确认",
-            onAction: async (action) => {
-              if(action == DialogAction.TWO) {
-                PlayQueueUtils.cleanQueue()
-                this.queueLength = PlayQueueUtils.getQueueLength()
+            DialogUtil.showPrimaryDialog({
+              title: '确认',
+              message: '清空播放列表',
+              primaryButton: "取消",
+              secondaryButton: "确认",
+              onAction: async (action) => {
+                if (action == DialogAction.TWO) {
+                  PlayQueueUtils.cleanQueue()
+                  this.queueLength = PlayQueueUtils.getQueueLength()
+                }
               }
-            }
+            })
           })
-        })
-      }
-      .padding({ left: 5, right: 5 })
-      .width('100%')
-      .justifyContent(FlexAlign.SpaceBetween)
+        }
+        .padding({ left: 5, right: 5 })
+        .width('100%')
+        .justifyContent(FlexAlign.SpaceBetween)
 
-      Stack() {
         List({ scroller: this.scroller, space: 15 }) {
           ForEach(this.queue, (item: PlayQueue, index) => {
             ListItem() {
@@ -119,7 +119,9 @@ export struct PlayQueueSheet {
                     .onClick(async () => {
                       this.isLoading = true
                       await playQueue(index)
-                      this.isLoading = false
+                      setTimeout(() => {
+                        this.isLoading = false
+                      }, 500)
                     })
                   }
                 }
@@ -140,20 +142,18 @@ export struct PlayQueueSheet {
         }
         .width('100%')
         .height('100%')
+        .layoutWeight(1)
         .scrollBar(BarState.Off)
-
-        if(this.isLoading) {
-          Column() {
-            LoadingProgress().width(40)
-          }
-          .justifyContent(FlexAlign.Center)
-          .height('100%')
-          .width('100%')
-        }
       }
-      .width('100%')
-      .layoutWeight(1)
-      .height('100%')
+      if(this.isLoading) {
+        Column() {
+          LoadingProgress()
+            .width(50)
+        }
+        .justifyContent(FlexAlign.Center)
+        .height('100%')
+        .width('100%')
+      }
     }
     .padding({ left:20, right:20, top:15 })
     .width('100%')

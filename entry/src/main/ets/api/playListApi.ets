@@ -218,7 +218,7 @@ export async function searchPlayLists(keyword: string, offset:number): Promise<P
   let list:Array<PlayList> = new Array()
   let hasMore:boolean = false
   const rootUrl = await getApiUrl()
-  const url:string = `${rootUrl}/search?type=1000&keywords=${encodeURIComponent(keyword)}&limit=10&offset=${offset}`
+  const url:string = `${rootUrl}/search?type=1000&keywords=${encodeURIComponent(keyword)}&limit=15&offset=${offset}`
   const request = new HttpRequest(url)
   await request.RequestInStream().then((data) => {
     const dataGot:PlayListSearchResult = data.result as PlayListSearchResult

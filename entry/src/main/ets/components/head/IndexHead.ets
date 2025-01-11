@@ -1,11 +1,12 @@
-import { CircleImageButton, CommonCircleButton } from "../buttons/CircleButton";
+import { CircleButton, CircleImageButton, CommonCircleButton } from "../buttons/CircleButton";
 import { MeSheet } from "../sheets/MeSheet";
 import { router } from "@kit.ArkUI";
 import { User, UserClass } from "../../common/entities/User";
 
 @Component
 export struct IndexHead {
-  @State isShowSheet: boolean = false;
+  @State isShowSheet: boolean = false
+  @Link isShowSearchButton: boolean
   @StorageProp('bottomRectHeight') bottomRectHeight: number = 0
   @StorageProp('topRectHeight') topRectHeight: number = 0
   @StorageProp('isValidCookie') isValidCookie: boolean = false
@@ -45,26 +46,20 @@ export struct IndexHead {
             })
         }
 
-        Search({
-          placeholder: '搜索内容',
-          icon: '/resources/base/media/ic_public_search_filled.svg',
-        })
-          .sharedTransition('search_component', {
-            duration: 300,
-            curve: Curve.EaseOut
-          })
-          .focusable(false)
+        // 搜索按钮
+        CircleButton({ imgUrl: $r('app.media.ic_public_search_filled'), bgColor: '#00cbcbcb', fillColor: $r('app.color.reverse') })
+          .opacity(this.isShowSearchButton ? 1 : 0)
+          .animation({ duration: 300 })
+          .position({ right: 50 })
           .onClick(() => {
             router.pushUrl({
-              url: 'pages/SearchPage'
+              url: "pages/SearchPage"
             })
           })
-          .layoutWeight(1)
-
         CommonCircleButton({ ButtonImageName: 'ic_public_more_filled', BgColor: '#00cbcbcb' })
           .bindMenu(this.MoreMenu())
       }
-      .padding({ left: 10, right: 10, bottom: 5 })
+      .padding({ left: 20, right: 20, bottom: 5 })
       .justifyContent(FlexAlign.SpaceBetween)
       .width('100%')
     }

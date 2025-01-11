@@ -58,16 +58,17 @@ export struct CircleImageButton {
 @Component
 export struct CircleButton {
   @State bgColor: Color | string = Color.Transparent
+  @State fillColor: Color | string | Resource = Color.White
   @State imgUrl: ResourceStr = ''
-  @State btnWidth: number = 60
-  @State imgWidth: number = 40
+  @State btnWidth: number = 45
+  @State imgWidth: number = 35
 
   build() {
     Button() {
       Image(this.imgUrl)
         .height(this.imgWidth)
-        .padding({ top:10, bottom:10, left:10, right:10 })
-        .fillColor(Color.White)
+        .padding(5)
+        .fillColor(this.fillColor)
     }
     .type(ButtonType.Circle)
     .backgroundColor(this.bgColor)

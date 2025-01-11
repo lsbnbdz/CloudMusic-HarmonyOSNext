@@ -13,16 +13,16 @@ export struct BottomPlayController {
   @StorageProp('topRectHeight') topRectHeight: number = 0
   @StorageProp('bottomRectHeight') bottomRectHeight: number = 0
 
-  @StorageLink('player-isplaying') isPlaying:boolean = false
-  @StorageProp('player-mode') playmode:number = 1
-  @StorageProp('player-fileName') fileName:string = ''
-  @StorageProp('player-song') song:Song = SongClass
-  @StorageProp('player-artists') artists:string = ''
-  @StorageProp('player-ispaused') isPaused:boolean = true
-  @StorageProp('player-picurl') picUrl:string = ''
-  @StorageProp('player-time') time:number = 0
+  @StorageLink('player-isplaying') isPlaying: boolean = false
+  @StorageProp('player-mode') playmode: number = 1
+  @StorageProp('player-fileName') fileName: string = ''
+  @StorageProp('player-song') song: Song = SongClass
+  @StorageProp('player-artists') artists: string = ''
+  @StorageProp('player-ispaused') isPaused: boolean = true
+  @StorageProp('player-picurl') picUrl: string = ''
+  @StorageProp('player-time') time: number = 0
 
-  @State componentOpacity:number = 0.8
+  @State componentOpacity: number = 0.8
   @State isShow: boolean = false
 
   build() {
@@ -49,10 +49,6 @@ export struct BottomPlayController {
     .backgroundColor($r('app.color.main'))
     .opacity(this.isShow ? this.componentOpacity : this.componentOpacity)
     .height(80)
-    .sharedTransition('bottom_play_controller', {
-      duration: 1,
-      curve: Curve.Friction
-    })
     .onClick(() => {
       if(this.isPlaying) { this.isShow = true }
       else { ToastUtil.showToast('暂无播放') }
@@ -101,6 +97,7 @@ struct ControlButtons {
 }
 
 @Extend(Image) function buttonImgStyle() {
+  .aspectRatio(1)
   .width(30)
   .fillColor($r('app.color.reverse'))
 }
@@ -117,8 +114,4 @@ struct ControlButtons {
   .width(50)
   .height(50)
   .borderRadius(10)
-  // .sharedTransition('songImg', {
-  //   duration: 300,
-  //   curve: Curve.Friction
-  // })
 }

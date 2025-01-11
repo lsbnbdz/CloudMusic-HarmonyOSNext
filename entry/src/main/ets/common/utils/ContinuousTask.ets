@@ -5,21 +5,12 @@ import { LogUtil } from '@pura/harmony-utils';
 
 /**
  * 长时任务
- * （音频播放）
  */
 const TAG = '[ContinuousTask] '
 
 class ContinuousTask {
   private context: Context = getContext(this)
 
-  /**
-   * 开始播放任务
-   * @param mode 0:fileUrl, 1:url
-   * @param song
-   * @param artists
-   * @param picUrl
-   * @param url
-   */
   async startTask() {
     let wantAgentInfo: wantAgent.WantAgentInfo = {
       wants: [
@@ -36,18 +27,18 @@ class ContinuousTask {
     wantAgent.getWantAgent(wantAgentInfo).then((wantAgentObj: WantAgent) => {
       backgroundTaskManager.startBackgroundRunning(this.context,
         backgroundTaskManager.BackgroundMode.AUDIO_PLAYBACK, wantAgentObj).then(async () => {
-        LogUtil.info(TAG + `启动长时任务 stopBackgroundRunning.`);
+        LogUtil.info(TAG + `启动长时任务 Start Background Running.`);
       }).catch((err: BusinessError) => {
-        LogUtil.error(TAG + `开启长时任务 startBackgroundRunning 失败：Code - ${err.code}, Message - ${err.message}`);
+        LogUtil.error(TAG + `启动长时任务 Start Background Running 失败：Code - ${err.code}, Message - ${err.message}`);
       });
     });
   }
 
   async stopTask() {
     backgroundTaskManager.stopBackgroundRunning(this.context).then(() => {
-      LogUtil.info(TAG + `成功结束长时任务 stopBackgroundRunning.`);
+      LogUtil.info(TAG + `成功结束长时任务 Stop Background Running.`);
     }).catch((err: BusinessError) => {
-      LogUtil.error(TAG + `结束长时任务 stopBackgroundRunning 失败：Code - ${err.code}, Message - ${err.message}`);
+      LogUtil.error(TAG + `结束长时任务 Stop Background Running 失败：Code - ${err.code}, Message - ${err.message}`);
     });
   }
 }

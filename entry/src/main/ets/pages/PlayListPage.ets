@@ -24,6 +24,7 @@ const TAG = '[PlayListPage] '
 struct PlayListPage {
   @StorageProp('bottomRectHeight') bottomRectHeight: number = 0
   @StorageProp('topRectHeight') topRectHeight: number = 0
+  @StorageProp('set-hasAnimation') hasAnimation: boolean = true
 
   private playList: PlayList = Object(router.getParams())['playList']
   private trackCount: number = Object(router.getParams())['trackCount']
@@ -38,10 +39,8 @@ struct PlayListPage {
   @State pageOpacity: number = 1
 
   private currentOffset: number = 0 // 歌曲偏移量
-  hasAnimation:boolean | undefined = false
 
   async onPageShow(): Promise<void> {
-    this.hasAnimation = AppStorage.get('set-hasAnimation')
     if (!this.hasLoaded) {
       await this.loadSongs(30, 0)
     }

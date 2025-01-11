@@ -8,7 +8,7 @@ export struct PlayQueueButton {
   @StorageProp('bottomRectHeight') bottomRectHeight: number = 0
   @State isShow: boolean = false
   @State imgWidth: number = 30
-  @State imgColor: ResourceStr = $r('app.color.reverse')
+  @State imgColor: Color | ResourceStr = $r('app.color.reverse')
 
   build() {
     Button(){

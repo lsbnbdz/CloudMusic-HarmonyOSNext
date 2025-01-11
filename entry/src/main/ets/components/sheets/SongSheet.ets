@@ -90,7 +90,7 @@ export struct SongSheet {
               .onClick(async () => {
                 AppStorage.setOrCreate('isPlayerLoading', true)
                 this.isShowSheet = !this.isShowSheet
-                playMusicByUrl(this.song, this.artists, this.picUrl, this.isValidCookie).then(() => {
+                playMusicByUrl(this.song, this.artists, this.isValidCookie).then(() => {
                   PlayQueueUtils.queueAdd(1, this.song, this.artists, '')
                   PlayQueueUtils.setIndex(PlayQueueUtils.currentQueueIndex + 1)
                   AppStorage.setOrCreate('isPlayerLoading', false)

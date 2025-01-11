@@ -5,7 +5,7 @@ import { QualityType } from "../entities/SongDownload"
  */
 export default class Constants {
   // Version
-  static readonly VERSION: string = '1.1.2'
+  static readonly VERSION: string = '1.1.3'
   static readonly VER_DESC: string = ''
 
   // Preferences
@@ -36,4 +36,5 @@ export default class Constants {
 
   // Emitter ID
   static readonly EMITTER_LYRIC_UPDATE: string = 'LYRIC_UPDATE'
+  static readonly EMITTER_SEARCH: string = 'SEARCH'
 }

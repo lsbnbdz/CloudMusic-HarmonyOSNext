@@ -12,7 +12,7 @@ import { promptAction } from "@kit.ArkUI";
 import PreferencesUtils from "../utils/PreferencesUtils";
 import { fileIo } from "@kit.CoreFileKit";
 import { SongPlay } from "../entities/SongPlay";
-import { getLyric } from "../../api/LyricApi";
+import { setLyric } from "../../api/LyricApi";
 
 /**
  * 音频播放控制方法
@@ -20,44 +20,38 @@ import { getLyric } from "../../api/LyricApi";
 const TAG = '[playerControl] '
 const pref = Constants.QUEUE_PREF
 
-export async function playMusicByUrl(song:Song,artists:string,picUrl:string,isLogged:boolean) {
+export async function playMusicByUrl(song:Song,artists:string,isLogged:boolean) {
   try {
-    let lyricArr: string[] = []
     LogUtil.info(TAG + 'Play Music By Url: ' + `Song: ${JSON.stringify(song)}` + '\n' + `artists: ${JSON.stringify(artists)}`)
     const quality:number | undefined = await AppStorage.get('set-playQuality')
     const songPlay:SongPlay = await getSongUrl(song.id, quality ? Constants.QUALITY[quality] : "standard", isLogged)
-    try {
-      lyricArr = await getLyric(song.id)
-    } catch (e) {
+    let fileNameFomatted = sanitizeFileName(`${artists} - ${song.name}`)
+    let localPath = await FileUtils.accessLocalFile(fileNameFomatted)
 
-    }
-
-    if(songPlay.data[0].url) {
-      AppStorage.setOrCreate('player-mode', 1)
-      AppStorage.setOrCreate('player-ispaused',false)
-      AppStorage.setOrCreate('player-song',song)
-      AppStorage.setOrCreate('player-artists',artists)
-      AppStorage.setOrCreate('player-picurl',picUrl)
-      AppStorage.setOrCreate('player-lyric',lyricArr)
-      // 是否存在本地文件
-      let fileNameFomatted = sanitizeFileName(`${artists} - ${song.name}`)
-      let localPath = await FileUtils.accessLocalFile(fileNameFomatted)
-      if(localPath != '') {
-        promptAction.showToast({ message: '找到本地文件，将优先播放本地文件'})
-        await AudioPlayUtils.setUrl(localPath)
-      }
-      else { await AudioPlayUtils.setUrl(songPlay.data[0].url) }
-      AVSessionUtils.setMetadata(song,artists,picUrl)
-      AVSessionUtils.activate()
-      AppStorage.setOrCreate('player-isplaying',true)
-      saveCurrentSongInfo(1, song, artists, picUrl)
-      EmitterUtil.post(Constants.EMITTER_LYRIC_UPDATE,'Lyric Updated')
+    setLyric(song.id)
+    AppStorage.setOrCreate('player-mode', 1)
+    AppStorage.setOrCreate('player-ispaused',false)
+    AppStorage.setOrCreate('player-song',song)
+    AppStorage.setOrCreate('player-artists',artists)
+    // 是否存在本地文件
+    if(localPath != '') {
+      promptAction.showToast({ message: '找到本地文件，将优先播放本地文件'})
+      await AudioPlayUtils.setUrl(localPath)
+    } else if(songPlay.data[0].url) {
+      await AudioPlayUtils.setUrl(songPlay.data[0].url)
     } else {
       ToastUtil.showToast('获取播放资源失败')
+      playNext()
     }
+    AppStorage.setOrCreate('player-isplaying', true)
+    const picUrl:string = await getSongPicUrl(song)
+    AppStorage.setOrCreate('player-picurl', picUrl)
+    AVSessionUtils.setMetadata(song, artists, picUrl)
+    AVSessionUtils.activate()
+    saveCurrentSongInfo(1, song, artists, picUrl)
   } catch (e) {
-    LogUtil.error(TAG + '播放歌曲失败: ' + e)
-    ToastUtil.showToast('播放失败: ' + e)
+    LogUtil.error(TAG + '播放出错: ' + e)
+    playNext()
   }
 }
 
@@ -91,10 +85,12 @@ export async function playMusicWithFile(fileName:string) {
       EmitterUtil.post(Constants.EMITTER_LYRIC_UPDATE,'Lyric Updated')
     } else {
       ToastUtil.showToast('未找到文件')
+      playNext()
     }
   } catch (e) {
     LogUtil.error(TAG + '播放歌曲失败: ' + JSON.stringify(e))
     ToastUtil.showToast('播放失败: ' + JSON.stringify(e))
+    playNext()
   }
 }
 
@@ -129,8 +125,7 @@ export async function playQueue(index:number) {
       PlayQueueUtils.setIndex(index)
     })
   } else { // Play with url
-    const picUrl = await getSongPicUrl(playqueue.song)
-    playMusicByUrl(playqueue.song, playqueue.artists, picUrl, isLogged ? true : false).then(() => {
+    playMusicByUrl(playqueue.song, playqueue.artists, isLogged ? true : false).then(() => {
       PlayQueueUtils.setIndex(index)
     })
   }
@@ -144,8 +139,7 @@ export async function playPre() {
     if(res.playmode == 0) {
       playMusicWithFile(res.fileName)
     } else {
-      let picUrl = await getSongPicUrl(res.song)
-      playMusicByUrl(res.song, res.artists, picUrl, isValidCookie?isValidCookie:false)
+      playMusicByUrl(res.song, res.artists, isValidCookie?isValidCookie:false)
     }
   } else {
     if(cycleMode == 2) { playQueue(PlayQueueUtils.getQueueLength() - 1) }
@@ -170,8 +164,7 @@ export async function playNext() {
     if(res.playmode == 0) {
       playMusicWithFile(res.fileName)
     } else {
-      let picUrl = await getSongPicUrl(res.song)
-      playMusicByUrl(res.song, res.artists, picUrl, isValidCookie?isValidCookie:false)
+      playMusicByUrl(res.song, res.artists, isValidCookie ? isValidCookie:false)
     }
   } else {
     if(cycleMode == 2) { playQueue(0) }

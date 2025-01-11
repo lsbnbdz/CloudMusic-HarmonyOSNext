@@ -8,7 +8,7 @@ import { LoopModeButton } from "../buttons/LoopModeButton"
 import { PlayQueueButton } from "../buttons/PlayQueueButton"
 import { DownloadDialog } from "../dialog/DownloadDialog"
 import { LyricComponent } from "../main/LyricComponent"
-import { AVCastPicker, AVCastPickerState } from "@kit.AVSessionKit"
+import { AVCastPicker } from "@kit.AVSessionKit"
 
 const TAG = '[PlayingCover] '
 export interface Lyric {
@@ -42,7 +42,7 @@ export struct PlayingCover {
   song1:Song = SongClass
   picUrl1:string = ''
 
-  private tabsController: TabsController = new TabsController();
+  private tabsController: TabsController = new TabsController()
 
   private dialogController: CustomDialogController = new CustomDialogController({
     builder: DownloadDialog({
@@ -62,11 +62,12 @@ export struct PlayingCover {
 
   build() {
    Stack() {
+     // 遮罩
      Column()
      .width('100%')
      .height('100%')
      .opacity(0.5)
-     .backgroundColor($r('app.color.background'))
+     .backgroundColor(Color.Black)
 
      Column() {
        Tabs({ controller: this.tabsController }) {
@@ -89,6 +90,7 @@ export struct PlayingCover {
                .fontSize(16)
                .layoutWeight(1)
                .textAlign(TextAlign.Start)
+               .fontColor(Color.White)
 
              // 拖动进度条时，显示即将跳转的时间
              if (this.isMovingSlider) {
@@ -109,6 +111,7 @@ export struct PlayingCover {
                .fontSize(16)
                .layoutWeight(1)
                .textAlign(TextAlign.End)
+               .fontColor(Color.White)
            }
            .width('90%')
            .justifyContent(FlexAlign.SpaceAround)
@@ -148,6 +151,7 @@ export struct PlayingCover {
          Row({ space: 20 }) {
            if (this.playmode == 1) {
              Select([{ value: '标准' }, { value: '高' }, { value: '极高' }, { value: '无损' }])
+               .fontColor(Color.White)
                .selected(3)
                .value('无损')
                .height(40)
@@ -157,7 +161,7 @@ export struct PlayingCover {
 
              Button({ type: ButtonType.Circle }) {
                Image($r('app.media.ic_public_download_filled'))
-                 .fillColor($r('app.color.reverse'))
+                 .fillColor(Color.White)
                  .width(25)
              }
              .backgroundColor(Color.Transparent)
@@ -168,13 +172,13 @@ export struct PlayingCover {
                this.dialogController.open()
              })
 
-             AddToPlayListCircleButton({ song: this.song })
+             AddToPlayListCircleButton({ song: this.song, imgColor: Color.White })
 
            }
 
-           LoopModeButton()
+           LoopModeButton({ imgColor: Color.White })
 
-           PlayQueueButton()
+           PlayQueueButton({ imgColor: Color.White })
 
          }
 
@@ -210,10 +214,6 @@ export struct PlayingCover {
          .padding({ top: 30, bottom: 50 })
          .justifyContent(FlexAlign.Center)
        }
-       .opacity(this.totalOpacity)
-       .animation({
-         duration: 200
-       })
        .width('100%')
      }
      .height('100%')
@@ -221,7 +221,7 @@ export struct PlayingCover {
 
      // Head
      Row() {
-       Button({ type: ButtonType.Circle }) { Image($r('app.media.ic_public_arrow_down_0')).fillColor($r('app.color.reverse')).width(35).height(35) }
+       Button({ type: ButtonType.Circle }) { Image($r('app.media.ic_public_arrow_down_0')).fillColor(Color.White).width(35).height(35) }
        .backgroundColor(Color.Transparent)
        .opacity(this.totalOpacity)
        .animation({
@@ -232,7 +232,7 @@ export struct PlayingCover {
        this.TabBar()
 
        Stack() {
-         AVCastPicker()
+         AVCastPicker({ normalColor: Color.White, activeColor: '#ff359bdb' })
            .opacity(this.totalOpacity)
            .animation({
              duration: 200
@@ -271,12 +271,33 @@ export struct PlayingCover {
       if (this.playmode == 0) {
         Stack() {
           Image($r('app.media.ic_public_music')).width('80%').fillColor(Color.Gray).borderRadius(5).aspectRatio(1)
+            .sharedTransition('CoverImg',{
+              duration: 500,
+              curve: Curve.Linear
+            })
         }
         .padding({ bottom: 30 })
       } else {
         Stack() {
           LoadingProgress().width(60)
-          Image(this.picUrl + '?param=512y512').width('80%').height(250).borderRadius(5).aspectRatio(1)
+          if(this.picUrl != '') {
+            Image(this.picUrl + '?param=512y512')
+              .width('80%')
+              .height(250)
+              .borderRadius(5)
+              .aspectRatio(1)
+              .sharedTransition('CoverImg', {
+                duration: 500,
+                curve: Curve.Linear
+              })
+          }
+          else {
+            Column() {}
+            .width('80%')
+            .height(250)
+            .borderRadius(5)
+            .aspectRatio(1)
+          }
         }
         .padding({ bottom: 30 })
       }
@@ -306,7 +327,7 @@ export struct PlayingCover {
         .animation({
           duration: 200
         })
-        .backgroundColor($r('app.color.reverse'))
+        .backgroundColor(Color.White)
         .onClick(() => this.tabsController.changeIndex(0))
       Button()
         .width(15)
@@ -315,7 +336,7 @@ export struct PlayingCover {
         .animation({
           duration: 200
         })
-        .backgroundColor($r('app.color.reverse'))
+        .backgroundColor(Color.White)
         .onClick(() => this.tabsController.changeIndex(1))
     }
   }
@@ -324,7 +345,7 @@ export struct PlayingCover {
 
 @Extend(Text) function textStyle(size:number) {
   .fontSize(size)
-  .fontColor($r('app.color.reverse'))
+  .fontColor(Color.White)
   .maxLines(1)
   .padding({ left:20, right:20 })
   .textOverflow({ overflow: TextOverflow.MARQUEE })
@@ -332,5 +353,5 @@ export struct PlayingCover {
 
 @Extend(Image) function buttonImgStyle() {
   .width(50)
-  .fillColor($r('app.color.reverse'))
+  .fillColor(Color.White)
 }

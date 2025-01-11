@@ -23,6 +23,7 @@ export struct AddToPlayListButton {
       this.isShowAddSheet = !this.isShowAddSheet
     })
     .bindSheet(this.isShowAddSheet, this.Sheet(), {
+      preferType: SheetType.CENTER,
       height: '80%',
       dragBar: false,
       showClose: false,
@@ -51,6 +52,7 @@ export struct AddToPlayListCircleButton {
     .backgroundColor(Color.Transparent)
     .onClick(() => { this.isShowAddSheet = !this.isShowAddSheet })
     .bindSheet(this.isShowAddSheet, this.Sheet(), {
+      preferType: SheetType.CENTER,
       height: '80%',
       dragBar: false,
       showClose: false,

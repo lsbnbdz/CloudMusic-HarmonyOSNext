@@ -19,6 +19,7 @@ export struct PlayQueueButton {
     .backgroundColor(Color.Transparent)
     .onClick(() => { this.isShow = !this.isShow })
     .bindSheet(this.isShow, this.QueueComponent(), {
+      preferType: SheetType.BOTTOM,
       height: '60%',
       dragBar: false,
       showClose: false,

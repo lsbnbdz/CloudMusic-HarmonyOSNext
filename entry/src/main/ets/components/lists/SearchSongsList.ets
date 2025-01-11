@@ -62,7 +62,10 @@ export struct SearchSongsList {
           ListItem() {
             Column() {
               SpinKit({ spinType: SpinType.spinO, spinSize: 30, spinColor: Color.Gray }).width(30)
-            }.justifyContent(FlexAlign.Center).width('100%').height(50)
+            }
+            .justifyContent(FlexAlign.Center)
+            .width('100%')
+            .height(50)
           }
         } else if (this.hasMoreSongs && this.searchKeyword) {
           ListItem() {

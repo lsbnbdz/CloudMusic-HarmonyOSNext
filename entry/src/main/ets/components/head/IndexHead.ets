@@ -33,6 +33,7 @@ export struct IndexHead {
         } else {
           CommonCircleButton({ ButtonImageName: 'ic_public_contacts_filled', BgColor: '#00cbcbcb' })
             .bindSheet(this.isShowSheet, this.Sheet(), {
+              preferType: SheetType.CENTER,
               backgroundColor: $r('app.color.background'),
               height: '50%',
               dragBar: false,

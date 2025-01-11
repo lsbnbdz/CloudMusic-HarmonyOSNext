@@ -90,6 +90,7 @@ export struct SongCard {
     .height(60)
     .padding({ left: 20, right: 20 })
     .bindSheet(this.isShowSheet, this.Sheet(), {
+      preferType: SheetType.CENTER,
       height: '70%',
       dragBar: true,
       onDisappear: () => { this.isShowSheet = false }

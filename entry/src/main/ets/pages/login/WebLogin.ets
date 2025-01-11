@@ -11,15 +11,16 @@ import { ToastUtil } from '@pura/harmony-utils';
 @Entry
 @Component
 struct WebLogin {
-  @StorageProp('bottomRectHeight') bottomRectHeight: number = 0;
-  @State userAgent: string = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36';
+  @StorageProp('bottomRectHeight') bottomRectHeight: number = 0
+  @State userAgent: string = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+  @State isShowHelpSheet:boolean = false
   controller: webview.WebviewController = new webview.WebviewController()
 
   build() {
     Stack() {
       Column() {
         CommonHead({ title: '登录'})
-        Help().padding({bottom:10})
+        this.Bar()
         Web({ src: '', controller: this.controller })
           .width('100%')
           .height('100%')
@@ -33,7 +34,7 @@ struct WebLogin {
           })
 
         Column() {
-          Button('获取登录信息').onClick(() => { this.getCookie() })
+
         }.width('100%').padding({ top:20 })
       }
       .height('100%')
@@ -82,15 +83,9 @@ struct WebLogin {
     }
   }
 
-
-}
-
-@Component
-struct Help {
-  @State isShowHelpSheet:boolean = false
-  build() {
-    // Help
-    Column() {
+  @Builder
+  Bar() {
+    Row() {
       Button() {
         Row({ space: 5 }) {
           Image($r('app.media.ic_public_help')).fillColor($r('app.color.reverse')).height('80%')
@@ -98,6 +93,7 @@ struct Help {
         }.padding({ right: 10 })
       }.height(30).alignSelf(ItemAlign.End).backgroundColor(Color.Transparent)
       .bindSheet(this.isShowHelpSheet, this.HelpSheet(), {
+        preferType: SheetType.BOTTOM,
         height: '50%',
         dragBar: false,
         onDisappear: () => {
@@ -107,7 +103,12 @@ struct Help {
       .onClick(() => {
         this.isShowHelpSheet = !this.isShowHelpSheet
       })
-    }.width('100%')
+
+      Button('获取登录信息').onClick(() => { this.getCookie() })
+    }
+    .justifyContent(FlexAlign.SpaceBetween)
+    .width('100%')
+    .padding({ bottom: 10, left: 15, right: 15 })
   }
 
   @Builder

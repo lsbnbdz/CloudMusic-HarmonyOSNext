@@ -82,7 +82,7 @@ export struct PlayingCover {
        .layoutWeight(1)
        .barHeight(0)
 
-       Column({ space: 20 }) {
+       Column({ space: 10 }) {
          Column({ space: 5 }) {
            Row() {
              // 当前时间
@@ -270,7 +270,7 @@ export struct PlayingCover {
       // 歌曲封面图片
       if (this.playmode == 0) {
         Stack() {
-          Image($r('app.media.ic_public_music')).width('80%').fillColor(Color.Gray).borderRadius(5).aspectRatio(1)
+          Image($r('app.media.ic_public_music')).height('60%').fillColor(Color.Gray).borderRadius(5).aspectRatio(1)
             .sharedTransition('CoverImg',{
               duration: 500,
               curve: Curve.Linear
@@ -282,8 +282,7 @@ export struct PlayingCover {
           LoadingProgress().width(60)
           if(this.picUrl != '') {
             Image(this.picUrl + '?param=512y512')
-              .width('80%')
-              .height(250)
+              .height('60%')
               .borderRadius(5)
               .aspectRatio(1)
               .sharedTransition('CoverImg', {
@@ -293,8 +292,7 @@ export struct PlayingCover {
           }
           else {
             Column() {}
-            .width('80%')
-            .height(250)
+            .height('60%')
             .borderRadius(5)
             .aspectRatio(1)
           }

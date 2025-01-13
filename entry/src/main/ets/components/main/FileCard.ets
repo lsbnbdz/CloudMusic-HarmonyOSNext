@@ -1,16 +1,19 @@
-/**
- * 文件卡片
- */
+import { DialogUtil, PasteboardUtil, ToastUtil } from "@pura/harmony-utils"
+import { DialogAction } from "@pura/harmony-utils/src/main/ets/entity/constraint"
 import { Song, SongClass } from "../../common/entities/SongsResult"
 import { fetchMetadata, fetchSongInfo } from "../../common/functions/functions"
 import { playMusicWithFile } from "../../common/functions/playerControl"
 import FileUtils from "../../common/utils/FileUtils"
 import PlayQueueUtils from "../../common/utils/PlayQueueUtils"
 
+/**
+ * 文件卡片组件
+ */
 @Component
 export struct FileCard {
   @State fileName: string = ''
-  @State song:Song = SongClass
+  @State song: Song = SongClass
+  @Link list: string[]
 
   async aboutToAppear(): Promise<void> {
     this.song = await fetchSongInfo(this.fileName)
@@ -27,7 +30,7 @@ export struct FileCard {
     }
     .type(ButtonType.Normal)
     .backgroundColor($r('app.color.main'))
-    .borderRadius(15)
+    .borderRadius(10)
     .width('100%')
     .height(60)
     .bindMenu(this.ClickMenu())
@@ -37,7 +40,11 @@ export struct FileCard {
   ClickMenu() {
     Menu() {
       MenuItem({ content: this.fileName }).width('80%')
-      MenuItem(this.MenuItem($r('app.media.ic_play_fill'), '播放'))
+        .onClick(() => {
+          PasteboardUtil.setDataText(`${this.song.name}`)
+          ToastUtil.showToast('已复制歌名至剪切板')
+        })
+      MenuItem(this.MenuItem($r('app.media.ic_play_fill'), '添加至列表并播放'))
         .onClick(async () => {
           const rootUrl = await FileUtils.getFilesDir()
           const fileUrl = rootUrl + `/${this.fileName}`
@@ -52,9 +59,31 @@ export struct FileCard {
           })
         })
 
-      MenuItem(this.MenuItem($r('app.media.ic_public_app_filled'), '预览'))
+      MenuItem(this.MenuItem($r('app.media.ic_public_download_filled'), '保存至本地'))
+        .onClick(() => {
+          FileUtils.saveFile(this.fileName)
+        })
+
+      MenuItem(this.MenuItem($r('app.media.ic_public_app_filled'), '文件预览'))
         .onClick(() => {
           FileUtils.previewFile(this.fileName)
+        })
+
+      MenuItem(this.MenuItem($r('app.media.ic_public_delete_filled'), '删除歌曲'))
+        .onClick(async () => {
+          DialogUtil.showPrimaryDialog({
+            title: '删除文件',
+            message:`确定删除 "${this.fileName}" ?`,
+            primaryButton: "取消",
+            secondaryButton: "删除",
+            onAction: async (action) => {
+              if(action == DialogAction.TWO) {
+                await FileUtils.deleteFile(this.fileName).then(async () => {
+                  this.list = await FileUtils.getFileName()
+                })
+              }
+            }
+          })
         })
     }
   }

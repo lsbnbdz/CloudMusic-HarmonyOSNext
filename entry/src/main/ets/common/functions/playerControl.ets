@@ -1,7 +1,6 @@
 import { EmitterUtil, FileUtil, LogUtil, RandomUtil, ToastUtil } from "@pura/harmony-utils";
 import { Song } from "../entities/SongsResult";
 import AudioPlayUtils from "../utils/AudioPlayUtils";
-import ContinuousTask from "../utils/ContinuousTask";
 import Constants from "../constants/Constants";
 import FileUtils from "../utils/FileUtils";
 import { getSongPicUrl, getSongUrl } from "../../api/songApi";
@@ -22,17 +21,11 @@ const pref = Constants.QUEUE_PREF
 
 export async function playMusicByUrl(song:Song,artists:string,isLogged:boolean) {
   try {
-    LogUtil.info(TAG + 'Play Music By Url: ' + `Song: ${JSON.stringify(song)}` + '\n' + `artists: ${JSON.stringify(artists)}`)
     const quality:number | undefined = await AppStorage.get('set-playQuality')
     const songPlay:SongPlay = await getSongUrl(song.id, quality ? Constants.QUALITY[quality] : "standard", isLogged)
-    let fileNameFomatted = sanitizeFileName(`${artists} - ${song.name}`)
-    let localPath = await FileUtils.accessLocalFile(fileNameFomatted)
-    AppStorage.setOrCreate('player-mode', 1)
-    AppStorage.setOrCreate('player-ispaused',false)
-    AppStorage.setOrCreate('player-song',song)
-    AppStorage.setOrCreate('player-artists',artists)
-    // 是否存在本地文件
-    if(localPath != '') {
+    let localPath = await FileUtils.accessLocalFile(sanitizeFileName(`${artists} - ${song.name}`))
+    setPlayData(1, song, artists)
+    if(localPath != '') { // 是否存在本地文件
       promptAction.showToast({ message: '找到本地文件，将优先播放本地文件'})
       await AudioPlayUtils.setUrl(localPath)
     } else if(songPlay.data[0].url) {
@@ -41,16 +34,15 @@ export async function playMusicByUrl(song:Song,artists:string,isLogged:boolean) 
       ToastUtil.showToast('获取播放资源失败')
       playNext()
     }
-    AppStorage.setOrCreate('player-isplaying', true)
     const picUrl:string = await getSongPicUrl(song)
-    AppStorage.setOrCreate('player-picurl', picUrl)
+    setPicUrl(await getSongPicUrl(song))
     LyricUtils.setLyric(song.id).then(() => {
       AVSessionUtils.setMetadata(song, artists, picUrl)
       AVSessionUtils.activate()
     })
     saveCurrentSongInfo(1, song, artists, picUrl)
   } catch (e) {
-    LogUtil.error(TAG + '播放出错: ' + e)
+    LogUtil.error(TAG + '播放Url出错: ' + e)
     playNext()
   }
 }
@@ -61,26 +53,19 @@ export async function playMusicWithFile(fileName:string) {
     const fileUrl = rootUrl + `/${fileName}`
     let file = await fileIo.open(fileUrl)
     let fdPath = 'fd://' + file.fd
-
     const metadata = await fetchMetadata(fileUrl)
     let song = await fetchSongInfo(fileName)
     if(metadata) {
       song.duration = (metadata.duration) ? parseInt(metadata.duration) : 0
     }
-    LogUtil.info(TAG + fileUrl)
     if(FileUtil.accessSync(fileUrl)) {
-      AppStorage.setOrCreate('player-mode', 0)
-      AppStorage.setOrCreate('player-fileName',fileName)
-      AppStorage.setOrCreate('player-ispaused', false)
-      AppStorage.setOrCreate('player-song', song)
-      AppStorage.setOrCreate('player-artists', song.artists[0].name)
-      AppStorage.setOrCreate('player-picurl','/resources/base/media/app.media.ic_public_music.svg')
-      LyricUtils.setLyricArr(['[00:00:00] 本地文件'])
-      await ContinuousTask.stopTask()
+      setPlayData(0, song, song.artists[0].name, fileName)
+      setPicUrl('/resources/base/media/app.media.ic_public_music.svg')
       await AudioPlayUtils.setUrl(fdPath)
+      LyricUtils.setLyricArr([])
+      LyricUtils.lyricString = ''
       AVSessionUtils.setMetadata(song,song.artists[0].name,`$r('app.media.ic_public_music.svg')`)
       AVSessionUtils.activate()
-      AppStorage.setOrCreate('player-isplaying',true)
       saveCurrentSongInfo(0, song, song.artists[0].name, '/resources/base/media/app.media.ic_public_music.svg')
       EmitterUtil.post(Constants.EMITTER_LYRIC_UPDATE,'Lyric Updated')
     } else {
@@ -88,10 +73,22 @@ export async function playMusicWithFile(fileName:string) {
       playNext()
     }
   } catch (e) {
-    LogUtil.error(TAG + '播放歌曲失败: ' + JSON.stringify(e))
-    ToastUtil.showToast('播放失败: ' + JSON.stringify(e))
+    LogUtil.error(TAG + '播放File出错: ' + JSON.stringify(e))
     playNext()
   }
+}
+
+async function setPlayData(mode: number, song:Song, artists: string, fileName: string = '') {
+  AppStorage.setOrCreate('player-isplaying',true)
+  AppStorage.setOrCreate('player-ispaused', false)
+  AppStorage.setOrCreate('player-mode', mode)
+  AppStorage.setOrCreate('player-fileName', fileName)
+  AppStorage.setOrCreate('player-song', song)
+  AppStorage.setOrCreate('player-artists', artists)
+}
+
+async function setPicUrl(picUrl: string) {
+  AppStorage.setOrCreate('player-picurl', picUrl)
 }
 
 export async function stopMusic() {

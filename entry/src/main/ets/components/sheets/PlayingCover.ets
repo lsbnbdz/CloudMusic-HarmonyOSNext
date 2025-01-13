@@ -181,6 +181,7 @@ export struct PlayingCover {
            PlayQueueButton({ imgColor: Color.White })
 
          }
+         .height(40)
 
          Row({ space: 30 }) {
            // 上一首
@@ -270,11 +271,13 @@ export struct PlayingCover {
       // 歌曲封面图片
       if (this.playmode == 0) {
         Stack() {
-          Image($r('app.media.ic_public_music')).height('60%').fillColor(Color.Gray).borderRadius(5).aspectRatio(1)
-            .sharedTransition('CoverImg',{
-              duration: 500,
-              curve: Curve.Linear
-            })
+          Column() {
+          }
+          .height('60%')
+          .borderRadius(5)
+          .aspectRatio(1)
+          Image($r('app.media.ic_public_music')).height('30%').fillColor(Color.Gray).borderRadius(5).aspectRatio(1)
+
         }
         .padding({ bottom: 30 })
       } else {
@@ -285,10 +288,6 @@ export struct PlayingCover {
               .height('60%')
               .borderRadius(5)
               .aspectRatio(1)
-              .sharedTransition('CoverImg', {
-                duration: 500,
-                curve: Curve.Linear
-              })
           }
           else {
             Column() {}

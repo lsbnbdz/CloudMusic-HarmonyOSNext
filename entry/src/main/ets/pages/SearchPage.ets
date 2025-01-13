@@ -1,4 +1,4 @@
-import { EmitterUtil, LogUtil, ToastUtil } from '@pura/harmony-utils';
+import { EmitterUtil, ToastUtil } from '@pura/harmony-utils';
 import { BottomPlayController } from '../components/play/BottomPlayController';
 import { CommonCircleButton } from '../components/buttons/CircleButton';
 import { router } from '@kit.ArkUI';

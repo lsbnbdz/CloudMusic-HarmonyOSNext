@@ -138,7 +138,7 @@ struct PlayListPage {
             .height('100%')
             .layoutWeight(1)
             .width('100%')
-            .scrollBar(BarState.Auto)
+            .scrollBar(BarState.Off)
           }
           ListHead({
             title: this.playList.name,

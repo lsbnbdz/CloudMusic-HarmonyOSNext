@@ -4,6 +4,7 @@ import ContinuousTask from './ContinuousTask'
 import AVSessionUtils from './AVSessionUtils'
 import { completeDo } from '../functions/playerControl'
 import { changeDuration } from '../functions/functions'
+import LyricUtils from './LyricUtils'
 
 /**
  * 音频播放工具
@@ -38,6 +39,7 @@ class AudioPlayUtils {
   }
 
   async play() {
+    LyricUtils.startInterval()
     ContinuousTask.startTask()
     await this.mPlayer.play()
     AVSessionUtils.playState(this.mPlayer.currentTime)
@@ -54,14 +56,14 @@ class AudioPlayUtils {
   }
 
   async stop() {
-    clearInterval(this.updateAvSession)
+    this.clearInterval()
     this.mPlayer.stop()
     ContinuousTask.stopTask()
     LogUtil.info(TAG + '停止播放')
   }
 
   async pause() {
-    clearInterval(this.updateAvSession)
+    this.clearInterval()
     this.mPlayer.pause()
     LogUtil.info(TAG + '暂停播放')
   }
@@ -78,14 +80,19 @@ class AudioPlayUtils {
     LogUtil.info(TAG + `跳转至 ${time} ( ${changeDuration(time)} )`)
   }
 
+  clearInterval() {
+    clearInterval(this.updateAvSession)
+    LyricUtils.endInterval()
+  }
+
   onState() {
     this.mPlayer.onStateChange(async (state) => {
       if(state == 'prepared') { this.play(); }
-      if(state == 'playing') { AppStorage.setOrCreate('player-isplaying', true); AppStorage.setOrCreate('player-ispaused', false) }
-      if(state == 'paused') { clearInterval(this.updateAvSession); AppStorage.setOrCreate('player-ispaused', true); AVSessionUtils.pauseState(this.mPlayer.currentTime) }
-      if(state == 'idle') { clearInterval(this.updateAvSession); AVSessionUtils.deactive() }
-      if(state == 'stopped') { clearInterval(this.updateAvSession); AppStorage.setOrCreate('player-ispaused', true); ContinuousTask.stopTask() }
-      if(state == 'completed') { clearInterval(this.updateAvSession); AppStorage.setOrCreate('player-ispaused', true); ContinuousTask.stopTask(); completeDo() }
+      if(state == 'playing') { AppStorage.setOrCreate('player-isplaying', true); AppStorage.setOrCreate('player-ispaused', false); }
+      if(state == 'paused') { this.clearInterval(); AppStorage.setOrCreate('player-ispaused', true); AVSessionUtils.pauseState(this.mPlayer.currentTime) }
+      if(state == 'idle') { this.clearInterval(); AVSessionUtils.deactive() }
+      if(state == 'stopped') { this.clearInterval(); AppStorage.setOrCreate('player-ispaused', true); ContinuousTask.stopTask() }
+      if(state == 'completed') { this.clearInterval(); AppStorage.setOrCreate('player-ispaused', true); ContinuousTask.stopTask(); completeDo() }
     })
   }
 }

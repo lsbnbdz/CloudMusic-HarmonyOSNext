@@ -12,7 +12,6 @@ import { PlayingCover } from "../sheets/PlayingCover"
 export struct BottomPlayController {
   @StorageProp('topRectHeight') topRectHeight: number = 0
   @StorageProp('bottomRectHeight') bottomRectHeight: number = 0
-
   @StorageLink('player-isplaying') isPlaying: boolean = false
   @StorageProp('player-mode') playmode: number = 1
   @StorageProp('player-fileName') fileName: string = ''
@@ -21,6 +20,7 @@ export struct BottomPlayController {
   @StorageProp('player-ispaused') isPaused: boolean = true
   @StorageProp('player-picurl') picUrl: string = ''
   @StorageProp('player-time') time: number = 0
+  @StorageProp('player-currentLyric') currentLyric: string = ''
 
   @State componentOpacity: number = 0.8
   @State isShow: boolean = false
@@ -31,10 +31,16 @@ export struct BottomPlayController {
         if(this.playmode == 0) { Image($r('app.media.ic_public_music')).fillColor($r('app.color.reverse')).songImg() }
         else { Image(this.picUrl + '?param=256y256').songImg() }
 
-        Column() {
+        Column({ space: 5 }) {
           Text(this.song.name).textStyle(18)
-          Text(this.artists).textStyle(14)
+          if(!this.currentLyric) {
+            Text(this.artists).textStyle(14).layoutWeight(1)
+          }
+          else {
+            Text(this.currentLyric).textStyle(14).textOverflow({ overflow: TextOverflow.Ellipsis }).layoutWeight(1)
+          }
         }
+        .padding({ top: 15, bottom: 15 })
         .layoutWeight(1)
 
         ControlButtons({ isPaused: this.isPaused, isPlaying: this.isPlaying })

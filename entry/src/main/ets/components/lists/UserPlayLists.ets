@@ -6,12 +6,14 @@ import { DialogUtil, LogUtil, ToastUtil } from "@pura/harmony-utils";
 import { RecommendCards } from "../main/RecommendCards";
 import { Announcement } from "../../common/entities/Announcement";
 import { router } from "@kit.ArkUI";
+import { User, UserClass } from "../../common/entities/User";
 
 @Component
 export struct UserPlayLists {
   @StorageProp('bottomRectHeight') bottomRectHeight: number = 0
   @StorageProp('topRectHeight') topRectHeight: number = 0
   @StorageProp('set-hasAnimation') hasAnimation: boolean = true
+  @StorageProp('User') user: User = UserClass
   @StorageProp('Announcement') announcement: Announcement = {
     code: -1,
     data: { title:'', content: '' },
@@ -87,7 +89,7 @@ export struct UserPlayLists {
             }
             ForEach(this.playLists, (item: PlayList, index) => {
               ListItem() {
-                PlayListCard({playList: item})
+                PlayListCard({ playList: item, isShowHeart: item.creator.userId == this.user.data.account.id ? false : true })
               }
             })
             ListItem().height( px2vp(this.bottomRectHeight) + 140 )
@@ -98,7 +100,7 @@ export struct UserPlayLists {
           })
           .height('100%')
           .width('100%')
-          .scrollBar(BarState.Auto)
+          .scrollBar(BarState.Off)
         }
         .onRefreshing(async () => {
           this.isRefreshing = true

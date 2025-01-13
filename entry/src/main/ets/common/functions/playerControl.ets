@@ -12,7 +12,7 @@ import { promptAction } from "@kit.ArkUI";
 import PreferencesUtils from "../utils/PreferencesUtils";
 import { fileIo } from "@kit.CoreFileKit";
 import { SongPlay } from "../entities/SongPlay";
-import { setLyric } from "../../api/LyricApi";
+import LyricUtils from "../utils/LyricUtils";
 
 /**
  * 音频播放控制方法
@@ -27,8 +27,6 @@ export async function playMusicByUrl(song:Song,artists:string,isLogged:boolean) 
     const songPlay:SongPlay = await getSongUrl(song.id, quality ? Constants.QUALITY[quality] : "standard", isLogged)
     let fileNameFomatted = sanitizeFileName(`${artists} - ${song.name}`)
     let localPath = await FileUtils.accessLocalFile(fileNameFomatted)
-
-    setLyric(song.id)
     AppStorage.setOrCreate('player-mode', 1)
     AppStorage.setOrCreate('player-ispaused',false)
     AppStorage.setOrCreate('player-song',song)
@@ -46,8 +44,10 @@ export async function playMusicByUrl(song:Song,artists:string,isLogged:boolean) 
     AppStorage.setOrCreate('player-isplaying', true)
     const picUrl:string = await getSongPicUrl(song)
     AppStorage.setOrCreate('player-picurl', picUrl)
-    AVSessionUtils.setMetadata(song, artists, picUrl)
-    AVSessionUtils.activate()
+    LyricUtils.setLyric(song.id).then(() => {
+      AVSessionUtils.setMetadata(song, artists, picUrl)
+      AVSessionUtils.activate()
+    })
     saveCurrentSongInfo(1, song, artists, picUrl)
   } catch (e) {
     LogUtil.error(TAG + '播放出错: ' + e)
@@ -75,7 +75,7 @@ export async function playMusicWithFile(fileName:string) {
       AppStorage.setOrCreate('player-song', song)
       AppStorage.setOrCreate('player-artists', song.artists[0].name)
       AppStorage.setOrCreate('player-picurl','/resources/base/media/app.media.ic_public_music.svg')
-      AppStorage.setOrCreate('player-lyric',[])
+      LyricUtils.setLyricArr(['[00:00:00] 本地文件'])
       await ContinuousTask.stopTask()
       await AudioPlayUtils.setUrl(fdPath)
       AVSessionUtils.setMetadata(song,song.artists[0].name,`$r('app.media.ic_public_music.svg')`)

@@ -1,8 +1,8 @@
 import { avSession } from "@kit.AVSessionKit";
 import { AppUtil, LogUtil, ToastUtil } from "@pura/harmony-utils";
-import { Song } from "../entities/SongsResult";
+import { Song, SongClass } from "../entities/SongsResult";
 import { changeCycleMode, pauseMusic, playNext, playPre, resumeMusic, seekMusic } from "../functions/playerControl";
-import AudioPlayUtils from "./AudioPlayUtils";
+import LyricUtils from "./LyricUtils";
 
 /**
  * AVSession 播控中心工具类
@@ -15,6 +15,10 @@ class AVSessionUtils {
 
   private isActivating = false
   private cycleMode: number = 0
+  private currentSong: Song = SongClass
+  private currentArtists: string = ''
+  private currentPic: string = ''
+  private lyric: string = ''
 
   async createSession(): Promise<avSession.AVSession> {
     if(this.session) {
@@ -66,12 +70,18 @@ class AVSessionUtils {
    * @param picUrl
    */
   async setMetadata(song: Song, artists: string, picUrl: string) {
+    this.currentSong = song
+    this.currentArtists = artists
+    this.currentPic = picUrl
+    this.lyric = LyricUtils.lyricString
+
     let metadata: avSession.AVMetadata = {
       assetId: `${song.id}`,
       title: song.name,
       mediaImage: picUrl,
       artist: artists != 'null' ? artists : '未知',
-      duration: song.duration
+      duration: song.duration,
+      lyric: this.lyric
     };
 
     (await this.session).setAVMetadata(metadata);

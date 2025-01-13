@@ -3,6 +3,7 @@ import Constants from "../common/constants/Constants";
 import { LyricResult } from "../common/entities/Lyric";
 import { getApiUrl } from "../common/functions/functions";
 import { HttpRequest } from "../common/utils/HttpRequestUtils";
+import LyricUtils from "../common/utils/LyricUtils";
 
 /**
  * 歌词类API
@@ -24,14 +25,15 @@ export async function getLyric(songId: number): Promise<string[]> {
     const dataGot:LyricResult = data.result as LyricResult
     if(dataGot.code == 200) {
       lyric = dataGot.lrc.lyric
+      LyricUtils.lyricString = lyric
     }
   })
   lyricArr = lyric.split('\n')
   return lyricArr
 }
 
-export async function setLyric(songId: number) {
-  let lyricArr = await getLyric(songId)
-  AppStorage.setOrCreate('player-lyric',lyricArr)
-  EmitterUtil.post(Constants.EMITTER_LYRIC_UPDATE,'Lyric Updated')
-}
+// export async function setLyric(songId: number) {
+//   let lyricArr = await getLyric(songId)
+//   AppStorage.setOrCreate('player-lyric',lyricArr)
+//   EmitterUtil.post(Constants.EMITTER_LYRIC_UPDATE,'Lyric Updated')
+// }

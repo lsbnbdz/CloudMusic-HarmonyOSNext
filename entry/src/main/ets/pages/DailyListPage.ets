@@ -28,6 +28,7 @@ struct DailyListPage {
   @State isLoading: boolean = true
   @State loadingPlayList:boolean = false
   @State pageOpacity: number = 1
+  @State totayDate: string = ''
   hasAnimation:boolean | undefined = false
 
   async onPageShow(): Promise<void> {
@@ -36,6 +37,8 @@ struct DailyListPage {
       await this.loadSongs()
       this.hasLoaded = true
     }
+    let date = new Date()
+    this.totayDate = `${date.toDateString()}`
   }
 
   async loadSongs(): Promise<void> {
@@ -70,6 +73,9 @@ struct DailyListPage {
 
             List() {
               ListItem().height(px2vp(this.topRectHeight) + 50)
+              ListItem() {
+                this.Info()
+              }
               ListItem() {
                 Button() {
                   Row({ space: 5 }) {
@@ -144,6 +150,21 @@ struct DailyListPage {
     .width('100%')
     .height('100%')
     .backgroundColor($r('app.color.background'));
+  }
+
+  @Builder
+  Info() {
+    Column() {
+      Text(this.totayDate)
+        .fontWeight(FontWeight.Bold)
+        .fontSize(18)
+        .width('100%')
+      Text('根据你的音乐口味生成，每天6:00更新')
+        .fontSize(12)
+        .width('100%')
+    }
+    .width('100%')
+    .padding({ left: 20, right: 20, bottom: 20 })
   }
 
   @Builder

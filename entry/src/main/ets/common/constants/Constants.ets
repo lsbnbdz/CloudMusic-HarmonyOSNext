@@ -5,7 +5,7 @@ import { QualityType } from "../entities/SongDownload"
  */
 export default class Constants {
   // Version
-  static readonly VERSION: string = '1.1.3'
+  static readonly VERSION: string = '1.1.5'
   static readonly VER_DESC: string = ''
 
   // Preferences
@@ -20,7 +20,7 @@ export default class Constants {
   static readonly API_URL: string = 'https://api.chenlvin.cc'
 
   // Cookie
-  static readonly COOKIE_EXPIRY_DAYS = 30
+  static readonly COOKIE_EXPIRY_DAYS = 28
 
   // Play
   static readonly QUALITY: QualityType[] = ['standard', 'higher', 'exhigh', 'lossless']

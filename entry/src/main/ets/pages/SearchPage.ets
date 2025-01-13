@@ -58,11 +58,6 @@ struct SearchPage {
     .backgroundColor($r('app.color.background'))
   }
 
-  @Builder
-  Songs() {
-
-  }
-
   /**
    * TabBar
    */
@@ -123,8 +118,4 @@ struct SearchPage {
     .width('100%')
     .backgroundColor(Color.Transparent)
   }
-
-
-
-
 }

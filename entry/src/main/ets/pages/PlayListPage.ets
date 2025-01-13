@@ -29,6 +29,7 @@ struct PlayListPage {
   private playList: PlayList = Object(router.getParams())['playList']
   private trackCount: number = Object(router.getParams())['trackCount']
   private isShowHeart: boolean = Object(router.getParams())['isShowHeart']
+  private currentOffset: number = 0 // 歌曲偏移量
   @State isSubscribed: boolean = this.playList.subscribed
   @State list: Array<Song> = new Array()
   @State hasMore: boolean = true
@@ -37,8 +38,6 @@ struct PlayListPage {
   @State isLoadingMore: boolean = false
   @State loadingPlayList: boolean = false
   @State pageOpacity: number = 1
-
-  private currentOffset: number = 0 // 歌曲偏移量
 
   async onPageShow(): Promise<void> {
     if (!this.hasLoaded) {

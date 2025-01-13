@@ -6,40 +6,28 @@ import { Lyric } from "../sheets/PlayingCover"
 
 @Component
 export struct LyricComponent {
-  @State hasLoaded: boolean = false
   @State firstLoad: boolean = true
   @State isAutoScrolling: boolean = false
   @State isUserScrolling: boolean = false
   @State updateLyricInterval: number = 0
-  @StorageProp('player-mode') playmode: number = 1
-  @StorageProp('player-time') time: number = 0
-  @StorageProp('player-lyric') lyricArr: string[] = []
-  @State currentLyricIndex: number = 0;
+  @State currentLyricIndex: number = 0
   @State lyricObjects: Lyric[] = []
 
   private scroller: Scroller = new Scroller()
 
   async aboutToAppear(): Promise<void> {
+    this.lyricObjects = LyricUtils.lyricObjects
+    this.currentLyricIndex = LyricUtils.currentLyricIndex
+    setTimeout(() => {
+      this.scroller.scrollToIndex(this.currentLyricIndex, false, ScrollAlign.CENTER)
+    }, 10)
+    this.updateLyricInterval = setInterval(() => {
+      this.updateCurrentLyric(LyricUtils.currentLyricIndex)
+    }, 500)
+
     EmitterUtil.onSubscribe(Constants.EMITTER_LYRIC_UPDATE, () => {
-      this.time = 0
-      if (this.playmode == 1) {
-        this.lyricObjects = LyricUtils.parseLyricArray(this.lyricArr)
-      } else {
-        this.lyricObjects = [{ time: 0, content: '正在播放本地文件' }]
-      }
+      this.lyricObjects = LyricUtils.lyricObjects
     })
-    if (!this.hasLoaded) {
-      if (this.playmode == 1) {
-        this.lyricObjects = LyricUtils.parseLyricArray(this.lyricArr)
-        await this.updateCurrentLyric()
-        this.updateLyricInterval = setInterval(() => {
-          this.updateCurrentLyric()
-        }, 500)
-      } else {
-        this.lyricObjects = [{ time: 0, content: '正在播放本地文件' }]
-      }
-      this.hasLoaded = true
-    }
   }
 
   aboutToDisappear(): void {
@@ -92,16 +80,12 @@ export struct LyricComponent {
   /**
    * 更新当前歌词位置
    */
-  private async updateCurrentLyric(hasAnimation: boolean = true) {
-    const newIndex = LyricUtils.updateCurrentLyricIndex(this.time, this.lyricObjects)
-    if (this.firstLoad) {
-      this.scroller.scrollToIndex(newIndex, false, ScrollAlign.CENTER)
-      this.firstLoad = false
-    } else if (this.currentLyricIndex !== newIndex) {
+  private async updateCurrentLyric(newIndex: number) {
+    if (this.currentLyricIndex != newIndex) {
       this.currentLyricIndex = newIndex
       if (!this.isUserScrolling) {
         this.isAutoScrolling = true
-        this.scroller.scrollToIndex(newIndex, hasAnimation, ScrollAlign.CENTER)
+        this.scroller.scrollToIndex(newIndex, true, ScrollAlign.CENTER)
       }
     }
     setTimeout(() => {

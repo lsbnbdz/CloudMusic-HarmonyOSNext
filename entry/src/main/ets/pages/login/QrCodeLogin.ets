@@ -12,24 +12,25 @@ struct QrCodeLogin {
 
   build() {
     Stack() {
-      Column({ space: 30 }) {
+      Column({ space: 20 }) {
         CommonHead({ title: '登录' })
-        Column({ space: 10 }) {
-          Text('使用网易云音乐App扫描下方二维码')
+        Column({ space: 30 }) {
+          Text('使用网易云音乐App扫描下方二维码\n扫码成功后点击下方按钮获取登录信息')
+            .textAlign(TextAlign.Center)
           // QR Code
           if(!this.qrCode) { Text('获取二维码出错').fontColor(Color.Red) }
           else {
             Image(this.qrCode[1]).width(256)
           }
-          Button('获取登录状态')
+          Button('手动获取登录状态')
             .onClick(() => {
               checkQrLogin(this.qrCode[0])
             })
         }
         .layoutWeight(1)
-
       }
     }
+    .backgroundColor($r('app.color.background'))
     .height('100%')
     .width('100%')
   }

@@ -1,15 +1,64 @@
+import { EmitterUtil } from "@pura/harmony-utils"
+import { getLyric } from "../../api/LyricApi"
 import { Lyric } from "../../components/sheets/PlayingCover"
+import Constants from "../constants/Constants"
 
 class LyricUtils {
-  // currentLyricIndex: number = 0
-  // lyricObjects: Array<Lyric> = []
-  // updateLyricInterval: number = 0
+  lyricString: string = ''
+  lyricArr: Array<string> = []
+  lyricObjects: Array<Lyric> = []
+  currentLyricIndex: number = 0
+  updateLyricInterval: number = 0
+  isUpdating: boolean = false
+
+  async setLyric(songId: number) {
+    AppStorage.setOrCreate('player-currentLyric', '')
+    this.currentLyricIndex = 0
+    let lyricArr = await getLyric(songId)
+    await this.setLyricArr(lyricArr)
+    EmitterUtil.post(Constants.EMITTER_LYRIC_UPDATE,'Lyric Updated')
+  }
+
+  async setLyricArr(arr: Array<string>) {
+    this.lyricArr = arr
+    this.lyricObjects = await this.parseLyricArray(this.lyricArr)
+  }
+
+  getCurrentLyric(): string {
+    return this.lyricObjects[this.currentLyricIndex].content
+  }
+
+  startInterval() {
+    if(this.isUpdating) { return }
+    else {
+      this.isUpdating = true
+      this.updateLyricInterval = setInterval(() => {
+        let time: number | undefined = AppStorage.get('player-time')
+        if (time) {
+         let newIndex = this.updateCurrentLyricIndex(time, this.lyricObjects)
+          if(newIndex != this.currentLyricIndex) {
+            this.currentLyricIndex = newIndex
+            AppStorage.setOrCreate('player-currentLyric', this.lyricObjects[newIndex].content)
+          }
+        }
+      }, 500)
+    }
+  }
+
+  endInterval() {
+    try {
+      clearInterval(this.updateLyricInterval)
+      this.isUpdating = false
+    } catch (e) {
+
+    }
+  }
 
   /**
    * 解析歌词字符串数组
    * @param lyricArr 歌词字符串数组
    */
-  parseLyricArray(lyricArr: string[]): Lyric[] {
+  async parseLyricArray(lyricArr: string[]): Promise<Array<Lyric>> {
     if (lyricArr.length > 1) {
       return lyricArr.map(item => {
         const match = item.match(/\[(\d+):(\d+)[.:](\d+)\](.*)/)

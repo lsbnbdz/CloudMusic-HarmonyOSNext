@@ -5,13 +5,12 @@ import { PlayList } from '../common/entities/PlayList'
 import { ListHead } from '../components/head/ListHead'
 import { SpinKit, SpinType } from '@pura/spinkit'
 import { DialogUtil, LogUtil, ToastUtil } from '@pura/harmony-utils'
-import { getPlayListSongs, PlayListOperation, putPlayListInQueue, subscribePlayList } from '../api/playListApi'
+import { getPlayListSongs, PlayListOperation, subscribePlayList } from '../api/playListApi'
 import { BottomPlayController } from '../components/play/BottomPlayController'
 import { CommonCircleButton } from '../components/buttons/CircleButton'
-import Constants from '../common/constants/Constants'
-import { playQueue } from '../common/functions/playerControl'
 import { DialogAction } from '@pura/harmony-utils/src/main/ets/entity/constraint'
 import { formatNumber } from '../common/functions/functions'
+import { playListToQueue } from '../common/functions/playList'
 
 /**
  * 歌单二级页面
@@ -25,6 +24,7 @@ struct PlayListPage {
   @StorageProp('bottomRectHeight') bottomRectHeight: number = 0
   @StorageProp('topRectHeight') topRectHeight: number = 0
   @StorageProp('set-hasAnimation') hasAnimation: boolean = true
+  @StorageProp('isPlayerLoading') isPlayerLoading:boolean = false
 
   private playList: PlayList = Object(router.getParams())['playList']
   private trackCount: number = Object(router.getParams())['trackCount']
@@ -36,7 +36,6 @@ struct PlayListPage {
   @State hasLoaded: boolean = false // 判定是否已加载 避免重复加载
   @State isLoading: boolean = true
   @State isLoadingMore: boolean = false
-  @State loadingPlayList: boolean = false
   @State pageOpacity: number = 1
 
   async onPageShow(): Promise<void> {
@@ -87,18 +86,27 @@ struct PlayListPage {
               ListItem() {
                 Button() {
                   Row({ space: 5 }) {
-                    Image($r('app.media.ic_play_fill')).width(15).fillColor(Color.Gray)
-                    Text('播放全部').fontSize(15)
+                    if(this.isPlayerLoading) {
+                      LoadingProgress().height(35).padding({ left: 30 })
+                    }
+                    else {
+                      Image($r('app.media.ic_play_fill')).width(15).fillColor(Color.Gray)
+                      Text(`播放全部 (${this.trackCount})`).fontSize(15)
+                    }
                   }
+                  .width('100%')
+                  .height(40)
                 }
                 .type(ButtonType.Normal)
                 .backgroundColor(Color.Transparent)
                 .borderRadius(15)
                 .onClick(async () => {
-                  this.loadingPlayList = true
-                  await putPlayListInQueue(this.playList.id, this.trackCount)
-                  this.loadingPlayList = false
-                  playQueue(0)
+                  if(this.isPlayerLoading) {
+                    ToastUtil.showToast('当前有正在加载的播放任务，请稍后再试')
+                  }
+                  else {
+                    playListToQueue(this.playList.id, this.trackCount, 0)
+                  }
                 })
               }
               .padding({ left: 20, bottom: 10 })
@@ -150,22 +158,6 @@ struct PlayListPage {
       BottomPlayController()
       .padding({ left: 10, right: 10, bottom: px2vp(this.bottomRectHeight)})
       .backgroundColor(Color.Transparent)
-
-      if(this.loadingPlayList) {
-        Column() {
-          Column({ space: 10 }) {
-            LoadingProgress().width(60)
-            Text('正在获取完整歌曲列表')
-          }
-          .padding(30)
-          .borderRadius(15)
-          .backgroundColor($r('app.color.main'))
-        }
-        .height('100%')
-        .width('100%')
-        .justifyContent(FlexAlign.Center)
-        .padding({ bottom: px2vp(this.topRectHeight) })
-      }
     }
     .opacity(this.pageOpacity)
     .width('100%')
@@ -274,36 +266,38 @@ struct PlayListPage {
   }
 
   @Builder SwipeItem(song: Song, index: number) {
-    Row({ space: 10 }) {
-      Button() {
-        Text('从歌单删除')
-          .height('100%')
-          .fontColor(Color.White)
-          .padding({ left: 10, right: 10 })
-          .textAlign(TextAlign.Center)
-      }
-      .type(ButtonType.Normal)
-      .height('100%')
-      .backgroundColor('#ffee4c51')
-      .onClick(() => {
-        DialogUtil.showPrimaryDialog({
-          title: '从歌单删除歌曲',
-          message: `${song.name}`,
-          primaryButton: "取消",
-          secondaryButton: "删除",
-          onAction: async (action) => {
-            if(action == DialogAction.TWO) {
-              try {
-                await PlayListOperation('del', this.playList.id, song.id)
-                ToastUtil.showToast('删除成功')
-                this.list.splice(index, 1)
-              } catch (e) {
-                ToastUtil.showToast('删除失败: ' + e)
+    if(!this.isShowHeart) {
+      Row({ space: 10 }) {
+        Button() {
+          Text('从歌单删除')
+            .height('100%')
+            .fontColor(Color.White)
+            .padding({ left: 10, right: 10 })
+            .textAlign(TextAlign.Center)
+        }
+        .type(ButtonType.Normal)
+        .height('100%')
+        .backgroundColor('#ffee4c51')
+        .onClick(() => {
+          DialogUtil.showPrimaryDialog({
+            title: '从歌单删除歌曲',
+            message: `${song.name}`,
+            primaryButton: "取消",
+            secondaryButton: "删除",
+            onAction: async (action) => {
+              if (action == DialogAction.TWO) {
+                try {
+                  await PlayListOperation('del', this.playList.id, song.id)
+                  ToastUtil.showToast('删除成功')
+                  this.list.splice(index, 1)
+                } catch (e) {
+                  ToastUtil.showToast('删除失败: ' + e)
+                }
               }
             }
-          }
+          })
         })
-      })
+      }
     }
   }
 }

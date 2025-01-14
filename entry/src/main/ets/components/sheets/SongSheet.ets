@@ -5,6 +5,7 @@ import { PlayList, playListClass } from "../../common/entities/PlayList";
 import { Song, SongClass } from "../../common/entities/SongsResult";
 import { changeDuration, getArtists } from "../../common/functions/functions";
 import { playMusicByUrl, playQueue } from "../../common/functions/playerControl";
+import { playListToQueue } from "../../common/functions/playList";
 import PlayQueueUtils from "../../common/utils/PlayQueueUtils";
 import { DownloadDialog } from "../dialog/DownloadDialog";
 
@@ -108,11 +109,8 @@ export struct SongSheet {
                 }
                 .clickButtonStyle()
                 .onClick(async () => {
-                  AppStorage.setOrCreate('isPlayerLoading', true)
+                  playListToQueue(this.playList.id, this.playList.trackCount, this.index)
                   this.isShowSheet = !this.isShowSheet
-                  await putPlayListInQueue(this.playList.id, this.playList.trackCount)
-                  AppStorage.setOrCreate('isPlayerLoading', false)
-                  playQueue(this.index)
                 })
               }
             }

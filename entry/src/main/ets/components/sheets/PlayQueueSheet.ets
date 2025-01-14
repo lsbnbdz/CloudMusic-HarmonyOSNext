@@ -1,5 +1,6 @@
 import { DialogUtil } from "@pura/harmony-utils"
 import { DialogAction } from "@pura/harmony-utils/src/main/ets/entity/constraint"
+import { PlayQueueDataSource } from "../../common/entities/DataSource"
 import { PlayQueue } from "../../common/entities/PlayQueue"
 import { playQueue } from "../../common/functions/playerControl"
 import PlayQueueUtils from "../../common/utils/PlayQueueUtils"
@@ -10,13 +11,14 @@ import { LoopModeButton } from "../buttons/LoopModeButton"
  */
 @Component
 export struct PlayQueueSheet {
-  private scroller: Scroller = new Scroller()
   @StorageProp('PlayQueue') queue: Array<PlayQueue> = []
   @StorageProp('currentQueueIndex') currentQueueIndex: number = 0
   @StorageProp('bottomRectHeight') bottomRectHeight: number = 0
   @State queueLength: number = PlayQueueUtils.getQueueLength()
   @State isLoading: boolean = false
   @Link isShow: boolean
+  private queueDataSource: PlayQueueDataSource = new PlayQueueDataSource(this.queue)
+  private scroller: Scroller = new Scroller()
 
   aboutToAppear(): void {
     setTimeout(() => {
@@ -69,7 +71,7 @@ export struct PlayQueueSheet {
         .justifyContent(FlexAlign.SpaceBetween)
 
         List({ scroller: this.scroller, space: 15 }) {
-          ForEach(this.queue, (item: PlayQueue, index) => {
+          LazyForEach(this.queueDataSource, (item: PlayQueue, index) => {
             ListItem() {
               Row({ space: 10 }) {
                 Text(`${index + 1}`)

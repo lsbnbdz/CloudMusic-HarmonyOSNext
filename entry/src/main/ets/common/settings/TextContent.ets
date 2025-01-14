@@ -61,7 +61,7 @@ export struct Settings_Privacy {
   build() {
     Row() {
       Text('隐私政策').LeftText()
-      Text('前往查看本软件的隐私政策').RightText().decoration({type: TextDecorationType.Underline})
+      Text('前往查看').RightText().decoration({type: TextDecorationType.Underline})
         .onClick(() => {
           router.pushUrl({
             url:'pages/WebPage',

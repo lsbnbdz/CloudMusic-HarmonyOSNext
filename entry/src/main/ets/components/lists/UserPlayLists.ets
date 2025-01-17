@@ -29,7 +29,6 @@ export struct UserPlayLists {
   @State LikeList: PlayList = playListClass
 
   async aboutToAppear(): Promise<void> {
-    LogUtil.info('Announcement: ' + JSON.stringify(this.announcement))
     this.isLoading = true
     try {
       const result = await getPlayLists(0)
@@ -146,7 +145,7 @@ export struct UserPlayLists {
         .onClick(() => {
           DialogUtil.showConfirmDialog({
             title: this.announcement.data.title,
-            message: this.announcement.data.content + '\n\n(首页横幅消息支持在【设置】中关闭)'
+            message: this.announcement.data.content
           })
         })
     }

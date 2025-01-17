@@ -1,5 +1,6 @@
 import { EmitterUtil } from "@pura/harmony-utils"
 import Constants from "../../common/constants/Constants"
+import { getLyricObjects } from "../../common/functions/lyric"
 import { seekMusic } from "../../common/functions/playerControl"
 import LyricUtils from "../../common/utils/LyricUtils"
 import { Lyric } from "../sheets/PlayingCover"
@@ -15,8 +16,10 @@ export struct LyricComponent {
 
   private scroller: Scroller = new Scroller()
 
+
+
   async aboutToAppear(): Promise<void> {
-    this.lyricObjects = LyricUtils.lyricObjects
+    this.lyricObjects = getLyricObjects()
     this.currentLyricIndex = LyricUtils.currentLyricIndex
     setTimeout(() => {
       this.scroller.scrollToIndex(this.currentLyricIndex, false, ScrollAlign.CENTER)
@@ -26,7 +29,7 @@ export struct LyricComponent {
     }, 500)
 
     EmitterUtil.onSubscribe(Constants.EMITTER_LYRIC_UPDATE, () => {
-      this.lyricObjects = LyricUtils.lyricObjects
+      this.lyricObjects = getLyricObjects()
     })
   }
 
@@ -37,26 +40,33 @@ export struct LyricComponent {
   build() {
     Stack() {
       List({ scroller: this.scroller, space: 30 }) {
-        ListItem().height('50%')
+        ListItem()
         ForEach(this.lyricObjects, (item: Lyric, index) => {
           ListItem() {
             Text(item.content)
               .width('100%')
-              .maxFontScale(24)
               .textAlign(TextAlign.Center)
               .fontSize(20)
-              .fontColor(index === this.currentLyricIndex ? '#ffff7777' : Color.White)
+              .fontColor(index == this.currentLyricIndex ? Color.White : '#8dffffff')
               .fontWeight(FontWeight.Bold)
               .textAlign(TextAlign.Center)
               .onClick(() => {
+                this.isAutoScrolling = true
                 seekMusic(item.time)
+                setTimeout(() => {
+                  this.isAutoScrolling = false
+                }, 100)
               })
-              .animation({ duration: 500 })
+              .animation({
+                duration: 500,
+                curve: Curve.Friction
+              })
           }
+          .padding({ left: 20, right: 20 })
         })
-        ListItem().height('50%')
       }
-      .padding({ left: 20, right: 20 })
+      .edgeEffect(EdgeEffect.None)
+      .scrollSnapAlign(ScrollSnapAlign.CENTER)
       .scrollBar(BarState.Off)
       .width('90%')
       .height('100%')

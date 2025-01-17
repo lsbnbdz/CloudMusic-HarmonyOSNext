@@ -50,7 +50,7 @@ class PlayQueueUtils {
   async queueAdd(playmode:number, song:Song = SongClass, artists:string = '', fileName:string = '') {
     try {
       if(this.queue.length > 5000) {
-        ToastUtil.showToast('播放列表歌曲数量已达上限')
+        ToastUtil.showToast('播放列表歌曲已达上限')
         return
       }
       this.queue.splice(this.currentQueueIndex + 1 , 0 ,{
@@ -65,17 +65,10 @@ class PlayQueueUtils {
     }
   }
 
-  async queueAdd_array(queue:Array<PlayQueue>): Promise<boolean> {
-    let result: boolean = true
-    if(this.queue.length + queue.length > 5000) {
-      let offset = 5000 - this.queue.length
-      this.queue.concat(queue.splice(offset, queue.length-offset))
-      ToastUtil.showToast('播放列表歌曲数量已达上限')
-      result = false
-    } else { this.queue = this.queue.concat(queue) }
+  async queueAdd_array(queue:Array<PlayQueue>) {
+    this.queue = this.queue.concat(queue)
     AppStorage.setOrCreate('PlayQueue',this.queue)
     await PreferencesUtils.putPreferenceValue(pref, 'queue', this.queue)
-    return result
   }
 
   /**

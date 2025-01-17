@@ -26,28 +26,26 @@ export struct BottomPlayController {
   @State isShow: boolean = false
 
   build() {
-    Row({ space: 10 }) {
-      Row() {
-        if(this.playmode == 0) { Image($r('app.media.ic_public_music')).fillColor($r('app.color.reverse')).songImg() }
-        else { Image(this.picUrl + '?param=256y256').songImg() }
+    Row() {
+      if(this.playmode == 0) { Image($r('app.media.ic_public_music')).fillColor($r('app.color.reverse')).songImg() }
+      else { Image(this.picUrl + '?param=256y256').songImg() }
 
-        Column({ space: 5 }) {
-          Text(this.song.name).textStyle(18)
-          if(!this.currentLyric) {
-            Text(this.artists).textStyle(14).layoutWeight(1)
-          }
-          else {
-            Text(this.currentLyric).textStyle(14).textOverflow({ overflow: TextOverflow.Ellipsis }).layoutWeight(1)
-          }
+      Column({ space: 5 }) {
+        Text(this.song.name).textStyle(18)
+        if(!this.currentLyric) {
+          Text(this.artists).textStyle(14).layoutWeight(1)
         }
-        .padding({ top: 15, bottom: 15 })
-        .layoutWeight(1)
-
-        ControlButtons({ isPaused: this.isPaused, isPlaying: this.isPlaying })
+        else {
+          Text(this.currentLyric).textStyle(14).textOverflow({ overflow: TextOverflow.Ellipsis }).layoutWeight(1)
+        }
       }
-      .justifyContent(FlexAlign.SpaceBetween)
+      .padding({ top: 15, bottom: 15 })
       .layoutWeight(1)
+
+      ControlButtons({ isPaused: this.isPaused, isPlaying: this.isPlaying })
     }
+    .justifyContent(FlexAlign.SpaceBetween)
+    .layoutWeight(1)
     .backdropBlur(50)
     .padding({ left:10, right:10 })
     .width('100%')
@@ -57,7 +55,7 @@ export struct BottomPlayController {
     .height(80)
     .onClick(() => {
       if(this.isPlaying) { this.isShow = true }
-      else { ToastUtil.showToast('暂无播放') }
+      else { ToastUtil.showToast('当前无正在播放歌曲') }
     })
     .bindContentCover(this.isShow, this.Cover(), {
       modalTransition: ModalTransition.DEFAULT,
@@ -80,7 +78,7 @@ struct ControlButtons {
   @Link isPaused: boolean
   @Link isPlaying: boolean
   build() {
-    Row({ space: 5 }) {
+    Row({ space: 10 }) {
       if (!this.isPaused) {
         Button() {
           Image($r('app.media.ic_public_pause')).fillColor(Color.Gray).buttonImgStyle()
@@ -112,7 +110,7 @@ struct ControlButtons {
   .fontSize(size)
   .fontColor($r('app.color.reverse'))
   .maxLines(1)
-  .padding({ left:20, right:20 })
+  .padding({ left:10, right:10 })
   .textOverflow({ overflow: TextOverflow.MARQUEE })
 }
 

@@ -1,10 +1,10 @@
 import { DialogUtil } from "@pura/harmony-utils"
 import { DialogAction } from "@pura/harmony-utils/src/main/ets/entity/constraint"
-import { DataSource } from "../../common/entities/DataSource"
 import { PlayQueue } from "../../common/entities/PlayQueue"
 import { playQueue } from "../../common/functions/playerControl"
 import PlayQueueUtils from "../../common/utils/PlayQueueUtils"
 import { LoopModeButton } from "../buttons/LoopModeButton"
+import { LazyData } from '@pie/lazy-data';
 
 /**
  * 播放列表 Sheet
@@ -17,11 +17,11 @@ export struct PlayQueueSheet {
   @State queueLength: number = PlayQueueUtils.getQueueLength()
   @State isLoading: boolean = false
   @Link isShow: boolean
+  @State dataSource: LazyData<PlayQueue> = new LazyData()
   private scroller: Scroller = new Scroller()
-  private queueData: DataSource<PlayQueue> = new DataSource()
 
   aboutToAppear(): void {
-    this.queueData.setData(this.queue)
+    this.dataSource.setData(this.queue)
 
     setTimeout(() => {
       this.scrollToCurrent(false)
@@ -62,6 +62,8 @@ export struct PlayQueueSheet {
               onAction: async (action) => {
                 if (action == DialogAction.TWO) {
                   PlayQueueUtils.cleanQueue()
+                  this.dataSource.setData([])
+                  this.dataSource.notifyDataReload()
                 }
               }
             })
@@ -72,7 +74,7 @@ export struct PlayQueueSheet {
         .justifyContent(FlexAlign.SpaceBetween)
 
         List({ scroller: this.scroller, space: 15 }) {
-          ForEach(this.queue, (item: PlayQueue, index) => {
+          LazyForEach(this.dataSource, (item: PlayQueue, index) => {
             ListItem() {
               Row({ space: 10 }) {
                 Text(`${index + 1}`)
@@ -135,15 +137,17 @@ export struct PlayQueueSheet {
                   Image($r('app.media.ic_public_cancel')).width(20).fillColor(Color.Gray)
                 }
                 .backgroundColor(Color.Transparent)
-                .onClick(async () => {
+                .onClick(() => {
                   PlayQueueUtils.queueDelete(index)
+                  this.dataSource.deleteData(index)
                   this.queueLength = PlayQueueUtils.getQueueLength()
+                  this.dataSource.notifyDataReload()
                 })
               }
               .width('100%')
               .justifyContent(FlexAlign.SpaceAround)
             }
-          })
+          }, (item: PlayQueue, index) => item.song.id.toString() + index)
 
           ListItem().height(px2vp(this.bottomRectHeight))
         }
@@ -152,6 +156,7 @@ export struct PlayQueueSheet {
         .layoutWeight(1)
         .scrollBar(BarState.Off)
       }
+
       if(this.isLoading) {
         Column() {
           LoadingProgress()

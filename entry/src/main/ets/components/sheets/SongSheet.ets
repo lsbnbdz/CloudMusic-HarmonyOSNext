@@ -1,10 +1,8 @@
-import { ToastUtil } from "@pura/harmony-utils";
-import { putPlayListInQueue } from "../../api/playListApi";
 import Constants from "../../common/constants/Constants";
 import { PlayList, playListClass } from "../../common/entities/PlayList";
 import { Song, SongClass } from "../../common/entities/SongsResult";
-import { changeDuration, getArtists } from "../../common/functions/functions";
-import { playMusicByUrl, playQueue } from "../../common/functions/playerControl";
+import { changeDuration } from "../../common/functions/functions";
+import { playMusicByUrl } from "../../common/functions/playerControl";
 import { playListToQueue } from "../../common/functions/playList";
 import PlayQueueUtils from "../../common/utils/PlayQueueUtils";
 import { DownloadDialog } from "../dialog/DownloadDialog";

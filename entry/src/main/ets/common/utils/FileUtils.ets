@@ -25,32 +25,22 @@ class FileUtils {
     return list.sort()
   }
 
+  /**
+   * 是否存在本地文件
+   * @param fileName
+   * @returns string - fdPath
+   */
   async accessLocalFile(fileName: string): Promise<string> {
-    const fileUrl_flac = this.filesDir + `/${fileName}.flac`
-    const fileUrl_mp3 = this.filesDir + `/${fileName}.mp3`
-
-    if(await FileUtil.access(fileUrl_flac)) {
-      let file = await fileIo.open(fileUrl_flac)
-      let fdPath = 'fd://' + file.fd
-      return fdPath
-    } else if(await FileUtil.access(fileUrl_mp3)) {
-      let file = await fileIo.open(fileUrl_mp3)
-      let fdPath = 'fd://' + file.fd
-      return fdPath
-    } else {
-      return ''
+    const fileType: Array<string> = ['flac', 'FLAC', 'mp3', 'MP3']
+    for(let type of fileType) {
+      let filePath = this.filesDir + `/${fileName}.${type}`
+      if(await(FileUtil.access(filePath))) {
+        let file = await fileIo.open(filePath)
+        let fdPath = 'fd://' + file.fd
+        return fdPath
+      }
     }
-  }
-
-  async getCacheName(): Promise<Array<string>> {
-    let list = await fileIo.listFile((this.cacheDir))
-    return list
-  }
-
-  async getFileStat() {
-    let list = await this.getFileName()
-    let result = await fileIo.stat(this.filesDir + `/${list[0]}`)
-    return result
+    return ''
   }
 
   async deleteFile(fileName:string) {
@@ -112,18 +102,17 @@ class FileUtils {
     PreviewUtil.openPreview(info).catch((error: BusinessError) => {
       LogUtil.error(TAG + 'preview file error: ' + error.message)
     })
-
   }
 
-  async removeCache() {
+  async removeCache(): Promise<boolean> {
     try {
-      await FileUtil.rmdir(this.cacheDir).then(() => {
-        ToastUtil.showToast('清除缓存成功')
-      })
+      await FileUtil.rmdir(this.cacheDir)
+      return true
     } catch (e) {
-      LogUtil.error(TAG + '清除缓存 remove cache 失败: ' + e.message())
+      LogUtil.error(TAG + e.message())
       ToastUtil.showToast('清除缓存失败')
     }
+    return false
   }
 
   getCacheSize(): number {

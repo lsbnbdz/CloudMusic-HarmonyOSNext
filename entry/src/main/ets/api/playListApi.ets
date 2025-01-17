@@ -109,9 +109,10 @@ export async function putPlayListInQueue(listId: number, trackCount: number, lim
       await PlayQueueUtils.cleanQueue()
       first = false
     }
-    await PlayQueueUtils.queueAdd_array(tempQueue)
+    let res = await PlayQueueUtils.queueAdd_array(tempQueue)
     tempQueue = []
     offset += limit
+    if(!res) return
   }
 }
 

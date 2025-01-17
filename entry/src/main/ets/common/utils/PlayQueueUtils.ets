@@ -1,4 +1,4 @@
-import { LogUtil } from '@pura/harmony-utils'
+import { LogUtil, ToastUtil } from '@pura/harmony-utils'
 import Constants from '../constants/Constants'
 import { PlayQueue } from '../entities/PlayQueue'
 import { Song, SongClass } from '../entities/SongsResult'
@@ -43,11 +43,16 @@ class PlayQueueUtils {
     AppStorage.setOrCreate('PlayQueue',this.queue)
     await PreferencesUtils.putPreferenceValue(pref, 'queue', this.queue)
   }
+
   /**
    * 添加歌曲至播放列表
    */
   async queueAdd(playmode:number, song:Song = SongClass, artists:string = '', fileName:string = '') {
     try {
+      if(this.queue.length > 5000) {
+        ToastUtil.showToast('播放列表歌曲数量已达上限')
+        return
+      }
       this.queue.splice(this.currentQueueIndex + 1 , 0 ,{
         playmode: playmode,
         song: song,
@@ -60,12 +65,17 @@ class PlayQueueUtils {
     }
   }
 
-  async queueAdd_array(queue:Array<PlayQueue>) {
-    this.queue = this.queue.concat(queue)
+  async queueAdd_array(queue:Array<PlayQueue>): Promise<boolean> {
+    let result: boolean = true
+    if(this.queue.length + queue.length > 5000) {
+      let offset = 5000 - this.queue.length
+      this.queue.concat(queue.splice(offset, queue.length-offset))
+      ToastUtil.showToast('播放列表歌曲数量已达上限')
+      result = false
+    } else { this.queue = this.queue.concat(queue) }
     AppStorage.setOrCreate('PlayQueue',this.queue)
     await PreferencesUtils.putPreferenceValue(pref, 'queue', this.queue)
-    LogUtil.info(TAG + '添加成功 add queue element success')
-    LogUtil.info(TAG + 'now queue: ' + JSON.stringify(this.queue))
+    return result
   }
 
   /**
@@ -79,7 +89,6 @@ class PlayQueueUtils {
       if(index < this.currentQueueIndex) {
         this.setIndex(this.currentQueueIndex - 1)
       }
-      LogUtil.info(TAG + '删除成功 delete queue element success')
     } catch (e) {
       LogUtil.error(TAG + '删除失败 delete queue element error: ' + e.message())
     }

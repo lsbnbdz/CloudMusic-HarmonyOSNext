@@ -1,6 +1,6 @@
 import { DialogUtil } from "@pura/harmony-utils"
 import { DialogAction } from "@pura/harmony-utils/src/main/ets/entity/constraint"
-import { PlayQueueDataSource } from "../../common/entities/DataSource"
+import { DataSource } from "../../common/entities/DataSource"
 import { PlayQueue } from "../../common/entities/PlayQueue"
 import { playQueue } from "../../common/functions/playerControl"
 import PlayQueueUtils from "../../common/utils/PlayQueueUtils"
@@ -17,10 +17,12 @@ export struct PlayQueueSheet {
   @State queueLength: number = PlayQueueUtils.getQueueLength()
   @State isLoading: boolean = false
   @Link isShow: boolean
-  private queueDataSource: PlayQueueDataSource = new PlayQueueDataSource(this.queue)
   private scroller: Scroller = new Scroller()
+  private queueData: DataSource<PlayQueue> = new DataSource()
 
   aboutToAppear(): void {
+    this.queueData.setData(this.queue)
+
     setTimeout(() => {
       this.scrollToCurrent(false)
     }, 100)
@@ -60,7 +62,6 @@ export struct PlayQueueSheet {
               onAction: async (action) => {
                 if (action == DialogAction.TWO) {
                   PlayQueueUtils.cleanQueue()
-                  this.queueLength = PlayQueueUtils.getQueueLength()
                 }
               }
             })
@@ -71,7 +72,7 @@ export struct PlayQueueSheet {
         .justifyContent(FlexAlign.SpaceBetween)
 
         List({ scroller: this.scroller, space: 15 }) {
-          LazyForEach(this.queueDataSource, (item: PlayQueue, index) => {
+          ForEach(this.queue, (item: PlayQueue, index) => {
             ListItem() {
               Row({ space: 10 }) {
                 Text(`${index + 1}`)
@@ -103,6 +104,7 @@ export struct PlayQueueSheet {
                     })
                   }
                 }
+
                 // 在线音乐
                 else {
                   if (this.currentQueueIndex == index) {
@@ -112,7 +114,7 @@ export struct PlayQueueSheet {
                       .fontWeight(FontWeight.Bold)
                       .fontColor('#ffd25959')
                   } else {
-                    Text() {
+                    Text(``) {
                       Span(`${item.song.name}`)
                       Span(` - ${item.artists}`).fontColor(Color.Gray)
                     }
@@ -127,11 +129,13 @@ export struct PlayQueueSheet {
                     })
                   }
                 }
+
+                // 从播放列表中删除
                 Button({ type: ButtonType.Circle }) {
                   Image($r('app.media.ic_public_cancel')).width(20).fillColor(Color.Gray)
                 }
                 .backgroundColor(Color.Transparent)
-                .onClick(() => {
+                .onClick(async () => {
                   PlayQueueUtils.queueDelete(index)
                   this.queueLength = PlayQueueUtils.getQueueLength()
                 })
@@ -140,6 +144,7 @@ export struct PlayQueueSheet {
               .justifyContent(FlexAlign.SpaceAround)
             }
           })
+
           ListItem().height(px2vp(this.bottomRectHeight))
         }
         .width('100%')

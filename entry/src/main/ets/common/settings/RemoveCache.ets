@@ -1,4 +1,4 @@
-import { DialogUtil } from "@pura/harmony-utils"
+import { DialogUtil, ToastUtil } from "@pura/harmony-utils"
 import { DialogAction } from "@pura/harmony-utils/src/main/ets/entity/constraint"
 import FileUtils from "../utils/FileUtils"
 
@@ -27,8 +27,18 @@ export struct RemoveCache {
             secondaryButton: "清理",
             onAction: async (action) => {
               if(action == DialogAction.TWO) {
-                await FileUtils.removeCache()
-                this.cacheSize = FileUtils.getCacheSize()
+                try {
+                  const res = await FileUtils.removeCache()
+                  if (res) {
+                    ToastUtil.showToast('成功清理缓存目录')
+                  } else {
+                    ToastUtil.showToast('清理缓存目录失败')
+                  }
+                } catch (e) {
+                  ToastUtil.showToast('清理缓存目录出错: ' + e)
+                } finally {
+                  this.cacheSize = FileUtils.getCacheSize()
+                }
               }
             }
           })

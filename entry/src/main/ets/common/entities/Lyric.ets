@@ -2,6 +2,17 @@
  * 歌词类
  */
 
+/**
+ * 歌词格式 time + content
+ */
+export interface Lyric {
+  time: number
+  content: string
+}
+
+/**
+ * HTTP Result
+ */
 interface Lrc {
   lyric: string
 }

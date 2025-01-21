@@ -1,55 +1,42 @@
-import { EmitterUtil, ToastUtil } from "@pura/harmony-utils"
-import Constants from "../../common/constants/Constants"
 import { Song, SongClass } from "../../common/entities/SongsResult"
-import { changeDuration } from "../../common/functions/functions"
-import { pauseMusic, playNext, playPre, resumeMusic, seekMusic } from "../../common/functions/playerControl"
+import { changeDuration } from "../../common/functions/commonFunction"
+import { pauseMusic, playNext, playPre, resumeMusic, seekMusic } from "../../common/functions/playControl"
 import { AddToPlayListCircleButton } from "../buttons/AddToPlayListButton"
 import { LoopModeButton } from "../buttons/LoopModeButton"
 import { PlayQueueButton } from "../buttons/PlayQueueButton"
 import { DownloadDialog } from "../dialog/DownloadDialog"
-import { LyricComponent } from "../main/LyricComponent"
+import { LyricComponent } from "../play/LyricComponent"
 import { AVCastPicker } from "@kit.AVSessionKit"
+import { promptAction } from "@kit.ArkUI"
+import { MsgConstants } from "../../common/constants/MsgConstants"
 
-const TAG = '[PlayingCover] '
-export interface Lyric {
-  time: number;
-  content: string;
-}
 @Component
 export struct PlayingCover {
-
   @StorageProp('topRectHeight') topRectHeight: number = 0
   @StorageProp('bottomRectHeight') bottomRectHeight: number = 0
-
-  @StorageProp('player-mode') playmode:number = 1
-  @StorageProp('player-song') song:Song = SongClass
-  @StorageProp('player-artists') artists:string = ''
-  @StorageProp('player-ispaused') isPaused:boolean = false
-  @StorageProp('player-picurl') picUrl:string = ''
-  @StorageProp('player-time') time:number = 0
+  @StorageProp('player-mode') playmode: number = 1
+  @StorageProp('player-song') song: Song = SongClass
+  @StorageProp('player-artists') artists: string = ''
+  @StorageProp('player-ispaused') isPaused: boolean = false
+  @StorageProp('player-picurl') picUrl: string = ''
+  @StorageProp('player-time') time: number = 0
   @StorageProp('player-lyric') lyricArr: string[] = []
-
   @Link isShow: boolean
   @State hasLoaded: boolean = false
-  @State qualitySelected:number = 3
   @State sliderThickness: number = 10
   @State isMovingSlider: boolean = false
   @State sliderMovingTime: number = 0
   @State tabPageIndex: number = 0
   @State totalOpacity: number = 0
-
-  artists1:string = ''
-  song1:Song = SongClass
-  picUrl1:string = ''
-
+  private artists1: string = ''
+  private song1: Song = SongClass
+  private picUrl1: string = ''
   private tabsController: TabsController = new TabsController()
-
   private dialogController: CustomDialogController = new CustomDialogController({
     builder: DownloadDialog({
       song: this.song1,
       picUrl: this.picUrl1,
       artists: this.artists1,
-      quality: Constants.QUALITY[this.qualitySelected],
       duration: changeDuration(this.song.duration)
     }),
   })
@@ -62,204 +49,265 @@ export struct PlayingCover {
 
   build() {
    Stack() {
-     // 遮罩
-     Column()
+     // Background
+     Stack() {
+       Image(this.picUrl + '?param=512y512')
+         .blur(100)
+         .width('100%')
+         .height('100%')
+         .animation({
+           duration: 300,
+           curve: Curve.Linear
+         })
+       Column()
+         .width('100%')
+         .height('100%')
+         .opacity(0.6)
+         .backgroundColor(Color.Black)
+     }
      .width('100%')
      .height('100%')
-     .opacity(0.5)
-     .backgroundColor(Color.Black)
 
      Column() {
-       Tabs({ controller: this.tabsController }) {
-         TabContent() {
-           this.SongInfo()
-         }
-         TabContent() {
-           LyricComponent()
-         }.height('100%')
+       Swiper() {
+         this.SongInfo()
+         LyricComponent()
+           .width('100%')
        }
-       .onChange((index) => { this.tabPageIndex = index })
+       .indicator(
+         new DotIndicator()
+           .top(px2vp(this.topRectHeight) + 5)
+           .selectedColor(Color.White)
+           .color(Color.Gray)
+       )
+       .clip(false)
+       .loop(false)
        .layoutWeight(1)
-       .barHeight(0)
 
        Column({ space: 10 }) {
-         Column({ space: 5 }) {
-           Row() {
-             // 当前时间
-             Text(`${changeDuration(this.time)}`)
-               .fontSize(16)
-               .layoutWeight(1)
-               .textAlign(TextAlign.Start)
-               .fontColor(Color.White)
-
-             // 拖动进度条时，显示即将跳转的时间
-             if (this.isMovingSlider) {
-               Column() {
-                 Text(`${changeDuration(this.sliderMovingTime)}`)
-                   .fontColor(Color.White)
-                   .backgroundColor(Color.Gray)
-                   .borderRadius(15)
-                   .fontSize(16)
-                   .textAlign(TextAlign.Center)
-                   .padding({ left: 10, right: 10 })
-               }
-               .layoutWeight(1)
-             }
-
-             // 总时间
-             Text(`${changeDuration(this.song.duration)}`)
-               .fontSize(16)
-               .layoutWeight(1)
-               .textAlign(TextAlign.End)
-               .fontColor(Color.White)
-           }
-           .width('90%')
-           .justifyContent(FlexAlign.SpaceAround)
-
-           // 进度条
-           Slider({
-             value: this.time,
-             max: this.song.duration,
-             style: SliderStyle.InSet
-           })
-             .width('90%')
-             .blockColor(Color.White)
-             .trackColor(Color.Gray)
-             .trackThickness(this.sliderThickness)
-             .selectedColor(Color.White)
-             .showSteps(false)
-             .showTips(false)
-             .animation({
-               duration: 600,
-               curve: Curve.LinearOutSlowIn,
-             })
-             .onChange((value: number, mode: SliderChangeMode) => {
-               if (mode == SliderChangeMode.Begin) {
-                 this.isMovingSlider = true
-                 this.sliderThickness = 20
-               } else if (mode == SliderChangeMode.Moving) {
-                 this.sliderMovingTime = value
-               } else if (mode == SliderChangeMode.End) {
-                 this.time = value
-                 this.isMovingSlider = false
-                 this.sliderThickness = 10
-                 seekMusic(value)
-               }
-             })
+         this.SliderContent()
+         this.ToolBar()
+         Row() {
+           LoopModeButton({ imgColor: Color.White }).opacity(0.8)
+           this.PlayButton()
+           PlayQueueButton({ imgColor: Color.White }).opacity(0.8)
          }
-
-         Row({ space: 20 }) {
-           if (this.playmode == 1) {
-             Select([{ value: '标准' }, { value: '高' }, { value: '极高' }, { value: '无损' }])
-               .fontColor(Color.White)
-               .selected(3)
-               .value('无损')
-               .height(40)
-               .onSelect((index: number) => {
-                 this.qualitySelected = index
-               })
-
-             Button({ type: ButtonType.Circle }) {
-               Image($r('app.media.ic_public_download_filled'))
-                 .fillColor(Color.White)
-                 .width(25)
-             }
-             .backgroundColor(Color.Transparent)
-             .onClick(() => {
-               this.song1 = this.song
-               this.artists1 = this.artists
-               this.picUrl1 = this.picUrl
-               this.dialogController.open()
-             })
-
-             AddToPlayListCircleButton({ song: this.song, imgColor: Color.White })
-
-           }
-
-           LoopModeButton({ imgColor: Color.White })
-
-           PlayQueueButton({ imgColor: Color.White })
-
-         }
-         .height(40)
-
-         Row({ space: 30 }) {
-           // 上一首
-           Button() {
-             Image($r('app.media.ic_public_play_last')).buttonImgStyle()
-           }.onClick(() => {
-             playPre()
-           }).backgroundColor(Color.Transparent)
-
-           // 暂停、继续
-           if (!this.isPaused) {
-             Button() {
-               Image($r('app.media.ic_public_pause')).buttonImgStyle()
-             }.onClick(() => {
-               pauseMusic()
-             }).backgroundColor(Color.Transparent)
-           } else {
-             Button() {
-               Image($r('app.media.ic_play_fill')).buttonImgStyle()
-             }.onClick(() => {
-               resumeMusic()
-             }).backgroundColor(Color.Transparent)
-           }
-           // 下一首
-           Button() {
-             Image($r('app.media.ic_public_play_next')).buttonImgStyle()
-           }.onClick(async () => {
-             await playNext()
-           }).backgroundColor(Color.Transparent)
-         }
-         .padding({ top: 30, bottom: 50 })
-         .justifyContent(FlexAlign.Center)
+         .padding({ top: 20, bottom: px2vp(this.bottomRectHeight) + 15 })
+         .justifyContent(FlexAlign.SpaceEvenly)
+         .width('90%')
        }
        .width('100%')
      }
      .height('100%')
 
-
-     // Head
-     Row() {
-       Button({ type: ButtonType.Circle }) { Image($r('app.media.ic_public_arrow_down_0')).fillColor(Color.White).width(35).height(35) }
-       .backgroundColor(Color.Transparent)
-       .opacity(this.totalOpacity)
-       .animation({
-         duration: 200
-       })
-       .onClick(() => { this.isShow = false })
-
-       this.TabBar()
-
-       Stack() {
-         AVCastPicker({ normalColor: Color.White, activeColor: '#ff359bdb' })
-           .opacity(this.totalOpacity)
-           .animation({
-             duration: 200
-           })
-           .width(30)
-           .height(30)
-           .backgroundColor(Color.Transparent)
-       }
-       .width(30)
-       .height(30)
-     }
-     .backdropBlur(20)
-     .position({ top: 0 })
-     .width('100%')
-     .justifyContent(FlexAlign.SpaceBetween)
-     .linearGradientBlur(100, {
-       fractionStops: [[0, 0],[1, 1]],
-       direction: GradientDirection.Top
-     })
-     .padding({ top:px2vp(this.topRectHeight), left: 10, right: 10, bottom: 5 })
+     this.Head() // Head
 
    }
    .height('100%')
-   .backgroundImage(this.picUrl)
-   .backgroundImageSize(ImageSize.Cover)
-   .backdropBlur(100)
+  }
+
+  /**
+   * 功能栏
+   */
+  @Builder
+  ToolBar() {
+    Row() {
+      if (this.playmode == 1) {
+        /**
+         * AVCastPicker
+         */
+        Column() {
+          AVCastPicker({ normalColor: Color.White, activeColor: '#ff359bdb' })
+            .width(25)
+            .height(25)
+            .backgroundColor(Color.Transparent)
+        }
+        .width(30)
+        .height(30)
+        /**
+         * Clock-Timer
+         */
+        Column() {
+          Image($r('app.media.ic_clock'))
+            .fillColor(Color.White)
+            .width(20)
+            .draggable(false)
+            .backgroundColor(Color.Transparent)
+            .onClick(() => {
+              promptAction.showToast({ message: MsgConstants.DEVELOPING, duration: 3000 })
+            })
+        }
+        .width(30)
+        .height(30)
+        /**
+         * Download
+         */
+        Column() {
+          Image($r('app.media.ic_public_download_filled'))
+            .fillColor(Color.White)
+            .width(24)
+            .draggable(false)
+            .backgroundColor(Color.Transparent)
+            .onClick(() => {
+              this.song1 = this.song
+              this.artists1 = this.artists
+              this.picUrl1 = this.picUrl
+              this.dialogController.open()
+            })
+        }
+        .width(30)
+        .height(30)
+        /**
+         * AddToPlayList
+         */
+        Column() {
+          AddToPlayListCircleButton({ song: this.song, imgColor: Color.White, imgWidth: 24 })
+        }
+        .width(30)
+        .height(30)
+      }
+    }
+    .opacity(this.totalOpacity)
+    .animation({
+      duration: 200,
+      curve: Curve.Linear
+    })
+    .justifyContent(FlexAlign.SpaceEvenly)
+    .width('90%')
+    .height(30)
+  }
+
+  /**
+   * 进度条组件
+   */
+  @Builder
+  SliderContent() {
+    Column({ space: 5 }) {
+      Row() {
+        // 当前时间
+        Text(`${changeDuration(this.time)}`)
+          .fontSize(16)
+          .layoutWeight(1)
+          .textAlign(TextAlign.Start)
+          .fontColor(Color.White)
+
+        // 拖动进度条时，显示即将跳转的时间
+        if (this.isMovingSlider) {
+          Column() {
+            Text(`${changeDuration(this.sliderMovingTime)}`)
+              .fontColor(Color.White)
+              .backgroundColor(Color.Gray)
+              .borderRadius(15)
+              .fontSize(16)
+              .textAlign(TextAlign.Center)
+              .padding({ left: 10, right: 10 })
+          }
+          .layoutWeight(1)
+        }
+
+        // 总时间
+        Text(`${changeDuration(this.song.duration)}`)
+          .fontSize(16)
+          .layoutWeight(1)
+          .textAlign(TextAlign.End)
+          .fontColor(Color.White)
+      }
+      .width('90%')
+      .justifyContent(FlexAlign.SpaceAround)
+
+      // 进度条
+      Slider({
+        value: this.time,
+        max: this.song.duration,
+        style: SliderStyle.InSet
+      })
+        .width('90%')
+        .blockColor(Color.White)
+        .trackColor(Color.Gray)
+        .trackThickness(this.sliderThickness)
+        .selectedColor(Color.White)
+        .showSteps(false)
+        .showTips(false)
+        .animation({
+          duration: 600,
+          curve: Curve.LinearOutSlowIn,
+        })
+        .onChange((value: number, mode: SliderChangeMode) => {
+          if (mode == SliderChangeMode.Begin) {
+            this.isMovingSlider = true
+            this.sliderThickness = 20
+          } else if (mode == SliderChangeMode.Moving) {
+            this.sliderMovingTime = value
+          } else if (mode == SliderChangeMode.End) {
+            this.time = value
+            this.isMovingSlider = false
+            this.sliderThickness = 10
+            seekMusic(value)
+          }
+        })
+    }
+  }
+
+  /**
+   * PlayButton
+   * 控制上一首、下一首、播放和暂停
+   */
+  @Builder
+  PlayButton() {
+    // 上一首
+    Button() {
+      Image($r('app.media.ic_public_play_last')).buttonImgStyle()
+    }
+    .backgroundColor(Color.Transparent)
+    .onClick(() => {
+      playPre()
+    })
+
+    // 暂停、继续
+    if (!this.isPaused) {
+      Button() {
+        Image($r('app.media.ic_public_pause')).buttonImgStyle()
+      }
+      .backgroundColor(Color.Transparent)
+      .onClick(() => {
+        pauseMusic()
+      })
+    } else {
+      Button() {
+        Image($r('app.media.ic_play_fill')).buttonImgStyle()
+      }
+      .backgroundColor(Color.Transparent)
+      .onClick(() => {
+        resumeMusic()
+      })
+    }
+    // 下一首
+    Button() {
+      Image($r('app.media.ic_public_play_next')).buttonImgStyle()
+    }
+    .backgroundColor(Color.Transparent)
+    .onClick(() => {
+      playNext()
+    })
+  }
+
+  /**
+   * Head
+   */
+  @Builder
+  Head() {
+    Row() {
+      Button({ type: ButtonType.Circle }) { Image($r('app.media.ic_public_arrow_down_0')).draggable(false).fillColor(Color.White).width(35).height(35) }
+      .backgroundColor(Color.Transparent)
+      .onClick(() => { this.isShow = false })
+      Button({ type: ButtonType.Circle }) { Image($r('app.media.ic_public_more_list')).draggable(false).fillColor(Color.White).width(35).height(35) }
+      .backgroundColor(Color.Transparent)
+      .onClick(() => { promptAction.showToast({ message: MsgConstants.DEVELOPING, duration: 3000 }) })
+    }
+    .position({ top: 0 })
+    .width('100%')
+    .justifyContent(FlexAlign.SpaceBetween)
+    .padding({ top: px2vp(this.topRectHeight), left: 10, right: 10, bottom: 5 })
   }
 
   /**
@@ -276,8 +324,10 @@ export struct PlayingCover {
           .height('60%')
           .borderRadius(5)
           .aspectRatio(1)
-          Image($r('app.media.ic_public_music')).height('30%').fillColor(Color.Gray).borderRadius(5).aspectRatio(1)
-
+          Image($r('app.media.ic_public_music'))
+            .height('30%').fillColor(Color.Gray)
+            .borderRadius(5)
+            .aspectRatio(1)
         }
         .padding({ bottom: 30 })
       } else {
@@ -288,9 +338,12 @@ export struct PlayingCover {
               .height('60%')
               .borderRadius(5)
               .aspectRatio(1)
+              .onClick(() => {
+                this.tabsController.changeIndex(1)
+              })
           }
           else {
-            Column() {}
+            Column()
             .height('60%')
             .borderRadius(5)
             .aspectRatio(1)
@@ -306,39 +359,12 @@ export struct PlayingCover {
       Text(this.artists)
         .textStyle(16)
     }
+    .width('100%')
     .padding({ left: 15, right: 15, top:px2vp(this.topRectHeight) + 40 })
     .height('100%')
     .justifyContent(FlexAlign.Center)
   }
-
-  /**
-   * TabBar
-   */
-  @Builder
-  TabBar() {
-    Row({ space: 5 }) {
-      Button()
-        .width(15)
-        .height(8)
-        .opacity(this.tabPageIndex == 0 ? 1.0 : 0.3)
-        .animation({
-          duration: 200
-        })
-        .backgroundColor(Color.White)
-        .onClick(() => this.tabsController.changeIndex(0))
-      Button()
-        .width(15)
-        .height(8)
-        .opacity(this.tabPageIndex == 1 ? 1.0 : 0.3)
-        .animation({
-          duration: 200
-        })
-        .backgroundColor(Color.White)
-        .onClick(() => this.tabsController.changeIndex(1))
-    }
-  }
 }
-
 
 @Extend(Text) function textStyle(size:number) {
   .fontSize(size)
@@ -351,4 +377,5 @@ export struct PlayingCover {
 @Extend(Image) function buttonImgStyle() {
   .width(50)
   .fillColor(Color.White)
+  .draggable(false)
 }

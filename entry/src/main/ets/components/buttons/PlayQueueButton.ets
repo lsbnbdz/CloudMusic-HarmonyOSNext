@@ -15,7 +15,9 @@ export struct PlayQueueButton {
       Image($r('app.media.ic_public_view_list_filled'))
         .width(this.imgWidth)
         .fillColor(this.imgColor)
+        .draggable(false)
     }
+    .stateEffect(false)
     .backgroundColor(Color.Transparent)
     .onClick(() => { this.isShow = !this.isShow })
     .bindSheet(this.isShow, this.QueueComponent(), {

@@ -19,6 +19,10 @@
     {
       "name": "component_background",
       "value": "#282828"
+    },
+    {
+      "name": "app_red",
+      "value": "#FFFF6F6F"
     }
   ]
 }

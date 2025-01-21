@@ -1,7 +1,7 @@
 import { EmitterUtil } from "@pura/harmony-utils"
-import { getLyric } from "../../api/LyricApi"
-import { Lyric } from "../../components/sheets/PlayingCover"
-import Constants from "../constants/Constants"
+import { getLyric } from "../../../api/LyricApi"
+import Constants from "../../constants/Constants"
+import { Lyric } from "../../entities/Lyric"
 
 class LyricUtils {
   lyricString: string = ''
@@ -38,10 +38,11 @@ class LyricUtils {
          let newIndex = this.updateCurrentLyricIndex(time, this.lyricObjects)
           if(newIndex != this.currentLyricIndex) {
             this.currentLyricIndex = newIndex
+            AppStorage.setOrCreate('player-currentLyricIndex', this.currentLyricIndex)
             AppStorage.setOrCreate('player-currentLyric', this.lyricObjects[newIndex].content)
           }
         }
-      }, 500)
+      }, 100)
     }
   }
 

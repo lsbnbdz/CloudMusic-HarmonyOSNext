@@ -1,7 +1,7 @@
 import { avSession } from "@kit.AVSessionKit";
 import { AppUtil, LogUtil, ToastUtil } from "@pura/harmony-utils";
-import { Song, SongClass } from "../entities/SongsResult";
-import { changeCycleMode, pauseMusic, playNext, playPre, resumeMusic, seekMusic } from "../functions/playerControl";
+import { Song, SongClass } from "../../entities/SongsResult";
+import { changeCycleMode, pauseMusic, playNext, playPre, resumeMusic, seekMusic } from "../../functions/playControl";
 import LyricUtils from "./LyricUtils";
 
 /**

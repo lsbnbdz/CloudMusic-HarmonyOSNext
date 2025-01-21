@@ -1,10 +1,10 @@
 import { Song } from '../common/entities/SongsResult'
-import { SongCard } from '../components/main/SongCard'
+import { SongCard } from '../components/cards/SongCard'
 import { ListHead } from '../components/head/ListHead'
 import { SpinKit, SpinType } from '@pura/spinkit'
 import { DialogUtil, LogUtil } from '@pura/harmony-utils'
 import { getCloudList } from '../api/playListApi'
-import { BottomPlayController } from '../components/play/BottomPlayController'
+import { BottomBarComponent } from '../components/play/BottomBarComponent'
 import { ExplainButton } from '../components/buttons/ExplainButton'
 import { CommonCircleButton } from '../components/buttons/CircleButton'
 
@@ -112,7 +112,7 @@ struct PlayListPage {
       }
       .height('100%')
 
-      BottomPlayController()
+      BottomBarComponent()
         .padding({ left: 10, right: 10, bottom: px2vp(this.bottomRectHeight)})
         .backgroundColor(Color.Transparent)
     }

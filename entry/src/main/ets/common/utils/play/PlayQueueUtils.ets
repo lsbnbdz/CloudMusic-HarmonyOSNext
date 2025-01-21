@@ -1,8 +1,8 @@
 import { LogUtil, ToastUtil } from '@pura/harmony-utils'
-import Constants from '../constants/Constants'
-import { PlayQueue } from '../entities/PlayQueue'
-import { Song, SongClass } from '../entities/SongsResult'
-import PreferencesUtils from './PreferencesUtils'
+import Constants from '../../constants/Constants'
+import { PlayQueue } from '../../entities/PlayQueue'
+import { Song, SongClass } from '../../entities/SongsResult'
+import PreferencesUtils from '../app/PreferencesUtils'
 
 /**
  * 播放列表工具
@@ -49,10 +49,6 @@ class PlayQueueUtils {
    */
   async queueAdd(playmode:number, song:Song = SongClass, artists:string = '', fileName:string = '') {
     try {
-      if(this.queue.length > 5000) {
-        ToastUtil.showToast('播放列表歌曲已达上限')
-        return
-      }
       this.queue.splice(this.currentQueueIndex + 1 , 0 ,{
         playmode: playmode,
         song: song,

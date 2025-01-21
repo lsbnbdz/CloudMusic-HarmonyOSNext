@@ -1,9 +1,9 @@
 import { EmitterUtil, LogUtil } from "@pura/harmony-utils";
 import Constants from "../common/constants/Constants";
 import { LyricResult } from "../common/entities/Lyric";
-import { getApiUrl } from "../common/functions/functions";
-import { HttpRequest } from "../common/utils/HttpRequestUtils";
-import LyricUtils from "../common/utils/LyricUtils";
+import { getApiUrl } from "../common/functions/commonFunction";
+import { HttpRequest } from "../common/utils/request/HttpRequestUtils";
+import LyricUtils from "../common/utils/play/LyricUtils";
 
 /**
  * 歌词类API

@@ -1,10 +1,12 @@
 ## Cloud Music For HarmonyOS NEXT
 
-**CloudMusic (云音汇) 是鸿蒙5.0上的网易云音乐三方客户端**
+**CloudMusic (云音汇) 是鸿蒙NEXT上的网易云音乐第三方App**
 
-该项目基于API 13，支持 HarmonyOS NEXT 5.0
+该项目基于 OHOS API14，支持 HarmonyOS 5.0.0.123 及以上系统版本。
 
-AppGallery 邀请尝鲜：https://docs.chenlvin.cc/cloudmusic/#/
+<br>>> AppGallery 邀请尝鲜：https://docs.chenlvin.cc/cloudmusic/#/
+
+<br>
 
 ### 当前支持功能：
 
@@ -15,19 +17,18 @@ AppGallery 邀请尝鲜：https://docs.chenlvin.cc/cloudmusic/#/
 - 歌曲、歌单搜索
 - 歌单收藏/取消收藏
 - 歌单内歌曲添加/删除
-- 歌曲播放
-- 歌曲下载
+- 下载歌曲
+- 播放相关功能
 
 
 ### 开发参考：
 
 - [华为开发者官网指南](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides-V5/application-dev-guide-V5?catalogVersion=V5)
 - [NeteaseCloudMusicApi](https://gitlab.com/Binaryify/neteasecloudmusicapi)
-- [OH三方库 @pura/harmony-utils](https://ohpm.openharmony.cn/#/cn/detail/@pura%2Fharmony-utils)
-- [OH三方库 @yunkss/ef_audio](https://ohpm.openharmony.cn/#/cn/detail/@yunkss%2Fef_audio)
 - [Music Sharing](https://github.com/Okysu/harmony-next-music-sharing)
-
-
+- [OpenHarmony三方库 @pura/harmony-utils](https://ohpm.openharmony.cn/#/cn/detail/@pura%2Fharmony-utils)
+- [OpenHarmony三方库 @yunkss/ef_audio](https://ohpm.openharmony.cn/#/cn/detail/@yunkss%2Fef_audio)
+- [OpenHarmony三方库 @pie/lazy-data](https://ohpm.openharmony.cn/#/cn/detail/@pie%2Flazy-data)
 
 
 ### 界面预览：

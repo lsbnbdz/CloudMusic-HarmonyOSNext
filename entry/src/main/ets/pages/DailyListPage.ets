@@ -1,15 +1,16 @@
 import { Song } from '../common/entities/SongsResult'
-import { SongCard } from '../components/main/SongCard'
+import { SongCard } from '../components/cards/SongCard'
 import { ListHead } from '../components/head/ListHead'
 import { SpinKit, SpinType } from '@pura/spinkit'
-import { LogUtil, ToastUtil } from '@pura/harmony-utils'
+import { LogUtil } from '@pura/harmony-utils'
 import { DailySongRes, PlayDailySongs } from '../api/playListApi'
-import { BottomPlayController } from '../components/play/BottomPlayController'
+import { BottomBarComponent } from '../components/play/BottomBarComponent'
 import { CommonCircleButton } from '../components/buttons/CircleButton'
-import Constants from '../common/constants/Constants'
-import { playQueue } from '../common/functions/playerControl'
+import { playQueue } from '../common/functions/playControl'
 import { AddToPlayListButton } from '../components/buttons/AddToPlayListButton'
 import { getDailySongs } from '../api/songApi'
+import { promptAction } from '@kit.ArkUI'
+import { MsgConstants } from '../common/constants/MsgConstants'
 
 /**
  * 每日推荐歌单页面
@@ -126,7 +127,7 @@ struct DailyListPage {
       }
       .height('100%')
 
-      BottomPlayController()
+      BottomBarComponent()
         .padding({ left: 10, right: 10, bottom: px2vp(this.bottomRectHeight)})
         .backgroundColor(Color.Transparent)
 
@@ -171,7 +172,7 @@ struct DailyListPage {
   HeadSlot() {
     CommonCircleButton({ ButtonImageName: 'ic_public_more_filled' })
       .onClick(() => {
-        ToastUtil.showToast(Constants.DEVELOPING_MSG)
+        promptAction.showToast({ message: MsgConstants.DEVELOPING, duration: 3000 })
       })
   }
 

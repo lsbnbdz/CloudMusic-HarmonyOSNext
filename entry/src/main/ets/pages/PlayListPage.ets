@@ -1,16 +1,16 @@
 import { router } from '@kit.ArkUI'
 import { Song } from '../common/entities/SongsResult'
-import { SongCard } from '../components/main/SongCard'
+import { SongCard } from '../components/cards/SongCard'
 import { PlayList } from '../common/entities/PlayList'
 import { ListHead } from '../components/head/ListHead'
 import { SpinKit, SpinType } from '@pura/spinkit'
 import { DialogUtil, LogUtil, ToastUtil } from '@pura/harmony-utils'
 import { getPlayListSongs, PlayListOperation, subscribePlayList } from '../api/playListApi'
-import { BottomPlayController } from '../components/play/BottomPlayController'
+import { BottomBarComponent } from '../components/play/BottomBarComponent'
 import { CommonCircleButton } from '../components/buttons/CircleButton'
 import { DialogAction } from '@pura/harmony-utils/src/main/ets/entity/constraint'
-import { formatNumber } from '../common/functions/functions'
-import { playListToQueue } from '../common/functions/playList'
+import { formatNumber } from '../common/functions/commonFunction'
+import { playListToQueue } from '../common/functions/playListOp'
 
 /**
  * 歌单二级页面
@@ -155,7 +155,7 @@ struct PlayListPage {
         }
         .height('100%')
 
-      BottomPlayController()
+      BottomBarComponent()
       .padding({ left: 10, right: 10, bottom: px2vp(this.bottomRectHeight)})
       .backgroundColor(Color.Transparent)
     }
@@ -168,17 +168,10 @@ struct PlayListPage {
   // 更多菜单
   @Builder
   PlayListMenu() {
-    if(this.playList.subscribed) {
-      Row() {
-
-      }.padding({ left: 10, right: 10, top: 5, bottom: 5 })
+    Row() {
+      Text('敬请期待')
     }
-    else {
-      Row() {
-
-      }.padding({ left: 10, right: 10, top: 5, bottom: 5 })
-    }
-
+    .padding({ left: 10, right: 10, top: 5, bottom: 5})
   }
 
   @Builder
@@ -187,15 +180,15 @@ struct PlayListPage {
       .bindMenu(this.PlayListMenu())
   }
 
-
   @Builder PlayListInfo() {
     Column() {
       Row({ space: 15 }) {
         Column() {
           Stack() {
-            Image($r('app.media.ic_public_music'))
+            Image('')
               .width('100%')
               .borderRadius(10)
+            LoadingProgress().width(40)
             Image(`${this.playList.coverImgUrl}?parm=256y256`)
               .width('100%')
               .borderRadius(10)
@@ -206,7 +199,7 @@ struct PlayListPage {
         .height(80)
         .width(80)
 
-        Column({ space: 5 }) {
+        Column() {
           Text(this.playList.name)
             .fontSize(18)
             .fontWeight(FontWeight.Medium)
@@ -216,13 +209,14 @@ struct PlayListPage {
             .fontSize(12)
             .width('100%')
             .textAlign(TextAlign.Start)
-          Text(`${formatNumber(this.playList.playCount)}次播放`)
+          Text(`${this.playList.trackCount}首歌曲     ${formatNumber(this.playList.playCount)}次播放`)
             .fontSize(12)
             .width('100%')
             .textAlign(TextAlign.Start)
         }
+        .height(80)
         .layoutWeight(1)
-        .justifyContent(FlexAlign.Start)
+        .justifyContent(FlexAlign.SpaceEvenly)
 
         if(this.isShowHeart) {
           if (this.isSubscribed) {

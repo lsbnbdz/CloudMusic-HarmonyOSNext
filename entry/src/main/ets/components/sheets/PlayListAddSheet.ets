@@ -4,7 +4,7 @@ import { PlayList } from "../../common/entities/PlayList"
 import { Song } from "../../common/entities/SongsResult"
 import { User, UserClass } from "../../common/entities/User"
 import { PlayQueueButton } from "../buttons/PlayQueueButton"
-import { PlayListCard } from "../main/PlayListCard"
+import { PlayListCard } from "../cards/PlayListCard"
 
 /**
  * 添加至歌单Sheet

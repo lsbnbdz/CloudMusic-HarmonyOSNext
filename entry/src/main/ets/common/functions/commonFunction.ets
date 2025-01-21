@@ -61,7 +61,8 @@ export async function fetchSongInfo(fileName: string): Promise<Song> {
     id: -1,
     name: songName,
     artists: artists,
-    duration: -1
+    duration: -1,
+    alias: []
   }
   return song
 }

@@ -1,7 +1,7 @@
-import FileUtils from '../common/utils/FileUtils';
+import FileUtils from '../common/utils/file/FileUtils';
 import { ListHead } from '../components/head/ListHead';
-import { FileCard } from '../components/main/FileCard';
-import { BottomPlayController } from '../components/play/BottomPlayController';
+import { FileCard } from '../components/cards/FileCard';
+import { BottomBarComponent } from '../components/play/BottomBarComponent';
 
 /**
  * 下载管理页
@@ -86,7 +86,7 @@ struct DownloadPage {
       .width('100%')
       .height('100%')
 
-    BottomPlayController()
+    BottomBarComponent()
       .padding({ left: 10, right: 10, bottom: px2vp(this.bottomRectHeight)})
       .backgroundColor(Color.Transparent)
     }

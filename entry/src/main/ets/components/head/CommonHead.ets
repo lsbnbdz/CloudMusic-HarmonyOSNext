@@ -11,10 +11,8 @@ export struct CommonHead {
       BackButton()
       Text(this.title).fontSize(20).fontColor($r('app.color.reverse'))
     }
-    // 避让状态栏
-    .padding({ top: px2vp(this.topRectHeight), left: 10, right: 10 })
+    .padding({ top: px2vp(this.topRectHeight), left: 10, right: 10, bottom: 5 })
     .width('100%')
-    .height(90)
     .backgroundColor(Color.Transparent)
   }
 

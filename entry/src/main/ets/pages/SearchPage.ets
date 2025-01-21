@@ -1,5 +1,5 @@
 import { EmitterUtil, ToastUtil } from '@pura/harmony-utils';
-import { BottomPlayController } from '../components/play/BottomPlayController';
+import { BottomBarComponent } from '../components/play/BottomBarComponent';
 import { CommonCircleButton } from '../components/buttons/CircleButton';
 import { router } from '@kit.ArkUI';
 import { SearchPlayListsList } from '../components/lists/SearchPlayListsList';
@@ -49,7 +49,7 @@ struct SearchPage {
         }
         .height('100%')
 
-      BottomPlayController()
+      BottomBarComponent()
         .padding({ left: 10, right: 10, bottom: px2vp(this.bottomRectHeight)})
         .backgroundColor(Color.Transparent)
     }

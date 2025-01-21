@@ -4,8 +4,8 @@ import { SongDetail } from "../common/entities/SongDetail"
 import { QualityType } from "../common/entities/SongDownload"
 import { SongPlay } from "../common/entities/SongPlay"
 import { Song, SongClass, SongsData } from "../common/entities/SongsResult"
-import { getApiUrl, isUsePubCookie } from "../common/functions/functions"
-import { HttpRequest } from "../common/utils/HttpRequestUtils"
+import { getApiUrl, isUsePubCookie } from "../common/functions/commonFunction"
+import { HttpRequest } from "../common/utils/request/HttpRequestUtils"
 import { DailySongRes } from "./playListApi"
 
 const TAG = '[Song API - songApi] '
@@ -20,7 +20,7 @@ export interface SearchReturn {
  * @param searchKeyword 搜索词
  * @returns SearchReturn
  */
-export async function getSongsList(searchKeyword:string, offset:number): Promise<SearchReturn> {
+export async function searchSongs(searchKeyword:string, offset:number): Promise<SearchReturn> {
   let list:Array<Song> = new Array()
   let hasMore:boolean = false
   let songCount:number = 0
@@ -38,6 +38,7 @@ export async function getSongsList(searchKeyword:string, offset:number): Promise
         name: song.name,
         artists: song.artists,
         duration: song.duration,
+        alias: song.alias
       })
     }
   })
@@ -48,22 +49,6 @@ export async function getSongsList(searchKeyword:string, offset:number): Promise
   }
 
   return searchReturn;
-}
-
-/**
- * 根据文件名，搜索歌曲信息，返回结果数组的第一个信息
- * @param searchName
- */
-export async function getSongInfo(searchName: string): Promise<Song> {
-  let song:Song = SongClass
-  const rootUrl = await getApiUrl()
-  const url:string = `${rootUrl}/search?keywords=${encodeURIComponent(searchName)}`
-  const request = new HttpRequest(url)
-  await request.Request().then((data) => {
-    const dataGot:SongsData = data.result as SongsData
-    song = dataGot.result.songs[0]
-  })
-  return song
 }
 
 /**
@@ -131,6 +116,7 @@ export async function getDailySongs(useCookie: boolean = true): Promise<Array<Da
             name: song.name,
             artists: song.ar,
             duration: song.dt,
+            alias: []
           },
           reason: song.reason
         })

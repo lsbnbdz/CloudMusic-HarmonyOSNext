@@ -16,6 +16,7 @@ export struct CommonCircleButton {
         Image($r(`app.media.${this.ButtonImageName}`))
           .width(30)
           .fillColor($r('app.color.reverse'))
+          .draggable(false)
       }
       .height(35)
       .width(35)

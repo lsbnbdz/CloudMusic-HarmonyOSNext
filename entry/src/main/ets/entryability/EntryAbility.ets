@@ -2,11 +2,11 @@ import { AbilityConstant, UIAbility, Want } from '@kit.AbilityKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { window } from '@kit.ArkUI';
 import { BusinessError } from '@kit.BasicServicesKit';
-import PreferencesUtils from '../common/utils/PreferencesUtils';
-import { getLoginInfo } from '../common/functions/getLoginInfo';
+import PreferencesUtils from '../common/utils/app/PreferencesUtils';
+import { getLoginInfo } from '../common/functions/login';
 import Constants from '../common/constants/Constants';
 import { LogUtil } from '@pura/harmony-utils';
-import { appInit } from '../common/functions/appInit';
+import { appInit } from '../common/functions/app/appInit';
 
 
 export default class EntryAbility extends UIAbility {

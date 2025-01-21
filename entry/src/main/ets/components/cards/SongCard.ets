@@ -1,36 +1,33 @@
 import { getSongPicUrl } from "../../api/songApi"
 import { Song, SongClass } from "../../common/entities/SongsResult"
-import { getArtists } from "../../common/functions/functions"
-import PlayQueueUtils from "../../common/utils/PlayQueueUtils"
+import { getArtists } from "../../common/functions/commonFunction"
+import PlayQueueUtils from "../../common/utils/play/PlayQueueUtils"
 import { SongSheet } from "../sheets/SongSheet"
 import { promptAction } from "@kit.ArkUI"
 import { PlayList, playListClass } from "../../common/entities/PlayList"
 
-@Preview
 @Component
 export struct SongCard {
-  @State hasAnimation:boolean = false
-  @State isShowSheet:boolean = false
-  @State showPlayButton:boolean = true
-  @State showAddQueueButton:boolean = true
-  @State startHeight:number = 60
-  @State startOpacity:number = 1
-  @State picUrl:string = ''
-  @State isPlayList:boolean = false
-  @State playList:PlayList = playListClass
-  @State index:number = 0
-  @State reason:string = ''
-
+  @State hasAnimation: boolean = false
+  @State isShowSheet: boolean = false
+  @State showPlayButton: boolean = true
+  @State showAddQueueButton: boolean = true
+  @State showSid: boolean = true
+  @State startHeight: number = 60
+  @State startOpacity: number = 1
+  @State picUrl: string = ''
+  @State isPlayList: boolean = false
+  @State playList: PlayList = playListClass
+  @State index: number = 0
+  @State reason: string = ''
   song:Song = SongClass
   sid:number = -1
   artists:string = ''
-
 
   async aboutToAppear(): Promise<void> {
     if(this.hasAnimation) { this.startHeight = 120; this.startOpacity = 0.1}
     const artistsStr = await getArtists(this.song.artists)
     this.artists = artistsStr
-
     const picUrl = await getSongPicUrl(this.song)
     this.picUrl = picUrl
   }
@@ -41,13 +38,25 @@ export struct SongCard {
         Row() {
           Text(`${this.sid + 1}`).width(40).fontWeight(FontWeight.Bold)
           Image(this.picUrl + '?param=100y100').width(50).padding({ right: 10 }).borderRadius(5)
-          Column({ space: 3 }) {
-            Text(this.song.name).textStyle(16)
+          Column({ space: 5 }) {
+            Row({ space: 5 }) {
+              Text(this.song.name).textStyle(16)
+              if(this.song.alias.length > 0) {
+                Text(`(${this.song.alias[0]})`)
+                  .layoutWeight(1)
+                  .fontSize(16)
+                  .fontColor(Color.Gray)
+                  .maxLines(1)
+                  .textOverflow({ overflow: TextOverflow.Ellipsis })
+              }
+            }
+            .width('100%')
+
             Row({ space: 5 }) {
               if(this.reason) {
                 Text(this.reason).reasonText()
               }
-              Text(this.artists).textStyle(12)
+              Text(this.artists).textStyle(12).fontColor(Color.Gray)
             }
             .width('100%')
           }

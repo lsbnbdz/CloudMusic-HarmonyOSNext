@@ -1,8 +1,8 @@
 import { http } from "@kit.NetworkKit"
 import { BusinessError } from "@kit.BasicServicesKit"
 import { LogUtil, ToastUtil } from "@pura/harmony-utils"
-import Constants from "../constants/Constants"
-import { uint8ArrayToString } from "../functions/functions"
+import { uint8ArrayToString } from "../../functions/commonFunction"
+import { MsgConstants } from "../../constants/MsgConstants"
 
 /**
  * 网络请求工具类
@@ -51,7 +51,7 @@ export class HttpRequest {
           httpRequest.destroy()
           reject(err)  // 出现错误时reject
           setTimeout(() => {
-            ToastUtil.showToast(`${Constants.HTTP_ERROR_MSG} ${this.url}`, { duration: 4000 })
+            ToastUtil.showToast(`${MsgConstants.HTTP_ERROR} ${this.url}`, { duration: 4000 })
           },1000)
         }
       })
@@ -96,7 +96,7 @@ export class HttpRequest {
         } catch (err) {
           LogUtil.error(TAG + 'Error: ' + this.url + '\nerr: ' + err)
           setTimeout(() => {
-            ToastUtil.showToast(`${Constants.HTTP_ERROR_MSG} ${this.url}`, { duration: 4000 })
+            ToastUtil.showToast(`${MsgConstants.HTTP_ERROR} ${this.url}`, { duration: 4000 })
           },1000)
           reject(err)
         }
@@ -151,7 +151,7 @@ export class HttpRequest {
           httpRequest.destroy()
           reject(err)  // 出现错误时reject
           setTimeout(() => {
-            ToastUtil.showToast(`${Constants.HTTP_ERROR_MSG}`, { duration: 4000 })
+            ToastUtil.showToast(`${MsgConstants.HTTP_ERROR}`, { duration: 4000 })
           },1000)
         }
       })

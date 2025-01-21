@@ -3,7 +3,7 @@ import { SpinKit, SpinType } from "@pura/spinkit"
 import { searchPlayLists } from "../../api/playListApi"
 import Constants from "../../common/constants/Constants"
 import { PlayList } from "../../common/entities/PlayList"
-import { PlayListCard } from "../main/PlayListCard"
+import { PlayListCard } from "../cards/PlayListCard"
 
 const TAG = "[SearchPlayListsList] "
 @Component

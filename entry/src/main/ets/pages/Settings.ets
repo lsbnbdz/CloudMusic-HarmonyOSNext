@@ -6,7 +6,7 @@ import { Animation } from '../common/settings/Animation'
 import { UsePublicCookie } from '../common/settings/UsePublicCookie'
 import { Settings_Bottom,
   Settings_Feedback,
-  Settings_Help, Settings_Privacy, Settings_Version } from '../common/settings/TextContent'
+  Settings_Version } from '../common/settings/TextContent'
 
 /**
  * 设置页面
@@ -30,15 +30,15 @@ struct Settings {
           ListItem() { RemoveCache() }
           ListItem() { Divider() }
           ListItem() { Settings_Version() }
-          ListItem() { Settings_Help() }
-          ListItem() { Settings_Privacy() }
           ListItem() { Settings_Feedback() }
         }
         .scrollBar(BarState.Auto)
         .width('100%')
         .height('100%')
         .layoutWeight(1)
+
         Settings_Bottom()
+          .padding({ bottom: px2vp(this.bottomRectHeight) })
       }
     }
     .padding({ top: px2vp(this.topRectHeight) })

@@ -1,5 +1,5 @@
 import { ExplainButton } from "../../components/buttons/ExplainButton"
-import PreferencesUtils from "../utils/PreferencesUtils"
+import PreferencesUtils from "../utils/app/PreferencesUtils"
 
 /**
  * 是否使用公共Cookie

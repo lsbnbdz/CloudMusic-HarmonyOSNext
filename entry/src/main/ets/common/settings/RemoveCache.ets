@@ -1,6 +1,6 @@
 import { DialogUtil, ToastUtil } from "@pura/harmony-utils"
 import { DialogAction } from "@pura/harmony-utils/src/main/ets/entity/constraint"
-import FileUtils from "../utils/FileUtils"
+import FileUtils from "../utils/file/FileUtils"
 
 /**
  * 清理缓存

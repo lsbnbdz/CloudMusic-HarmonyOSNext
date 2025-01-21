@@ -1,10 +1,10 @@
 import Constants from "../../common/constants/Constants";
 import { PlayList, playListClass } from "../../common/entities/PlayList";
 import { Song, SongClass } from "../../common/entities/SongsResult";
-import { changeDuration } from "../../common/functions/functions";
-import { playMusicByUrl } from "../../common/functions/playerControl";
-import { playListToQueue } from "../../common/functions/playList";
-import PlayQueueUtils from "../../common/utils/PlayQueueUtils";
+import { changeDuration } from "../../common/functions/commonFunction";
+import { playMusicByUrl } from "../../common/functions/playControl";
+import { playListToQueue } from "../../common/functions/playListOp";
+import PlayQueueUtils from "../../common/utils/play/PlayQueueUtils";
 import { DownloadDialog } from "../dialog/DownloadDialog";
 
 @Component
@@ -21,8 +21,7 @@ export struct SongSheet {
       song: this.song,
       picUrl: this.picUrl,
       artists: this.artists,
-      duration: this.duration,
-      quality: Constants.QUALITY[this.qualitySelected]
+      duration: this.duration
     }),
   })
 
@@ -42,7 +41,7 @@ export struct SongSheet {
 
   build() {
     Column({ space: 30 }) {
-      Column({ space:10 }) {
+      Column({ space: 15 }) {
         Stack() {
           // 图片加载动画
           if (this.isPicLoading) {
@@ -61,6 +60,7 @@ export struct SongSheet {
         .height(120); // Stack 大小与图片一致
 
         Text(this.song.name).textStyle(22)
+        if(this.song.alias.length > 0) { Text(`${this.song.alias[0]}`).textStyle(14).fontColor(Color.Gray) }
         Text(this.artists).textStyle(14)
         Divider()
         Text(`时长 ${this.duration}`).textStyle(12)

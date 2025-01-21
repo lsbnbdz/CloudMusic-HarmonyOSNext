@@ -1,10 +1,10 @@
 import { common } from '@kit.AbilityKit'
 import { BusinessError, request } from '@kit.BasicServicesKit'
-import { SongDownload } from '../entities/SongDownload'
-import { Song } from '../entities/SongsResult'
+import { SongDownload } from '../../entities/SongDownload'
+import { Song } from '../../entities/SongsResult'
 import { DialogUtil, FileUtil, LogUtil, ToastUtil } from '@pura/harmony-utils'
 import { promptAction } from '@kit.ArkUI'
-import { changeb2Mb, sanitizeFileName } from '../functions/functions'
+import { changeb2Mb, sanitizeFileName } from '../../functions/commonFunction'
 import FileUtils from './FileUtils'
 
 /**

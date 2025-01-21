@@ -1,10 +1,10 @@
 import { EmitterUtil, LogUtil } from "@pura/harmony-utils"
 import { SpinKit, SpinType } from "@pura/spinkit"
-import { getSongsList } from "../../api/songApi"
+import { searchSongs } from "../../api/songApi"
 import Constants from "../../common/constants/Constants"
 import { Song } from "../../common/entities/SongsResult"
 import { AddToPlayListButton } from "../buttons/AddToPlayListButton"
-import { SongCard } from "../main/SongCard"
+import { SongCard } from "../cards/SongCard"
 
 /**
  * 搜索结果——单曲列表
@@ -108,7 +108,7 @@ export struct SearchSongsList {
       this.isLoadingMore = true // 加载更多
     }
     try {
-      const result = await getSongsList(this.searchKeyword, offset)
+      const result = await searchSongs(this.searchKeyword, offset)
       this.songList = [...this.songList, ...result.list] // 合并歌曲列表
       this.songOffset += 30
       this.hasMoreSongs = result.hasMore

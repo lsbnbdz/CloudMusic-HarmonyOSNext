@@ -1,17 +1,17 @@
 import { EmitterUtil, FileUtil, LogUtil, RandomUtil, ToastUtil } from "@pura/harmony-utils";
 import { Song } from "../entities/SongsResult";
-import AudioPlayUtils from "../utils/AudioPlayUtils";
+import AudioPlayUtils from "../utils/play/AudioPlayUtils";
 import Constants from "../constants/Constants";
-import FileUtils from "../utils/FileUtils";
+import FileUtils from "../utils/file/FileUtils";
 import { getSongPicUrl, getSongUrl } from "../../api/songApi";
-import { fetchMetadata, fetchSongInfo, sanitizeFileName } from "./functions";
-import PlayQueueUtils from "../utils/PlayQueueUtils";
-import AVSessionUtils from "../utils/AVSessionUtils";
+import { fetchMetadata, fetchSongInfo, sanitizeFileName } from "./commonFunction";
+import PlayQueueUtils from "../utils/play/PlayQueueUtils";
+import AVSessionUtils from "../utils/play/AVSessionUtils";
 import { promptAction } from "@kit.ArkUI";
-import PreferencesUtils from "../utils/PreferencesUtils";
+import PreferencesUtils from "../utils/app/PreferencesUtils";
 import { fileIo } from "@kit.CoreFileKit";
 import { SongPlay } from "../entities/SongPlay";
-import LyricUtils from "../utils/LyricUtils";
+import LyricUtils from "../utils/play/LyricUtils";
 
 /**
  * 音频播放控制方法
@@ -23,8 +23,12 @@ export async function playMusicByUrl(song:Song,artists:string,isLogged:boolean) 
   try {
     const quality:number | undefined = await AppStorage.get('set-playQuality')
     const songPlay:SongPlay = await getSongUrl(song.id, quality ? Constants.QUALITY[quality] : "standard", isLogged)
-    let localPath = await FileUtils.accessLocalFile(sanitizeFileName(`${artists} - ${song.name}`))
     setPlayData(1, song, artists)
+    let localPath: string = ''
+    try {
+      localPath = await FileUtils.accessLocalFile(sanitizeFileName(`${artists} - ${song.name}`))
+    } catch (e) {}
+
     if(localPath != '') { // 是否存在本地文件
       promptAction.showToast({ message: '找到本地文件，将优先播放本地文件'})
       await AudioPlayUtils.setUrl(localPath)
@@ -199,7 +203,6 @@ export async function completeDo() {
 export async function changeCycleMode(mode: number) {
   AppStorage.setOrCreate('cycleMode', mode)
   PreferencesUtils.putPreferenceValue(pref,'cycleMode', mode).then(async () => {
-    promptAction.showToast({ message: `${Constants.CYCLE_MODE[mode]}` })
     AVSessionUtils.playState(await getPlayTime())
   })
 }

@@ -1,7 +1,7 @@
 import { LogUtil, ToastUtil } from "@pura/harmony-utils";
 import Constants from "../common/constants/Constants";
 import { Announcement } from "../common/entities/Announcement";
-import { HttpRequest } from "../common/utils/HttpRequestUtils";
+import { HttpRequest } from "../common/utils/request/HttpRequestUtils";
 
 /**
  * Chenlvin's API

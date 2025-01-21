@@ -1,6 +1,6 @@
 import { ToastUtil } from '@pura/harmony-utils'
 import { ExplainButton } from '../../components/buttons/ExplainButton'
-import PreferencesUtils from '../utils/PreferencesUtils'
+import PreferencesUtils from '../utils/app/PreferencesUtils'
 
 /**
  * 自定义API地址

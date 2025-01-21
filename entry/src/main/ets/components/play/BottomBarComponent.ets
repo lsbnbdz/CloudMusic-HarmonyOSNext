@@ -1,15 +1,16 @@
 import { ToastUtil } from "@pura/harmony-utils"
 import { Song, SongClass } from "../../common/entities/SongsResult"
-import { pauseMusic, playQueue, resumeMusic } from "../../common/functions/playerControl"
-import playQueueUtils from "../../common/utils/PlayQueueUtils"
+import { pauseMusic, playQueue, resumeMusic } from "../../common/functions/playControl"
+import playQueueUtils from "../../common/utils/play/PlayQueueUtils"
 import { PlayQueueButton } from "../buttons/PlayQueueButton"
 import { PlayingCover } from "../sheets/PlayingCover"
+import { router } from "@kit.ArkUI"
 
 /**
  * 底部播控组件
  */
 @Component
-export struct BottomPlayController {
+export struct BottomBarComponent {
   @StorageProp('topRectHeight') topRectHeight: number = 0
   @StorageProp('bottomRectHeight') bottomRectHeight: number = 0
   @StorageLink('player-isplaying') isPlaying: boolean = false
@@ -54,7 +55,9 @@ export struct BottomPlayController {
     .opacity(this.isShow ? this.componentOpacity : this.componentOpacity)
     .height(80)
     .onClick(() => {
-      if(this.isPlaying) { this.isShow = true }
+      if(this.isPlaying) {
+        this.isShow = true
+      }
       else { ToastUtil.showToast('当前无正在播放歌曲') }
     })
     .bindContentCover(this.isShow, this.Cover(), {

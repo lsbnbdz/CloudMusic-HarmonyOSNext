@@ -42,23 +42,23 @@ export struct AddToPlayListCircleButton {
   @State isShowAddSheet: boolean = false
   @State song: Song = SongClass
   @State imgColor: Color | ResourceStr = $r('app.color.reverse')
+  @State imgWidth: number = 30
 
   build() {
-    Button(){
-      Image($r('app.media.ic_files_new_folder'))
-        .width(30)
-        .fillColor(this.imgColor)
-    }
-    .backgroundColor(Color.Transparent)
-    .onClick(() => { this.isShowAddSheet = !this.isShowAddSheet })
-    .bindSheet(this.isShowAddSheet, this.Sheet(), {
-      preferType: SheetType.CENTER,
-      height: '80%',
-      dragBar: false,
-      showClose: false,
-      backgroundColor: $r('app.color.background'),
-      onDisappear: () => { this.isShowAddSheet = false }
-    })
+    Image($r('app.media.ic_public_add_norm'))
+      .width(this.imgWidth)
+      .fillColor(this.imgColor)
+      .draggable(false)
+      .backgroundColor(Color.Transparent)
+      .onClick(() => { this.isShowAddSheet = !this.isShowAddSheet })
+      .bindSheet(this.isShowAddSheet, this.Sheet(), {
+        preferType: SheetType.CENTER,
+        height: '80%',
+        dragBar: false,
+        showClose: false,
+        backgroundColor: $r('app.color.background'),
+        onDisappear: () => { this.isShowAddSheet = false }
+      })
   }
 
   @Builder Sheet() {

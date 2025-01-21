@@ -5,7 +5,7 @@ import { QualityType } from "../entities/SongDownload"
  */
 export default class Constants {
   // Version
-  static readonly VERSION: string = '1.1.6.1'
+  static readonly VERSION: string = '1.1.7'
   static readonly VER_DESC: string = ''
 
   // Preferences
@@ -29,10 +29,6 @@ export default class Constants {
    * 0-顺序播放, 1-单曲循环, 2-顺序循环, 3-随机播放
    */
   static readonly CYCLE_MODE: string[] = ['顺序播放', '单曲循环', '顺序循环', '随机播放']
-
-  // Messages
-  static readonly HTTP_ERROR_MSG: string = '网络请求发生错误，请检查\n网络连接和API服务器是否正常'
-  static readonly DEVELOPING_MSG: string = '该功能正在开发中，敬请期待。'
 
   // Emitter ID
   static readonly EMITTER_LYRIC_UPDATE: string = 'LYRIC_UPDATE'

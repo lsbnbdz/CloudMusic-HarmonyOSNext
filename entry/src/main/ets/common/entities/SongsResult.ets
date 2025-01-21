@@ -1,23 +1,28 @@
+/**
+ * 歌曲搜索结果
+ */
+
 export interface Artist {
-  id:number
-  name:string
+  id: number
+  name: string
 }
 
 export interface Song {
-  id:number
-  name:string
-  artists:Artist[]
-  duration:number
+  id: number
+  name: string
+  artists: Artist[]
+  duration: number
+  alias: string[]
 }
 
 interface Result {
-  songs:Song[]
-  hasMore:boolean
-  songCount:number // 歌曲总数
+  songs: Song[]
+  hasMore: boolean
+  songCount: number // 歌曲总数
 }
 
 export interface SongsData {
-  result:Result
+  result: Result
 }
 
 export const SongClass: Song = {
@@ -29,26 +34,6 @@ export const SongClass: Song = {
       name: '',
     }
   ],
-  duration: 0
-};
-
-
-export const SongsDataClass: SongsData = {
-  result: {
-    songs: [
-      {
-        id: 0,
-        name: '',
-        artists: [
-          {
-            id: 0,
-            name: '',
-          }
-        ],
-        duration: 0
-      }
-    ],
-    hasMore: false,
-    songCount: 0
-  }
+  duration: 0,
+  alias: []
 }

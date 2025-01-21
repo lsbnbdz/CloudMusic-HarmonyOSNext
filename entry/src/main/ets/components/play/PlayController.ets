@@ -1,11 +1,12 @@
 import Constants from "../../common/constants/Constants"
 import { Song, SongClass } from "../../common/entities/SongsResult"
-import { changeDuration } from "../../common/functions/functions"
-import { pauseMusic, resumeMusic, stopMusic } from "../../common/functions/playerControl"
+import { changeDuration } from "../../common/functions/commonFunction"
+import { pauseMusic, resumeMusic, stopMusic } from "../../common/functions/playControl"
 import { DownloadDialog } from "../dialog/DownloadDialog"
 
 /**
- * 播控组件（右上角）
+ * 右上角播控按钮
+ * 【已 停 用】
  */
 @Component
 export struct PlayController {
@@ -29,7 +30,6 @@ export struct PlayController {
       song: this.song1,
       picUrl: this.picUrl1,
       artists: this.artists1,
-      quality: Constants.QUALITY[this.qualitySelected],
       duration: changeDuration(this.song.duration)
     }),
   })

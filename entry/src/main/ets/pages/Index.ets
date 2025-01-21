@@ -1,8 +1,8 @@
 import { IndexHead } from '../components/head/IndexHead'
 import { UserPlayLists } from '../components/lists/UserPlayLists'
-import { BottomPlayController } from '../components/play/BottomPlayController';
+import { BottomBarComponent } from '../components/play/BottomBarComponent';
 import { router } from '@kit.ArkUI';
-import { RecommendCards_NotLogged } from '../components/main/RecommendCards';
+import { RecommendCards_NotLogged } from '../components/cards/RecommendCards';
 
 @Entry
 @Component
@@ -30,7 +30,7 @@ struct Index {
         }
 
       }
-      BottomPlayController()
+      BottomBarComponent()
         .padding({ left: 10, right: 10, bottom: px2vp(this.bottomRectHeight)})
         .backgroundColor(Color.Transparent)
     }

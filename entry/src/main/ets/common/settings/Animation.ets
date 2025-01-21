@@ -1,4 +1,4 @@
-import PreferencesUtils from "../utils/PreferencesUtils";
+import PreferencesUtils from "../utils/app/PreferencesUtils";
 
 /**
  * 动画开关

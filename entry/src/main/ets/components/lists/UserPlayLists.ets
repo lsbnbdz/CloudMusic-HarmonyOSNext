@@ -1,9 +1,9 @@
 import { getPlayLists } from "../../api/playListApi"
 import { PlayList, playListClass } from "../../common/entities/PlayList"
-import { PlayListCard } from "../main/PlayListCard"
+import { PlayListCard } from "../cards/PlayListCard"
 import { SpinKit, SpinType } from '@pura/spinkit'
 import { DialogUtil, LogUtil, ToastUtil } from "@pura/harmony-utils";
-import { RecommendCards } from "../main/RecommendCards";
+import { RecommendCards } from "../cards/RecommendCards";
 import { Announcement } from "../../common/entities/Announcement";
 import { router } from "@kit.ArkUI";
 import { User, UserClass } from "../../common/entities/User";
@@ -84,14 +84,24 @@ export struct UserPlayLists {
             .padding({ left: 20, right: 20 })
 
             ListItem() {
-              RecommendCards({ LikeList: this.LikeList })
-            }
-            ForEach(this.playLists, (item: PlayList, index) => {
-              ListItem() {
-                PlayListCard({ playList: item, isShowHeart: item.creator.userId == this.user.data.account.id ? false : true })
+              Column({ space: 10 }) {
+                Text(`发现`).textStyle(18)
+                RecommendCards({ LikeList: this.LikeList })
               }
-            })
-            ListItem().height( px2vp(this.bottomRectHeight) + 140 )
+              .width('100%')
+            }
+            ListItem() {
+              Column({ space: 10 }) {
+                Text(`${this.user.data.profile.nickname} 的歌单`).textStyle(18)
+                ForEach(this.playLists, (item: PlayList) => {
+                  ListItem() {
+                    PlayListCard({ playList: item, isShowHeart: item.creator.userId == this.user.data.account.id ? false : true })
+                  }
+                })
+              }
+              .width('100%')
+            }.padding({ top: 20 })
+            ListItem().height( px2vp(this.bottomRectHeight) + 120 )
           }
           .onScrollIndex((end) => {
             if(end < 1) { this.isShowSearchButton = false }
@@ -151,4 +161,12 @@ export struct UserPlayLists {
     }
     .backgroundColor('#fff8b8b8')
   }
+}
+
+@Extend(Text) function textStyle(size: number) {
+  .width('100%')
+  .fontSize(size)
+  .fontWeight(FontWeight.Bold)
+  .fontColor($r('app.color.reverse'))
+  .padding({ left: 20, right: 20 })
 }

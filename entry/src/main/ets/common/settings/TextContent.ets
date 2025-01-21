@@ -16,25 +16,6 @@ export struct Settings_Version {
 }
 
 /**
- * 帮助
- */
-@Component
-export struct Settings_Help {
-  build() {
-    Row() {
-      Text('帮助与疑难解答').LeftText()
-      Text('前往查看').RightText().textAlign(TextAlign.End).decoration({type: TextDecorationType.Underline})
-    }.width('100%').justifyContent(FlexAlign.SpaceBetween).padding({ left:30, right: 30})
-    .onClick(() => {
-      router.pushUrl({
-        url:'pages/WebPage',
-        params: {title:'帮助', url:`https://docs.chenlvin.cc/cloudmusic/#/help?timestamp=${new Date().getTime()}`}
-      })
-    })
-  }
-}
-
-/**
  * 反馈
  */
 @Component
@@ -54,36 +35,37 @@ export struct Settings_Feedback {
 }
 
 /**
- * 隐私政策
- */
-@Component
-export struct Settings_Privacy {
-  build() {
-    Row() {
-      Text('隐私政策').LeftText()
-      Text('前往查看').RightText().decoration({type: TextDecorationType.Underline})
-        .onClick(() => {
-          router.pushUrl({
-            url:'pages/WebPage',
-            params: {title:'隐私政策', url:'https://docs.chenlvin.cc/cloudmusic/#/privacy'}
-          })
-        })
-    }.width('100%').justifyContent(FlexAlign.SpaceBetween).padding({ left:30, right: 30})
-  }
-}
-
-/**
  * 底部信息
  */
 @Component
 export struct Settings_Bottom {
   build() {
     Column() {
-      Text('云音汇 @Chenlvin\n' +
+      Row() {
+        Text('疑难解答').BottomText().fontColor($r('app.color.blue'))
+          .onClick(() => {
+            router.pushUrl({
+              url:'pages/WebPage',
+              params: {title:'帮助', url:`https://docs.chenlvin.cc/cloudmusic/#/help?timestamp=${new Date().getTime()}`}
+            })
+          })
+        Text('    |    ').BottomText().fontColor($r('app.color.blue'))
+        Text('隐私政策').BottomText().fontColor($r('app.color.blue'))
+          .onClick(() => {
+            router.pushUrl({
+              url:'pages/WebPage',
+              params: {title:'隐私政策', url:'https://docs.chenlvin.cc/cloudmusic/#/privacy'}
+            })
+          })
+      }
+      .width('100%')
+      .justifyContent(FlexAlign.Center)
+      .padding({ bottom: 15 })
+
+      Text('云音汇 - HMOS\n' +
         'GitHub: CloudMusic-HarmonyOSNext').BottomText()
     }
     .width('100%')
-    .height(50)
   }
 }
 

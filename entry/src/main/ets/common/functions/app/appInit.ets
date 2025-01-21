@@ -1,9 +1,9 @@
 import { LogUtil } from "@pura/harmony-utils"
-import { getAnnouncement } from "../../api/chenlvinApi"
-import Constants from "../constants/Constants"
-import { Song, SongClass } from "../entities/SongsResult"
-import PlayQueueUtils from "../utils/PlayQueueUtils"
-import PreferencesUtils from "../utils/PreferencesUtils"
+import { getAnnouncement } from "../../../api/chenlvinApi"
+import Constants from "../../constants/Constants"
+import { Song, SongClass } from "../../entities/SongsResult"
+import PlayQueueUtils from "../../utils/play/PlayQueueUtils"
+import PreferencesUtils from "../../utils/app/PreferencesUtils"
 
 /**
  * App初始化
@@ -94,7 +94,8 @@ async function loadSavedSong() {
     id: 0,
     name: "暂无播放",
     artists: [],
-    duration: 0
+    duration: 0,
+    alias: []
   }
   let artists = '选择一首歌曲播放吧'
   let picUrl: string = ''

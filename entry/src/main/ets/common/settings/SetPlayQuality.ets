@@ -1,6 +1,6 @@
 import Constants from "../constants/Constants"
 import { QualityType } from "../entities/SongDownload"
-import PreferencesUtils from "../utils/PreferencesUtils"
+import PreferencesUtils from "../utils/app/PreferencesUtils"
 
 /**
  * 设置播放音质

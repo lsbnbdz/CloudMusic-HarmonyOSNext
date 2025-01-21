@@ -5,10 +5,10 @@ import { CloudSongs, DailyListSongs, PlayListSongs } from "../common/entities/Pl
 import { PlayQueue } from "../common/entities/PlayQueue"
 import { Song } from "../common/entities/SongsResult"
 import { User, UserClass } from "../common/entities/User"
-import { getApiUrl, getArtists } from "../common/functions/functions"
-import { HttpRequest } from "../common/utils/HttpRequestUtils"
-import PlayQueueUtils from "../common/utils/PlayQueueUtils"
-import PreferencesUtils from "../common/utils/PreferencesUtils"
+import { getApiUrl, getArtists } from "../common/functions/commonFunction"
+import { HttpRequest } from "../common/utils/request/HttpRequestUtils"
+import PlayQueueUtils from "../common/utils/play/PlayQueueUtils"
+import PreferencesUtils from "../common/utils/app/PreferencesUtils"
 import { JSON } from "@kit.ArkTS"
 
 /**
@@ -69,6 +69,7 @@ export async function getPlayListSongs(listId:number, offset:number): Promise<Ar
         name: song.name,
         artists: song.ar,
         duration: song.dt,
+        alias: []
       })
     }
   })
@@ -96,7 +97,8 @@ export async function putPlayListInQueue(listId: number, trackCount: number, lim
         id: item.id,
         name: item.name,
         artists: item.ar,
-        duration: item.dt
+        duration: item.dt,
+        alias: []
       }
       tempQueue.push({
         playmode: 1,
@@ -133,7 +135,8 @@ export async function PlayDailySongs(): Promise<void> {
         id: item.id,
         name: item.name,
         artists: item.ar,
-        duration: item.dt
+        duration: item.dt,
+        alias: []
       }
       queue.push({
         playmode: 1,
@@ -206,11 +209,11 @@ export async function getCloudList(offset:number): Promise<Array<Song>> {
         name: song.simpleSong.name,
         artists: song.simpleSong.ar,
         duration: song.simpleSong.dt,
+        alias: []
       })
     }
   })
-  LogUtil.info(TAG + 'getCloudList: ' + JSON.stringify(list))
-  return list;
+  return list
 }
 
 /**

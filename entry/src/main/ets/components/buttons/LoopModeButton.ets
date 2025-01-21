@@ -1,4 +1,4 @@
-import { changeCycleMode } from "../../common/functions/playerControl"
+import { changeCycleMode } from "../../common/functions/playControl"
 
 @Component
 export struct LoopModeButton {
@@ -33,8 +33,11 @@ export struct LoopModeButton {
 @Extend(Button) function button(width: number = 30) {
   .backgroundColor(Color.Transparent)
   .width(width)
+  .hoverEffect(HoverEffect.Scale)
+  .stateEffect(false)
 }
 
 @Extend(Image) function image(width: number = 30) {
   .width(width)
+  .draggable(false)
 }

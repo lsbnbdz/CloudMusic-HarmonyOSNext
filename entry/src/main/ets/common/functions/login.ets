@@ -2,9 +2,9 @@ import { LogUtil } from "@pura/harmony-utils"
 import { getPubCookie } from "../../api/chenlvinApi"
 import Constants from "../constants/Constants"
 import { User, UserClass } from "../entities/User"
-import { HttpRequest } from "../utils/HttpRequestUtils"
-import PreferencesUtils from "../utils/PreferencesUtils"
-import { getApiUrl } from "./functions"
+import { HttpRequest } from "../utils/request/HttpRequestUtils"
+import PreferencesUtils from "../utils/app/PreferencesUtils"
+import { getApiUrl } from "./commonFunction"
 
 /**
  * 获取登录信息（应用启动时）

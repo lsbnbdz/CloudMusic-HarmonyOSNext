@@ -6,20 +6,3 @@ export interface PlayQueue {
   artists:string
   fileName:string
 }
-
-export const PlayQueueClass:PlayQueue = {
-  playmode: 1,
-  song: {
-    id: 0,
-    name: '',
-    artists: [
-      {
-        id: 0,
-        name: '',
-      }
-    ],
-    duration: 0
-  },
-  artists: '',
-  fileName: ''
-}

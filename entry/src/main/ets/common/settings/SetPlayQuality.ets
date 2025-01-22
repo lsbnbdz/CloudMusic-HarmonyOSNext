@@ -1,4 +1,4 @@
-import Constants from "../constants/Constants"
+import { PlayConstants } from "../constants/PlayConstants"
 import { QualityType } from "../entities/SongDownload"
 import PreferencesUtils from "../utils/app/PreferencesUtils"
 
@@ -18,7 +18,7 @@ export struct SetPlayQuality {
       Text('在线播放音质').LeftText()
       Select([{ value: '标准' }, { value: '高' }, { value: '极高' }, { value: '无损' }])
         .selected(this.selected)
-        .value(this.selected ? Constants.QUALITY_NAME[this.selected] : '标准')
+        .value(this.selected ? PlayConstants.QUALITY_NAME[this.selected] : '标准')
         .width(100)
         .onSelect((index: number) => {
           AppStorage.setOrCreate('set-playQuality',index)

@@ -1,7 +1,7 @@
 import { EmitterUtil, LogUtil } from "@pura/harmony-utils"
 import { SpinKit, SpinType } from "@pura/spinkit"
 import { searchPlayLists } from "../../api/playListApi"
-import Constants from "../../common/constants/Constants"
+import { EmitterConstants } from "../../common/constants/EmitterConstants"
 import { PlayList } from "../../common/entities/PlayList"
 import { PlayListCard } from "../cards/PlayListCard"
 
@@ -23,7 +23,7 @@ export struct SearchPlayListsList {
     if(this.searchKeyword) {
       await this.loadPlayLists(0)
     }
-    EmitterUtil.onSubscribe(Constants.EMITTER_SEARCH, async (keyword: string) => {
+    EmitterUtil.onSubscribe(EmitterConstants.EMITTER_SEARCH, async (keyword: string) => {
       this.searchKeyword = keyword
       this.playLists = []
       this.playListOffset = 0
@@ -32,7 +32,7 @@ export struct SearchPlayListsList {
   }
 
   aboutToDisappear(): void {
-    EmitterUtil.unSubscribe(Constants.EMITTER_SEARCH)
+    EmitterUtil.unSubscribe(EmitterConstants.EMITTER_SEARCH)
   }
 
   build() {

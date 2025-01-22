@@ -3,7 +3,7 @@ import { getPlayLists, PlayListOperation } from "../../api/playListApi"
 import { PlayList } from "../../common/entities/PlayList"
 import { Song } from "../../common/entities/SongsResult"
 import { User, UserClass } from "../../common/entities/User"
-import { PlayQueueButton } from "../buttons/PlayQueueButton"
+import { PlayQueueButton } from "../buttons/play/PlayQueueButton"
 import { PlayListCard } from "../cards/PlayListCard"
 
 /**

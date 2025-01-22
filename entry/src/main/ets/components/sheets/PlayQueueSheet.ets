@@ -3,7 +3,7 @@ import { DialogAction } from "@pura/harmony-utils/src/main/ets/entity/constraint
 import { PlayQueue } from "../../common/entities/PlayQueue"
 import { playQueue } from "../../common/functions/playControl"
 import PlayQueueUtils from "../../common/utils/play/PlayQueueUtils"
-import { LoopModeButton } from "../buttons/LoopModeButton"
+import { LoopModeButton } from "../buttons/play/LoopModeButton"
 import { LazyData } from '@pie/lazy-data';
 
 /**
@@ -90,7 +90,7 @@ export struct PlayQueueSheet {
                     Text(`${item.song.name} - ${item.artists}`)
                       .textStyle(16)
                       .fontWeight(FontWeight.Bold)
-                      .fontColor('#ffd25959')
+                      .fontColor($r('app.color.app_red'))
                       .layoutWeight(1)
                   } else {
                     Text() {

@@ -1,5 +1,4 @@
 import { LogUtil, ToastUtil } from "@pura/harmony-utils"
-import Constants from "../common/constants/Constants"
 import { PlayList, PlayListOperationRes, PlayListSearchResult } from "../common/entities/PlayList"
 import { CloudSongs, DailyListSongs, PlayListSongs } from "../common/entities/PlayListSongs"
 import { PlayQueue } from "../common/entities/PlayQueue"
@@ -10,6 +9,7 @@ import { HttpRequest } from "../common/utils/request/HttpRequestUtils"
 import PlayQueueUtils from "../common/utils/play/PlayQueueUtils"
 import PreferencesUtils from "../common/utils/app/PreferencesUtils"
 import { JSON } from "@kit.ArkTS"
+import { StorageConstants } from "../common/constants/StorageConstants"
 
 /**
  * 歌单类API
@@ -31,7 +31,7 @@ export interface PlayListsResult {
 export async function getPlayLists(offset:number): Promise<PlayListsResult> {
   let list:Array<PlayList> = new Array()
   let hasMore:boolean = false
-  const user = await PreferencesUtils.getPreferenceValue<User>(Constants.USER_PREF,'user',UserClass)
+  const user = await PreferencesUtils.getPreferenceValue<User>(StorageConstants.USER_PREF,'user',UserClass)
   const rootUrl = await getApiUrl()
   const url:string = `${rootUrl}/user/playlist?uid=${user.data.account.id}&limit=10&offset=${offset}&timestamp=${new Date().getTime()}`
   const request = new HttpRequest(url)

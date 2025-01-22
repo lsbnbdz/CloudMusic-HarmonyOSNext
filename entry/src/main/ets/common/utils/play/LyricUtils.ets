@@ -1,6 +1,6 @@
 import { EmitterUtil } from "@pura/harmony-utils"
 import { getLyric } from "../../../api/LyricApi"
-import Constants from "../../constants/Constants"
+import { EmitterConstants } from "../../constants/EmitterConstants"
 import { Lyric } from "../../entities/Lyric"
 
 class LyricUtils {
@@ -16,7 +16,7 @@ class LyricUtils {
     this.currentLyricIndex = 0
     let lyricArr = await getLyric(songId)
     await this.setLyricArr(lyricArr)
-    EmitterUtil.post(Constants.EMITTER_LYRIC_UPDATE,'Lyric Updated')
+    EmitterUtil.post(EmitterConstants.EMITTER_LYRIC_UPDATE,'Lyric Updated')
   }
 
   async setLyricArr(arr: Array<string>) {

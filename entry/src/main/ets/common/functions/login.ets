@@ -5,12 +5,13 @@ import { User, UserClass } from "../entities/User"
 import { HttpRequest } from "../utils/request/HttpRequestUtils"
 import PreferencesUtils from "../utils/app/PreferencesUtils"
 import { getApiUrl } from "./commonFunction"
+import { StorageConstants } from "../constants/StorageConstants"
 
 /**
  * 获取登录信息（应用启动时）
  */
 export async function getLoginInfo() {
-  const userPref:string = Constants.USER_PREF
+  const userPref:string = StorageConstants.USER_PREF
 
   const cookie = await PreferencesUtils.getPreferenceValue<string>(userPref, 'cookie', '')
   const signTime = await PreferencesUtils.getPreferenceValue<number>(userPref, 'signTime', 0)

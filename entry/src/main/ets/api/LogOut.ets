@@ -1,15 +1,15 @@
-import Constants from "../common/constants/Constants"
 import PreferencesUtils from "../common/utils/app/PreferencesUtils"
 import { promptAction } from "@kit.ArkUI"
 import { getApiUrl } from "../common/functions/commonFunction"
 import { HttpRequest } from "../common/utils/request/HttpRequestUtils"
 import { LogUtil, ToastUtil } from "@pura/harmony-utils"
+import { StorageConstants } from "../common/constants/StorageConstants"
 
 /**
  * 退出登录
  */
 const TAG = '[LogOut] '
-const userPref = Constants.USER_PREF
+const userPref = StorageConstants.USER_PREF
 
 export async function logOut() {
   const rootUrl = await getApiUrl()

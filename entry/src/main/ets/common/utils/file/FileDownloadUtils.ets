@@ -19,6 +19,13 @@ class FileDownloadUtils {
   cacheDir = this.context.cacheDir
 
   async download(songDownload:SongDownload, song:Song, artists:string) {
+    if(song.name.length + artists.length >= 103) {
+      try {
+        artists = artists.slice(0, 100 - song.name.length)
+      } catch (e) {
+        artists = 'null'
+      }
+    }
     let fileName = sanitizeFileName(`${artists} - ${song.name}.${songDownload.data[0].type}`)
     let cachePath = this.cacheDir + `/${fileName}`
     let descPath = this.filesDir + `/${fileName}`

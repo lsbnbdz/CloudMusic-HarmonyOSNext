@@ -23,6 +23,10 @@
     {
       "name": "blue",
       "value": "#4578ed"
+    },
+    {
+      "name": "app_red",
+      "value": "#FFFF6F6F"
     }
   ]
 }

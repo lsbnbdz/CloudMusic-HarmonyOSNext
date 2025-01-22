@@ -1,6 +1,6 @@
 import { router } from "@kit.ArkUI"
 import { PasteboardUtil, ToastUtil } from "@pura/harmony-utils"
-import Constants from "../constants/Constants"
+import { AppConstants } from "../constants/AppConstants"
 
 /**
  * 显示版本号
@@ -10,7 +10,7 @@ export struct Settings_Version {
   build() {
     Row() {
       Text('当前版本').LeftText()
-      Text(Constants.VERSION + Constants.VER_DESC).RightText()
+      Text(AppConstants.VERSION + AppConstants.VER_DESC).RightText()
     }.width('100%').justifyContent(FlexAlign.SpaceBetween).padding({ left:30, right: 30})
   }
 }

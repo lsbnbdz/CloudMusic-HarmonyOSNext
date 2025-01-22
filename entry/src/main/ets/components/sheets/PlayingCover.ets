@@ -1,14 +1,16 @@
 import { Song, SongClass } from "../../common/entities/SongsResult"
 import { changeDuration } from "../../common/functions/commonFunction"
 import { pauseMusic, playNext, playPre, resumeMusic, seekMusic } from "../../common/functions/playControl"
-import { AddToPlayListCircleButton } from "../buttons/AddToPlayListButton"
-import { LoopModeButton } from "../buttons/LoopModeButton"
-import { PlayQueueButton } from "../buttons/PlayQueueButton"
+import { AddToPlayListCircleButton } from "../buttons/play/AddToPlayListButton"
+import { LoopModeButton } from "../buttons/play/LoopModeButton"
+import { PlayQueueButton } from "../buttons/play/PlayQueueButton"
 import { DownloadDialog } from "../dialog/DownloadDialog"
 import { LyricComponent } from "../play/LyricComponent"
 import { AVCastPicker } from "@kit.AVSessionKit"
 import { promptAction } from "@kit.ArkUI"
 import { MsgConstants } from "../../common/constants/MsgConstants"
+import { TimerButton } from "../buttons/play/TimerButton"
+import { StorageConstants } from "../../common/constants/StorageConstants"
 
 @Component
 export struct PlayingCover {
@@ -21,6 +23,8 @@ export struct PlayingCover {
   @StorageProp('player-picurl') picUrl: string = ''
   @StorageProp('player-time') time: number = 0
   @StorageProp('player-lyric') lyricArr: string[] = []
+  @StorageProp(StorageConstants.PLAY_COUNTDOWN_WORKING) isTimerWorking: boolean = false
+  @StorageProp(StorageConstants.PLAY_IS_LOCALFILE) isLocalFile: boolean = false
   @Link isShow: boolean
   @State hasLoaded: boolean = false
   @State sliderThickness: number = 10
@@ -111,8 +115,8 @@ export struct PlayingCover {
    */
   @Builder
   ToolBar() {
-    Row() {
-      if (this.playmode == 1) {
+    Column() {
+      Row() {
         /**
          * AVCastPicker
          */
@@ -124,57 +128,50 @@ export struct PlayingCover {
         }
         .width(30)
         .height(30)
+
         /**
          * Clock-Timer
          */
-        Column() {
-          Image($r('app.media.ic_clock'))
-            .fillColor(Color.White)
-            .width(20)
-            .draggable(false)
-            .backgroundColor(Color.Transparent)
-            .onClick(() => {
-              promptAction.showToast({ message: MsgConstants.DEVELOPING, duration: 3000 })
-            })
+        TimerButton({ isTimerWorking: this.isTimerWorking })
+        if (this.playmode == 1) {
+          /**
+           * Download
+           */
+          Column() {
+            Image($r('app.media.ic_public_download_filled'))
+              .fillColor(this.isLocalFile ? $r('app.color.blue') : Color.White)
+              .width(24)
+              .draggable(false)
+              .backgroundColor(Color.Transparent)
+              .onClick(() => {
+                this.song1 = this.song
+                this.artists1 = this.artists
+                this.picUrl1 = this.picUrl
+                this.dialogController.open()
+              })
+          }
+          .width(30)
+          .height(30)
+
+          /**
+           * AddToPlayList
+           */
+          Column() {
+            AddToPlayListCircleButton({ song: this.song, imgColor: Color.White, imgWidth: 24 })
+          }
+          .width(30)
+          .height(30)
         }
-        .width(30)
-        .height(30)
-        /**
-         * Download
-         */
-        Column() {
-          Image($r('app.media.ic_public_download_filled'))
-            .fillColor(Color.White)
-            .width(24)
-            .draggable(false)
-            .backgroundColor(Color.Transparent)
-            .onClick(() => {
-              this.song1 = this.song
-              this.artists1 = this.artists
-              this.picUrl1 = this.picUrl
-              this.dialogController.open()
-            })
-        }
-        .width(30)
-        .height(30)
-        /**
-         * AddToPlayList
-         */
-        Column() {
-          AddToPlayListCircleButton({ song: this.song, imgColor: Color.White, imgWidth: 24 })
-        }
-        .width(30)
-        .height(30)
       }
+      .opacity(this.totalOpacity)
+      .animation({
+        duration: 200,
+        curve: Curve.Linear
+      })
+      .justifyContent(FlexAlign.SpaceEvenly)
+      .width('90%')
+      .height(30)
     }
-    .opacity(this.totalOpacity)
-    .animation({
-      duration: 200,
-      curve: Curve.Linear
-    })
-    .justifyContent(FlexAlign.SpaceEvenly)
-    .width('90%')
-    .height(30)
   }
 
   /**

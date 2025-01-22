@@ -1,5 +1,5 @@
-import { Song, SongClass } from "../../common/entities/SongsResult"
-import { PlayListAddSheet } from "../sheets/PlayListAddSheet"
+import { Song, SongClass } from "../../../common/entities/SongsResult"
+import { PlayListAddSheet } from "../../sheets/PlayListAddSheet"
 
 @Component
 export struct AddToPlayListButton {

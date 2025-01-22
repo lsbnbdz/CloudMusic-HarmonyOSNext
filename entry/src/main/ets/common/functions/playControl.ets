@@ -1,7 +1,6 @@
 import { EmitterUtil, FileUtil, LogUtil, RandomUtil, ToastUtil } from "@pura/harmony-utils";
 import { Song } from "../entities/SongsResult";
 import AudioPlayUtils from "../utils/play/AudioPlayUtils";
-import Constants from "../constants/Constants";
 import FileUtils from "../utils/file/FileUtils";
 import { getSongPicUrl, getSongUrl } from "../../api/songApi";
 import { fetchMetadata, fetchSongInfo, sanitizeFileName } from "./commonFunction";
@@ -12,27 +11,39 @@ import PreferencesUtils from "../utils/app/PreferencesUtils";
 import { fileIo } from "@kit.CoreFileKit";
 import { SongPlay } from "../entities/SongPlay";
 import LyricUtils from "../utils/play/LyricUtils";
+import { PlayConstants } from "../constants/PlayConstants";
+import { EmitterConstants } from "../constants/EmitterConstants";
+import { StorageConstants } from "../constants/StorageConstants";
 
 /**
  * 音频播放控制方法
  */
 const TAG = '[playerControl] '
-const pref = Constants.QUEUE_PREF
+const pref = StorageConstants.QUEUE_PREF
 
 export async function playMusicByUrl(song:Song,artists:string,isLogged:boolean) {
   try {
     const quality:number | undefined = await AppStorage.get('set-playQuality')
-    const songPlay:SongPlay = await getSongUrl(song.id, quality ? Constants.QUALITY[quality] : "standard", isLogged)
+    const songPlay:SongPlay = await getSongUrl(song.id, quality ? PlayConstants.QUALITY[quality] : "standard", isLogged)
     setPlayData(1, song, artists)
     let localPath: string = ''
+    let tempArtists: string = ''
     try {
-      localPath = await FileUtils.accessLocalFile(sanitizeFileName(`${artists} - ${song.name}`))
+      if(song.name.length + artists.length >= 103) {
+        try {
+          tempArtists = artists.slice(0, 100 - song.name.length)
+        } catch (e) {
+          artists = 'null'
+        }
+      }
+      localPath = await FileUtils.accessLocalFile(sanitizeFileName(`${tempArtists} - ${song.name}`))
     } catch (e) {}
 
     if(localPath != '') { // 是否存在本地文件
-      promptAction.showToast({ message: '找到本地文件，将优先播放本地文件'})
+      AppStorage.setOrCreate(StorageConstants.PLAY_IS_LOCALFILE, true)
       await AudioPlayUtils.setUrl(localPath)
     } else if(songPlay.data[0].url) {
+      AppStorage.setOrCreate(StorageConstants.PLAY_IS_LOCALFILE, false)
       await AudioPlayUtils.setUrl(songPlay.data[0].url)
     } else {
       ToastUtil.showToast('获取播放资源失败')
@@ -71,7 +82,7 @@ export async function playMusicWithFile(fileName:string) {
       AVSessionUtils.setMetadata(song,song.artists[0].name,`$r('app.media.ic_public_music.svg')`)
       AVSessionUtils.activate()
       saveCurrentSongInfo(0, song, song.artists[0].name, '/resources/base/media/app.media.ic_public_music.svg')
-      EmitterUtil.post(Constants.EMITTER_LYRIC_UPDATE,'Lyric Updated')
+      EmitterUtil.post(EmitterConstants.EMITTER_LYRIC_UPDATE,'Lyric Updated')
     } else {
       ToastUtil.showToast('未找到文件')
       playNext()

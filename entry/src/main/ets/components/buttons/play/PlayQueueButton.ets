@@ -1,5 +1,5 @@
-import { PlayQueue } from "../../common/entities/PlayQueue"
-import { PlayQueueSheet } from "../sheets/PlayQueueSheet"
+import { PlayQueue } from "../../../common/entities/PlayQueue"
+import { PlayQueueSheet } from "../../sheets/PlayQueueSheet"
 
 @Component
 export struct PlayQueueButton {

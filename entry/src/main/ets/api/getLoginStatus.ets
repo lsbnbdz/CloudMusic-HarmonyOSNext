@@ -1,10 +1,10 @@
 import { promptAction, router } from "@kit.ArkUI"
 import { LogUtil, ToastUtil } from "@pura/harmony-utils"
-import Constants from "../common/constants/Constants"
 import { User } from "../common/entities/User"
 import { getApiUrl } from "../common/functions/commonFunction"
 import { HttpRequest } from "../common/utils/request/HttpRequestUtils"
 import PreferencesUtils from "../common/utils/app/PreferencesUtils"
+import { StorageConstants } from "../common/constants/StorageConstants"
 
 /**
  * 获取登录状态
@@ -16,7 +16,7 @@ export async function getLoginStatus(cookie: string) {
     const rootUrl = await getApiUrl()
     const url:string = `${rootUrl}/login/status?timestamp=${timestamp}`
     const request = new HttpRequest(url,false)
-    const userPref = Constants.USER_PREF
+    const userPref = StorageConstants.USER_PREF
 
     request.Request().then((data) => {
       const user:User = data.result as User

@@ -1,9 +1,9 @@
 import { LogUtil } from "@pura/harmony-utils"
 import { getAnnouncement } from "../../../api/chenlvinApi"
-import Constants from "../../constants/Constants"
 import { Song, SongClass } from "../../entities/SongsResult"
 import PlayQueueUtils from "../../utils/play/PlayQueueUtils"
 import PreferencesUtils from "../../utils/app/PreferencesUtils"
+import { StorageConstants } from "../../constants/StorageConstants"
 
 /**
  * App初始化
@@ -38,7 +38,7 @@ async function initPlayQueue() {
  */
 async function initSettings() {
   LogUtil.info(TAG + 'initSettings - 开始初始化设置')
-  const SetPerf: string = Constants.SET_PERF
+  const SetPerf: string = StorageConstants.SET_PERF
 
   // hasAnimation
   const hasAnimationExist = await PreferencesUtils.hasPreferenceValue(SetPerf, 'hasAnimation')

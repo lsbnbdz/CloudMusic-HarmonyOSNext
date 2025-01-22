@@ -1,5 +1,5 @@
-import { LogUtil, ToastUtil } from '@pura/harmony-utils'
-import Constants from '../../constants/Constants'
+import { LogUtil } from '@pura/harmony-utils'
+import { StorageConstants } from '../../constants/StorageConstants'
 import { PlayQueue } from '../../entities/PlayQueue'
 import { Song, SongClass } from '../../entities/SongsResult'
 import PreferencesUtils from '../app/PreferencesUtils'
@@ -8,7 +8,7 @@ import PreferencesUtils from '../app/PreferencesUtils'
  * 播放列表工具
  */
 const TAG = '[PlayQueueUtils] '
-const pref = Constants.QUEUE_PREF
+const pref = StorageConstants.QUEUE_PREF
 
 class PlayQueueUtils {
   queue:Array<PlayQueue> = []

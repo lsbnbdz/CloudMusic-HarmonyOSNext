@@ -1,9 +1,9 @@
 import { EmitterUtil, LogUtil } from "@pura/harmony-utils"
 import { SpinKit, SpinType } from "@pura/spinkit"
 import { searchSongs } from "../../api/songApi"
-import Constants from "../../common/constants/Constants"
+import { EmitterConstants } from "../../common/constants/EmitterConstants"
 import { Song } from "../../common/entities/SongsResult"
-import { AddToPlayListButton } from "../buttons/AddToPlayListButton"
+import { AddToPlayListButton } from "../buttons/play/AddToPlayListButton"
 import { SongCard } from "../cards/SongCard"
 
 /**
@@ -28,7 +28,7 @@ export struct SearchSongsList {
     if(this.searchKeyword) {
       await this.loadSongs(0)
     }
-    EmitterUtil.onSubscribe(Constants.EMITTER_SEARCH, async (keyword: string) => {
+    EmitterUtil.onSubscribe(EmitterConstants.EMITTER_SEARCH, async (keyword: string) => {
       this.searchKeyword = keyword
       this.songList = []
       this.songOffset = 0
@@ -37,7 +37,7 @@ export struct SearchSongsList {
   }
 
   aboutToDisappear(): void {
-    EmitterUtil.unSubscribe(Constants.EMITTER_SEARCH)
+    EmitterUtil.unSubscribe(EmitterConstants.EMITTER_SEARCH)
   }
 
   build() {
@@ -101,7 +101,7 @@ export struct SearchSongsList {
   }
 
   async loadSongs(offset: number): Promise<void> {
-    if (!this.hasMoreSongs) return // 没有更多歌曲直接返回
+    if (!this.hasMoreSongs && offset != 0) return // 没有更多歌曲直接返回
     if (offset == 0) {
       this.isLoading = true // 初次加载
     } else {

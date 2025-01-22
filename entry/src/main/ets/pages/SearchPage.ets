@@ -3,8 +3,8 @@ import { BottomBarComponent } from '../components/play/BottomBarComponent';
 import { CommonCircleButton } from '../components/buttons/CircleButton';
 import { router } from '@kit.ArkUI';
 import { SearchPlayListsList } from '../components/lists/SearchPlayListsList';
-import Constants from '../common/constants/Constants';
 import { SearchSongsList } from '../components/lists/SearchSongsList';
+import { EmitterConstants } from '../common/constants/EmitterConstants';
 
 /**
  * 歌曲列表页（搜索结果）
@@ -106,7 +106,7 @@ struct SearchPage {
         .searchButton('搜索')
         .onSubmit(async (value) => {
           this.searchKeyword = value
-          EmitterUtil.post(Constants.EMITTER_SEARCH, value)
+          EmitterUtil.post(EmitterConstants.EMITTER_SEARCH, value)
           if(!value) {
             ToastUtil.showToast('请输入搜索内容')
           }

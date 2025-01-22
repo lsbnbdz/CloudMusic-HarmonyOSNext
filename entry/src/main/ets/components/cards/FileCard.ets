@@ -22,10 +22,12 @@ export struct FileCard {
   build() {
     Button() {
       Column({ space: 5 }) {
-        Text(this.song.name)
-          .textStyle(16)
-        Text(this.song.artists[0].name)
-          .textStyle(12)
+        Text() {
+          Span(this.song.artists[0].name).fontColor(Color.Gray)
+          Span(' - ')
+          Span(this.song.name)
+        }
+        .textStyle(16)
       }
     }
     .type(ButtonType.Normal)

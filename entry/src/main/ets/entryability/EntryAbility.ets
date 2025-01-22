@@ -4,9 +4,9 @@ import { window } from '@kit.ArkUI';
 import { BusinessError } from '@kit.BasicServicesKit';
 import PreferencesUtils from '../common/utils/app/PreferencesUtils';
 import { getLoginInfo } from '../common/functions/login';
-import Constants from '../common/constants/Constants';
 import { LogUtil } from '@pura/harmony-utils';
 import { appInit } from '../common/functions/app/appInit';
+import { StorageConstants } from '../common/constants/StorageConstants';
 
 
 export default class EntryAbility extends UIAbility {
@@ -14,12 +14,12 @@ export default class EntryAbility extends UIAbility {
     hilog.info(0x0000, 'testTag', '%{public}s', 'Ability onCreate');
 
     // 初始化
-    await PreferencesUtils.loadPreference(this.context, Constants.USER_PREF)
-    await PreferencesUtils.loadPreference(this.context, Constants.SET_PERF)
-    await PreferencesUtils.loadPreference(this.context, Constants.QUEUE_PREF)
     LogUtil.init(0x1010, 'Cloud Music', true)
-    appInit()
 
+    await PreferencesUtils.loadPreference(this.context, StorageConstants.USER_PREF)
+    await PreferencesUtils.loadPreference(this.context, StorageConstants.SET_PERF)
+    await PreferencesUtils.loadPreference(this.context, StorageConstants.QUEUE_PREF)
+    appInit()
   }
 
   onDestroy(): void {

@@ -1,12 +1,12 @@
 import { getDownloadInfo } from "../../api/getDownloadInfo"
-import { QualityType, SongDownload, SongDownloadClass } from "../../common/entities/SongDownload"
+import { SongDownload, SongDownloadClass } from "../../common/entities/SongDownload"
 import { Song, SongClass } from "../../common/entities/SongsResult"
 import { pasteboard } from "@kit.BasicServicesKit"
 import { promptAction } from "@kit.ArkUI"
 import { SpinKit, SpinType } from "@pura/spinkit"
 import FileDownloadUtils from "../../common/utils/file/FileDownloadUtils"
 import { LogUtil, ToastUtil } from "@pura/harmony-utils"
-import Constants from "../../common/constants/Constants"
+import { PlayConstants } from "../../common/constants/PlayConstants"
 
 @CustomDialog
 export struct DownloadDialog {
@@ -26,7 +26,7 @@ export struct DownloadDialog {
 
   async aboutToAppear(): Promise<void> {
     try {
-      const gotDownloadData: SongDownload = await getDownloadInfo(this.song.id, Constants.QUALITY[this.quality], this.isValidCookie)
+      const gotDownloadData: SongDownload = await getDownloadInfo(this.song.id, PlayConstants.QUALITY[this.quality], this.isValidCookie)
       this.songDownload = gotDownloadData
       if(this.songDownload.data[0].url == null) { this.succ = false }
       this.fileSize = await convertSize(this.songDownload.data[0].size)

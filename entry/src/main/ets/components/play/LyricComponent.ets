@@ -1,9 +1,9 @@
 import { EmitterUtil } from "@pura/harmony-utils"
-import Constants from "../../common/constants/Constants"
 import { Lyric } from "../../common/entities/Lyric"
 import { getLyricObjects } from "../../common/functions/lyricOp"
 import { seekMusic } from "../../common/functions/playControl"
 import { LengthUnit } from "@kit.ArkUI"
+import { EmitterConstants } from "../../common/constants/EmitterConstants"
 
 @Component
 export struct LyricComponent {
@@ -24,7 +24,7 @@ export struct LyricComponent {
     this.userScrollingInterval = setInterval(() => {
       if(this.userScrolling > 0) this.userScrolling -= 1
     }, 1000)
-    EmitterUtil.onSubscribe(Constants.EMITTER_LYRIC_UPDATE, () => {
+    EmitterUtil.onSubscribe(EmitterConstants.EMITTER_LYRIC_UPDATE, () => {
       this.lyricObjects = getLyricObjects()
       this.currentLyricIndex = 0
     })
@@ -71,7 +71,7 @@ export struct LyricComponent {
         value: 40
         }
       })
-      .padding({ top: px2vp(this.topRectHeight) })
+      .padding({ top: px2vp(this.topRectHeight) + 30 })
       .edgeEffect(EdgeEffect.None)
       .scrollSnapAlign(ScrollSnapAlign.CENTER)
       .scrollBar(BarState.Off)

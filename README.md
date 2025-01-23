@@ -4,9 +4,12 @@
 
 该项目基于 OHOS API13，支持 HarmonyOS 5.0 及以上系统版本。
 
-<br>>> AppGallery 邀请尝鲜：https://docs.chenlvin.cc/cloudmusic/#/
+**[!] 由于AG审核无法通过，本应用自 v.1.2.0 起，不再上架AppGallery尝鲜区，辛苦各位用户自己安装。**
 
-<br>
+### 安装方式
+
+- 自行编译安装
+- 通过本仓库release中的hap包安装
 
 ### 当前支持功能：
 
@@ -40,5 +43,6 @@
 <img src="./images/5.jpg" width="20%" />
 <img src="./images/6.jpg" width="20%" />
 <img src="./images/7.jpg" width="20%" />
+<img src="./images/8.jpg" width="20%" />
 
 

@@ -5,10 +5,12 @@
 该项目基于 OHOS API13，支持 HarmonyOS 5.0 及以上系统版本。
 
 AppGallery邀请尝鲜：https://docs.chenlvin.cc/cloudmusic/#/
+
 **[!] 由于AppGallery的复审机制可能会导致尝鲜应用下架，建议各位自行编译或使用hap安装。**
 
 ### 安装方式
 
+- 通过应用市场邀请尝鲜下载（不稳定）
 - 自行编译安装
 - 通过本仓库release中的hap包安装
 
@@ -37,13 +39,13 @@ AppGallery邀请尝鲜：https://docs.chenlvin.cc/cloudmusic/#/
 
 ### 界面预览：
 
-<img src="./images/1.jpg" width="20%" />
-<img src="./images/2.jpg" width="20%" />
-<img src="./images/3.jpg" width="20%" />
-<img src="./images/4.jpg" width="20%" />
-<img src="./images/5.jpg" width="20%" />
-<img src="./images/6.jpg" width="20%" />
-<img src="./images/7.jpg" width="20%" />
-<img src="./images/8.jpg" width="20%" />
+<img src="./images/01.jpg" width="20%" />
+<img src="./images/02.jpg" width="20%" />
+<img src="./images/03.jpg" width="20%" />
+<img src="./images/04.jpg" width="20%" />
+<img src="./images/05.jpg" width="20%" />
+<img src="./images/06.jpg" width="20%" />
+<img src="./images/07.jpg" width="20%" />
+<img src="./images/08.jpg" width="20%" />
 
 

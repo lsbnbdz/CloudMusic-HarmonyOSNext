@@ -2,7 +2,7 @@
 
 **CloudMusic (云音汇) 是鸿蒙NEXT上的网易云音乐第三方App**
 
-该项目基于 OHOS API14，支持 HarmonyOS 5.0.0.123 及以上系统版本。
+该项目基于 OHOS API13，支持 HarmonyOS 5.0 及以上系统版本。
 
 <br>>> AppGallery 邀请尝鲜：https://docs.chenlvin.cc/cloudmusic/#/
 

@@ -6,6 +6,8 @@ import { DialogUtil, FileUtil, LogUtil, ToastUtil } from '@pura/harmony-utils'
 import { promptAction } from '@kit.ArkUI'
 import { changeb2Mb, sanitizeFileName } from '../../functions/commonFunction'
 import FileUtils from './FileUtils'
+import { MsgConstants } from '../../constants/MsgConstants'
+import NotificationUtils from '../app/NotificationUtils'
 
 /**
  * 文件下载
@@ -40,16 +42,12 @@ class FileDownloadUtils {
           filePath: cachePath
         }).then(async (downloadTask: request.DownloadTask) => {
           downloadTask.on('progress', async (received, total) => {
-            promptAction.showToast({ message: `下载中: ${changeb2Mb(received)} / ${changeb2Mb(total)} MB` })
+            NotificationUtils.publish(song.id, MsgConstants.DOWNLOADING, `${song.name}` + '\n' + `${changeb2Mb(received)} / ${changeb2Mb(total)} MB`)
           })
           downloadTask.on('complete', () => {
             FileUtils.moveFile(cachePath, descPath).then(() => {
-              DialogUtil.showConfirmDialog({
-                title: '下载完成',
-                message: `${artists} - ${song.name}.${songDownload.data[0].type}`
-              })
+              NotificationUtils.publish(song.id, MsgConstants.DOWNLOAD_COMPLETE, `${song.name}  - ${artists}`)
               promptAction.showToast({ message: `下载完成: ${song.name}` })
-              LogUtil.info(TAG + '下载完成: ' + `${artists} - ${song.name}.${songDownload.data[0].type}`)
             })
           })
         }).catch((err: BusinessError) => {
@@ -58,7 +56,8 @@ class FileDownloadUtils {
           FileUtils.deleteFile(`${artists} - ${song.name}.${songDownload.data[0].type}`)
         });
       } catch (error) {
-        let err: BusinessError = error as BusinessError;
+        let err: BusinessError = error as BusinessError
+        NotificationUtils.cancel(song.id)
         if (err.code == 13400002) {
           DialogUtil.showConfirmDialog({ title: '提示', message: `文件已存在` })
         } else {

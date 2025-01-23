@@ -11,6 +11,8 @@ import { CommonCircleButton } from '../components/buttons/CircleButton'
 import { DialogAction } from '@pura/harmony-utils/src/main/ets/entity/constraint'
 import { formatNumber } from '../common/functions/commonFunction'
 import { playListToQueue } from '../common/functions/playListOp'
+import { AddToPlayListButton } from '../components/buttons/play/AddToPlayListButton'
+import { QuestionButton } from '../components/buttons/QuestionButton'
 
 /**
  * 歌单二级页面
@@ -169,8 +171,15 @@ struct PlayListPage {
   @Builder
   PlayListMenu() {
     Row() {
-      Text('敬请期待')
+      QuestionButton({ title: '歌单', msg: '歌单详情页支持左滑歌曲卡片进行操作', comSize: 25 })
+      Text('帮助')
     }
+    .onClick(() => {
+      DialogUtil.showConfirmDialog({
+        title: '歌单',
+        message: '歌单详情页支持左滑歌曲卡片进行操作'
+      })
+    })
     .padding({ left: 10, right: 10, top: 5, bottom: 5})
   }
 
@@ -260,8 +269,10 @@ struct PlayListPage {
   }
 
   @Builder SwipeItem(song: Song, index: number) {
-    if(!this.isShowHeart) {
-      Row({ space: 10 }) {
+    Row() {
+      AddToPlayListButton({ song: song })
+      // Delete button
+      if (!this.isShowHeart) {
         Button() {
           Text('从歌单删除')
             .height('100%')

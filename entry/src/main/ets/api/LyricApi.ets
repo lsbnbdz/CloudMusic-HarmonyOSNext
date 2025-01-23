@@ -1,5 +1,3 @@
-import { EmitterUtil, LogUtil } from "@pura/harmony-utils";
-import Constants from "../common/constants/Constants";
 import { LyricResult } from "../common/entities/Lyric";
 import { getApiUrl } from "../common/functions/commonFunction";
 import { HttpRequest } from "../common/utils/request/HttpRequestUtils";

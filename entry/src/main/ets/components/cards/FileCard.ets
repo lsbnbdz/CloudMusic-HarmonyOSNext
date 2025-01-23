@@ -13,6 +13,7 @@ import PlayQueueUtils from "../../common/utils/play/PlayQueueUtils"
 export struct FileCard {
   @State fileName: string = ''
   @State song: Song = SongClass
+  @Prop columnEnd: number = 0
   @Link list: string[]
 
   async aboutToAppear(): Promise<void> {
@@ -23,8 +24,10 @@ export struct FileCard {
     Button() {
       Column({ space: 5 }) {
         Text() {
-          Span(this.song.artists[0].name).fontColor(Color.Gray)
-          Span(' - ')
+          if(this.columnEnd == 0) {
+            Span(this.song.artists[0].name).fontColor(Color.Gray)
+            Span(' - ')
+          }
           Span(this.song.name)
         }
         .textStyle(16)

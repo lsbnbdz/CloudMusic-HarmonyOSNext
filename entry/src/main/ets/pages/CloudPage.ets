@@ -2,11 +2,11 @@ import { Song } from '../common/entities/SongsResult'
 import { SongCard } from '../components/cards/SongCard'
 import { ListHead } from '../components/head/ListHead'
 import { SpinKit, SpinType } from '@pura/spinkit'
-import { DialogUtil, LogUtil } from '@pura/harmony-utils'
+import { LogUtil } from '@pura/harmony-utils'
 import { getCloudList } from '../api/playListApi'
 import { BottomBarComponent } from '../components/play/BottomBarComponent'
-import { ExplainButton } from '../components/buttons/ExplainButton'
-import { CommonCircleButton } from '../components/buttons/CircleButton'
+import { AddToPlayListButton } from '../components/buttons/play/AddToPlayListButton'
+import { QuestionButton } from '../components/buttons/QuestionButton'
 
 /**
  * 云盘
@@ -74,8 +74,8 @@ struct PlayListPage {
                 SongCard({ song: item, sid: index, hasAnimation: this.hasAnimation,
                   isPlayList: false, index: index })
               }
-            });
-            // 添加加载更多
+              .swipeAction({ end: this.SwipeItem(item) })
+            })
             if (this.isLoadingMore) {
               ListItem() {
                 Column() {
@@ -124,14 +124,11 @@ struct PlayListPage {
 
   @Builder
   HeadSlot() {
-    CommonCircleButton({
-      ButtonImageName: 'app.media.ic_public_help'
-    })
-      .onClick(() => {
-        DialogUtil.showConfirmDialog({
-          title: '云盘',
-          message: '音乐云盘内歌曲仅支持单首播放、下载'
-        })
-      })
+    QuestionButton({ title: '云盘', msg: '音乐云盘内歌曲仅支持单首播放、下载' })
+  }
+
+  @Builder
+  SwipeItem(song: Song) {
+    AddToPlayListButton({ song: song })
   }
 }

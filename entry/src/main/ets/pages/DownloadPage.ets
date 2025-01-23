@@ -15,10 +15,11 @@ struct DownloadPage {
 
   @State fileList: string[] = []
   @State columnsTemplate: string = '1fr'
-  @State columnEnd: number = 1
+  @State columnEnd: number = 0
 
   async onPageShow(): Promise<void> {
     this.fileList = await FileUtils.getFileName()
+    this.fileList.reverse()
   }
 
   async changeLayout(columnEnd: number ) {
@@ -36,7 +37,11 @@ struct DownloadPage {
             GridItem() {
               if (this.fileList.length > 0) {
                 Row() {
-                  Text(`按歌手名排序 (${this.fileList.length})`)
+                  Text(`共 ${this.fileList.length} 首歌曲 (点击排序)`)
+                    .fontSize(16)
+                    .onClick(() => {
+                      this.fileList.sort()
+                    })
                   Select([{ value: '1列' }, { value: '2列' }, { value: '3列' }])
                     .selected(0)
                     .borderStyle(BorderStyle.Solid)
@@ -52,13 +57,12 @@ struct DownloadPage {
                 Text('下载文件为空').width('100%').textAlign(TextAlign.Center).padding({ left: 30, right: 30, top: 10 })
               }
             }
-            .padding({ bottom: 10 })
             .columnStart(0)
             .columnEnd(this.columnEnd)
 
             ForEach(this.fileList, (item: string, index: number) => {
               GridItem() {
-                FileCard({ fileName: item, list: this.fileList })
+                FileCard({ fileName: item, list: this.fileList, columnEnd: this.columnEnd })
                   .layoutWeight(1)
               }
             })

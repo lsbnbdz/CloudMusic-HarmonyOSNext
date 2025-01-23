@@ -17,12 +17,22 @@ struct LoginPage {
 
         Button({ type: ButtonType.Normal }) {
           Row({ space: 10 }) {
-            Image($r('app.media.ic_celiakeyboard_default')).imageStyle()
-            Text('网页登录').textStyle(20)
-          }.height('100%').onClick(() => {
+            Image($r('app.media.ic_celiakeyboard_default'))
+              .imageStyle()
+            Text('网页登录')
+              .textStyle(20)
+          }
+          .height('100%')
+          .onClick(() => {
             router.replaceUrl({ url:'pages/login/WebLogin' })
           })
-        }.backgroundColor('#ff3e93ea').borderRadius(10).height(80).width(240)
+        }
+        .backgroundColor(Color.Transparent)
+        .borderWidth(3)
+        .borderColor($r('app.color.blue'))
+        .borderRadius(10)
+        .height(80)
+        .width(240)
 
         Button({ type: ButtonType.Normal }) {
           Row({ space: 10 }) {
@@ -31,7 +41,13 @@ struct LoginPage {
           }.height('100%').onClick(() => {
             router.replaceUrl({ url:'pages/login/QrCodeLogin' })
           })
-        }.backgroundColor('#ffff3737').borderRadius(10).height(80).width(240)
+        }
+        .backgroundColor(Color.Transparent)
+        .borderWidth(3)
+        .borderColor($r('app.color.app_red'))
+        .borderRadius(10)
+        .height(80)
+        .width(240)
 
 
       }

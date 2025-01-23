@@ -22,7 +22,7 @@ class FileUtils {
 
   async getFileName(): Promise<Array<string>> {
     let list = await fileIo.listFile(this.filesDir)
-    return list.sort()
+    return list
   }
 
   /**

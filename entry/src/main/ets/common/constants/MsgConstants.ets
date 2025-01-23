@@ -10,4 +10,12 @@ export class MsgConstants {
    * 功能开发中的提示
    */
   static readonly DEVELOPING: string = '该功能正在开发中，敬请期待。'
+  /**
+   * 正在下载提示
+   */
+  static readonly DOWNLOADING: string = '正在下载'
+  /**
+   * 下载完成提示
+   */
+  static readonly DOWNLOAD_COMPLETE: string = '下载完成'
 }

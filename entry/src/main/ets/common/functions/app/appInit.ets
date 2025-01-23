@@ -1,9 +1,10 @@
-import { LogUtil } from "@pura/harmony-utils"
+import { AppUtil, LogUtil } from "@pura/harmony-utils"
 import { getAnnouncement } from "../../../api/chenlvinApi"
 import { Song, SongClass } from "../../entities/SongsResult"
 import PlayQueueUtils from "../../utils/play/PlayQueueUtils"
 import PreferencesUtils from "../../utils/app/PreferencesUtils"
 import { StorageConstants } from "../../constants/StorageConstants"
+import { notificationManager } from "@kit.NotificationKit"
 
 /**
  * App初始化
@@ -11,11 +12,18 @@ import { StorageConstants } from "../../constants/StorageConstants"
 const TAG = '[appInit] '
 
 export async function appInit() {
+  await initApp()
   await initSettings()
   await initPlayQueue()
   await audioPlayerInit()
   await loadSavedSong()
   await getAnnouncement()
+}
+
+async function initApp() {
+  notificationManager.requestEnableNotification(AppUtil.getContext()).then(() => {
+    LogUtil.info(TAG + '成功请求通知权限')
+  })
 }
 
 async function audioPlayerInit() {

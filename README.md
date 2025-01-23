@@ -4,6 +4,7 @@
 
 该项目基于 OHOS API13，支持 HarmonyOS 5.0 及以上系统版本。
 
+AppGallery邀请尝鲜：https://docs.chenlvin.cc/cloudmusic/#/
 **[!] 由于AppGallery的复审机制可能会导致尝鲜应用下架，建议各位自行编译或使用hap安装。**
 
 ### 安装方式

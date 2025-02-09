@@ -8,7 +8,7 @@ export struct TimerButton {
   build() {
     Column() {
       Image($r('app.media.ic_clock'))
-        .fillColor(this.isTimerWorking ? $r('app.color.blue') : Color.White)
+        .fillColor(Color.White)
         .width(20)
         .draggable(false)
         .backgroundColor(Color.Transparent)

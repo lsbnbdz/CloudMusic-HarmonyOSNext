@@ -1,5 +1,5 @@
 import { notificationManager } from "@kit.NotificationKit"
-import { AppUtil, LogUtil } from "@pura/harmony-utils"
+import { LogUtil } from "@pura/harmony-utils"
 
 /**
  * 通知类

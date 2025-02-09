@@ -2,7 +2,7 @@ import { LogUtil, ToastUtil } from '@pura/harmony-utils'
 import { EfAVPlayer } from '@yunkss/ef_audio'
 import ContinuousTask from './ContinuousTask'
 import AVSessionUtils from './AVSessionUtils'
-import { completeDo } from '../../functions/playControl'
+import { completeDo } from '../../functions/play/playControl'
 import { changeDuration } from '../../functions/commonFunction'
 import LyricUtils from './LyricUtils'
 

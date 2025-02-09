@@ -3,7 +3,7 @@ import { DailyListSongs } from "../common/entities/PlayListSongs"
 import { SongDetail } from "../common/entities/SongDetail"
 import { QualityType } from "../common/entities/SongDownload"
 import { SongPlay } from "../common/entities/SongPlay"
-import { Song, SongClass, SongsData } from "../common/entities/SongsResult"
+import { Song, SongsData } from "../common/entities/SongsResult"
 import { getApiUrl, isUsePubCookie } from "../common/functions/commonFunction"
 import { HttpRequest } from "../common/utils/request/HttpRequestUtils"
 import { DailySongRes } from "./playListApi"
@@ -123,5 +123,38 @@ export async function getDailySongs(useCookie: boolean = true): Promise<Array<Da
       }
     }
   })
-  return list;
+  return list
+}
+
+/**
+ * 获取喜欢列表(songId 数组)
+ * @param uid
+ * @returns
+ */
+export async function getLikeList(uid: number): Promise<string[]> {
+  let list:Array<string> = []
+  const rootUrl = await getApiUrl()
+  const url: string = `${rootUrl}/likelist?uid=${uid}&timestamp=${new Date().getTime()}`
+  const request = new HttpRequest(url)
+  await request.Request().then((data) => {
+    const dataGot:string[] = data.result['ids'] as string[]
+    list = dataGot
+  })
+  return list
+}
+
+/**
+ * 喜欢歌曲
+ * @param songId
+ * @returns
+ */
+export async function likeMusic(sid: number): Promise<boolean> {
+  let code = -1
+  const rootUrl = await getApiUrl()
+  const url: string = `${rootUrl}/like?id=${sid}&timestamp=${new Date().getTime()}`
+  const request = new HttpRequest(url)
+  await request.Request().then((data) => {
+    code = data.result['code'] as number
+  })
+  return code == 200 ? true : false
 }

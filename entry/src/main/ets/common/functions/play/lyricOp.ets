@@ -1,5 +1,5 @@
-import { Lyric } from "../entities/Lyric";
-import LyricUtils from "../utils/play/LyricUtils";
+import { Lyric } from "../../entities/Lyric";
+import LyricUtils from "../../utils/play/LyricUtils";
 
 /**
  * Get Lyric Objects

@@ -1,6 +1,6 @@
 import { DateUtil } from "@pura/harmony-utils"
 import { StorageConstants } from "../../common/constants/StorageConstants"
-import { pauseMusic, stopMusic } from "../../common/functions/playControl"
+import { pauseMusic, stopMusic } from "../../common/functions/play/playControl"
 
 @Component
 export struct TimerSheet {

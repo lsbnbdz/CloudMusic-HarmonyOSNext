@@ -1,6 +1,6 @@
 import { Song, SongClass } from "../../common/entities/SongsResult"
 import { changeDuration } from "../../common/functions/commonFunction"
-import { pauseMusic, playNext, playPre, resumeMusic, seekMusic } from "../../common/functions/playControl"
+import { pauseMusic, playNext, playPre, resumeMusic, seekMusic } from "../../common/functions/play/playControl"
 import { AddToPlayListCircleButton } from "../buttons/play/AddToPlayListButton"
 import { LoopModeButton } from "../buttons/play/LoopModeButton"
 import { PlayQueueButton } from "../buttons/play/PlayQueueButton"
@@ -96,9 +96,18 @@ export struct PlayingCover {
            this.PlayButton()
            PlayQueueButton({ imgColor: Color.White }).opacity(0.8)
          }
-         .padding({ top: 20, bottom: px2vp(this.bottomRectHeight) + 15 })
+         .padding({ top: 20, bottom: 15 })
          .justifyContent(FlexAlign.SpaceEvenly)
          .width('90%')
+         Row({ space: 15 }) {
+           if(this.isLocalFile) { Text('本地文件播放中').fontSize(10) }
+           if(this.isTimerWorking) { Text('定时关闭已设置').fontSize(10) }
+         }
+         .justifyContent(FlexAlign.Center)
+         .width('100%')
+         .height(30)
+         .backgroundColor(Color.Transparent)
+         .padding({ bottom: px2vp(this.bottomRectHeight) })
        }
        .width('100%')
      }
@@ -121,7 +130,7 @@ export struct PlayingCover {
          * AVCastPicker
          */
         Column() {
-          AVCastPicker({ normalColor: Color.White, activeColor: '#ff359bdb' })
+          AVCastPicker({ normalColor: Color.White })
             .width(25)
             .height(25)
             .backgroundColor(Color.Transparent)
@@ -138,9 +147,9 @@ export struct PlayingCover {
            * Download
            */
           Column() {
-            Image($r('app.media.ic_public_download_filled'))
-              .fillColor(this.isLocalFile ? $r('app.color.blue') : Color.White)
-              .width(24)
+            Image($r('app.media.ic_public_cloud_download'))
+              .fillColor(Color.White)
+              .width(25)
               .draggable(false)
               .backgroundColor(Color.Transparent)
               .onClick(() => {

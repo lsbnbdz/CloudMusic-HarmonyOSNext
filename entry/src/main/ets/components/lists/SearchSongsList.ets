@@ -93,11 +93,7 @@ export struct SearchSongsList {
   }
 
   @Builder SwipeItem(song: Song) {
-    Row({ space: 10 }) {
-      AddToPlayListButton({ song: song })
-    }
-    .height('100%')
-    .backgroundColor(Color.Transparent)
+    AddToPlayListButton({ song: song })
   }
 
   async loadSongs(offset: number): Promise<void> {

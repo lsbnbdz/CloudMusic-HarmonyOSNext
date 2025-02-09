@@ -1,7 +1,7 @@
 import { EmitterUtil } from "@pura/harmony-utils"
 import { Lyric } from "../../common/entities/Lyric"
-import { getLyricObjects } from "../../common/functions/lyricOp"
-import { seekMusic } from "../../common/functions/playControl"
+import { getLyricObjects } from "../../common/functions/play/lyricOp"
+import { seekMusic } from "../../common/functions/play/playControl"
 import { LengthUnit } from "@kit.ArkUI"
 import { EmitterConstants } from "../../common/constants/EmitterConstants"
 

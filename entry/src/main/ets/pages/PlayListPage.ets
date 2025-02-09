@@ -10,7 +10,7 @@ import { BottomBarComponent } from '../components/play/BottomBarComponent'
 import { CommonCircleButton } from '../components/buttons/CircleButton'
 import { DialogAction } from '@pura/harmony-utils/src/main/ets/entity/constraint'
 import { formatNumber } from '../common/functions/commonFunction'
-import { playListToQueue } from '../common/functions/playListOp'
+import { playListToQueue } from '../common/functions/play/playListOp'
 import { AddToPlayListButton } from '../components/buttons/play/AddToPlayListButton'
 import { QuestionButton } from '../components/buttons/QuestionButton'
 
@@ -86,39 +86,43 @@ struct PlayListPage {
               }
               .padding({ bottom: 15 })
               ListItem() {
-                Button() {
-                  Row({ space: 5 }) {
-                    if(this.isPlayerLoading) {
-                      LoadingProgress().height(35).padding({ left: 30 })
+                Row() {
+                  Button() {
+                    Row({ space: 5 }) {
+                      if (this.isPlayerLoading) {
+                        LoadingProgress().height(35).padding({ left: 30 })
+                      } else {
+                        Image($r('app.media.ic_play_fill')).width(15).fillColor(Color.Gray)
+                        Text(`播放全部 (${this.trackCount})`).fontSize(15)
+                      }
                     }
-                    else {
-                      Image($r('app.media.ic_play_fill')).width(15).fillColor(Color.Gray)
-                      Text(`播放全部 (${this.trackCount})`).fontSize(15)
-                    }
+                    .height(40)
                   }
-                  .width('100%')
-                  .height(40)
+                  .type(ButtonType.Normal)
+                  .backgroundColor(Color.Transparent)
+                  .borderRadius(15)
+                  .onClick(async () => {
+                    if (this.isPlayerLoading) {
+                      ToastUtil.showToast('当前有正在加载的播放任务，请稍后再试')
+                    } else {
+                      playListToQueue(this.playList.id, this.trackCount, 0)
+                    }
+                  })
+
+                  Text(`左滑操作歌曲`).fontSize(15)
+
                 }
-                .type(ButtonType.Normal)
-                .backgroundColor(Color.Transparent)
-                .borderRadius(15)
-                .onClick(async () => {
-                  if(this.isPlayerLoading) {
-                    ToastUtil.showToast('当前有正在加载的播放任务，请稍后再试')
-                  }
-                  else {
-                    playListToQueue(this.playList.id, this.trackCount, 0)
-                  }
-                })
+                .justifyContent(FlexAlign.SpaceBetween)
+                .width('100%')
               }
-              .padding({ left: 20, bottom: 10 })
+              .padding({ left: 20, bottom: 10, right: 20 })
 
               ForEach(this.list, (item: Song, index) => {
                 ListItem() {
                   SongCard({ song: item, sid: index, hasAnimation: this.hasAnimation,
                     isPlayList: true, playList: this.playList, index: index })
                 }
-                .swipeAction({ end: this.SwipeItem(item, index) })
+                .swipeAction({ end: this.SwipeItem(item, index), edgeEffect: SwipeEdgeEffect.None })
               });
               // 添加加载更多
               if (this.isLoadingMore) {

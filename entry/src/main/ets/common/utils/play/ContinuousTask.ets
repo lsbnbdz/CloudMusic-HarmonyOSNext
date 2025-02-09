@@ -27,19 +27,19 @@ class ContinuousTask {
     wantAgent.getWantAgent(wantAgentInfo).then((wantAgentObj: WantAgent) => {
       backgroundTaskManager.startBackgroundRunning(this.context,
         backgroundTaskManager.BackgroundMode.AUDIO_PLAYBACK, wantAgentObj).then(async () => {
-        LogUtil.info(TAG + `启动长时任务 Start Background Running.`);
+        LogUtil.info(TAG + `启动长时任务`)
       }).catch((err: BusinessError) => {
-        LogUtil.error(TAG + `启动长时任务 Start Background Running 失败：Code - ${err.code}, Message - ${err.message}`);
-      });
-    });
+        // LogUtil.error(TAG + `启动长时任务 Start Background Running 失败：Code - ${err.code}, Message - ${err.message}`);
+      })
+    })
   }
 
   async stopTask() {
     backgroundTaskManager.stopBackgroundRunning(this.context).then(() => {
-      LogUtil.info(TAG + `成功结束长时任务 Stop Background Running.`);
+      LogUtil.info(TAG + `成功结束长时任务 Stop Background Running.`)
     }).catch((err: BusinessError) => {
       LogUtil.error(TAG + `结束长时任务 Stop Background Running 失败：Code - ${err.code}, Message - ${err.message}`);
-    });
+    })
   }
 }
 

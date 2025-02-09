@@ -24,9 +24,9 @@ export async function getLoginStatus(cookie: string) {
         PreferencesUtils.putPreferenceValue(userPref, 'user', user)
         PreferencesUtils.putPreferenceValue(userPref, 'cookie', cookie)
         PreferencesUtils.putPreferenceValue(userPref, 'signTime', Date.now())
-        AppStorage.setOrCreate('vipType', user.data.account.vipType)
-        AppStorage.setOrCreate('isValidCookie', true)
-        AppStorage.setOrCreate('User', user)
+        AppStorage.setOrCreate(StorageConstants.VIP_TYPE, user.data.account.vipType)
+        AppStorage.setOrCreate(StorageConstants.VALID_COOKIE, true)
+        AppStorage.setOrCreate(StorageConstants.USER, user)
         promptAction.showToast({
           message: '登录成功！'
         })

@@ -1,7 +1,10 @@
 import { avSession } from "@kit.AVSessionKit";
 import { AppUtil, LogUtil, ToastUtil } from "@pura/harmony-utils";
+import { StorageConstants } from "../../constants/StorageConstants";
 import { Song, SongClass } from "../../entities/SongsResult";
-import { changeCycleMode, pauseMusic, playNext, playPre, resumeMusic, seekMusic } from "../../functions/playControl";
+import { changeCycleMode,
+  likeThisSong,
+  pauseMusic, playNext, playPre, resumeMusic, seekMusic } from "../../functions/play/playControl";
 import LyricUtils from "./LyricUtils";
 
 /**
@@ -48,6 +51,9 @@ class AVSessionUtils {
       });
       session.on('seek', (time) => {
         seekMusic(time)
+      });
+      session.on('toggleFavorite', (isFavor) => {
+        likeThisSong()
       })
       session.on('setLoopMode', (loopMode) => {
         if(loopMode == 0) { changeCycleMode(1) }
@@ -84,19 +90,19 @@ class AVSessionUtils {
       lyric: this.lyric
     };
 
-    (await this.session).setAVMetadata(metadata);
+    (await this.session).setAVMetadata(metadata)
   }
 
   /**
    * 启用
    */
   async activate() {
-    if (this.isActivating) return; // 防止重复调用
-    this.isActivating = true;
+    if (this.isActivating) return // 防止重复调用
+    this.isActivating = true
     try {
-      await (await this.session).activate();
+      await (await this.session).activate()
     } finally {
-      this.isActivating = false;
+      this.isActivating = false
     }
   }
 
@@ -106,9 +112,9 @@ class AVSessionUtils {
   async deactive() {
     if (this.isActivating) return; // 等待激活完成
     try {
-      await (await this.session).deactivate();
+      await (await this.session).deactivate()
     } catch (e) {
-      LogUtil.error(TAG + '停用失败: ' + e);
+      LogUtil.error(TAG + '停用失败: ' + e)
     }
   }
 
@@ -120,6 +126,7 @@ class AVSessionUtils {
     let playbackState: avSession.AVPlaybackState = {
       state: avSession.PlaybackState.PLAYBACK_STATE_PLAY,
       loopMode: loopMode,
+      isFavorite: AppStorage.get(StorageConstants.ISLIKED) as boolean,
       position: {
         elapsedTime: time,
         updateTime: new Date().getTime()

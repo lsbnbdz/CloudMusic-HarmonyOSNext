@@ -73,7 +73,7 @@ export struct PlayListAddSheet {
                     this.isShow = false
                   } catch (e) {
                     LogUtil.info(TAG + 'Add to PlayList Error: ' + e)
-                    ToastUtil.showToast('添加到歌单失败: ' + e)
+                    ToastUtil.showToast(e.message)
                   }
                 })
               }

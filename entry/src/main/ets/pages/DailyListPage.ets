@@ -6,7 +6,7 @@ import { LogUtil } from '@pura/harmony-utils'
 import { DailySongRes, PlayDailySongs } from '../api/playListApi'
 import { BottomBarComponent } from '../components/play/BottomBarComponent'
 import { CommonCircleButton } from '../components/buttons/CircleButton'
-import { playQueue } from '../common/functions/playControl'
+import { playQueue } from '../common/functions/play/playControl'
 import { AddToPlayListButton } from '../components/buttons/play/AddToPlayListButton'
 import { getDailySongs } from '../api/songApi'
 import { promptAction } from '@kit.ArkUI'
@@ -177,11 +177,7 @@ struct DailyListPage {
   }
 
   @Builder SwipeItem(song: Song) {
-    Row({ space: 10 }) {
-      AddToPlayListButton({ song: song })
-    }
-    .height('100%')
-    .backgroundColor(Color.Transparent)
+    AddToPlayListButton({ song: song })
   }
 
 }

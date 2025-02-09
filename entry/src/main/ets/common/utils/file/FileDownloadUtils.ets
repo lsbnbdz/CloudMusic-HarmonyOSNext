@@ -42,7 +42,7 @@ class FileDownloadUtils {
           filePath: cachePath
         }).then(async (downloadTask: request.DownloadTask) => {
           downloadTask.on('progress', async (received, total) => {
-            NotificationUtils.publish(song.id, MsgConstants.DOWNLOADING, `${song.name}` + '\n' + `${changeb2Mb(received)} / ${changeb2Mb(total)} MB`)
+            NotificationUtils.publish(song.id, MsgConstants.DOWNLOADING, `${song.name}` + '\n' + `${changeb2Mb(received).toFixed(2)} / ${changeb2Mb(total).toFixed(2)} MB`)
           })
           downloadTask.on('complete', () => {
             FileUtils.moveFile(cachePath, descPath).then(() => {

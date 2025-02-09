@@ -2,7 +2,7 @@ import { DialogUtil, PasteboardUtil, ToastUtil } from "@pura/harmony-utils"
 import { DialogAction } from "@pura/harmony-utils/src/main/ets/entity/constraint"
 import { Song, SongClass } from "../../common/entities/SongsResult"
 import { fetchMetadata, fetchSongInfo } from "../../common/functions/commonFunction"
-import { playMusicWithFile } from "../../common/functions/playControl"
+import { playMusicWithFile } from "../../common/functions/play/playControl"
 import FileUtils from "../../common/utils/file/FileUtils"
 import PlayQueueUtils from "../../common/utils/play/PlayQueueUtils"
 

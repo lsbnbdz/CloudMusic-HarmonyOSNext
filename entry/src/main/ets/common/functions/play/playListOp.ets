@@ -1,4 +1,4 @@
-import { putPlayListInQueue } from "../../api/playListApi"
+import { putPlayListInQueue } from "../../../api/playListApi"
 import { playQueue } from "./playControl"
 
 export async function playListToQueue(id: number, count: number, currentIndex: number = 0) {

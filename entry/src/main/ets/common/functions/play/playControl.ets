@@ -1,19 +1,20 @@
 import { EmitterUtil, FileUtil, LogUtil, RandomUtil, ToastUtil } from "@pura/harmony-utils";
-import { Song } from "../entities/SongsResult";
-import AudioPlayUtils from "../utils/play/AudioPlayUtils";
-import FileUtils from "../utils/file/FileUtils";
-import { getSongPicUrl, getSongUrl } from "../../api/songApi";
-import { fetchMetadata, fetchSongInfo, sanitizeFileName } from "./commonFunction";
-import PlayQueueUtils from "../utils/play/PlayQueueUtils";
-import AVSessionUtils from "../utils/play/AVSessionUtils";
-import { promptAction } from "@kit.ArkUI";
-import PreferencesUtils from "../utils/app/PreferencesUtils";
+import { Song } from "../../entities/SongsResult";
+import AudioPlayUtils from "../../utils/play/AudioPlayUtils";
+import FileUtils from "../../utils/file/FileUtils";
+import { getLikeList, getSongPicUrl, getSongUrl, likeMusic } from "../../../api/songApi";
+import { fetchMetadata, fetchSongInfo, sanitizeFileName } from "../commonFunction";
+import PlayQueueUtils from "../../utils/play/PlayQueueUtils";
+import AVSessionUtils from "../../utils/play/AVSessionUtils";
+import PreferencesUtils from "../../utils/app/PreferencesUtils";
 import { fileIo } from "@kit.CoreFileKit";
-import { SongPlay } from "../entities/SongPlay";
-import LyricUtils from "../utils/play/LyricUtils";
-import { PlayConstants } from "../constants/PlayConstants";
-import { EmitterConstants } from "../constants/EmitterConstants";
-import { StorageConstants } from "../constants/StorageConstants";
+import { SongPlay } from "../../entities/SongPlay";
+import LyricUtils from "../../utils/play/LyricUtils";
+import { PlayConstants } from "../../constants/PlayConstants";
+import { EmitterConstants } from "../../constants/EmitterConstants";
+import { StorageConstants } from "../../constants/StorageConstants";
+import { JSON } from "@kit.ArkTS";
+import { User } from "../../entities/User";
 
 /**
  * 音频播放控制方法
@@ -23,18 +24,16 @@ const pref = StorageConstants.QUEUE_PREF
 
 export async function playMusicByUrl(song:Song,artists:string,isLogged:boolean) {
   try {
+    isThisSongLiked(song.id)
     const quality:number | undefined = await AppStorage.get('set-playQuality')
     const songPlay:SongPlay = await getSongUrl(song.id, quality ? PlayConstants.QUALITY[quality] : "standard", isLogged)
     setPlayData(1, song, artists)
     let localPath: string = ''
-    let tempArtists: string = ''
+    let tempArtists: string = artists
     try {
       if(song.name.length + artists.length >= 103) {
-        try {
-          tempArtists = artists.slice(0, 100 - song.name.length)
-        } catch (e) {
-          artists = 'null'
-        }
+        try { tempArtists = artists.slice(0, 100 - song.name.length) }
+        catch (e) { artists = 'null' }
       }
       localPath = await FileUtils.accessLocalFile(sanitizeFileName(`${tempArtists} - ${song.name}`))
     } catch (e) {}
@@ -50,7 +49,7 @@ export async function playMusicByUrl(song:Song,artists:string,isLogged:boolean) 
       playNext()
     }
     const picUrl:string = await getSongPicUrl(song)
-    setPicUrl(await getSongPicUrl(song))
+    setPicUrl(picUrl)
     LyricUtils.setLyric(song.id).then(() => {
       AVSessionUtils.setMetadata(song, artists, picUrl)
       AVSessionUtils.activate()
@@ -64,6 +63,7 @@ export async function playMusicByUrl(song:Song,artists:string,isLogged:boolean) 
 
 export async function playMusicWithFile(fileName:string) {
   try {
+    AppStorage.setOrCreate(StorageConstants.ISLIKED, true)
     const rootUrl = await FileUtils.getFilesDir()
     const fileUrl = rootUrl + `/${fileName}`
     let file = await fileIo.open(fileUrl)
@@ -94,12 +94,12 @@ export async function playMusicWithFile(fileName:string) {
 }
 
 async function setPlayData(mode: number, song:Song, artists: string, fileName: string = '') {
-  AppStorage.setOrCreate('player-isplaying',true)
-  AppStorage.setOrCreate('player-ispaused', false)
-  AppStorage.setOrCreate('player-mode', mode)
-  AppStorage.setOrCreate('player-fileName', fileName)
-  AppStorage.setOrCreate('player-song', song)
-  AppStorage.setOrCreate('player-artists', artists)
+  AppStorage.setOrCreate(StorageConstants.IS_PLAYING ,true)
+  AppStorage.setOrCreate(StorageConstants.IS_PAUSED, false)
+  AppStorage.setOrCreate(StorageConstants.PLAY_MODE, mode)
+  AppStorage.setOrCreate(StorageConstants.PLAY_FILE_NAME, fileName)
+  AppStorage.setOrCreate(StorageConstants.PLAY_SONG, song)
+  AppStorage.setOrCreate(StorageConstants.PLAY_ARTISTS, artists)
 }
 
 async function setPicUrl(picUrl: string) {
@@ -212,8 +212,8 @@ export async function completeDo() {
  * @param mode
  */
 export async function changeCycleMode(mode: number) {
-  AppStorage.setOrCreate('cycleMode', mode)
-  PreferencesUtils.putPreferenceValue(pref,'cycleMode', mode).then(async () => {
+  AppStorage.setOrCreate(StorageConstants.CYCLE_MODE, mode)
+  PreferencesUtils.putPreferenceValue(pref,StorageConstants.CYCLE_MODE, mode).then(async () => {
     AVSessionUtils.playState(await getPlayTime())
   })
 }
@@ -223,7 +223,7 @@ export async function changeCycleMode(mode: number) {
  * @returns number-mode
  */
 export async function getCycleMode(): Promise<number> {
-  const mode: number | undefined = await AppStorage.get('cycleMode')
+  const mode: number | undefined = await AppStorage.get(StorageConstants.CYCLE_MODE)
   if(mode) {
     return mode
   } else return 0
@@ -252,4 +252,27 @@ async function getPlayTime(): Promise<number> {
     resTime = elapsedTime
   }
   return resTime
+}
+
+/**
+ * 判断当前歌曲是否被喜欢
+ * @param sid
+ */
+export async function isThisSongLiked(sid: number) {
+  let user = AppStorage.get(StorageConstants.USER) as User
+  let likelist: string[] = await getLikeList(user.data.profile.userId)
+  const isLiked = likelist.map(Number).includes(sid)
+  AppStorage.setOrCreate(StorageConstants.ISLIKED, isLiked)
+}
+
+/**
+ * 喜欢当前歌曲
+ */
+export async function likeThisSong() {
+  if(await AppStorage.get(StorageConstants.ISLIKED) as boolean) { return }
+  else {
+    let currentSong = await AppStorage.get(StorageConstants.PLAY_SONG) as Song
+    AppStorage.setOrCreate(StorageConstants.ISLIKED, true)
+    ToastUtil.showToast(await likeMusic(currentSong.id) ? '收藏成功' : '收藏失败')
+  }
 }

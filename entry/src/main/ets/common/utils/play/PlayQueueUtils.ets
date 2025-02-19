@@ -1,4 +1,5 @@
-import { LogUtil } from '@pura/harmony-utils'
+import { EmitterUtil, LogUtil } from '@pura/harmony-utils'
+import { EmitterConstants } from '../../constants/EmitterConstants'
 import { StorageConstants } from '../../constants/StorageConstants'
 import { PlayQueue } from '../../entities/PlayQueue'
 import { Song, SongClass } from '../../entities/SongsResult'
@@ -40,8 +41,12 @@ class PlayQueueUtils {
    * 同步存储
    */
   private async syncQueueToStorage() {
-    AppStorage.setOrCreate('PlayQueue',this.queue)
-    await PreferencesUtils.putPreferenceValue(pref, 'queue', this.queue)
+    try {
+      AppStorage.setOrCreate('PlayQueue', this.queue)
+      await PreferencesUtils.putPreferenceValue(pref, 'queue', this.queue)
+    } catch (e) {
+      LogUtil.error(TAG + 'Error while syncQueueToStorage: ' + e.message)
+    }
   }
 
   /**
@@ -62,9 +67,14 @@ class PlayQueueUtils {
   }
 
   async queueAdd_array(queue:Array<PlayQueue>) {
-    this.queue = this.queue.concat(queue)
-    AppStorage.setOrCreate('PlayQueue',this.queue)
-    await PreferencesUtils.putPreferenceValue(pref, 'queue', this.queue)
+    try {
+      this.queue = this.queue.concat(queue)
+      AppStorage.setOrCreate('PlayQueue', this.queue)
+      await PreferencesUtils.putPreferenceValue(pref, 'queue', this.queue)
+      EmitterUtil.post(EmitterConstants.EMITTER_REFRESH_PLAYQUEUE, () => {})
+    } catch (e) {
+      LogUtil.error(TAG + 'Error while queueAdd_array: ' + e.message)
+    }
   }
 
   /**

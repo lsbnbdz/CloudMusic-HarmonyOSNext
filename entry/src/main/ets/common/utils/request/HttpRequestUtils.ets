@@ -17,6 +17,7 @@ export class HttpRequest {
   constructor(url: string, usingCache?:boolean) {
     this.url = url
     if(usingCache) { this.usingCache = usingCache }
+    LogUtil.info(TAG + 'HTTPRequest: ' + url)
   }
 
   /**

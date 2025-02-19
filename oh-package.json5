@@ -3,7 +3,6 @@
   "description": "Please describe the basic information.",
   "dependencies": {
     "@pura/harmony-utils": "^1.2.4",
-    "@pura/spinkit": "^1.0.4",
     "@yunkss/ef_audio": "^1.0.1",
     "@pie/lazy-data": "^1.0.0"
   },

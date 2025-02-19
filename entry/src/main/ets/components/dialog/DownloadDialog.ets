@@ -3,10 +3,10 @@ import { SongDownload, SongDownloadClass } from "../../common/entities/SongDownl
 import { Song, SongClass } from "../../common/entities/SongsResult"
 import { pasteboard } from "@kit.BasicServicesKit"
 import { promptAction } from "@kit.ArkUI"
-import { SpinKit, SpinType } from "@pura/spinkit"
 import FileDownloadUtils from "../../common/utils/file/FileDownloadUtils"
 import { LogUtil, ToastUtil } from "@pura/harmony-utils"
 import { PlayConstants } from "../../common/constants/PlayConstants"
+import Constants from "../../common/constants/Constants"
 
 @CustomDialog
 export struct DownloadDialog {
@@ -46,7 +46,7 @@ export struct DownloadDialog {
       if(this.succ) {
         Stack() {
           if (this.isLoading) {
-            SpinKit({ spinType: SpinType.spinB, spinSize: 40, spinColor: $r('app.color.reverse') }).width(40)
+            LoadingProgress().width(Constants.SIZE_LOADING_PROGRESS_CARD)
           }
           Column({ space: 10 }) {
             Image(this.picUrl).width(128)

@@ -14,6 +14,7 @@ const TAG = '[appInit] '
 export async function appInit() {
   await initApp()
   await initSettings()
+  await initBasicInfo()
   await initPlayQueue()
   await audioPlayerInit()
   await loadSavedSong()
@@ -24,6 +25,11 @@ async function initApp() {
   notificationManager.requestEnableNotification(AppUtil.getContext()).then(() => {
     LogUtil.info(TAG + '成功请求通知权限')
   })
+}
+
+async function initBasicInfo() {
+  let empty: string[] = []
+  AppStorage.setOrCreate(StorageConstants.USER_LIKELIST, empty)
 }
 
 async function audioPlayerInit() {
@@ -42,7 +48,7 @@ async function initPlayQueue() {
 }
 
 /**
- * 初始化设置
+ * 初始化设置项
  */
 async function initSettings() {
   LogUtil.info(TAG + 'initSettings - 开始初始化设置')

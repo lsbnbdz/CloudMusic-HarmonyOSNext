@@ -3,8 +3,8 @@ import { AppUtil, LogUtil, ToastUtil } from "@pura/harmony-utils";
 import { StorageConstants } from "../../constants/StorageConstants";
 import { Song, SongClass } from "../../entities/SongsResult";
 import { changeCycleMode,
-  likeThisSong,
   pauseMusic, playNext, playPre, resumeMusic, seekMusic } from "../../functions/play/playControl";
+import { likeThisSong } from "../../functions/play/songLike";
 import LyricUtils from "./LyricUtils";
 
 /**

@@ -2,6 +2,7 @@ import { CircleButton, CircleImageButton, CommonCircleButton } from "../buttons/
 import { MeSheet } from "../sheets/MeSheet";
 import { router } from "@kit.ArkUI";
 import { User, UserClass } from "../../common/entities/User";
+import Constants from "../../common/constants/Constants";
 
 @Component
 export struct IndexHead {
@@ -95,7 +96,7 @@ export struct IndexHead {
       .width(22)
       Text(title)
         .fontColor($r('app.color.reverse'))
-        .fontSize(16)
+        .fontSize(Constants.FONT_SIZE_COMMON)
     }
     .padding({ left: 15, right: 15, top: 5, bottom: 5 })
     .height(40)

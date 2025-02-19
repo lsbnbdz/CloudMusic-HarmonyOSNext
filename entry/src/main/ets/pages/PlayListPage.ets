@@ -3,16 +3,16 @@ import { Song } from '../common/entities/SongsResult'
 import { SongCard } from '../components/cards/SongCard'
 import { PlayList } from '../common/entities/PlayList'
 import { ListHead } from '../components/head/ListHead'
-import { SpinKit, SpinType } from '@pura/spinkit'
 import { DialogUtil, LogUtil, ToastUtil } from '@pura/harmony-utils'
 import { getPlayListSongs, PlayListOperation, subscribePlayList } from '../api/playListApi'
 import { BottomBarComponent } from '../components/play/BottomBarComponent'
-import { CommonCircleButton } from '../components/buttons/CircleButton'
 import { DialogAction } from '@pura/harmony-utils/src/main/ets/entity/constraint'
 import { formatNumber } from '../common/functions/commonFunction'
 import { playListToQueue } from '../common/functions/play/playListOp'
 import { AddToPlayListButton } from '../components/buttons/play/AddToPlayListButton'
 import { QuestionButton } from '../components/buttons/QuestionButton'
+import Constants from '../common/constants/Constants'
+import { ClickToLoadButton, LoadingMoreButton, NoMoreButton } from '../components/buttons/LoadMoreButtons'
 
 /**
  * 歌单二级页面
@@ -32,6 +32,7 @@ struct PlayListPage {
   private trackCount: number = Object(router.getParams())['trackCount']
   private isShowHeart: boolean = Object(router.getParams())['isShowHeart']
   private currentOffset: number = 0 // 歌曲偏移量
+
   @State isSubscribed: boolean = this.playList.subscribed
   @State list: Array<Song> = new Array()
   @State hasMore: boolean = true
@@ -76,7 +77,7 @@ struct PlayListPage {
         Stack({ alignContent: Alignment.Top }) {
           if (this.isLoading) {
             Column() {
-              SpinKit({ spinType: SpinType.spinO, spinSize: 60, spinColor: Color.Gray }).width(60)
+              LoadingProgress().width(Constants.SIZE_LOADING_PROGRESS_DEFAULT)
             }.height('100%').width('100%').justifyContent(FlexAlign.Center)
           } else {
             List() {
@@ -92,11 +93,11 @@ struct PlayListPage {
                       if (this.isPlayerLoading) {
                         LoadingProgress().height(35).padding({ left: 30 })
                       } else {
-                        Image($r('app.media.ic_play_fill')).width(15).fillColor(Color.Gray)
-                        Text(`播放全部 (${this.trackCount})`).fontSize(15)
+                        Image($r('app.media.ic_play_fill')).width(Constants.FONT_SIZE_COMMON).fillColor(Color.Gray)
+                        Text(`播放全部 (${this.trackCount})`).fontSize(Constants.FONT_SIZE_COMMON)
                       }
                     }
-                    .height(40)
+                    .height(Constants.HEIGHT_TEXT_BUTTON)
                   }
                   .type(ButtonType.Normal)
                   .backgroundColor(Color.Transparent)
@@ -108,9 +109,6 @@ struct PlayListPage {
                       playListToQueue(this.playList.id, this.trackCount, 0)
                     }
                   })
-
-                  Text(`左滑操作歌曲`).fontSize(15)
-
                 }
                 .justifyContent(FlexAlign.SpaceBetween)
                 .width('100%')
@@ -123,28 +121,23 @@ struct PlayListPage {
                     isPlayList: true, playList: this.playList, index: index })
                 }
                 .swipeAction({ end: this.SwipeItem(item, index), edgeEffect: SwipeEdgeEffect.None })
-              });
+              })
+
               // 添加加载更多
               if (this.isLoadingMore) {
                 ListItem() {
-                  Column() {
-                    SpinKit({ spinType: SpinType.spinO, spinSize: 30, spinColor: Color.Gray }).width(30)
-                  }.justifyContent(FlexAlign.Center).width('100%').height(50)
+                  LoadingMoreButton()
                 }
               } else if (this.hasMore) {
                 ListItem() {
-                  Text("点击加载更多")
+                  ClickToLoadButton()
                     .onClick(() => {
                       this.loadSongs(30, this.currentOffset)
                     })
-                    .padding({ top: 10, bottom: px2vp(this.bottomRectHeight) })
-                    .fontColor($r('app.color.reverse'))
-                    .width('100%')
-                    .textAlign(TextAlign.Center)
                 }
               } else if (!this.hasMore) {
                 ListItem() {
-                  Text('没有更多了~').fontSize(16).textAlign(TextAlign.Center).width('100%').height(50);
+                  NoMoreButton()
                 }
               }
               ListItem().height(px2vp(this.bottomRectHeight) + 80)
@@ -172,25 +165,29 @@ struct PlayListPage {
   }
 
   // 更多菜单
-  @Builder
-  PlayListMenu() {
-    Row() {
-      QuestionButton({ title: '歌单', msg: '歌单详情页支持左滑歌曲卡片进行操作', comSize: 25 })
-      Text('帮助')
-    }
-    .onClick(() => {
-      DialogUtil.showConfirmDialog({
-        title: '歌单',
-        message: '歌单详情页支持左滑歌曲卡片进行操作'
-      })
-    })
-    .padding({ left: 10, right: 10, top: 5, bottom: 5})
-  }
+  // @Builder
+  // PlayListMenu() {
+  //   Row() {
+  //     QuestionButton({ title: '歌单', msg: '歌单详情页支持左滑歌曲卡片进行操作', comSize: 25 })
+  //     Text('帮助')
+  //   }
+  //   .onClick(() => {
+  //     DialogUtil.showConfirmDialog({
+  //       title: '歌单',
+  //       message: '歌单详情页支持左滑歌曲卡片进行操作'
+  //     })
+  //   })
+  //   .padding({ left: 10, right: 10, top: 5, bottom: 5})
+  // }
 
   @Builder
   HeadSlot() {
-    CommonCircleButton({ ButtonImageName: 'ic_public_more_filled' })
-      .bindMenu(this.PlayListMenu())
+    QuestionButton({
+      title: '歌单',
+      msg: '增删歌曲：左滑歌曲卡片\n\n' +
+        '收藏歌单：点击信息栏右边爱心图标',
+      comSize: Constants.SIZE_ICON_BUTTON_HEAD
+    })
   }
 
   @Builder PlayListInfo() {
@@ -235,23 +232,7 @@ struct PlayListPage {
           if (this.isSubscribed) {
             Image($r('app.media.ic_heart_filled')).fillColor(Color.Pink).width(25)
               .onClick(async () => {
-                DialogUtil.showPrimaryDialog({
-                  title: '取消收藏',
-                  message: '确认取消收藏歌单\n' + `《${this.playList.name}》`,
-                  primaryButton: "取消",
-                  secondaryButton: "确认",
-                  onAction: async (action) => {
-                    if(action == DialogAction.TWO) {
-                      let res: boolean = await subscribePlayList(this.playList.id, 2)
-                      LogUtil.info(TAG + 'res: ' + res)
-                      if(res) {
-                        ToastUtil.showToast('取消收藏歌单')
-                        this.isSubscribed = false
-                      }
-                    }
-                  }
-                })
-
+                this.UnSubScribe()
               })
           } else {
             Image($r('app.media.ic_heart_filled')).fillColor($r('app.color.main')).width(25)
@@ -272,6 +253,25 @@ struct PlayListPage {
     .justifyContent(FlexAlign.Center)
   }
 
+  private UnSubScribe() {
+    DialogUtil.showPrimaryDialog({
+      title: '取消收藏歌单',
+      message: `《${this.playList.name}》`,
+      primaryButton: "取消",
+      secondaryButton: {
+        value: '确认',
+        fontColor: Color.Red,
+        action: async () => {
+          let res: boolean = await subscribePlayList(this.playList.id, 2)
+          LogUtil.info(TAG + 'res: ' + res)
+          if(res) {
+            ToastUtil.showToast('取消收藏歌单')
+            this.isSubscribed = false
+          }
+        }
+      }
+    })
+  }
   @Builder SwipeItem(song: Song, index: number) {
     Row() {
       AddToPlayListButton({ song: song })

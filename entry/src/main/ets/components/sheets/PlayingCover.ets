@@ -7,10 +7,11 @@ import { PlayQueueButton } from "../buttons/play/PlayQueueButton"
 import { DownloadDialog } from "../dialog/DownloadDialog"
 import { LyricComponent } from "../play/LyricComponent"
 import { AVCastPicker } from "@kit.AVSessionKit"
-import { promptAction } from "@kit.ArkUI"
-import { MsgConstants } from "../../common/constants/MsgConstants"
 import { TimerButton } from "../buttons/play/TimerButton"
 import { StorageConstants } from "../../common/constants/StorageConstants"
+import Constants from "../../common/constants/Constants"
+import { SetPlayQuality } from "../settings/SetPlayQuality"
+import { PasteboardUtil, ToastUtil } from "@pura/harmony-utils"
 
 @Component
 export struct PlayingCover {
@@ -32,6 +33,7 @@ export struct PlayingCover {
   @State sliderMovingTime: number = 0
   @State tabPageIndex: number = 0
   @State totalOpacity: number = 0
+  @State isShowPopup: boolean = false
   private artists1: string = ''
   private song1: Song = SongClass
   private picUrl1: string = ''
@@ -100,8 +102,8 @@ export struct PlayingCover {
          .justifyContent(FlexAlign.SpaceEvenly)
          .width('90%')
          Row({ space: 15 }) {
-           if(this.isLocalFile) { Text('本地文件播放中').fontSize(10) }
-           if(this.isTimerWorking) { Text('定时关闭已设置').fontSize(10) }
+           if(this.isLocalFile) { Text('本地文件播放中').fontSize(10).fontColor(Color.Gray) }
+           if(this.isTimerWorking) { Text('已设置定时关闭').fontSize(10).fontColor(Color.Gray) }
          }
          .justifyContent(FlexAlign.Center)
          .width('100%')
@@ -192,7 +194,7 @@ export struct PlayingCover {
       Row() {
         // 当前时间
         Text(`${changeDuration(this.time)}`)
-          .fontSize(16)
+          .fontSize(Constants.FONT_SIZE_COMMON)
           .layoutWeight(1)
           .textAlign(TextAlign.Start)
           .fontColor(Color.White)
@@ -204,7 +206,7 @@ export struct PlayingCover {
               .fontColor(Color.White)
               .backgroundColor(Color.Gray)
               .borderRadius(15)
-              .fontSize(16)
+              .fontSize(Constants.FONT_SIZE_COMMON)
               .textAlign(TextAlign.Center)
               .padding({ left: 10, right: 10 })
           }
@@ -213,7 +215,7 @@ export struct PlayingCover {
 
         // 总时间
         Text(`${changeDuration(this.song.duration)}`)
-          .fontSize(16)
+          .fontSize(Constants.FONT_SIZE_COMMON)
           .layoutWeight(1)
           .textAlign(TextAlign.End)
           .fontColor(Color.White)
@@ -303,12 +305,20 @@ export struct PlayingCover {
   @Builder
   Head() {
     Row() {
-      Button({ type: ButtonType.Circle }) { Image($r('app.media.ic_public_arrow_down_0')).draggable(false).fillColor(Color.White).width(35).height(35) }
+      Button({ type: ButtonType.Circle }) { Image($r('app.media.ic_public_arrow_down_0')).draggable(false).fillColor(Color.White).width(Constants.SIZE_ICON_BUTTON_COMMON).aspectRatio(1) }
       .backgroundColor(Color.Transparent)
       .onClick(() => { this.isShow = false })
-      Button({ type: ButtonType.Circle }) { Image($r('app.media.ic_public_more_list')).draggable(false).fillColor(Color.White).width(35).height(35) }
+      Button({ type: ButtonType.Circle }) { Image($r('app.media.ic_public_more_list')).draggable(false).fillColor(Color.White).width(Constants.SIZE_ICON_BUTTON_COMMON).aspectRatio(1) }
       .backgroundColor(Color.Transparent)
-      .onClick(() => { promptAction.showToast({ message: MsgConstants.DEVELOPING, duration: 3000 }) })
+      .bindPopup(this.isShowPopup, {
+        builder: this.MorePopup(),
+        onWillDismiss: () => {
+          this.isShowPopup = false
+        }
+      })
+      .onClick(() => {
+        this.isShowPopup = true
+      })
     }
     .position({ top: 0 })
     .width('100%')
@@ -362,13 +372,39 @@ export struct PlayingCover {
       Text(this.song.name)
         .textStyle(24)
         .fontWeight(FontWeight.Bold)
+        .onClick(() => {
+          PasteboardUtil.setDataText(this.song.name)
+          ToastUtil.showToast('已复制歌名到剪贴板', { duration: 3000 })
+        })
       Text(this.artists)
         .textStyle(16)
+        .onClick(() => {
+          PasteboardUtil.setDataText(this.artists)
+          ToastUtil.showToast('已复制歌手名到剪贴板', { duration: 3000 })
+        })
     }
     .width('100%')
     .padding({ left: 15, right: 15, top:px2vp(this.topRectHeight) + 40 })
     .height('100%')
     .justifyContent(FlexAlign.Center)
+    .gesture(
+      SwipeGesture({
+        fingers: 1,
+        direction: SwipeDirection.Vertical
+      }).onAction(() => { this.isShow = false })
+    )
+  }
+
+  /**
+   * Menu
+   */
+  @Builder
+  MorePopup() {
+    Column({ space: Constants.PADDING_EDGE_DEFAULT }) {
+      SetPlayQuality()
+    }
+    .width('80%')
+    .padding({ left: Constants.PADDING_EDGE_TEXT, right: Constants.PADDING_EDGE_TEXT, top: Constants.PADDING_EDGE_DEFAULT, bottom: Constants.PADDING_EDGE_DEFAULT })
   }
 }
 

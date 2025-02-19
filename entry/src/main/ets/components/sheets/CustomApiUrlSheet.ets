@@ -1,16 +1,26 @@
-import { ToastUtil } from '@pura/harmony-utils'
-import { ExplainButton } from '../../components/buttons/ExplainButton'
-import PreferencesUtils from '../utils/app/PreferencesUtils'
+import { ToastUtil } from "@pura/harmony-utils"
+import Constants from "../../common/constants/Constants"
+import PreferencesUtils from "../../common/utils/app/PreferencesUtils"
+import { ExplainButton } from "../buttons/ExplainButton"
 
 /**
- * 自定义API地址
+ * 自定义API服务器地址
+ * Sheet
  */
 @Component
-export struct CustomApiUrl {
+export struct CustomApiUrlSheet {
   @StorageLink('set-isCustomApiUrl') isCustomApiUrl: boolean = false
   @StorageProp('set-customApiUrl') customApiUrl: string = ''
+  @StorageProp('bottomRectHeight') bottomRectHeight: number = 0
+  @Link isShowSheet: boolean
+
   build() {
     Column({ space: 5 }) {
+      Text('API服务器设置')
+        .width('100%')
+        .fontSize(Constants.FONT_SIZE_TITLE)
+        .fontWeight(FontWeight.Bold)
+        .padding(Constants.PADDING_EDGE_TEXT)
       Row() {
         Row({ space: 5 }) {
           Text('自定义API服务器地址').LeftText()
@@ -25,7 +35,10 @@ export struct CustomApiUrl {
           .onChange(() => {
             this.toggleCustomApiUrl()
           })
-      }.width('100%').justifyContent(FlexAlign.SpaceBetween).padding({ left: 30, right: 30 })
+      }
+      .width('100%')
+      .justifyContent(FlexAlign.SpaceBetween)
+      .padding({ left: Constants.PADDING_EDGE_TEXT, right: Constants.PADDING_EDGE_TEXT })
 
       if(this.isCustomApiUrl) {
         Row({ space: 10 }) {
@@ -39,9 +52,11 @@ export struct CustomApiUrl {
             })
         }
         .justifyContent(FlexAlign.Center)
-        .width('80%')
+        .width('100%')
+        .padding({ left: Constants.PADDING_EDGE_TEXT, right: Constants.PADDING_EDGE_TEXT })
       }
     }
+    .padding({ left: Constants.PADDING_EDGE_DEFAULT, right: Constants.PADDING_EDGE_DEFAULT, bottom: px2vp(this.bottomRectHeight) + Constants.PADDING_EDGE_TEXT })
     .width('100%')
   }
 
@@ -60,6 +75,6 @@ export struct CustomApiUrl {
 }
 
 @Extend(Text) function LeftText() {
-  .fontSize(16)
+  .fontSize(Constants.FONT_SIZE_COMMON)
   .fontWeight(FontWeight.Bold)
 }

@@ -1,8 +1,10 @@
 import { EmitterUtil, LogUtil } from "@pura/harmony-utils"
-import { SpinKit, SpinType } from "@pura/spinkit"
+
 import { searchPlayLists } from "../../api/playListApi"
+import Constants from "../../common/constants/Constants"
 import { EmitterConstants } from "../../common/constants/EmitterConstants"
 import { PlayList } from "../../common/entities/PlayList"
+import { LoadingMoreButton, NoMoreButton } from "../buttons/LoadMoreButtons"
 import { PlayListCard } from "../cards/PlayListCard"
 
 const TAG = "[SearchPlayListsList] "
@@ -38,7 +40,7 @@ export struct SearchPlayListsList {
   build() {
     if(this.isLoading == true) {
       Column() {
-        SpinKit({ spinType: SpinType.spinO, spinSize:60, spinColor:Color.Gray }).width(60)
+        LoadingProgress().width(Constants.SIZE_LOADING_PROGRESS_DEFAULT)
       }
       .padding({ bottom: px2vp(this.topRectHeight) })
       .height('100%')
@@ -53,24 +55,18 @@ export struct SearchPlayListsList {
         })
         if (this.isLoadingMore) {
           ListItem() {
-            Column() {
-              SpinKit({ spinType: SpinType.spinO, spinSize: 30, spinColor: Color.Gray }).width(30)
-            }.justifyContent(FlexAlign.Center).width('100%').height(50)
+            LoadingMoreButton()
           }
         } else if (this.hasMorePlayLists && this.searchKeyword) {
           ListItem() {
-            Text("点击加载更多")
+            LoadingMoreButton()
               .onClick(() => {
                 this.loadPlayLists(this.playListOffset)
               })
-              .padding({ top: 10, bottom: px2vp(this.bottomRectHeight) })
-              .fontColor($r('app.color.reverse'))
-              .width('100%')
-              .textAlign(TextAlign.Center)
           }
         } else if (!this.hasMorePlayLists) {
           ListItem() {
-            Text('没有更多了~').fontSize(16).textAlign(TextAlign.Center).width('100%').height(50);
+            NoMoreButton()
           }
         }
         ListItem().height(px2vp(this.bottomRectHeight) + 80)

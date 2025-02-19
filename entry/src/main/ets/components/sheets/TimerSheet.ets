@@ -1,4 +1,5 @@
 import { DateUtil } from "@pura/harmony-utils"
+import Constants from "../../common/constants/Constants"
 import { StorageConstants } from "../../common/constants/StorageConstants"
 import { pauseMusic, stopMusic } from "../../common/functions/play/playControl"
 
@@ -112,7 +113,7 @@ export struct TimerSheet {
   @Builder chooseTimeButton(hour: boolean, time: number) {
     Button() {
       Column() {
-        Text(time.toString()).fontColor($r('app.color.reverse')).fontWeight(FontWeight.Bolder).fontSize(16)
+        Text(time.toString()).fontColor($r('app.color.reverse')).fontWeight(FontWeight.Bolder).fontSize(Constants.FONT_SIZE_COMMON)
         Text(hour ? '小时' : '分钟').fontColor($r('app.color.reverse')).fontSize(10)
       }
     }

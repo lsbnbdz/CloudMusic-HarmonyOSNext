@@ -9,4 +9,9 @@ export class EmitterConstants {
    * 更新搜索内容
    */
   static readonly EMITTER_SEARCH: string = 'SEARCH'
+  /**
+   * Emitter
+   * 刷新播放列表
+   */
+  static readonly EMITTER_REFRESH_PLAYQUEUE: string = 'REFRESH_PLAYQUEUE'
 }

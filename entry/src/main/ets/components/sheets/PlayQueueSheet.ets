@@ -1,10 +1,15 @@
-import { DialogUtil } from "@pura/harmony-utils"
+import { DialogUtil, EmitterUtil, ToastUtil } from "@pura/harmony-utils"
 import { DialogAction } from "@pura/harmony-utils/src/main/ets/entity/constraint"
 import { PlayQueue } from "../../common/entities/PlayQueue"
 import { playQueue } from "../../common/functions/play/playControl"
 import PlayQueueUtils from "../../common/utils/play/PlayQueueUtils"
 import { LoopModeButton } from "../buttons/play/LoopModeButton"
 import { LazyData } from '@pie/lazy-data';
+import { setHeartMode } from "../../api/songApi"
+import { StorageConstants } from "../../common/constants/StorageConstants"
+import { PlayList, playListClass } from "../../common/entities/PlayList"
+import Constants from "../../common/constants/Constants"
+import { EmitterConstants } from "../../common/constants/EmitterConstants"
 
 /**
  * 播放列表 Sheet
@@ -12,12 +17,13 @@ import { LazyData } from '@pie/lazy-data';
 @Component
 export struct PlayQueueSheet {
   @StorageProp('PlayQueue') queue: Array<PlayQueue> = []
-  @StorageProp('currentQueueIndex') currentQueueIndex: number = 0
+  @StorageLink('currentQueueIndex') currentQueueIndex: number = 0
   @StorageProp('bottomRectHeight') bottomRectHeight: number = 0
-  @State queueLength: number = PlayQueueUtils.getQueueLength()
+  @StorageProp('player-mode') playmode: number = 1
   @State isLoading: boolean = false
   @Link isShow: boolean
   @State dataSource: LazyData<PlayQueue> = new LazyData()
+  @StorageProp(StorageConstants.PLAYLIST_LIKE) likePlayList: PlayList = playListClass
   private scroller: Scroller = new Scroller()
 
   aboutToAppear(): void {
@@ -26,6 +32,15 @@ export struct PlayQueueSheet {
     setTimeout(() => {
       this.scrollToCurrent(false)
     }, 100)
+
+    EmitterUtil.onSubscribe(EmitterConstants.EMITTER_REFRESH_PLAYQUEUE, () => {
+      this.dataSource.setData(this.queue)
+      this.dataSource.notifyDataReload()
+    })
+  }
+
+  aboutToDisappear(): void {
+    EmitterUtil.off(EmitterConstants.EMITTER_REFRESH_PLAYQUEUE, () => {})
   }
 
   build() {
@@ -34,46 +49,47 @@ export struct PlayQueueSheet {
         Row() {
           Row({ space: 15 }) {
             Text() {
-              Span('播放列表').fontSize(20).fontColor(Color.Gray).fontWeight(FontWeight.Bold)
-              Span(`  (${this.queueLength})`).fontSize(16).fontColor(Color.Gray)
+              Span('播放列表').fontSize(Constants.FONT_SIZE_TITLE).fontColor(Color.Gray).fontWeight(FontWeight.Bold)
+              Span(`  (${this.queue.length})`).fontSize(Constants.FONT_SIZE_COMMON).fontColor(Color.Gray)
             }
 
             LoopModeButton({ imgWidth: 25, btnWidth: 25 })
 
+            // HeartMode Button
+            if(this.queue.length > 0 && this.playmode == 1) {
+              Button() {
+                Image($r('app.media.ic_heart_filled')).width(Constants.SIZE_ICON_BUTTON_Bar - 5).fillColor($r('app.color.app_red'))
+              }
+              .backgroundColor(Color.Transparent)
+              .onClick(async () => {
+                await this.startHeartMode()
+              })
+            }
+          }
+
+          Row({ space: 10 }) {
             Button({ type: ButtonType.Circle }) {
-              Image($r('app.media.ic_position')).width(20).fillColor($r('app.color.reverse'))
+              Image($r('app.media.ic_position')).width(Constants.SIZE_ICON_BUTTON_Bar).fillColor(Color.Gray)
             }
             .backgroundColor(Color.Transparent)
             .onClick(() => {
               this.scrollToCurrent()
             })
-          }
 
-          Button({ type: ButtonType.Circle }) {
-            Image($r('app.media.ic_public_delete_filled')).width(25).fillColor(Color.Gray)
-          }
-          .backgroundColor(Color.Transparent)
-          .onClick(() => {
-            DialogUtil.showPrimaryDialog({
-              title: '确认',
-              message: '清空播放列表',
-              primaryButton: "取消",
-              secondaryButton: "确认",
-              onAction: async (action) => {
-                if (action == DialogAction.TWO) {
-                  PlayQueueUtils.cleanQueue()
-                  this.dataSource.setData([])
-                  this.dataSource.notifyDataReload()
-                }
-              }
+            Button({ type: ButtonType.Circle }) {
+              Image($r('app.media.ic_public_delete_filled')).width(Constants.SIZE_ICON_BUTTON_Bar - 5).fillColor(Color.Gray)
+            }
+            .backgroundColor(Color.Transparent)
+            .onClick(() => {
+              this.cleanPlayQueue()
             })
-          })
+          }
         }
         .padding({ left: 5, right: 5 })
         .width('100%')
         .justifyContent(FlexAlign.SpaceBetween)
 
-        List({ scroller: this.scroller, space: 15 }) {
+        List({ scroller: this.scroller, space: 20 }) {
           LazyForEach(this.dataSource, (item: PlayQueue, index) => {
             ListItem() {
               Row({ space: 10 }) {
@@ -114,7 +130,7 @@ export struct PlayQueueSheet {
                       .layoutWeight(1)
                       .textStyle(16)
                       .fontWeight(FontWeight.Bold)
-                      .fontColor('#ffd25959')
+                      .fontColor($r('app.color.app_red'))
                   } else {
                     Text(``) {
                       Span(`${item.song.name}`)
@@ -140,7 +156,6 @@ export struct PlayQueueSheet {
                 .onClick(() => {
                   PlayQueueUtils.queueDelete(index)
                   this.dataSource.deleteData(index)
-                  this.queueLength = PlayQueueUtils.getQueueLength()
                   this.dataSource.notifyDataReload()
                 })
               }
@@ -174,6 +189,48 @@ export struct PlayQueueSheet {
   scrollToCurrent(animation: boolean = true) {
     if(this.currentQueueIndex <= 3) { this.scroller.scrollToIndex(this.currentQueueIndex, animation) }
     else { this.scroller.scrollToIndex(this.currentQueueIndex, animation, ScrollAlign.CENTER) }
+  }
+
+  private cleanPlayQueue() {
+    DialogUtil.showPrimaryDialog({
+      title: '确认',
+      message: '清空播放列表',
+      primaryButton: "取消",
+      secondaryButton: "确认",
+      onAction: async (action) => {
+        if (action == DialogAction.TWO) {
+          PlayQueueUtils.cleanQueue()
+          this.dataSource.setData([])
+          this.dataSource.notifyDataReload()
+        }
+      }
+    })
+  }
+
+  private async startHeartMode() {
+    DialogUtil.showPrimaryDialog({
+      title: '心动歌单',
+      message: '是否将播放列表替换为【心动歌单】?\n\n开启心动歌单后，\n将会替换当前播放列表并开始新的播放',
+      primaryButton: "取消",
+      secondaryButton: {
+        value: '确认',
+        fontColor: Color.Red,
+        action: async () => {
+          this.isLoading = true
+          try {
+            await setHeartMode(this.queue[this.currentQueueIndex].song.id, this.likePlayList.id)
+            playQueue(0)
+            this.scroller.scrollToIndex(0)
+          } catch (e) {
+            ToastUtil.showToast('获取心动模式歌单失败')
+          } finally {
+            this.dataSource.setData(this.queue)
+            this.dataSource.notifyDataReload()
+            this.isLoading = false
+          }
+        }
+      }
+    })
   }
 }
 

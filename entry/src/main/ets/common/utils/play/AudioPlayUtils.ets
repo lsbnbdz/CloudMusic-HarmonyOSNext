@@ -1,4 +1,4 @@
-import { LogUtil, ToastUtil } from '@pura/harmony-utils'
+import { LogUtil } from '@pura/harmony-utils'
 import { EfAVPlayer } from '@yunkss/ef_audio'
 import ContinuousTask from './ContinuousTask'
 import AVSessionUtils from './AVSessionUtils'
@@ -14,7 +14,6 @@ const TAG = '[AudioPlayUtils] '
 
 class AudioPlayUtils {
   mPlayer: EfAVPlayer = new EfAVPlayer()
-
   updateAvSession = 0
 
   async init() {

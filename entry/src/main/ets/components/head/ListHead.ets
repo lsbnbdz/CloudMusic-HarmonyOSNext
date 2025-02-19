@@ -1,4 +1,5 @@
 import { ToastUtil } from "@pura/harmony-utils";
+import Constants from "../../common/constants/Constants";
 import { BackButton } from "../buttons/BackButton";
 import { CommonCircleButton } from "../buttons/CircleButton";
 
@@ -12,13 +13,21 @@ export struct ListHead {
   build() {
     Row({ space: 20 }) {
       BackButton()
-      Text(`${this.title}`).fontSize(18).fontColor($r('app.color.reverse')).maxLines(1)
+      Text(`${this.title}`)
+        .fontSize(Constants.FONT_SIZE_TITLE)
+        .fontColor($r('app.color.reverse'))
+        .maxLines(1)
         .textOverflow({ overflow: TextOverflow.Ellipsis })
         .layoutWeight(1)
         .textAlign(TextAlign.Center)
       this.slot()
     }
-    .padding({ left: 10, right: 10, top: px2vp(this.topRectHeight), bottom: 5 })
+    .padding({
+      left: Constants.PADDING_EDGE_DEFAULT,
+      right: Constants.PADDING_EDGE_DEFAULT,
+      top: px2vp(this.topRectHeight),
+      bottom: 5
+    })
     .width('100%')
     .backgroundColor(Color.Transparent)
     .backdropBlur(50)
@@ -29,6 +38,6 @@ export struct ListHead {
 
   @Builder
   Slot() {
-    CommonCircleButton()
+    CommonCircleButton({ wid: Constants.SIZE_ICON_BUTTON_HEAD })
   }
 }

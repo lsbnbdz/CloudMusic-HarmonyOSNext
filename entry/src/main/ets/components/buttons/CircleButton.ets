@@ -1,6 +1,7 @@
 /**
  * 圆形按钮组件
  */
+import Constants from "../../common/constants/Constants"
 
 /**
  * 圆形图标按钮
@@ -9,17 +10,18 @@
 export struct CommonCircleButton {
   ButtonImageName: string = ''
   BgColor: string = 'transparent'
+  wid: number = Constants.SIZE_ICON_BUTTON_COMMON
 
   build() {
     Column() {
       Button({type: ButtonType.Circle}) {
         Image($r(`app.media.${this.ButtonImageName}`))
-          .width(30)
+          .width('90%')
           .fillColor($r('app.color.reverse'))
           .draggable(false)
       }
-      .height(35)
-      .width(35)
+      .height(this.wid)
+      .aspectRatio(1)
       .backgroundColor(this.BgColor)
       .opacity(0.8)
     }
@@ -31,19 +33,20 @@ export struct CommonCircleButton {
  */
 @Component
 export struct CircleImageButton {
-  imgUrl: ResourceStr = ''
+  imgUrl: ResourceStr | string = ''
   BgColor: string = 'transparent'
+  wid: number = Constants.SIZE_ICON_BUTTON_COMMON
 
   build() {
     Column() {
       Button({type: ButtonType.Circle}) {
         Image(this.imgUrl)
           .borderRadius(50)
-          .width(35)
+          .width(this.wid)
           .fillColor($r('app.color.reverse'))
       }
-      .height(35)
-      .width(35)
+      .height(this.wid)
+      .width(this.wid)
       .backgroundColor(this.BgColor)
       .opacity(0.8)
     }

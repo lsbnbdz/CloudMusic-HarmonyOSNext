@@ -1,4 +1,4 @@
-import { LogUtil, ToastUtil } from "@pura/harmony-utils"
+import { EmitterUtil, LogUtil, ToastUtil } from "@pura/harmony-utils"
 import { PlayList, PlayListOperationRes, PlayListSearchResult } from "../common/entities/PlayList"
 import { CloudSongs, DailyListSongs, PlayListSongs } from "../common/entities/PlayListSongs"
 import { PlayQueue } from "../common/entities/PlayQueue"

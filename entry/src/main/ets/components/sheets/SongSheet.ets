@@ -81,7 +81,7 @@ export struct SongSheet {
               Button() {
                 Row({ space: 5 }) {
                   Image($r('app.media.ic_play_fill')).width(18).fillColor($r('app.color.reverse'))
-                  Text('播放单首').fontSize(16).fontColor($r('app.color.reverse'))
+                  Text('播放单首').fontSize(Constants.FONT_SIZE_COMMON).fontColor($r('app.color.reverse'))
                 }
                 .padding(15)
               }
@@ -101,7 +101,7 @@ export struct SongSheet {
                 Button() {
                   Row({ space: 5 }) {
                     Image($r('app.media.ic_play_fill')).width(18).fillColor($r('app.color.reverse'))
-                    Text('播放歌单').fontSize(16).fontColor($r('app.color.reverse'))
+                    Text('播放歌单').fontSize(Constants.FONT_SIZE_COMMON).fontColor($r('app.color.reverse'))
                   }
                   .padding(15)
                 }
@@ -116,14 +116,6 @@ export struct SongSheet {
         }
 
         Row({ space: 5 }) {
-          // 音质选择框
-          Select([{ value: '标准' }, { value: '高' }, { value: '极高' }, { value: '无损' }])
-            .selected(3)
-            .value('无损')
-            .onSelect((index: number) => {
-              this.qualitySelected = index
-            })
-
           // 下载按钮
           Button() {
             Row({ space: 5 }) {

@@ -1,5 +1,6 @@
 import { router } from "@kit.ArkUI"
 import { ToastUtil } from "@pura/harmony-utils"
+import Constants from "../../common/constants/Constants"
 import { PlayList, playListClass } from "../../common/entities/PlayList"
 
 @Component
@@ -58,10 +59,10 @@ export struct RecommendCards {
       Column() {
         Text(`${firText}`)
           .width('100%')
-          .textStyle(20, true)
+          .textStyle(Constants.FONT_SIZE_TITLE, true)
         Text(`${secText}`)
           .width('100%')
-          .textStyle(14)
+          .textStyle(Constants.FONT_SIZE_COMMON)
           .textAlign(TextAlign.Center)
       }
       .justifyContent(FlexAlign.SpaceBetween)
@@ -140,10 +141,10 @@ export struct RecommendCards_NotLogged {
       Column() {
         Text(`${firText}`)
           .width('100%')
-          .textStyle(20, true)
+          .textStyle(Constants.FONT_SIZE_TITLE, true)
         Text(`${secText}`)
           .width('100%')
-          .textStyle(14)
+          .textStyle(Constants.FONT_SIZE_COMMON)
           .textAlign(TextAlign.Center)
       }
       .justifyContent(FlexAlign.SpaceBetween)
@@ -155,5 +156,73 @@ export struct RecommendCards_NotLogged {
     .backgroundImageSize(ImageSize.Cover)
     .buttonSty()
     .onClick(onClick)
+  }
+}
+
+/**
+ * RecommendCards
+ * Loading
+ * Skeleton
+ */
+@Component
+export struct RecommendCards_Skeleton {
+  @State isVisible: boolean = false
+
+  aboutToAppear(): void {
+    this.isVisible = true
+  }
+
+  build() {
+    List({ space: 15 }) {
+      ListItem().width(5)
+      ListItem() {
+        this.ContentButton()
+      }
+      .width(150)
+      ListItem() {
+        this.ContentButton()
+      }
+      .width(150)
+      ListItem() {
+        this.ContentButton()
+      }
+      .width(150)
+
+      ListItem().width(5)
+    }
+    .borderRadius(0)
+    .scrollBar(BarState.Off)
+    .listDirection(Axis.Horizontal)
+    .width('100%')
+  }
+
+  @Builder
+  ContentButton() {
+    Button() {
+      Column() {
+        Column() {}
+        .width('100%')
+        .height(Constants.FONT_SIZE_TITLE)
+        .backgroundColor($r('app.color.background'))
+        .padding({ left: Constants.PADDING_EDGE_DEFAULT, right: Constants.PADDING_EDGE_DEFAULT })
+
+        Column() {}
+        .width('80%')
+        .height(Constants.FONT_SIZE_COMMON)
+        .backgroundColor($r('app.color.background'))
+        .padding({ left: Constants.PADDING_EDGE_DEFAULT, right: Constants.PADDING_EDGE_DEFAULT })
+      }
+      .justifyContent(FlexAlign.SpaceBetween)
+      .height('100%')
+      .width('100%')
+      .padding({ left: 10, right: 10, top: 15, bottom: 15 })
+    }
+    .opacity(this.isVisible ? 1 : 0)
+    .backgroundColor($r('app.color.main'))
+    .buttonSty()
+    .animation({
+      duration: 1500,
+      curve: Curve.EaseInOut
+    })
   }
 }

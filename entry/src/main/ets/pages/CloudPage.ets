@@ -1,12 +1,13 @@
 import { Song } from '../common/entities/SongsResult'
 import { SongCard } from '../components/cards/SongCard'
 import { ListHead } from '../components/head/ListHead'
-import { SpinKit, SpinType } from '@pura/spinkit'
+
 import { LogUtil } from '@pura/harmony-utils'
 import { getCloudList } from '../api/playListApi'
 import { BottomBarComponent } from '../components/play/BottomBarComponent'
 import { AddToPlayListButton } from '../components/buttons/play/AddToPlayListButton'
 import { QuestionButton } from '../components/buttons/QuestionButton'
+import Constants from '../common/constants/Constants'
 
 /**
  * 云盘
@@ -64,7 +65,7 @@ struct PlayListPage {
       Stack({ alignContent: Alignment.Top }) {
         if (this.isLoading) {
           Column() {
-            SpinKit({ spinType: SpinType.spinO, spinSize: 60, spinColor: Color.Gray }).width(60)
+            LoadingProgress().width(Constants.SIZE_LOADING_PROGRESS_DEFAULT)
           }.height('100%').width('100%').justifyContent(FlexAlign.Center)
         } else {
           List() {
@@ -79,7 +80,7 @@ struct PlayListPage {
             if (this.isLoadingMore) {
               ListItem() {
                 Column() {
-                  SpinKit({ spinType: SpinType.spinO, spinSize: 30, spinColor: Color.Gray }).width(30)
+                  LoadingProgress().width(Constants.SIZE_LOADING_PROGRESS_CARD)
                 }.justifyContent(FlexAlign.Center).width('100%').height(50)
               }
             } else if (this.hasMore) {
@@ -95,7 +96,7 @@ struct PlayListPage {
               }
             } else if (!this.hasMore) {
               ListItem() {
-                Text('没有更多了~').fontSize(16).textAlign(TextAlign.Center).width('100%').height(50);
+                Text('没有更多了~').fontSize(Constants.FONT_SIZE_COMMON).textAlign(TextAlign.Center).width('100%').height(50);
               }
             }
             ListItem().height(px2vp(this.bottomRectHeight) + 80)
@@ -124,7 +125,7 @@ struct PlayListPage {
 
   @Builder
   HeadSlot() {
-    QuestionButton({ title: '云盘', msg: '音乐云盘内歌曲仅支持单首播放、下载' })
+    QuestionButton({ title: '云盘', msg: '音乐云盘内歌曲仅支持单首播放、下载', comSize: Constants.SIZE_ICON_BUTTON_HEAD })
   }
 
   @Builder

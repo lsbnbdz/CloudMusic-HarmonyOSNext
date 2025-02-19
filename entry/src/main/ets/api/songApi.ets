@@ -1,10 +1,15 @@
 import { LogUtil } from "@pura/harmony-utils"
+import { StorageConstants } from "../common/constants/StorageConstants"
+import { HeartMode } from "../common/entities/HeartMode"
 import { DailyListSongs } from "../common/entities/PlayListSongs"
+import { PlayQueue } from "../common/entities/PlayQueue"
 import { SongDetail } from "../common/entities/SongDetail"
 import { QualityType } from "../common/entities/SongDownload"
 import { SongPlay } from "../common/entities/SongPlay"
 import { Song, SongsData } from "../common/entities/SongsResult"
-import { getApiUrl, isUsePubCookie } from "../common/functions/commonFunction"
+import { getApiUrl, getArtists, isUsePubCookie } from "../common/functions/commonFunction"
+import { playQueue } from "../common/functions/play/playControl"
+import PlayQueueUtils from "../common/utils/play/PlayQueueUtils"
 import { HttpRequest } from "../common/utils/request/HttpRequestUtils"
 import { DailySongRes } from "./playListApi"
 
@@ -132,6 +137,7 @@ export async function getDailySongs(useCookie: boolean = true): Promise<Array<Da
  * @returns
  */
 export async function getLikeList(uid: number): Promise<string[]> {
+
   let list:Array<string> = []
   const rootUrl = await getApiUrl()
   const url: string = `${rootUrl}/likelist?uid=${uid}&timestamp=${new Date().getTime()}`
@@ -140,6 +146,7 @@ export async function getLikeList(uid: number): Promise<string[]> {
     const dataGot:string[] = data.result['ids'] as string[]
     list = dataGot
   })
+  AppStorage.setOrCreate(StorageConstants.USER_LIKELIST, list)
   return list
 }
 
@@ -157,4 +164,37 @@ export async function likeMusic(sid: number): Promise<boolean> {
     code = data.result['code'] as number
   })
   return code == 200 ? true : false
+}
+
+/**
+ * 心动模式
+ * @param id - 歌曲id
+ * @param pid - 歌单id
+ */
+export async function setHeartMode(id: number, pid: number): Promise<void> {
+  let queue: Array<PlayQueue> = []
+  let tempSong: Song
+  const rootUrl = await getApiUrl()
+  const url: string = `${rootUrl}/playmode/intelligence/list?id=${id}&pid=${pid}`
+  const request = new HttpRequest(url)
+  let data = await request.RequestInStream()
+  let dataGot = data.result as HeartMode
+  for(let item of dataGot.data) {
+    let artists = await getArtists(item.songInfo.ar)
+    tempSong = {
+      id: item.songInfo.id,
+      name: item.songInfo.name,
+      artists: item.songInfo.ar,
+      duration: item.songInfo.dt,
+      alias: []
+    }
+    queue.push({
+      playmode: 1,
+      song: tempSong,
+      artists: artists,
+      fileName: ''
+    })
+  }
+  await PlayQueueUtils.cleanQueue()
+  await PlayQueueUtils.queueAdd_array(queue)
 }

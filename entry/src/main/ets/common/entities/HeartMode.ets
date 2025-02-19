@@ -1,0 +1,23 @@
+/**
+ * 心动模式
+ */
+interface Artist {
+  name: string
+  id: number
+}
+
+interface SongInfo {
+  id: number
+  name: string
+  ar: Artist[]
+  dt: number
+}
+
+interface ResultData {
+  songInfo: SongInfo
+}
+
+export interface HeartMode {
+  code: number
+  data: ResultData[]
+}

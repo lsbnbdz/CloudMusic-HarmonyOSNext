@@ -1,8 +1,10 @@
 import { EmitterUtil, LogUtil } from "@pura/harmony-utils"
-import { SpinKit, SpinType } from "@pura/spinkit"
+
 import { searchSongs } from "../../api/songApi"
+import Constants from "../../common/constants/Constants"
 import { EmitterConstants } from "../../common/constants/EmitterConstants"
 import { Song } from "../../common/entities/SongsResult"
+import { ClickToLoadButton, LoadingMoreButton, NoMoreButton } from "../buttons/LoadMoreButtons"
 import { AddToPlayListButton } from "../buttons/play/AddToPlayListButton"
 import { SongCard } from "../cards/SongCard"
 
@@ -43,7 +45,7 @@ export struct SearchSongsList {
   build() {
     if(this.isLoading == true) {
       Column() {
-        SpinKit({ spinType: SpinType.spinO, spinSize:60, spinColor:Color.Gray }).width(60)
+        LoadingProgress().width(Constants.SIZE_LOADING_PROGRESS_DEFAULT)
       }
       .padding({ bottom: px2vp(this.topRectHeight) })
       .height('100%')
@@ -60,27 +62,18 @@ export struct SearchSongsList {
         // 添加加载更多
         if (this.isLoadingMore) {
           ListItem() {
-            Column() {
-              SpinKit({ spinType: SpinType.spinO, spinSize: 30, spinColor: Color.Gray }).width(30)
-            }
-            .justifyContent(FlexAlign.Center)
-            .width('100%')
-            .height(50)
+            LoadingMoreButton()
           }
         } else if (this.hasMoreSongs && this.searchKeyword) {
           ListItem() {
-            Text("点击加载更多")
+            ClickToLoadButton()
               .onClick(() => {
                 this.loadSongs(this.songOffset)
               })
-              .padding({ top: 10, bottom: px2vp(this.bottomRectHeight) })
-              .fontColor($r('app.color.reverse'))
-              .width('100%')
-              .textAlign(TextAlign.Center)
           }
         } else if (!this.hasMoreSongs) {
           ListItem() {
-            Text('没有更多了~').fontSize(16).textAlign(TextAlign.Center).width('100%').height(50);
+            NoMoreButton()
           }
         }
         ListItem().height(px2vp(this.bottomRectHeight) + 80)

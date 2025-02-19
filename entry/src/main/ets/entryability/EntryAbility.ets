@@ -13,12 +13,15 @@ export default class EntryAbility extends UIAbility {
   async onCreate(want: Want, launchParam: AbilityConstant.LaunchParam): Promise<void> {
     hilog.info(0x0000, 'testTag', '%{public}s', 'Ability onCreate');
 
-    // 初始化
+    // 初始化 Log
     LogUtil.init(0x1010, 'Cloud Music', true)
 
+    // 初始化用户首选项
     await PreferencesUtils.loadPreference(this.context, StorageConstants.USER_PREF)
     await PreferencesUtils.loadPreference(this.context, StorageConstants.SET_PERF)
     await PreferencesUtils.loadPreference(this.context, StorageConstants.QUEUE_PREF)
+
+    // 初始化应用信息
     appInit()
   }
 

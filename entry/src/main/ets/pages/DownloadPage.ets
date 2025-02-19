@@ -2,6 +2,7 @@ import FileUtils from '../common/utils/file/FileUtils';
 import { ListHead } from '../components/head/ListHead';
 import { FileCard } from '../components/cards/FileCard';
 import { BottomBarComponent } from '../components/play/BottomBarComponent';
+import Constants from '../common/constants/Constants';
 
 /**
  * 下载管理页
@@ -25,7 +26,6 @@ struct DownloadPage {
   async changeLayout(columnEnd: number ) {
     if(columnEnd == 0) { this.columnsTemplate = '1fr'; this.columnEnd = 0 }
     else if(columnEnd == 1) { this.columnsTemplate = '1fr 1fr'; this.columnEnd = 1 }
-    else if(columnEnd == 2) { this.columnsTemplate = '1fr 1fr 1fr'; this.columnEnd = 2 }
   }
 
   build() {
@@ -38,11 +38,12 @@ struct DownloadPage {
               if (this.fileList.length > 0) {
                 Row() {
                   Text(`共 ${this.fileList.length} 首歌曲 (点击排序)`)
-                    .fontSize(16)
+                    .fontSize(Constants.FONT_SIZE_COMMON)
                     .onClick(() => {
                       this.fileList.sort()
                     })
-                  Select([{ value: '1列' }, { value: '2列' }, { value: '3列' }])
+                  Select([{ value: '1列' }, { value: '2列' }])
+                    .height(Constants.HEIGHT_SELECT)
                     .selected(0)
                     .borderStyle(BorderStyle.Solid)
                     .value('1列')

@@ -1,6 +1,7 @@
-import { PlayConstants } from "../constants/PlayConstants"
-import { QualityType } from "../entities/SongDownload"
-import PreferencesUtils from "../utils/app/PreferencesUtils"
+import Constants from "../../common/constants/Constants"
+import { PlayConstants } from "../../common/constants/PlayConstants"
+import { QualityType } from "../../common/entities/SongDownload"
+import PreferencesUtils from "../../common/utils/app/PreferencesUtils"
 
 /**
  * 设置播放音质
@@ -20,16 +21,18 @@ export struct SetPlayQuality {
         .selected(this.selected)
         .value(this.selected ? PlayConstants.QUALITY_NAME[this.selected] : '标准')
         .width(100)
+        .height(Constants.HEIGHT_SELECT)
         .onSelect((index: number) => {
           AppStorage.setOrCreate('set-playQuality',index)
           PreferencesUtils.putPreferenceValue('Settings', 'playQuality', index)
         })
     }
-    .width('100%').justifyContent(FlexAlign.SpaceBetween).padding({ left:30, right: 30})
+    .width('100%')
+    .justifyContent(FlexAlign.SpaceBetween)
   }
 }
 
 @Extend(Text) function LeftText() {
-  .fontSize(16)
+  .fontSize(Constants.FONT_SIZE_COMMON)
   .fontWeight(FontWeight.Bold)
 }

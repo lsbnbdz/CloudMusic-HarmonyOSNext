@@ -1,5 +1,6 @@
-import { ExplainButton } from "../../components/buttons/ExplainButton"
-import PreferencesUtils from "../utils/app/PreferencesUtils"
+import { ExplainButton } from "../buttons/ExplainButton"
+import Constants from "../../common/constants/Constants"
+import PreferencesUtils from "../../common/utils/app/PreferencesUtils"
 
 /**
  * 是否使用公共Cookie
@@ -18,17 +19,18 @@ export struct UsePublicCookie {
         })
       }
       Toggle({ type: ToggleType.Switch, isOn:this.isUsePubCookie }).height(24).width(48)
-        .onChange(() => { this.isUsePubCookie = !this.isUsePubCookie
+        .onChange(() => {
+          this.isUsePubCookie = !this.isUsePubCookie
           AppStorage.setOrCreate('set-isUsePubCookie',this.isUsePubCookie)
-          PreferencesUtils.putPreferenceValue('Settings','isUsePubCookie',this.isUsePubCookie)})
+          PreferencesUtils.putPreferenceValue('Settings','isUsePubCookie',this.isUsePubCookie)
+        })
     }
     .width('100%')
     .justifyContent(FlexAlign.SpaceBetween)
-    .padding({ left:30, right: 30})
   }
 }
 
 @Extend(Text) function LeftText() {
-  .fontSize(16)
+  .fontSize(Constants.FONT_SIZE_COMMON)
   .fontWeight(FontWeight.Bold)
 }

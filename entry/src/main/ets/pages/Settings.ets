@@ -1,12 +1,13 @@
 import { SettingsHead } from '../components/head/SettingsHead'
-import { CustomApiUrl } from '../common/settings/CustomApiUrl'
-import { SetPlayQuality } from '../common/settings/SetPlayQuality'
-import { RemoveCache } from '../common/settings/RemoveCache'
-import { Animation } from '../common/settings/Animation'
-import { UsePublicCookie } from '../common/settings/UsePublicCookie'
+import { CustomApiUrl } from '../components/settings/CustomApiUrl'
+import { SetPlayQuality } from '../components/settings/SetPlayQuality'
+import { RemoveCache } from '../components/settings/RemoveCache'
+import { Animation } from '../components/settings/Animation'
+import { UsePublicCookie } from '../components/settings/UsePublicCookie'
 import { Settings_Bottom,
   Settings_Feedback,
-  Settings_Version } from '../common/settings/TextContent'
+  Settings_Version } from '../components/settings/TextContent'
+import Constants from '../common/constants/Constants'
 
 /**
  * 设置页面
@@ -20,17 +21,17 @@ struct Settings {
   build() {
     Stack() {
       Column({ space: 10 }) {
-        SettingsHead().padding({ bottom: 20 })
+        SettingsHead()
 
-        List({ space: 20 }) {
-          ListItem() { Animation() }
-          ListItem() { UsePublicCookie() }
-          ListItem() { SetPlayQuality() }
-          ListItem() { CustomApiUrl() }
-          ListItem() { RemoveCache() }
+        List({ space: 10 }) {
+          ListItem() { SetPlayQuality() }.listItemStyle()
+          ListItem() { Animation() }.listItemStyle()
+          ListItem() { UsePublicCookie() }.listItemStyle()
+          ListItem() { CustomApiUrl() }.listItemStyle()
+          ListItem() { RemoveCache() }.listItemStyle()
           ListItem() { Divider() }
-          ListItem() { Settings_Version() }
-          ListItem() { Settings_Feedback() }
+          ListItem() { Settings_Version() }.listItemStyle()
+          ListItem() { Settings_Feedback() }.listItemStyle()
         }
         .scrollBar(BarState.Auto)
         .width('100%')
@@ -45,6 +46,14 @@ struct Settings {
     .width('100%')
     .height('100%')
     .backgroundColor($r('app.color.background'))
+  }
+
+  @Styles listItemStyle() {
+    .backgroundColor($r('app.color.main'))
+    .borderRadius(Constants.RADIUS_CARD)
+    .height(Constants.HEIGHT_SETTINGS_ITEM)
+    .margin({ left: 20, right: 20 })
+    .padding({ left: Constants.PADDING_EDGE_DEFAULT, right: Constants.PADDING_EDGE_DEFAULT })
   }
 }
 

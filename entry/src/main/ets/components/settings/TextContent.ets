@@ -1,6 +1,7 @@
 import { router } from "@kit.ArkUI"
 import { PasteboardUtil, ToastUtil } from "@pura/harmony-utils"
-import { AppConstants } from "../constants/AppConstants"
+import { AppConstants } from "../../common/constants/AppConstants"
+import Constants from "../../common/constants/Constants"
 
 /**
  * 显示版本号
@@ -9,9 +10,12 @@ import { AppConstants } from "../constants/AppConstants"
 export struct Settings_Version {
   build() {
     Row() {
-      Text('当前版本').LeftText()
-      Text(AppConstants.VERSION + AppConstants.VER_DESC).RightText()
-    }.width('100%').justifyContent(FlexAlign.SpaceBetween).padding({ left:30, right: 30})
+      Text('当前版本')
+        .LeftText()
+      Text(AppConstants.VERSION + AppConstants.VER_DESC)
+        .RightText()
+    }.width('100%')
+    .justifyContent(FlexAlign.SpaceBetween)
   }
 }
 
@@ -22,9 +26,15 @@ export struct Settings_Version {
 export struct Settings_Feedback {
   build() {
     Row() {
-      Text('建议与反馈').LeftText()
-      Text('前往反馈').RightText().textAlign(TextAlign.End).decoration({type: TextDecorationType.Underline})
-    }.width('100%').justifyContent(FlexAlign.SpaceBetween).padding({ left:30, right: 30})
+      Text('建议与反馈')
+        .LeftText()
+      Text('前往反馈')
+        .RightText()
+        .textAlign(TextAlign.End)
+        .decoration({type: TextDecorationType.Underline})
+    }
+    .width('100%')
+    .justifyContent(FlexAlign.SpaceBetween)
     .onClick(() => {
       router.pushUrl({
         url:'pages/WebPage',
@@ -70,12 +80,12 @@ export struct Settings_Bottom {
 }
 
 @Extend(Text) function LeftText() {
-  .fontSize(16)
+  .fontSize(Constants.FONT_SIZE_COMMON)
   .fontWeight(FontWeight.Bold)
 }
 
 @Extend(Text) function RightText() {
-  .fontSize(16)
+  .fontSize(Constants.FONT_SIZE_COMMON)
 }
 
 @Extend(Text) function BottomText() {

@@ -1,5 +1,6 @@
 import { DialogUtil, PasteboardUtil, ToastUtil } from "@pura/harmony-utils"
 import { DialogAction } from "@pura/harmony-utils/src/main/ets/entity/constraint"
+import Constants from "../../common/constants/Constants"
 import { Song, SongClass } from "../../common/entities/SongsResult"
 import { fetchMetadata, fetchSongInfo } from "../../common/functions/commonFunction"
 import { playMusicWithFile } from "../../common/functions/play/playControl"
@@ -104,7 +105,7 @@ export struct FileCard {
       .width(22)
       Text(title)
         .fontColor(contentColor)
-        .fontSize(16)
+        .fontSize(Constants.FONT_SIZE_COMMON)
         .fontWeight(isBold ? FontWeight.Bold : FontWeight.Normal)
     }
     .padding({ left: 15, right: 15, top: 5, bottom: 5 })

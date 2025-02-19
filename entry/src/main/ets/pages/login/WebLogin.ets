@@ -2,8 +2,9 @@ import { CommonHead } from '../../components/head/CommonHead';
 import { webview } from '@kit.ArkWeb';
 import { promptAction } from '@kit.ArkUI';
 import { getLoginStatus } from '../../api/getLoginStatus';
-import { LoginHelpSheet } from '../../components/sheets/LoginHelpSheet';
-import { ToastUtil } from '@pura/harmony-utils';
+import { DialogUtil, LogUtil, ToastUtil } from '@pura/harmony-utils';
+import { CommonCircleButton } from '../../components/buttons/CircleButton';
+import { MsgConstants } from '../../common/constants/MsgConstants';
 
 /**
  * 网页登录页面
@@ -13,7 +14,7 @@ import { ToastUtil } from '@pura/harmony-utils';
 struct WebLogin {
   @StorageProp('bottomRectHeight') bottomRectHeight: number = 0
   @State userAgent: string = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
-  @State isShowHelpSheet:boolean = false
+  @State isLoading: boolean = true
   controller: webview.WebviewController = new webview.WebviewController()
 
   build() {
@@ -21,28 +22,46 @@ struct WebLogin {
       Column() {
         CommonHead({ title: '登录'})
         this.Bar()
-        Web({ src: '', controller: this.controller })
-          .width('100%')
-          .height('100%')
-          .onControllerAttached(() => {
-            try {
-              this.controller.setCustomUserAgent(this.userAgent)
-              this.controller.loadUrl(`https://music.163.com/#/login`)
-            } catch (error) {
-              console.error('Login Web Error: ' + error.message)
-            }
+        Stack() {
+          Web({
+            src: '',
+            controller: this.controller
           })
+            .javaScriptAccess(true)
+            .overScrollMode(OverScrollMode.ALWAYS)
+            .width('100%')
+            .height('100%')
+            .onProgressChange((e) => {
+              if (e.newProgress == 100) {
+                this.isLoading = false
+              }
+            })
+            .onControllerAttached(() => {
+              try {
+                this.controller.setCustomUserAgent(this.userAgent)
+                this.controller.loadUrl(`https://music.163.com/#/login`)
+              } catch (error) {
+                console.error('Login Web Error: ' + error.message)
+              }
+            })
 
-        Column() {
-
-        }.width('100%').padding({ top:20 })
+          if(this.isLoading) {
+            Stack({ alignContent: Alignment.Center }) {
+              this.Loading()
+            }
+            .height('100%')
+            .width('100%')
+          }
+        }
+        .width('100%')
+        .height('100%')
       }
       .height('100%')
       .width('100%')
     }
     .height('100%')
     .width('100%')
-    .backgroundColor($r('app.color.main'))
+    .backgroundColor($r('app.color.background'))
     .padding({ bottom: vp2px(this.bottomRectHeight) })
   }
 
@@ -67,52 +86,62 @@ struct WebLogin {
 
   async checkValidCookie(cookie: string): Promise<boolean> {
     try {
-      const hasMusicU = cookie.includes('MUSIC_U');
-      const hasCsrf = cookie.includes('__csrf');
+      const hasMusicU = cookie.includes('MUSIC_U')
+      const hasCsrf = cookie.includes('__csrf')
 
       if (hasMusicU && hasCsrf) {
-        console.log('Valid cookie detected:', cookie);
-        return true;
+        return true
       } else {
-        console.log('Invalid or unauthenticated cookie:', cookie);
-        return false;
+        LogUtil.info('Cookie 无效: ', cookie)
+        return false
       }
     } catch (error) {
-      console.error('Error while checking cookie validity:', error.message);
-      return false;
+      LogUtil.error('检查 Cookie 有效性出错: ', error.message)
+      return false
     }
   }
 
+  @Builder
+  Loading() {
+    Column() {
+      LoadingProgress()
+        .width(40)
+      Text('网页加载中')
+        .fontColor($r('app.color.reverse'))
+    }
+    .backgroundColor(Color.Transparent)
+    .padding({ left: 15, right: 15, bottom: 10, top: 10})
+  }
   @Builder
   Bar() {
     Row() {
       Button() {
         Row({ space: 5 }) {
           Image($r('app.media.ic_public_help')).fillColor($r('app.color.reverse')).height('80%')
-          Text('如何登录？').fontColor($r('app.color.reverse')).height('80%')
-        }.padding({ right: 10 })
-      }.height(30).alignSelf(ItemAlign.End).backgroundColor(Color.Transparent)
-      .bindSheet(this.isShowHelpSheet, this.HelpSheet(), {
-        preferType: SheetType.BOTTOM,
-        height: '50%',
-        dragBar: false,
-        onDisappear: () => {
-          this.isShowHelpSheet = !this.isShowHelpSheet
+          Text('如何登录?').fontColor($r('app.color.reverse')).height('80%')
         }
-      })
+        .padding({ right: 10 })
+      }
+      .height(30)
+      .alignSelf(ItemAlign.End)
+      .backgroundColor(Color.Transparent)
       .onClick(() => {
-        this.isShowHelpSheet = !this.isShowHelpSheet
+        DialogUtil.showConfirmDialog({
+          title: '如何登录',
+          message: MsgConstants.HOW_TO_LOGIN_MSG
+        })
       })
-
-      Button('获取登录信息').onClick(() => { this.getCookie() })
+      Row({ space: 10 }) {
+        Button('刷新').onClick(() => {
+          this.controller.refresh()
+        })
+        Button('获取登录信息').onClick(() => {
+          this.getCookie()
+        })
+      }
     }
     .justifyContent(FlexAlign.SpaceBetween)
     .width('100%')
     .padding({ bottom: 10, left: 15, right: 15 })
-  }
-
-  @Builder
-  HelpSheet() {
-    LoginHelpSheet({ isShowSheet: this.isShowHelpSheet })
   }
 }

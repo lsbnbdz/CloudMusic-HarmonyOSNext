@@ -7,7 +7,7 @@ import { RecommendCards_NotLogged } from '../components/cards/RecommendCards';
 @Entry
 @Component
 struct Index {
-  @StorageProp("isValidCookie") isValidCookie:boolean = false
+  @StorageProp("isValidCookie") isValidCookie: boolean = false
   @StorageProp('topRectHeight') topRectHeight: number = 0
   @StorageProp('bottomRectHeight') bottomRectHeight: number = 0
   @State isShowSearchButton: boolean = false

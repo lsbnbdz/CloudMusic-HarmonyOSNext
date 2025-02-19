@@ -1,7 +1,7 @@
 import { Song } from '../common/entities/SongsResult'
 import { SongCard } from '../components/cards/SongCard'
 import { ListHead } from '../components/head/ListHead'
-import { SpinKit, SpinType } from '@pura/spinkit'
+
 import { LogUtil } from '@pura/harmony-utils'
 import { DailySongRes, PlayDailySongs } from '../api/playListApi'
 import { BottomBarComponent } from '../components/play/BottomBarComponent'
@@ -11,6 +11,7 @@ import { AddToPlayListButton } from '../components/buttons/play/AddToPlayListBut
 import { getDailySongs } from '../api/songApi'
 import { promptAction } from '@kit.ArkUI'
 import { MsgConstants } from '../common/constants/MsgConstants'
+import Constants from '../common/constants/Constants'
 
 /**
  * 每日推荐歌单页面
@@ -60,14 +61,14 @@ struct DailyListPage {
       Stack({ alignContent: Alignment.Top }) {
         if (this.isLoading) {
           Column() {
-            SpinKit({ spinType: SpinType.spinO, spinSize: 60, spinColor: Color.Gray }).width(60)
+            LoadingProgress().width(Constants.SIZE_LOADING_PROGRESS_DEFAULT)
           }.height('100%').width('100%').justifyContent(FlexAlign.Center)
         } else {
           // debug
           Stack({ alignContent: Alignment.Top}) {
             Column() {
             if(this.list.length < 3) {
-              Text('当前环境无法获取每日推荐歌单。').fontSize(16).textAlign(TextAlign.Center)
+              Text('当前环境无法获取每日推荐歌单。').fontSize(Constants.FONT_SIZE_COMMON).textAlign(TextAlign.Center)
             }
             }
             .padding({ top: px2vp(this.topRectHeight) + 150, left: 20, right: 20 })
@@ -80,13 +81,14 @@ struct DailyListPage {
               ListItem() {
                 Button() {
                   Row({ space: 5 }) {
-                    Image($r('app.media.ic_play_fill')).width(15).fillColor(Color.Gray)
-                    Text('播放全部').fontSize(15)
+                    Image($r('app.media.ic_play_fill')).width(Constants.FONT_SIZE_COMMON).fillColor(Color.Gray)
+                    Text('播放全部').fontSize(Constants.FONT_SIZE_COMMON)
                   }
+                  .height(Constants.HEIGHT_TEXT_BUTTON)
                 }
                 .type(ButtonType.Normal)
                 .backgroundColor(Color.Transparent)
-                .borderRadius(15)
+                .borderRadius(Constants.RADIUS_BUTTON)
                 .onClick(async () => {
                   this.loadingPlayList = true
                   await PlayDailySongs()
@@ -128,7 +130,7 @@ struct DailyListPage {
       .height('100%')
 
       BottomBarComponent()
-        .padding({ left: 10, right: 10, bottom: px2vp(this.bottomRectHeight)})
+        .padding({ left: Constants.PADDING_EDGE_DEFAULT, right: Constants.PADDING_EDGE_DEFAULT, bottom: px2vp(this.bottomRectHeight)})
         .backgroundColor(Color.Transparent)
 
       if(this.loadingPlayList) {
@@ -170,7 +172,7 @@ struct DailyListPage {
 
   @Builder
   HeadSlot() {
-    CommonCircleButton({ ButtonImageName: 'ic_public_more_filled' })
+    CommonCircleButton({ ButtonImageName: 'ic_public_more_filled', wid: Constants.SIZE_ICON_BUTTON_HEAD })
       .onClick(() => {
         promptAction.showToast({ message: MsgConstants.DEVELOPING, duration: 3000 })
       })

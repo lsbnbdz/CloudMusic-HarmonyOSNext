@@ -32,14 +32,22 @@ export struct Me {
 
       Column() {
         this.ItemCard($r('app.media.ic_public_settings_filled'), '设置', () => {
-          this.pageInfos.pushPathByName('SettingsPage', null)
+          if(this.pageInfos.size() == 0) {
+            this.pageInfos.pushPathByName('SettingsPage', null)
+          } else {
+            this.pageInfos.replacePathByName('SettingsPage', null)
+          }
         })
       }
       .itemColumnStyle()
 
       Column() {
         this.ItemCard($r('app.media.ic_public_download_filled'), '下载', () => {
-          this.pageInfos.pushPathByName('DownloadPage', null)
+          if(this.pageInfos.size() == 0) {
+            this.pageInfos.pushPathByName('DownloadPage', null)
+          } else {
+            this.pageInfos.replacePathByName('DownloadPage', null)
+          }
         })
       }
       .itemColumnStyle()
@@ -52,7 +60,7 @@ export struct Me {
         })
       } else {
         this.LoginButton(Color.Blue, '登 录', () => {
-          this.pageInfos.pushPathByName('LoginPage', null)
+          this.pageInfos.pushPathByName('LoginPage', null, true)
         })
       }
 

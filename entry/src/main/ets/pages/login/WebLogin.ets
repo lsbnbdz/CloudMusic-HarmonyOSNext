@@ -25,7 +25,15 @@ export struct WebLogin {
               src: '',
               controller: this.controller
             })
+              .allowWindowOpenMethod(true)
+              .horizontalScrollBarAccess(true)
+              .verticalScrollBarAccess(true)
+              .fileAccess(true)
+              .domStorageAccess(true)
               .javaScriptAccess(true)
+              .imageAccess(true)
+              .onlineImageAccess(true)
+              .overviewModeAccess(true)
               .cacheMode(CacheMode.Online)
               .overScrollMode(OverScrollMode.ALWAYS)
               .width('100%')

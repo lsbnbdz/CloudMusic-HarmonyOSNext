@@ -57,10 +57,6 @@ export struct BottomBarComponent {
     .onClick(() => {
       if(this.isPlaying) {
         this.isShow = true
-
-        // this.getUIContext()?.animateTo({ duration: 300, curve: Curve.Friction }, () => {
-        //   this.pageInfos.pushPathByName('FullPlayerPage', null)
-        // })
       }
       else { ToastUtil.showToast('当前无正在播放歌曲') }
     })

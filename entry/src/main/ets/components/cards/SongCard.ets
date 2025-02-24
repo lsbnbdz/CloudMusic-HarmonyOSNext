@@ -2,7 +2,6 @@ import { getSongPicUrl } from "../../api/songApi"
 import { Song, SongClass } from "../../common/entities/SongsResult"
 import { changeDuration, getArtists } from "../../common/functions/commonFunction"
 import PlayQueueUtils from "../../common/utils/play/PlayQueueUtils"
-import { SongSheet } from "../sheets/SongSheet"
 import { promptAction } from "@kit.ArkUI"
 import { PlayList, playListClass } from "../../common/entities/PlayList"
 import Constants from "../../common/constants/Constants"
@@ -15,8 +14,6 @@ import { DownloadDialog } from "../dialog/DownloadDialog"
 export struct SongCard {
   @StorageProp('isPlayerLoading') isPlayerLoading:boolean = false
   @StorageProp('isValidCookie') isValidCookie:boolean = false
-  @State hasAnimation: boolean = false
-  // @State isShowSheet: boolean = false
   @State showPlayButton: boolean = true
   @State showAddQueueButton: boolean = true
   @State showSid: boolean = true
@@ -41,7 +38,7 @@ export struct SongCard {
   })
 
   async aboutToAppear(): Promise<void> {
-    if(this.hasAnimation) { this.startHeight = 120; this.startOpacity = 0.1}
+    this.startHeight = 120; this.startOpacity = 0.1
     const artistsStr = await getArtists(this.song.artists)
     this.artists = artistsStr
     const picUrl = await getSongPicUrl(this.song)
@@ -120,20 +117,7 @@ export struct SongCard {
     .height(60)
     .padding({ left: 20, right: 20 })
     .bindMenu(this.ClickMenu)
-    // .bindSheet(this.isShowSheet, this.Sheet(), {
-    //   preferType: SheetType.CENTER,
-    //   height: '70%',
-    //   dragBar: true,
-    //   onDisappear: () => { this.isShowSheet = false }
-    // })
-    // .onClick(() => { this.isShowSheet = !this.isShowSheet })
   }
-
-  // @Builder
-  // Sheet() {
-  //   SongSheet({ song: this.song, isShowSheet: this.isShowSheet, artists:this.artists, picUrl:this.picUrl,
-  //     isPlayList:this.isPlayList, playList: this.playList, index: this.index, showPlayButton: this.showPlayButton})
-  // }
 
   @Builder
   ClickMenu() {
@@ -162,6 +146,10 @@ export struct SongCard {
       }
     }
     .width('80%')
+    .constraintSize({
+      minWidth: 100,
+      maxWidth: 300
+    })
   }
 
   @Builder MenuInfo() {

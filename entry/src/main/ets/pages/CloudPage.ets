@@ -1,13 +1,13 @@
 import { Song } from '../common/entities/SongsResult'
 import { SongCard } from '../components/cards/SongCard'
-import { ListHead } from '../components/head/ListHead'
 import { DialogUtil, LogUtil } from '@pura/harmony-utils'
 import { getCloudList } from '../api/playListApi'
 import { BottomBarComponent } from '../components/play/BottomBarComponent'
 import { AddToPlayListButton } from '../components/buttons/play/AddToPlayListButton'
-import { QuestionButton } from '../components/buttons/QuestionButton'
 import Constants from '../common/constants/Constants'
 import { ClickToLoadButton, LoadingMoreButton, NoMoreButton } from '../components/buttons/LoadMoreButtons'
+import { resourceManager } from '@kit.LocalizationKit'
+import { StorageConstants } from '../common/constants/StorageConstants'
 
 /**
  * 云盘
@@ -19,6 +19,8 @@ const TAG = '[CloudPage] '
 export struct CloudPage {
   @StorageProp('bottomRectHeight') bottomRectHeight: number = 0
   @StorageProp('topRectHeight') topRectHeight: number = 0
+  @StorageProp(StorageConstants.DEVICE_TYPE) deviceType: resourceManager.DeviceType = resourceManager.DeviceType.DEVICE_TYPE_PHONE
+  private currentOffset: number = 0
   @State list: Array<Song> = new Array()
   @State pageOpacity: number = 1
   @State hasMore: boolean = true
@@ -37,11 +39,8 @@ export struct CloudPage {
       }
     }
   ]
-  private currentOffset: number = 0
-  hasAnimation:boolean | undefined = false
 
   async aboutToAppear() {
-    this.hasAnimation = AppStorage.get('set-hasAnimation')
     if (!this.hasLoaded) {
       await this.loadSongs(50, 0)
     }
@@ -80,7 +79,7 @@ export struct CloudPage {
             List() {
               ForEach(this.list, (item: Song, index) => {
                 ListItem() {
-                  SongCard({ song: item, sid: index, hasAnimation: this.hasAnimation,
+                  SongCard({ song: item, sid: index,
                     isPlayList: false, index: index })
                 }
                 .swipeAction({ end: this.SwipeItem(item) })
@@ -112,9 +111,11 @@ export struct CloudPage {
         }
         .height('100%')
 
-        BottomBarComponent()
-          .padding(Constants.PADDING_EDGE_DEFAULT)
-          .backgroundColor(Color.Transparent)
+        if(this.deviceType == resourceManager.DeviceType.DEVICE_TYPE_PHONE) {
+          BottomBarComponent()
+            .padding(Constants.PADDING_EDGE_DEFAULT)
+            .backgroundColor(Color.Transparent)
+        }
       }
       .opacity(this.pageOpacity)
       .width('100%')

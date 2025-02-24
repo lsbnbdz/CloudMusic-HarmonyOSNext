@@ -17,7 +17,10 @@ export struct MeSheet {
         Text('未登录').NormalText(24)
         Button('登 录').LoginButton()
           .onClick(() => {
-            this.pageInfos.pushPathByName('LoginPage', null)
+            if(this.pageInfos.size() == 0) {
+              this.pageInfos.pushPathByName('LoginPage', null, true)
+            }
+            this.pageInfos.replacePathByName('LoginPage', null, true)
           })
         } else {
         Column({ space: 20 }) {

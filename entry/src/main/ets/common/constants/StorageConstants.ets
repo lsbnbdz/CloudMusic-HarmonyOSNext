@@ -3,6 +3,11 @@
  */
 export class StorageConstants {
   /**
+   * 设备类型
+   * @description AppStorage
+   */
+  static readonly DEVICE_TYPE: string = 'deviceType'
+  /**
    * Vip类型
    * @description AppStorage
    */

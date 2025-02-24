@@ -5,6 +5,7 @@ import PlayQueueUtils from "../../utils/play/PlayQueueUtils"
 import PreferencesUtils from "../../utils/app/PreferencesUtils"
 import { StorageConstants } from "../../constants/StorageConstants"
 import { notificationManager } from "@kit.NotificationKit"
+import { resourceManager } from "@kit.LocalizationKit"
 
 /**
  * App初始化
@@ -30,6 +31,8 @@ async function initApp() {
 async function initBasicInfo() {
   let empty: string[] = []
   AppStorage.setOrCreate(StorageConstants.USER_LIKELIST, empty)
+  let deviceType = await getDeviceTypeInfo()
+  AppStorage.setOrCreate(StorageConstants.DEVICE_TYPE, deviceType)
 }
 
 async function audioPlayerInit() {
@@ -53,16 +56,6 @@ async function initPlayQueue() {
 async function initSettings() {
   LogUtil.info(TAG + 'initSettings - 开始初始化设置')
   const SetPerf: string = StorageConstants.SET_PERF
-
-  // hasAnimation
-  const hasAnimationExist = await PreferencesUtils.hasPreferenceValue(SetPerf, 'hasAnimation')
-  if (!hasAnimationExist) {
-    await PreferencesUtils.putPreferenceValue(SetPerf, 'hasAnimation', true)
-    AppStorage.setOrCreate('set-hasAnimation',true)
-  } else {
-    const hasAnimation = await PreferencesUtils.getPreferenceValue(SetPerf, 'hasAnimation', true)
-    AppStorage.setOrCreate('set-hasAnimation',hasAnimation)
-  }
 
   // customApiUrl
   const isCustomApiUrlExist = await PreferencesUtils.hasPreferenceValue(SetPerf, 'isCustomApiUrl')
@@ -127,4 +120,17 @@ async function loadSavedSong() {
   AppStorage.setOrCreate('player-song',song)
   AppStorage.setOrCreate('player-artists',artists)
   AppStorage.setOrCreate('player-picurl',picUrl)
+}
+
+/**
+ * 获取当前设备类型
+ */
+async function getDeviceTypeInfo(): Promise<resourceManager.DeviceType> {
+  let deviceType = resourceManager.DeviceType.DEVICE_TYPE_PHONE
+  try {
+    deviceType = getContext().resourceManager.getDeviceCapabilitySync().deviceType
+  } catch (e) {
+    LogUtil.error(TAG + 'Failed to get device type: ' + e.message)
+  }
+  return deviceType
 }

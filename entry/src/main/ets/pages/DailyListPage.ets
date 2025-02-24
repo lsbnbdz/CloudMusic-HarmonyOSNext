@@ -1,16 +1,11 @@
 import { Song } from '../common/entities/SongsResult'
 import { SongCard } from '../components/cards/SongCard'
-import { ListHead } from '../components/head/ListHead'
-
 import { LogUtil } from '@pura/harmony-utils'
 import { DailySongRes, PlayDailySongs } from '../api/playListApi'
 import { BottomBarComponent } from '../components/play/BottomBarComponent'
-import { CommonCircleButton } from '../components/buttons/CircleButton'
 import { playQueue } from '../common/functions/play/playControl'
 import { AddToPlayListButton } from '../components/buttons/play/AddToPlayListButton'
 import { getDailySongs } from '../api/songApi'
-import { promptAction } from '@kit.ArkUI'
-import { MsgConstants } from '../common/constants/MsgConstants'
 import Constants from '../common/constants/Constants'
 
 /**
@@ -30,11 +25,9 @@ export struct DailyListPage {
   @State loadingPlayList:boolean = false
   @State pageOpacity: number = 1
   @State totayDate: string = ''
-  hasAnimation:boolean | undefined = false
 
   async aboutToAppear() {
     if(!this.hasLoaded) {
-      this.hasAnimation = AppStorage.get('set-hasAnimation')
       await this.loadSongs()
       this.hasLoaded = true
     }
@@ -102,7 +95,6 @@ export struct DailyListPage {
                     SongCard({
                       song: item.song,
                       sid: index,
-                      hasAnimation: this.hasAnimation,
                       isPlayList: false,
                       index: index,
                       reason: item.reason

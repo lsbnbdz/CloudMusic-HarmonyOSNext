@@ -1,5 +1,3 @@
-import { CommonHead } from '../../components/head/CommonHead'
-import { promptAction, router } from '@kit.ArkUI';
 import Constants from '../../common/constants/Constants';
 
 /**

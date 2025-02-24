@@ -11,6 +11,9 @@ import { AddToPlayListButton } from '../components/buttons/play/AddToPlayListBut
 import Constants from '../common/constants/Constants'
 import { ClickToLoadButton, LoadingMoreButton, NoMoreButton } from '../components/buttons/LoadMoreButtons'
 import { PlayListPageParam } from '../common/entities/PageParams'
+import { PlayListCard_Skeleton } from '../components/cards/PlayListCard'
+import { StorageConstants } from '../common/constants/StorageConstants'
+import { resourceManager } from '@kit.LocalizationKit'
 
 /**
  * 歌单二级页面
@@ -26,8 +29,8 @@ export struct PlayListPage {
   }
   @StorageProp('bottomRectHeight') bottomRectHeight: number = 0
   @StorageProp('topRectHeight') topRectHeight: number = 0
-  @StorageProp('set-hasAnimation') hasAnimation: boolean = true
   @StorageProp('isPlayerLoading') isPlayerLoading: boolean = false
+  @StorageProp(StorageConstants.DEVICE_TYPE) deviceType: resourceManager.DeviceType = resourceManager.DeviceType.DEVICE_TYPE_PHONE
   private currentOffset: number = 0 // 歌曲偏移量
 
   @State isSubscribed: boolean = false
@@ -95,72 +98,70 @@ export struct PlayListPage {
              this.PlayListInfo()
             }
             .padding({ bottom: 15 })
-            if (this.isLoading) {
-              ListItem() {
-                Column() {
-                  LoadingProgress()
-                    .width(Constants.SIZE_LOADING_PROGRESS_CARD)
-                    .padding({ top: Constants.PADDING_EDGE_TEXT })
-                }.width('100%').justifyContent(FlexAlign.Center)
-              }
-            } else {
-              ListItem() {
-                Row() {
-                  Button() {
-                    Row({ space: 5 }) {
-                      if (this.isPlayerLoading) {
-                        LoadingProgress().height(35).padding({ left: 30 })
-                      } else {
-                        Image($r('app.media.ic_play_fill')).width(Constants.FONT_SIZE_COMMON).fillColor(Color.Gray)
-                        Text(`播放全部 (${this.param.playList.trackCount})`).fontSize(Constants.FONT_SIZE_COMMON)
-                      }
-                    }
-                    .height(Constants.HEIGHT_TEXT_BUTTON)
-                  }
-                  .type(ButtonType.Normal)
-                  .backgroundColor(Color.Transparent)
-                  .borderRadius(15)
-                  .onClick(async () => {
+            ListItem() {
+              Row() {
+                Button() {
+                  Row({ space: 5 }) {
                     if (this.isPlayerLoading) {
-                      ToastUtil.showToast('当前有正在加载的播放任务，请稍后再试')
+                      LoadingProgress().height(35).padding({ left: 30 })
                     } else {
-                      playListToQueue(this.param.playList.id, this.param.playList.trackCount, 0)
+                      Image($r('app.media.ic_play_fill')).width(Constants.FONT_SIZE_COMMON).fillColor(Color.Gray)
+                      Text(`播放全部 (${this.param.playList.trackCount})`).fontSize(Constants.FONT_SIZE_COMMON)
+                    }
+                  }
+                  .height(Constants.HEIGHT_TEXT_BUTTON)
+                }
+                .type(ButtonType.Normal)
+                .backgroundColor(Color.Transparent)
+                .borderRadius(15)
+                .onClick(async () => {
+                  if (this.isPlayerLoading) {
+                    ToastUtil.showToast('当前有正在加载的播放任务，请稍后再试')
+                  } else {
+                    playListToQueue(this.param.playList.id, this.param.playList.trackCount, 0)
+                  }
+                })
+              }
+              .justifyContent(FlexAlign.SpaceBetween)
+              .width('100%')
+            }
+            .padding({ left: 20, bottom: 10, right: 20 })
+
+            ListItem() {
+              Column() {
+                Search({
+                  placeholder: '搜索歌单',
+                  icon: '/resources/base/media/ic_public_search_filled.svg'
+                })
+                  .height(Constants.HEIGHT_SELECT)
+                  .width('100%')
+                  .searchButton('搜索')
+                  .margin({ left: Constants.PADDING_EDGE_DEFAULT })
+                  .onChange((value) => {
+                    if(value == '') {
+                      this.filteredList = []
+                      this.searchKeyword = ''
                     }
                   })
-                }
-                .justifyContent(FlexAlign.SpaceBetween)
-                .width('100%')
-              }
-              .padding({ left: 20, bottom: 10, right: 20 })
-
-              ListItem() {
-                Column() {
-                  Search({
-                    placeholder: '搜索歌单',
-                    icon: '/resources/base/media/ic_public_search_filled.svg'
+                  .onSubmit((value) => {
+                    this.searchKeyword = value
+                    this.handelSearch()
                   })
-                    .height(Constants.HEIGHT_SELECT)
-                    .width('100%')
-                    .searchButton('搜索')
-                    .margin({ left: Constants.PADDING_EDGE_DEFAULT })
-                    .onChange((value) => {
-                      if(value == '') {
-                        this.filteredList = []
-                        this.searchKeyword = ''
-                      }
-                    })
-                    .onSubmit((value) => {
-                      this.searchKeyword = value
-                      this.handelSearch()
-                    })
-                }
-                .padding({ left: 20, right: 20, bottom: 10 })
-                .justifyContent(FlexAlign.Center)
               }
+              .padding({ left: 20, right: 20, bottom: 10 })
+              .justifyContent(FlexAlign.Center)
+            }
 
+            if (this.isLoading) {
+              ForEach([1, 2, 3, 4, 5, 6, 7, 8, 9, 10], () => {
+                ListItem() {
+                  PlayListCard_Skeleton()
+                }
+              })
+            } else {
               ForEach(this.searchKeyword ? this.filteredList : this.list, (item: Song, index) => {
                 ListItem() {
-                  SongCard({ song: item, sid: index, hasAnimation: this.hasAnimation,
+                  SongCard({ song: item, sid: index,
                     isPlayList: true, playList: this.param.playList, index: index })
                 }
                 .swipeAction({ end: this.SwipeItem(item, index), edgeEffect: SwipeEdgeEffect.None })
@@ -199,9 +200,11 @@ export struct PlayListPage {
         }
         .height('100%')
 
-        BottomBarComponent()
-          .padding(Constants.PADDING_EDGE_DEFAULT)
-          .backgroundColor(Color.Transparent)
+        if(this.deviceType == resourceManager.DeviceType.DEVICE_TYPE_PHONE) {
+          BottomBarComponent()
+            .padding(Constants.PADDING_EDGE_DEFAULT)
+            .backgroundColor(Color.Transparent)
+        }
       }
       .opacity(this.pageOpacity)
       .width('100%')

@@ -50,7 +50,11 @@ export struct TopListItemCard {
         },
         isShowHeart: false
       }
-      this.pageInfos.pushPathByName('PLayListPage', param, true)
+      if(this.pageInfos.size() == 0) {
+        this.pageInfos.pushPathByName('PLayListPage', param, true)
+      } else {
+        this.pageInfos.replacePathByName('PLayListPage', param, true)
+      }
     })
   }
 }

@@ -6,14 +6,14 @@ import Constants from "../../common/constants/Constants"
 @Component
 export struct PlayListCard {
   @Consume('pageInfos') pageInfos: NavPathStack
-  @State hasAnimation: boolean = false
   @State startOpacity:number = 1
   @State startHeight:number = 60
   @State isShowHeart: boolean = true
   playList:PlayList = playListClass
 
   aboutToAppear(): void {
-    if(this.hasAnimation) { this.startHeight = 120; this.startOpacity = 0.1}
+    this.startHeight = 120
+    this.startOpacity = 0.1
   }
 
   build() {
@@ -51,7 +51,11 @@ export struct PlayListCard {
         playList: this.playList,
         isShowHeart: this.isShowHeart
       }
-      this.pageInfos.pushPathByName('PLayListPage', param, true)
+      if(this.pageInfos.size() == 0) {
+        this.pageInfos.pushPathByName('PLayListPage', param, true)
+      } else {
+        this.pageInfos.replacePathByName('PLayListPage', param, true)
+      }
     })
   }
 }
@@ -75,8 +79,8 @@ export struct PlayListCard_Skeleton {
           .aspectRatio(1)
           .borderRadius(Constants.RADIUS_CARD)
         Column({ space: 8 }) {
-          Column().backgroundColor($r('app.color.main')).borderRadius(Constants.RADIUS_CARD).height(Constants.FONT_SIZE_TITLE).width('100%')
-          Column().backgroundColor($r('app.color.main')).borderRadius(Constants.RADIUS_CARD).height(Constants.FONT_SIZE_COMMON).width('100%')
+          Column().backgroundColor($r('app.color.main')).borderRadius(Constants.RADIUS_CARD).height(Constants.FONT_SIZE_TITLE).width('60%').alignSelf(ItemAlign.Start)
+          Column().backgroundColor($r('app.color.main')).borderRadius(Constants.RADIUS_CARD).height(Constants.FONT_SIZE_COMMON).width('40%').alignSelf(ItemAlign.Start)
         }
         .layoutWeight(1)
       }

@@ -17,7 +17,6 @@ const TAG = "[SearchSongsList] "
 export struct SearchSongsList {
   @StorageProp('bottomRectHeight') bottomRectHeight: number = 0
   @StorageProp('topRectHeight') topRectHeight: number = 0
-  @StorageProp('set-hasAnimation') hasAnimation: boolean = true
   @Prop searchKeyword: string = ''
   @State songList: Array<Song> = []
   @State songOffset: number = 0
@@ -55,7 +54,7 @@ export struct SearchSongsList {
       List() {
         ForEach(this.songList, (item: Song, index) => {
           ListItem() {
-            SongCard({ song: item, sid: index, hasAnimation: this.hasAnimation })
+            SongCard({ song: item, sid: index })
           }
           .swipeAction({ end: this.SwipeItem(item)})
         })

@@ -19,7 +19,11 @@ export struct RecommendCards {
        */
       ListItem() {
         this.ContentButton(`每日推荐`,'符合你口味的\n新鲜好歌',$r('app.media.bg1'),() => {
-          this.pageInfos.pushPathByName('DailyListPage', null)
+          if(this.pageInfos.size() == 0) {
+            this.pageInfos.pushPathByName('DailyListPage', null)
+          } else {
+            this.pageInfos.replacePathByName('DailyListPage', null)
+          }
         })
       }
       .width(cardWidth)
@@ -29,7 +33,11 @@ export struct RecommendCards {
        */
       ListItem() {
         this.ContentButton(`我的音乐云盘`,`随时随地畅听`,$r('app.media.bg2'),() => {
-          this.pageInfos.pushPathByName('CloudPage', null)
+          if(this.pageInfos.size() == 0) {
+            this.pageInfos.pushPathByName('CloudPage', null)
+          } else {
+            this.pageInfos.replacePathByName('CloudPage', null)
+          }
         })
       }
       .width(cardWidth)
@@ -120,7 +128,11 @@ export struct RecommendCards_NotLogged {
        */
       ListItem() {
         this.ContentButton(`每日推荐`,'符合你口味的\n新鲜好歌',$r('app.media.bg1'),() => {
-          this.pageInfos.pushPathByName('DailyListPage', null)
+          if(this.pageInfos.size() == 0) {
+            this.pageInfos.pushPathByName('DailyListPage', null)
+          } else {
+            this.pageInfos.replacePathByName('DailyListPage', null)
+          }
         })
       }
       .width(cardWidth)

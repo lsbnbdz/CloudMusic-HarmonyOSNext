@@ -1,7 +1,5 @@
-import { SettingsHead } from '../components/head/SettingsHead'
 import { UsePublicCookie } from '../components/settings/UsePublicCookie'
 import { SetPlayQuality } from '../components/settings/SetPlayQuality'
-import { Animation } from '../components/settings/Animation'
 import { CustomApiUrl } from '../components/settings/CustomApiUrl'
 import { RemoveCache } from '../components/settings/RemoveCache'
 import { Settings_Bottom, Settings_Feedback, Settings_Version } from '../components/settings/TextContent'
@@ -22,7 +20,6 @@ export struct SettingsPage {
         Column({ space: 10 }) {
           List({ space: 10 }) {
             ListItem() { SetPlayQuality() }.listItemStyle()
-            ListItem() { Animation() }.listItemStyle()
             ListItem() { UsePublicCookie() }.listItemStyle()
             ListItem() { CustomApiUrl() }.listItemStyle()
             ListItem() { RemoveCache() }.listItemStyle()

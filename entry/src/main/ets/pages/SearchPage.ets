@@ -1,11 +1,11 @@
 import { EmitterUtil, ToastUtil } from '@pura/harmony-utils';
 import { BottomBarComponent } from '../components/play/BottomBarComponent';
-import { CommonCircleButton } from '../components/buttons/CircleButton';
-import { router } from '@kit.ArkUI';
 import { SearchPlayListsList } from '../components/lists/SearchPlayListsList';
 import { SearchSongsList } from '../components/lists/SearchSongsList';
 import { EmitterConstants } from '../common/constants/EmitterConstants';
 import Constants from '../common/constants/Constants';
+import { StorageConstants } from '../common/constants/StorageConstants';
+import { resourceManager } from '@kit.LocalizationKit';
 
 /**
  * 歌曲列表页（搜索结果）
@@ -14,9 +14,9 @@ const TAG = "[SearchPage] "
 
 @Component
 export struct SearchPage {
+  @StorageProp(StorageConstants.DEVICE_TYPE) deviceType: resourceManager.DeviceType = resourceManager.DeviceType.DEVICE_TYPE_PHONE
   @State tabPageIndex: number = 0
   @State searchKeyword: string = ''
-  hasAnimation: boolean | undefined = false
   private tabsController: TabsController = new TabsController()
 
   build() {
@@ -43,9 +43,11 @@ export struct SearchPage {
         }
         .height('100%')
 
-        BottomBarComponent()
-          .padding(Constants.PADDING_EDGE_DEFAULT)
-          .backgroundColor(Color.Transparent)
+        if(this.deviceType == resourceManager.DeviceType.DEVICE_TYPE_PHONE) {
+          BottomBarComponent()
+            .padding(Constants.PADDING_EDGE_DEFAULT)
+            .backgroundColor(Color.Transparent)
+        }
       }
       .width('100%')
       .height('100%')

@@ -12,6 +12,7 @@ import { StorageConstants } from "../../common/constants/StorageConstants"
 import Constants from "../../common/constants/Constants"
 import { SetPlayQuality } from "../settings/SetPlayQuality"
 import { PasteboardUtil, ToastUtil } from "@pura/harmony-utils"
+import { resourceManager } from "@kit.LocalizationKit"
 
 @Component
 export struct PlayingCover {
@@ -25,6 +26,7 @@ export struct PlayingCover {
   @StorageProp('player-lyric') lyricArr: string[] = []
   @StorageProp(StorageConstants.PLAY_COUNTDOWN_WORKING) isTimerWorking: boolean = false
   @StorageProp(StorageConstants.PLAY_IS_LOCALFILE) isLocalFile: boolean = false
+  @StorageProp(StorageConstants.DEVICE_TYPE) deviceType: resourceManager.DeviceType = resourceManager.DeviceType.DEVICE_TYPE_PHONE
   @Link isShow: boolean
   @State hasLoaded: boolean = false
   @State sliderThickness: number = 10
@@ -75,49 +77,19 @@ export struct PlayingCover {
      .width('100%')
      .height('100%')
 
-     Column() {
-       Swiper() {
-         this.SongInfo()
-         LyricComponent()
-           .padding({ top: px2vp(this.topRectHeight) })
-           .width('100%')
-       }
-       .indicator(
-         new DotIndicator()
-           .top(px2vp(this.topRectHeight) + 5)
-           .selectedColor(Color.White)
-           .color(Color.Gray)
-       )
-       .clip(false)
-       .loop(false)
-       .layoutWeight(1)
-
-       Column({ space: 10 }) {
-         this.SliderContent()
-         this.ToolBar()
-         Row() {
-           LoopModeButton({ imgColor: Color.White }).opacity(0.8)
-           this.PlayButton()
-           PlayQueueButton({ imgColor: Color.White }).opacity(0.8)
-         }
-         .padding({ top: 20, bottom: 15 })
-         .justifyContent(FlexAlign.SpaceEvenly)
-         .width('90%')
-         Row({ space: 15 }) {
-           if(this.isLocalFile) { Text('本地文件播放中').fontSize(10).fontColor(Color.Gray) }
-           if(this.isTimerWorking) { Text('已设置定时关闭').fontSize(10).fontColor(Color.Gray) }
-         }
-         .justifyContent(FlexAlign.Center)
-         .width('100%')
-         .height(30)
-         .backgroundColor(Color.Transparent)
-       }
-       .width('100%')
+     /**
+      * 主内容
+      */
+     if(this.deviceType == resourceManager.DeviceType.DEVICE_TYPE_TABLET) {
+       this.TabletUI()
+     } else {
+       this.PhoneUI()
      }
-     .height('100%')
-     .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
 
-     this.Head() // Head
+     /**
+      * Head栏
+      */
+     this.Head()
 
    }
    .height('100%')
@@ -386,6 +358,7 @@ export struct PlayingCover {
           ToastUtil.showToast('已复制歌手名到剪贴板', { duration: 3000 })
         })
     }
+    .layoutWeight(1)
     .width('100%')
     .padding({ left: 15, right: 15, top:px2vp(this.topRectHeight) + 40 })
     .height('100%')
@@ -406,8 +379,98 @@ export struct PlayingCover {
     Column({ space: Constants.PADDING_EDGE_DEFAULT }) {
       SetPlayQuality()
     }
+    .constraintSize({
+      minWidth: 200,
+      maxWidth: 400
+    })
     .width('80%')
     .padding({ left: Constants.PADDING_EDGE_TEXT, right: Constants.PADDING_EDGE_TEXT, top: Constants.PADDING_EDGE_DEFAULT, bottom: Constants.PADDING_EDGE_DEFAULT })
+  }
+
+  @Builder PhoneUI() {
+    Column() {
+      Swiper() {
+        this.SongInfo()
+        LyricComponent()
+          .padding({ top: px2vp(this.topRectHeight) })
+          .width('100%')
+      }
+      .indicator(
+        new DotIndicator()
+          .top(px2vp(this.topRectHeight) + 5)
+          .selectedColor(Color.White)
+          .color(Color.Gray)
+      )
+      .clip(false)
+      .loop(false)
+      .layoutWeight(1)
+
+      Column({ space: 10 }) {
+        this.SliderContent()
+        this.ToolBar()
+        Row() {
+          LoopModeButton({ imgColor: Color.White }).opacity(0.8)
+          this.PlayButton()
+          PlayQueueButton({ imgColor: Color.White }).opacity(0.8)
+        }
+        .padding({ top: 20, bottom: 15 })
+        .justifyContent(FlexAlign.SpaceEvenly)
+        .width('90%')
+        Row({ space: 15 }) {
+          if(this.isLocalFile) { Text('本地文件播放中').fontSize(10).fontColor(Color.Gray) }
+          if(this.isTimerWorking) { Text('已设置定时关闭').fontSize(10).fontColor(Color.Gray) }
+        }
+        .justifyContent(FlexAlign.Center)
+        .width('100%')
+        .height(30)
+        .backgroundColor(Color.Transparent)
+      }
+      .constraintSize({
+        minWidth: 200,
+        maxWidth: 500
+      })
+      .width('100%')
+    }
+    .height('100%')
+    .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
+  }
+
+  @Builder TabletUI() {
+    Row() {
+      Column() {
+        this.SongInfo()
+        Column({ space: 10 }) {
+          this.SliderContent()
+          this.ToolBar()
+          Row() {
+            LoopModeButton({ imgColor: Color.White }).opacity(0.8)
+            this.PlayButton()
+            PlayQueueButton({ imgColor: Color.White }).opacity(0.8)
+          }
+          .padding({ top: 20, bottom: 15 })
+          .justifyContent(FlexAlign.SpaceEvenly)
+          .width('90%')
+          Row({ space: 15 }) {
+            if(this.isLocalFile) { Text('本地文件播放中').fontSize(10).fontColor(Color.Gray) }
+            if(this.isTimerWorking) { Text('已设置定时关闭').fontSize(10).fontColor(Color.Gray) }
+          }
+          .justifyContent(FlexAlign.Center)
+          .width('100%')
+          .height(30)
+          .backgroundColor(Color.Transparent)
+        }
+        .width('100%')
+      }
+      .layoutWeight(1.5)
+
+      LyricComponent()
+        .padding({ top: px2vp(this.topRectHeight) })
+        .width('100%')
+        .layoutWeight(2)
+    }
+    .width('100%')
+    .height('100%')
+    .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
   }
 }
 

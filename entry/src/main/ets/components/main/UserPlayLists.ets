@@ -11,7 +11,6 @@ export struct UserPlayLists {
   @StorageLink('UserPlayLists') playLists: Array<PlayList> = []
   @StorageProp('bottomRectHeight') bottomRectHeight: number = 0
   @StorageProp('topRectHeight') topRectHeight: number = 0
-  @StorageProp('set-hasAnimation') hasAnimation: boolean = true
   @StorageProp('User') user: User = UserClass
   @StorageProp("isValidCookie") isValidCookie: boolean = false
   @StorageProp('Announcement') announcement: Announcement = {
@@ -44,42 +43,44 @@ export struct UserPlayLists {
 
   build() {
     Column() {
-      Refresh({ refreshing: this.isRefreshing}) {
-        List({ space: 10 }) {
-          if(this.announcement.visible) {
-            ListItem() {
-              this.Announcement()
-            }
-          }
-
-          ListItem() {
-            Column({ space: 10 }) {
-              if(this.isLoading) {
-                this.Loading()
-              } else {
-                ForEach(this.playLists, (item: PlayList) => {
-                  ListItem() {
-                    PlayListCard({
-                      playList: item,
-                      isShowHeart: item.creator.userId == this.user.data.account.id ? false : true
-                    })
-                  }
-                })
+      if(this.isValidCookie && this.user && this.playLists.length > 0) {
+        Refresh({ refreshing: this.isRefreshing}) {
+          List({ space: 10 }) {
+            if(this.announcement.visible) {
+              ListItem() {
+                this.Announcement()
               }
             }
-            .width('100%')
+
+            ListItem() {
+              Column({ space: 10 }) {
+                if(this.isLoading) {
+                  this.Loading()
+                } else {
+                  ForEach(this.playLists, (item: PlayList) => {
+                    ListItem() {
+                      PlayListCard({
+                        playList: item,
+                        isShowHeart: item.creator.userId == this.user.data.account.id ? false : true
+                      })
+                    }
+                  })
+                }
+              }
+              .width('100%')
+            }
+            ListItem().height( px2vp(this.bottomRectHeight) + 80 )
           }
-          ListItem().height( px2vp(this.bottomRectHeight) + 80 )
+          .height('100%')
+          .width('100%')
+          .scrollBar(BarState.Off)
+          .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
         }
-        .height('100%')
-        .width('100%')
-        .scrollBar(BarState.Off)
         .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
+        .onRefreshing(async () => {
+          await this.refreshContent()
+        })
       }
-      .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
-      .onRefreshing(async () => {
-        await this.refreshContent()
-      })
     }
     .width('100%')
     .height('100%')
@@ -87,7 +88,7 @@ export struct UserPlayLists {
 
   @Builder
   itemLayout(playList: PlayList, index: number): void {
-    PlayListCard({ playList: playList, hasAnimation: this.hasAnimation })
+    PlayListCard({ playList: playList })
   }
 
   @Builder

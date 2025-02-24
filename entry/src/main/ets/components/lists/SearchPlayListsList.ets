@@ -12,7 +12,6 @@ const TAG = "[SearchPlayListsList] "
 export struct SearchPlayListsList {
   @StorageProp('bottomRectHeight') bottomRectHeight: number = 0
   @StorageProp('topRectHeight') topRectHeight: number = 0
-  @StorageProp('set-hasAnimation') hasAnimation: boolean = true
   @State playLists: Array<PlayList> = []
   @Prop searchKeyword: string = ''
   @State playListOffset: number = 0
@@ -50,7 +49,7 @@ export struct SearchPlayListsList {
       List() {
         ForEach(this.playLists, (item: PlayList, index) => {
           ListItem() {
-            PlayListCard({ playList: item, hasAnimation: this.hasAnimation })
+            PlayListCard({ playList: item })
           }
         })
         if (this.isLoadingMore) {

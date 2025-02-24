@@ -1,7 +1,5 @@
 import { Explore } from '../components/main/Explore'
 import { BottomBarComponent } from '../components/play/BottomBarComponent';
-import { router } from '@kit.ArkUI';
-import { RecommendCards_NotLogged } from '../components/cards/RecommendCards';
 import Constants from '../common/constants/Constants';
 import { SettingsPage } from './SettingsPage';
 import { DownloadPage } from './DownloadPage';
@@ -16,13 +14,15 @@ import { WebLogin } from './login/WebLogin';
 import { WebPage } from './WebPage';
 import { UserPlayLists } from '../components/main/UserPlayLists';
 import { Me } from '../components/main/Me';
-import { FullPlayerPage } from './FullPlayerPage';
+import { resourceManager } from '@kit.LocalizationKit';
+import { StorageConstants } from '../common/constants/StorageConstants';
 
 @Entry
 @Component
 struct Index {
   @StorageProp('topRectHeight') topRectHeight: number = 0
   @StorageProp('bottomRectHeight') bottomRectHeight: number = 0
+  @StorageProp(StorageConstants.DEVICE_TYPE) deviceType: resourceManager.DeviceType = resourceManager.DeviceType.DEVICE_TYPE_PHONE
   @State index: number = 0
   @Provide('pageInfos') pageInfos: NavPathStack = new NavPathStack()
   private menuItems: NavigationMenuItem[] = [
@@ -30,7 +30,10 @@ struct Index {
       value: '搜索',
       icon: $r('app.media.ic_public_search_filled'),
       action: () => {
-        this.pageInfos.pushPathByName('SearchPage', null)
+        if(this.pageInfos.size() == 0) {
+          this.pageInfos.pushPathByName('SearchPage', null, true)
+        }
+        this.pageInfos.replacePathByName('SearchPage', null, true)
       }
     }
   ]
@@ -51,6 +54,10 @@ struct Index {
           .backgroundColor(Color.Transparent)
       }
     }
+    .height('100%')
+    .width('100%')
+    .navBarWidthRange(['40%', '60%'])
+    .navBarPosition(NavBarPosition.Start)
     .mode(NavigationMode.Auto)
     .titleMode(NavigationTitleMode.Mini)
     .title(this.index == 0 ? '发现' : this.index == 1 ? '歌单' : '我的')
@@ -65,9 +72,6 @@ struct Index {
     if(name === 'SettingsPage') {
       SettingsPage()
     }
-    // else if(name === 'FullPlayerPage') {
-    //   FullPlayerPage()
-    // }
     else if(name === 'DownloadPage') {
       DownloadPage()
     }
@@ -95,51 +99,6 @@ struct Index {
     else if(name === 'WebPage') {
       WebPage({ param: param as WebPageParam })
     }
-  }
-
-  @Builder
-  NotLogged() {
-    List({ space: 10 }) {
-      ListItem() {
-        Search({
-          placeholder: '搜索内容',
-          icon: '/resources/base/media/ic_public_search_filled.svg',
-        })
-          .sharedTransition('search_component', {
-            duration: 300,
-            curve: Curve.Friction
-          })
-          .focusable(false)
-          .onClick(() => {
-            router.pushUrl({
-              url: 'pages/SearchPage'
-            })
-          })
-      }
-      .padding({ left: 20, right: 20 })
-      ListItem() {
-        RecommendCards_NotLogged()
-      }
-      ListItem() {
-        Column({ space: 15 }) {
-          Text('尚未登录')
-            .fontSize(24)
-            .fontWeight(FontWeight.Bold)
-            .textAlign(TextAlign.Center)
-            .padding({ top: 100 })
-          Text('点击左上角图标进行登录\n以获取日推、歌单、云盘等内容')
-            .fontSize(18)
-            .fontWeight(FontWeight.Regular)
-            .textAlign(TextAlign.Center)
-        }
-        .width('100%')
-        .height('100%')
-        .layoutWeight(1)
-      }
-    }
-    .scrollBar(BarState.Off)
-    .height('100%')
-    .width('100%')
   }
 
   @Builder ToolBar() {

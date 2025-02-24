@@ -1,5 +1,5 @@
 import { DialogUtil, LogUtil} from "@pura/harmony-utils";
-import { RecommendCards, RecommendCards_Skeleton } from "../cards/RecommendCards";
+import { RecommendCards, RecommendCards_NotLogged, RecommendCards_Skeleton } from "../cards/RecommendCards";
 import { Announcement } from "../../common/entities/Announcement";
 import { User, UserClass } from "../../common/entities/User";
 import Constants from "../../common/constants/Constants";
@@ -17,7 +17,6 @@ export struct Explore {
   @StorageProp('bottomRectHeight') bottomRectHeight: number = 0
   @StorageProp('topRectHeight') topRectHeight: number = 0
   @StorageProp("isValidCookie") isValidCookie: boolean = false
-  @StorageProp('set-hasAnimation') hasAnimation: boolean = true
   @StorageProp(StorageConstants.USER) user: User = UserClass
   @StorageProp('Announcement') announcement: Announcement = {
     code: -1,
@@ -35,8 +34,10 @@ export struct Explore {
       try {
         const toplist = await getTopList()
         this.topList = toplist
-        const playlist = await getPlayLists(0)
-        this.playLists = playlist.playlist
+        if(this.isValidCookie && this.user) {
+          const playlist = await getPlayLists(0)
+          this.playLists = playlist.playlist
+        }
       } catch (e) {
         LogUtil.error('Error fetching playlists: ', e)
       } finally {
@@ -59,7 +60,10 @@ export struct Explore {
             })
               .focusable(false)
               .onClick(() => {
-                 this.pageInfos.pushPathByName('SearchPage', null, true)
+                if(this.pageInfos.size() == 0) {
+                  this.pageInfos.pushPathByName('SearchPage', null, true)
+                }
+                 this.pageInfos.replacePathByName('SearchPage', null, true)
               })
               .layoutWeight(1)
           }
@@ -72,7 +76,10 @@ export struct Explore {
               if(this.isLoading) {
                 RecommendCards_Skeleton()
               } else {
-                RecommendCards()
+                if(this.isValidCookie && this.user) {
+                  RecommendCards()
+                }
+                else { RecommendCards_NotLogged() }
               }
             }
             .width('100%')
@@ -95,7 +102,7 @@ export struct Explore {
             .columnEnd(1)
           } else {
             GridItem() {
-              GridRow({ columns: { xs: 2, sm: 3, md: 4, lg: 5 } }) {
+              GridRow({ columns: { xs: 2, sm: 3, md: 2, lg: 3, xl: 3 } }) {
                 ForEach(this.topList, (item: TopListItem) => {
                   GridCol() {
                     TopListItemCard({ topListItem: item }).padding(Constants.PADDING_EDGE_DEFAULT)

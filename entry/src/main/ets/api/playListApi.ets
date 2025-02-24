@@ -37,7 +37,6 @@ export async function getPlayLists(offset:number): Promise<PlayListsResult> {
   const request = new HttpRequest(url)
   await request.RequestInStream().then((data) => {
     const dataGot:PlayListsResult = data.result as PlayListsResult
-    LogUtil.info(TAG + 'getPlayLists - dataGot: ' + JSON.stringify(dataGot))
     hasMore = dataGot.more
     list = dataGot.playlist
   })

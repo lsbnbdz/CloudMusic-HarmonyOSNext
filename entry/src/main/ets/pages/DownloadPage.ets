@@ -2,6 +2,8 @@ import FileUtils from '../common/utils/file/FileUtils';
 import { FileCard } from '../components/cards/FileCard';
 import { BottomBarComponent } from '../components/play/BottomBarComponent';
 import Constants from '../common/constants/Constants';
+import { resourceManager } from '@kit.LocalizationKit';
+import { StorageConstants } from '../common/constants/StorageConstants';
 
 /**
  * 下载管理页
@@ -11,7 +13,7 @@ import Constants from '../common/constants/Constants';
 export struct DownloadPage {
   @StorageProp('bottomRectHeight') bottomRectHeight: number = 0
   @StorageProp('topRectHeight') topRectHeight: number = 0
-
+  @StorageProp(StorageConstants.DEVICE_TYPE) deviceType: resourceManager.DeviceType = resourceManager.DeviceType.DEVICE_TYPE_PHONE
   @State fileList: string[] = []
   @State columnsTemplate: string = '1fr'
   @State columnEnd: number = 0
@@ -89,9 +91,11 @@ export struct DownloadPage {
         .width('100%')
         .height('100%')
 
-        BottomBarComponent()
-          .padding({ left: 10, right: 10 })
-          .backgroundColor(Color.Transparent)
+        if(this.deviceType == resourceManager.DeviceType.DEVICE_TYPE_PHONE) {
+          BottomBarComponent()
+            .padding(Constants.PADDING_EDGE_DEFAULT)
+            .backgroundColor(Color.Transparent)
+        }
       }
       .backgroundColor($r('app.color.background'))
       .height('100%')

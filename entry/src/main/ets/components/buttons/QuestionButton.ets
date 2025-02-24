@@ -9,7 +9,7 @@ export struct QuestionButton {
   build() {
     Column() {
       Button({type: ButtonType.Circle}) {
-        Image($r(`app.media.app.media.ic_public_help`))
+        Image($r(`app.media.ic_public_help`))
           .width(this.comSize - 5)
           .fillColor($r('app.color.reverse'))
           .draggable(false)

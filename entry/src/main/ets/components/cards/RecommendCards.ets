@@ -1,11 +1,15 @@
-import { router } from "@kit.ArkUI"
-import { ToastUtil } from "@pura/harmony-utils"
+import { DialogUtil, ToastUtil } from "@pura/harmony-utils"
+import { setHeartMode } from "../../api/songApi"
 import Constants from "../../common/constants/Constants"
-import { PlayList, playListClass } from "../../common/entities/PlayList"
+import { PlayList } from "../../common/entities/PlayList"
+import { playQueue } from "../../common/functions/play/playControl"
+
+let cardWidth: number = 150
 
 @Component
 export struct RecommendCards {
-  @State LikeList:PlayList = playListClass
+  @Consume('pageInfos') pageInfos: NavPathStack
+  @StorageProp('UserPlayLists') playLists: Array<PlayList> = []
 
   build() {
     List({ space: 15 }) {
@@ -14,36 +18,48 @@ export struct RecommendCards {
        * 每日推荐卡片
        */
       ListItem() {
-        this.ContentButton(`每日推荐`,'符合你口味的\n新鲜好歌',$r('app.media.bg3'),() => {
-          router.pushUrl({
-            url: 'pages/DailyListPage',
-          })
+        this.ContentButton(`每日推荐`,'符合你口味的\n新鲜好歌',$r('app.media.bg1'),() => {
+          this.pageInfos.pushPathByName('DailyListPage', null)
         })
       }
-      .width(150)
-      /**
-       * 喜欢的音乐卡片
-       */
-      ListItem() {
-        this.ContentButton(`${this.LikeList.name}`,`${this.LikeList.trackCount} 首歌曲`,$r('app.media.bg2'),() => {
-          router.pushUrl({
-            url: 'pages/PlayListPage',
-            params: { 'playList': this.LikeList, 'trackCount': this.LikeList.trackCount }
-          })
-        })
-      }
-      .width(150)
+      .width(cardWidth)
+
       /**
        * 音乐云盘卡片
        */
       ListItem() {
-        this.ContentButton(`我的音乐云盘`,`随时随地畅听`,$r('app.media.bg1'),() => {
-          router.pushUrl({
-            url: 'pages/CloudPage',
-          })
+        this.ContentButton(`我的音乐云盘`,`随时随地畅听`,$r('app.media.bg2'),() => {
+          this.pageInfos.pushPathByName('CloudPage', null)
         })
       }
-      .width(150)
+      .width(cardWidth)
+
+      /**
+       * 心动歌单卡片
+       */
+      ListItem() {
+        this.ContentButton(`心动歌单`,`智能播放`,$r('app.media.bg3'), async () => {
+          DialogUtil.showPrimaryDialog({
+            title: '心动歌单',
+            message: '是否将播放列表替换为【心动歌单】?\n\n开启心动歌单后，\n将会替换当前播放列表并开始新的播放',
+            primaryButton: "取消",
+            secondaryButton: {
+              value: '确认',
+              fontColor: Color.Red,
+              action: async () => {
+                try {
+                  await setHeartMode(0, this.playLists[0].id)
+                  playQueue(0)
+                } catch (e) {
+                  ToastUtil.showToast('获取心动模式歌单失败')
+                }
+              }
+            }
+          })
+
+        })
+      }
+      .width(cardWidth)
 
       ListItem().width(5)
     }
@@ -54,7 +70,7 @@ export struct RecommendCards {
   }
 
   @Builder
-  ContentButton(firText:string, secText:string, imgUrl:ResourceStr, onClick: ()=>void) {
+  ContentButton(firText:string, secText:string, imgUrl:ResourceStr, onClick?: () => void ) {
     Button() {
       Column() {
         Text(`${firText}`)
@@ -79,7 +95,7 @@ export struct RecommendCards {
 
 @Extend(Button) function buttonSty() {
   .type(ButtonType.Normal)
-  .height(150)
+  .aspectRatio(1)
   .width('100%')
   .borderRadius(15)
   .backgroundColor(Color.Transparent)
@@ -94,6 +110,8 @@ export struct RecommendCards {
 
 @Component
 export struct RecommendCards_NotLogged {
+  @Consume('pageInfos') pageInfos: NavPathStack
+
   build() {
     List({ space: 15 }) {
       ListItem().width(5)
@@ -101,31 +119,31 @@ export struct RecommendCards_NotLogged {
        * 每日推荐卡片
        */
       ListItem() {
-        this.ContentButton(`每日推荐`,'符合你口味的\n新鲜好歌',$r('app.media.bg3'),() => {
-          router.pushUrl({
-            url: 'pages/DailyListPage',
-          })
+        this.ContentButton(`每日推荐`,'符合你口味的\n新鲜好歌',$r('app.media.bg1'),() => {
+          this.pageInfos.pushPathByName('DailyListPage', null)
         })
       }
-      .width(150)
-      /**
-       * 喜欢的音乐卡片
-       */
-      ListItem() {
-        this.ContentButton(`我喜欢的歌曲`,`尚未登录`,$r('app.media.bg2'),() => {
-          ToastUtil.showToast('请登录后再试')
-        })
-      }
-      .width(150)
+      .width(cardWidth)
+
       /**
        * 音乐云盘卡片
        */
       ListItem() {
-        this.ContentButton(`我的音乐云盘`,`尚未登录`,$r('app.media.bg1'),() => {
+        this.ContentButton(`我的音乐云盘`,`尚未登录`,$r('app.media.bg2'),() => {
           ToastUtil.showToast('请登录后再试')
         })
       }
-      .width(150)
+      .width(cardWidth)
+
+      /**
+       * 心动歌单卡片
+       */
+      ListItem() {
+        this.ContentButton(`心动歌单`,`尚未登录`,$r('app.media.bg3'),() => {
+          ToastUtil.showToast('请登录后再试')
+        })
+      }
+      .width(cardWidth)
 
       ListItem().width(5)
     }
@@ -166,11 +184,6 @@ export struct RecommendCards_NotLogged {
  */
 @Component
 export struct RecommendCards_Skeleton {
-  @State isVisible: boolean = false
-
-  aboutToAppear(): void {
-    this.isVisible = true
-  }
 
   build() {
     List({ space: 15 }) {
@@ -178,15 +191,15 @@ export struct RecommendCards_Skeleton {
       ListItem() {
         this.ContentButton()
       }
-      .width(150)
+      .width(cardWidth)
       ListItem() {
         this.ContentButton()
       }
-      .width(150)
+      .width(cardWidth)
       ListItem() {
         this.ContentButton()
       }
-      .width(150)
+      .width(cardWidth)
 
       ListItem().width(5)
     }
@@ -201,12 +214,15 @@ export struct RecommendCards_Skeleton {
     Button() {
       Column() {
         Column() {}
-        .width('100%')
+        .borderRadius(Constants.RADIUS_IMG)
+        .width('80%')
         .height(Constants.FONT_SIZE_TITLE)
         .backgroundColor($r('app.color.background'))
+        .alignSelf(ItemAlign.Start)
         .padding({ left: Constants.PADDING_EDGE_DEFAULT, right: Constants.PADDING_EDGE_DEFAULT })
 
         Column() {}
+        .borderRadius(Constants.RADIUS_IMG)
         .width('80%')
         .height(Constants.FONT_SIZE_COMMON)
         .backgroundColor($r('app.color.background'))
@@ -217,12 +233,7 @@ export struct RecommendCards_Skeleton {
       .width('100%')
       .padding({ left: 10, right: 10, top: 15, bottom: 15 })
     }
-    .opacity(this.isVisible ? 1 : 0)
     .backgroundColor($r('app.color.main'))
     .buttonSty()
-    .animation({
-      duration: 1500,
-      curve: Curve.EaseInOut
-    })
   }
 }

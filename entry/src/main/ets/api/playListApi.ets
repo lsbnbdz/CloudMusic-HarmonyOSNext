@@ -2,7 +2,7 @@ import { EmitterUtil, LogUtil, ToastUtil } from "@pura/harmony-utils"
 import { PlayList, PlayListOperationRes, PlayListSearchResult } from "../common/entities/PlayList"
 import { CloudSongs, DailyListSongs, PlayListSongs } from "../common/entities/PlayListSongs"
 import { PlayQueue } from "../common/entities/PlayQueue"
-import { Song } from "../common/entities/SongsResult"
+import { Artist, Song } from "../common/entities/SongsResult"
 import { User, UserClass } from "../common/entities/User"
 import { getApiUrl, getArtists } from "../common/functions/commonFunction"
 import { HttpRequest } from "../common/utils/request/HttpRequestUtils"
@@ -49,6 +49,22 @@ export async function getPlayLists(offset:number): Promise<PlayListsResult> {
   return result
 }
 
+class SongC {
+  id: number
+  name: string
+  artists: Artist[]
+  duration: number
+  alias: string[]
+
+  constructor(id: number, name: string, artists: Artist[], duration: number, alias: string[]) {
+    this.id = id
+    this.name = name
+    this.artists = artists
+    this.duration = duration
+    this.alias = alias
+  }
+}
+
 /**
  * 获取歌单内歌曲列表
  * @param listId 歌单ID
@@ -56,24 +72,21 @@ export async function getPlayLists(offset:number): Promise<PlayListsResult> {
  * @param offset 偏移
  * @returns list 歌曲列表
  */
-export async function getPlayListSongs(listId:number, offset:number): Promise<Array<Song>> {
-  let list:Array<Song> = new Array()
+export async function getPlayListSongs(listId: number, trackCount: number, offset: number): Promise<Array<Song>> {
+  let list: Array<Song> = []
   const rootUrl = await getApiUrl()
-  const url:string = `${rootUrl}/playlist/track/all?id=${listId}&limit=30&offset=${offset}&timestamp=${new Date().getTime()}`
+  const url:string = `${rootUrl}/playlist/track/all?id=${listId}&limit=100&offset=${offset}&timestamp=${new Date().getTime()}`
   const request = new HttpRequest(url)
-  await request.Request().then((data) => {
-    const dataGot:PlayListSongs = data.result as PlayListSongs
-    for(let song of dataGot.songs) {
-      list.push({
-        id: song.id ,
-        name: song.name,
-        artists: song.ar,
-        duration: song.dt,
-        alias: []
-      })
-    }
+  await request.RequestInStream().then((data) => {
+    const dataGot: PlayListSongs = data.result as PlayListSongs
+    list = dataGot.songs.map(song => new SongC(
+      song.id,
+      song.name,
+      song.ar,
+      song.dt,
+      []
+    ))
   })
-  LogUtil.info(TAG + 'getPlayListSongs - dataGot => list: ' + JSON.stringify(list))
   return list
 }
 
@@ -198,9 +211,9 @@ export interface DailySongRes {
 export async function getCloudList(offset:number): Promise<Array<Song>> {
   let list:Array<Song> = new Array()
   const rootUrl = await getApiUrl()
-  const url:string = `${rootUrl}/user/cloud?limit=20&offset=${offset}`
+  const url:string = `${rootUrl}/user/cloud?limit=50&offset=${offset}`
   const request = new HttpRequest(url)
-  await request.Request().then((data) => {
+  await request.RequestInStream().then((data) => {
     LogUtil.info(TAG + 'got data: ' + JSON.stringify(data.result))
     const dataGot:CloudSongs = data.result as CloudSongs
     for(let song of dataGot.data) {

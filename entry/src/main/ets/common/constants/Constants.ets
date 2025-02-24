@@ -45,7 +45,7 @@ export default class Constants {
   /**
    * Bar Icon 按钮尺寸
    */
-  static readonly SIZE_ICON_BUTTON_Bar: number = 25
+  static readonly SIZE_ICON_BUTTON_BAR: number = 25
   /**
    * 默认加载图标尺寸
    */
@@ -78,6 +78,10 @@ export default class Constants {
    * 普通字体尺寸
    */
   static readonly FONT_SIZE_COMMON: number = 15
+  /**
+   * Bar 字体尺寸
+   */
+  static readonly FONT_SIZE_BAR: number = 10
   /**
    * 默认边缘避让尺寸
    */

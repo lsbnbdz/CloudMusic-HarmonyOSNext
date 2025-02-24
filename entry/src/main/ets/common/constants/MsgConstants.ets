@@ -9,9 +9,9 @@ export class MsgConstants {
   /**
    * 如何登录
    */
-  static readonly HOW_TO_LOGIN_MSG: string = '在当前网页中登录你的网易云音乐账号\n' +
-    '（任意登录方式均可）\n\n' +
-    '待网页开始转圈加载或登录完成后，点击下方按钮，之后等待登录完成\n'
+  static readonly HOW_TO_LOGIN_MSG: string = '请先耐心等待网页加载，之后在当前网页中登录你的网易云音乐账号\n' +
+    '（点击登录弹窗下方的“选择其他登录方式”可以使用更多方法登录）\n\n' +
+    '待开始转圈加载或登录完成后，点击下方按钮，之后等待登录完成\n'
   /**
    * 功能开发中的提示
    */

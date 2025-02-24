@@ -53,23 +53,27 @@ export struct PlayQueueSheet {
               Span(`  (${this.queue.length})`).fontSize(Constants.FONT_SIZE_COMMON).fontColor(Color.Gray)
             }
 
-            LoopModeButton({ imgWidth: 25, btnWidth: 25 })
+            LoopModeButton({ imgWidth: Constants.SIZE_ICON_BUTTON_BAR, btnWidth: Constants.SIZE_ICON_BUTTON_BAR })
 
             // HeartMode Button
             if(this.queue.length > 0 && this.playmode == 1) {
               Button() {
-                Image($r('app.media.ic_heart_filled')).width(Constants.SIZE_ICON_BUTTON_Bar - 5).fillColor($r('app.color.app_red'))
+                Image($r('app.media.ic_heart_filled')).width(Constants.SIZE_ICON_BUTTON_BAR - 5).fillColor($r('app.color.reverse'))
               }
               .backgroundColor(Color.Transparent)
               .onClick(async () => {
                 await this.startHeartMode()
               })
             }
+
+            if(this.isLoading) {
+              LoadingProgress().width(Constants.SIZE_ICON_BUTTON_BAR)
+            }
           }
 
           Row({ space: 10 }) {
             Button({ type: ButtonType.Circle }) {
-              Image($r('app.media.ic_position')).width(Constants.SIZE_ICON_BUTTON_Bar).fillColor(Color.Gray)
+              Image($r('app.media.ic_position')).width(Constants.SIZE_ICON_BUTTON_BAR).fillColor(Color.Gray)
             }
             .backgroundColor(Color.Transparent)
             .onClick(() => {
@@ -77,7 +81,7 @@ export struct PlayQueueSheet {
             })
 
             Button({ type: ButtonType.Circle }) {
-              Image($r('app.media.ic_public_delete_filled')).width(Constants.SIZE_ICON_BUTTON_Bar - 5).fillColor(Color.Gray)
+              Image($r('app.media.ic_public_delete_filled')).width(Constants.SIZE_ICON_BUTTON_BAR - 5).fillColor(Color.Gray)
             }
             .backgroundColor(Color.Transparent)
             .onClick(() => {
@@ -174,8 +178,7 @@ export struct PlayQueueSheet {
 
       if(this.isLoading) {
         Column() {
-          LoadingProgress()
-            .width(50)
+
         }
         .justifyContent(FlexAlign.Center)
         .height('100%')

@@ -1,17 +1,16 @@
 import { CircleButton, CircleImageButton, CommonCircleButton } from "../buttons/CircleButton";
 import { MeSheet } from "../sheets/MeSheet";
-import { router } from "@kit.ArkUI";
 import { User, UserClass } from "../../common/entities/User";
 import Constants from "../../common/constants/Constants";
 
 @Component
 export struct IndexHead {
   @State isShowSheet: boolean = false
-  @Link isShowSearchButton: boolean
   @StorageProp('bottomRectHeight') bottomRectHeight: number = 0
   @StorageProp('topRectHeight') topRectHeight: number = 0
   @StorageProp('isValidCookie') isValidCookie: boolean = false
   @StorageProp('User') user: User = UserClass
+  @Consume('pageInfos') pageInfos: NavPathStack
 
   build() {
     Stack() {
@@ -32,7 +31,7 @@ export struct IndexHead {
             })
 
         } else {
-          CommonCircleButton({ ButtonImageName: 'ic_public_contacts_filled', BgColor: '#00cbcbcb' })
+          CommonCircleButton({ ButtonImageName: 'ic_user_portrait', BgColor: '#00cbcbcb' })
             .bindSheet(this.isShowSheet, this.Sheet(), {
               preferType: SheetType.CENTER,
               backgroundColor: $r('app.color.background'),
@@ -50,18 +49,14 @@ export struct IndexHead {
 
         // 搜索按钮
         CircleButton({ imgUrl: $r('app.media.ic_public_search_filled'), bgColor: '#00cbcbcb', fillColor: $r('app.color.reverse') })
-          .opacity(this.isShowSearchButton ? 1 : 0)
-          .animation({ duration: 300 })
           .position({ right: 50 })
           .onClick(() => {
-            router.pushUrl({
-              url: "pages/SearchPage"
-            })
+            this.pageInfos.pushPathByName('SearchPage', null)
           })
         CommonCircleButton({ ButtonImageName: 'ic_public_more_filled', BgColor: '#00cbcbcb' })
           .bindMenu(this.MoreMenu())
       }
-      .padding({ left: 20, right: 20, bottom: 5 })
+      .padding({ left: 20, right: 20 })
       .justifyContent(FlexAlign.SpaceBetween)
       .width('100%')
     }
@@ -74,19 +69,19 @@ export struct IndexHead {
       MenuItem(this.MenuItem($r('app.media.ic_public_download_filled'), '下载'))
         .contentFontColor($r('app.color.reverse'))
         .onClick(()=>{
-          router.pushUrl({ url:'pages/DownloadPage' })
+          this.pageInfos.pushPathByName('DownloadPage', null)
         })
 
       MenuItem(this.MenuItem($r('app.media.ic_public_settings_filled') ,'设置'))
         .contentFontColor($r('app.color.reverse'))
         .onClick(()=>{
-          router.pushUrl({ url:'pages/Settings' })
+          this.pageInfos.pushPathByName('SettingsPage', null)
         })
     }
   }
 
   @Builder
-  MenuItem(image:ResourceStr, title:string) {
+  MenuItem(image: ResourceStr, title: string) {
     Row({ space: 10 }) {
       Column() {
         Image(image)
@@ -107,15 +102,4 @@ export struct IndexHead {
   Sheet() {
     MeSheet({ isShowSheet: this.isShowSheet })
   }
-}
-
-@Extend(Text) function textStyle() {
-  .fontSize(18)
-  .fontColor($r('app.color.reverse'))
-  .maxLines(1)
-  .layoutWeight(1)
-  .width('100%')
-  .padding({ left:10, right: 10})
-  .textAlign(TextAlign.Center)
-  .textOverflow({ overflow: TextOverflow.Ellipsis })
 }

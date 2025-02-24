@@ -1,21 +1,20 @@
-import { Song, SongClass } from "../../common/entities/SongsResult"
-import { changeDuration } from "../../common/functions/commonFunction"
-import { pauseMusic, playNext, playPre, resumeMusic, seekMusic } from "../../common/functions/play/playControl"
-import { AddToPlayListCircleButton } from "../buttons/play/AddToPlayListButton"
-import { LoopModeButton } from "../buttons/play/LoopModeButton"
-import { PlayQueueButton } from "../buttons/play/PlayQueueButton"
-import { DownloadDialog } from "../dialog/DownloadDialog"
-import { LyricComponent } from "../play/LyricComponent"
+import { Song, SongClass } from "../common/entities/SongsResult"
+import { changeDuration } from "../common/functions/commonFunction"
+import { pauseMusic, playNext, playPre, resumeMusic, seekMusic } from "../common/functions/play/playControl"
+import { AddToPlayListCircleButton } from "../components/buttons/play/AddToPlayListButton"
+import { LoopModeButton } from "../components/buttons/play/LoopModeButton"
+import { PlayQueueButton } from "../components/buttons/play/PlayQueueButton"
+import { DownloadDialog } from "../components/dialog/DownloadDialog"
+import { LyricComponent } from "../components/play/LyricComponent"
 import { AVCastPicker } from "@kit.AVSessionKit"
-import { TimerButton } from "../buttons/play/TimerButton"
-import { StorageConstants } from "../../common/constants/StorageConstants"
-import Constants from "../../common/constants/Constants"
-import { SetPlayQuality } from "../settings/SetPlayQuality"
+import { TimerButton } from "../components/buttons/play/TimerButton"
+import { StorageConstants } from "../common/constants/StorageConstants"
+import Constants from "../common/constants/Constants"
+import { SetPlayQuality } from "../components/settings/SetPlayQuality"
 import { PasteboardUtil, ToastUtil } from "@pura/harmony-utils"
 
 @Component
-export struct PlayingCover {
-  @StorageProp('topRectHeight') topRectHeight: number = 0
+export struct FullPlayerPage {
   @StorageProp('player-mode') playmode: number = 1
   @StorageProp('player-song') song: Song = SongClass
   @StorageProp('player-artists') artists: string = ''
@@ -25,7 +24,6 @@ export struct PlayingCover {
   @StorageProp('player-lyric') lyricArr: string[] = []
   @StorageProp(StorageConstants.PLAY_COUNTDOWN_WORKING) isTimerWorking: boolean = false
   @StorageProp(StorageConstants.PLAY_IS_LOCALFILE) isLocalFile: boolean = false
-  @Link isShow: boolean
   @State hasLoaded: boolean = false
   @State sliderThickness: number = 10
   @State isMovingSlider: boolean = false
@@ -33,6 +31,7 @@ export struct PlayingCover {
   @State tabPageIndex: number = 0
   @State totalOpacity: number = 0
   @State isShowPopup: boolean = false
+  @Consume('pageInfos') pageInfos: NavPathStack
   private artists1: string = ''
   private song1: Song = SongClass
   private picUrl1: string = ''
@@ -46,6 +45,12 @@ export struct PlayingCover {
     }),
   })
 
+  private close() {
+    this.getUIContext()?.animateTo({ duration: 300, curve: Curve.Friction }, () => {
+      this.pageInfos.pop(false)
+    })
+  }
+
   aboutToAppear(): void {
     setTimeout(() => {
       this.totalOpacity = 1
@@ -53,75 +58,80 @@ export struct PlayingCover {
   }
 
   build() {
-   Stack() {
-     // Background
-     Stack() {
-       Image(this.picUrl + '?param=512y512')
-         .blur(100)
-         .width('100%')
-         .height('100%')
-         .animation({
-           duration: 300,
-           curve: Curve.Linear
-         })
-         .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
-       Column()
-         .width('100%')
-         .height('100%')
-         .opacity(0.6)
-         .backgroundColor(Color.Black)
-         .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
-     }
-     .width('100%')
-     .height('100%')
+    NavDestination() {
+      Stack() {
+        // Background
+        Stack() {
+          Image(this.picUrl + '?param=512y512')
+            .blur(100)
+            .width('100%')
+            .height('100%')
+            .animation({
+              duration: 300,
+              curve: Curve.Linear
+            })
+            .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
+          Column()
+            .width('100%')
+            .height('100%')
+            .opacity(0.6)
+            .backgroundColor(Color.Black)
+            .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
+        }
+        .width('100%')
+        .height('100%')
+        .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
 
-     Column() {
-       Swiper() {
-         this.SongInfo()
-         LyricComponent()
-           .padding({ top: px2vp(this.topRectHeight) })
-           .width('100%')
-       }
-       .indicator(
-         new DotIndicator()
-           .top(px2vp(this.topRectHeight) + 5)
-           .selectedColor(Color.White)
-           .color(Color.Gray)
-       )
-       .clip(false)
-       .loop(false)
-       .layoutWeight(1)
+        Column() {
+          Swiper() {
+            this.SongInfo()
+            LyricComponent()
+              .width('100%')
+          }
+          .indicator(
+            new DotIndicator()
+              .top(5)
+              .selectedColor(Color.White)
+              .color(Color.Gray)
+          )
+          .clip(false)
+          .loop(false)
+          .layoutWeight(1)
 
-       Column({ space: 10 }) {
-         this.SliderContent()
-         this.ToolBar()
-         Row() {
-           LoopModeButton({ imgColor: Color.White }).opacity(0.8)
-           this.PlayButton()
-           PlayQueueButton({ imgColor: Color.White }).opacity(0.8)
-         }
-         .padding({ top: 20, bottom: 15 })
-         .justifyContent(FlexAlign.SpaceEvenly)
-         .width('90%')
-         Row({ space: 15 }) {
-           if(this.isLocalFile) { Text('本地文件播放中').fontSize(10).fontColor(Color.Gray) }
-           if(this.isTimerWorking) { Text('已设置定时关闭').fontSize(10).fontColor(Color.Gray) }
-         }
-         .justifyContent(FlexAlign.Center)
-         .width('100%')
-         .height(30)
-         .backgroundColor(Color.Transparent)
-       }
-       .width('100%')
-     }
-     .height('100%')
-     .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
+          Column({ space: 10 }) {
+            this.SliderContent()
+            this.ToolBar()
+            Row() {
+              LoopModeButton({ imgColor: Color.White }).opacity(0.8)
+              this.PlayButton()
+              PlayQueueButton({ imgColor: Color.White }).opacity(0.8)
+            }
+            .padding({ top: 20, bottom: 15 })
+            .justifyContent(FlexAlign.SpaceEvenly)
+            .width('90%')
+            Row({ space: 15 }) {
+              if(this.isLocalFile) { Text('本地文件播放中').fontSize(10).fontColor(Color.Gray) }
+              if(this.isTimerWorking) { Text('已设置定时关闭').fontSize(10).fontColor(Color.Gray) }
+            }
+            .justifyContent(FlexAlign.Center)
+            .width('100%')
+            .height(30)
+            .backgroundColor(Color.Transparent)
+          }
+          .width('100%')
+        }
+        .height('100%')
+        .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
 
-     this.Head() // Head
+        this.Head() // Head
 
-   }
-   .height('100%')
-   .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
+      }
+      .height('100%')
+      .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
+    }
+    .hideTitleBar(true)
+    .hideToolBar(true)
+    .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
   }
 
   /**
@@ -177,7 +187,7 @@ export struct PlayingCover {
           .height(30)
         }
       }
-      .opacity(this.totalOpacity)
+      // .opacity(this.totalOpacity)
       .animation({
         duration: 200,
         curve: Curve.Linear
@@ -310,7 +320,9 @@ export struct PlayingCover {
     Row() {
       Button({ type: ButtonType.Circle }) { Image($r('app.media.ic_public_arrow_down_0')).draggable(false).fillColor(Color.White).width(Constants.SIZE_ICON_BUTTON_COMMON).aspectRatio(1) }
       .backgroundColor(Color.Transparent)
-      .onClick(() => { this.isShow = false })
+      .onClick(() => {
+        this.close()
+      })
       Button({ type: ButtonType.Circle }) { Image($r('app.media.ic_public_more_list')).draggable(false).fillColor(Color.White).width(Constants.SIZE_ICON_BUTTON_COMMON).aspectRatio(1) }
       .backgroundColor(Color.Transparent)
       .bindPopup(this.isShowPopup, {
@@ -326,7 +338,7 @@ export struct PlayingCover {
     .position({ top: 0 })
     .width('100%')
     .justifyContent(FlexAlign.SpaceBetween)
-    .padding({ top: px2vp(this.topRectHeight), left: 10, right: 10, bottom: 5 })
+    .padding({ left: 10, right: 10, bottom: 5 })
   }
 
   /**
@@ -344,9 +356,12 @@ export struct PlayingCover {
           .borderRadius(5)
           .aspectRatio(1)
           Image($r('app.media.ic_public_music'))
-            .height('30%').fillColor(Color.Gray)
+            .height('30%')
+            .fillColor(Color.Gray)
             .borderRadius(5)
             .aspectRatio(1)
+            .geometryTransition('PlayerPic')
+            .sharedTransition('PlayerPic', { duration: 500 })
         }
         .padding({ bottom: 30 })
       } else {
@@ -354,6 +369,8 @@ export struct PlayingCover {
           LoadingProgress().width(60)
           if(this.picUrl != '') {
             Image(this.picUrl + '?param=512y512')
+              .geometryTransition('PlayerPic')
+              .sharedTransition('PlayerPic', { duration: 500 })
               .height('60%')
               .borderRadius(5)
               .aspectRatio(1)
@@ -363,9 +380,9 @@ export struct PlayingCover {
           }
           else {
             Column()
-            .height('60%')
-            .borderRadius(5)
-            .aspectRatio(1)
+              .height('60%')
+              .borderRadius(5)
+              .aspectRatio(1)
           }
         }
         .padding({ bottom: 30 })
@@ -387,14 +404,14 @@ export struct PlayingCover {
         })
     }
     .width('100%')
-    .padding({ left: 15, right: 15, top:px2vp(this.topRectHeight) + 40 })
+    .padding({ left: 15, right: 15, top: 40 })
     .height('100%')
     .justifyContent(FlexAlign.Center)
     .gesture(
       SwipeGesture({
         fingers: 1,
         direction: SwipeDirection.Vertical
-      }).onAction(() => { this.isShow = false })
+      }).onAction(() => { this.close() })
     )
   }
 

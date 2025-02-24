@@ -1,15 +1,5 @@
 {
   "src": [
-    "pages/Index",
-    "pages/Settings",
-    "pages/SearchPage",
-    "pages/login/LoginPage",
-    "pages/login/WebLogin",
-    "pages/DownloadPage",
-    "pages/PlayListPage",
-    "pages/WebPage",
-    "pages/login/QrCodeLogin",
-    "pages/DailyListPage",
-    "pages/CloudPage"
+    "pages/Index"
   ]
 }

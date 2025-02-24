@@ -5,35 +5,30 @@ import { router } from '@kit.ArkUI';
 import { SearchPlayListsList } from '../components/lists/SearchPlayListsList';
 import { SearchSongsList } from '../components/lists/SearchSongsList';
 import { EmitterConstants } from '../common/constants/EmitterConstants';
+import Constants from '../common/constants/Constants';
 
 /**
  * 歌曲列表页（搜索结果）
  */
 const TAG = "[SearchPage] "
-@Entry
+
 @Component
-struct SearchPage {
-  @StorageProp('bottomRectHeight') bottomRectHeight: number = 0
-  @StorageProp('topRectHeight') topRectHeight: number = 0
+export struct SearchPage {
   @State tabPageIndex: number = 0
   @State searchKeyword: string = ''
   hasAnimation: boolean | undefined = false
   private tabsController: TabsController = new TabsController()
 
-  pageTransition() {
-    PageTransitionEnter({ duration: 100, curve: Curve.EaseIn })
-    PageTransitionExit({ duration: 100, curve: Curve.EaseOut })
-  }
-
   build() {
-    Stack({ alignContent: Alignment.Bottom }) {
+    NavDestination() {
+      Stack({ alignContent: Alignment.Bottom }) {
         Stack({ alignContent: Alignment.Top }) {
           if(this.searchKeyword != '') {
             Column({ space: 10 }) {
               this.TabBar()
               Tabs({ controller: this.tabsController }) {
-                TabContent() { SearchSongsList({ searchKeyword: this.searchKeyword }) }
-                TabContent() { SearchPlayListsList({ searchKeyword: this.searchKeyword }) }
+                TabContent() { SearchSongsList({ searchKeyword: this.searchKeyword }) }.expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.BOTTOM])
+                TabContent() { SearchPlayListsList({ searchKeyword: this.searchKeyword }) }.expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.BOTTOM])
               }
               .layoutWeight(1)
               .onChange((index) => {
@@ -45,17 +40,19 @@ struct SearchPage {
             .height('100%')
             .width('100%')
           }
-          this.Head()
         }
         .height('100%')
 
-      BottomBarComponent()
-        .padding({ left: 10, right: 10, bottom: px2vp(this.bottomRectHeight)})
-        .backgroundColor(Color.Transparent)
+        BottomBarComponent()
+          .padding(Constants.PADDING_EDGE_DEFAULT)
+          .backgroundColor(Color.Transparent)
+      }
+      .width('100%')
+      .height('100%')
+      .backgroundColor($r('app.color.background'))
     }
-    .width('100%')
-    .height('100%')
     .backgroundColor($r('app.color.background'))
+    .title(this.Head())
   }
 
   /**
@@ -83,39 +80,26 @@ struct SearchPage {
     }
     .width('80%')
     .justifyContent(FlexAlign.SpaceAround)
-    .padding({ top: px2vp(this.topRectHeight) + 60 })
   }
 
   @Builder
   Head() {
-    Row({ space: 20 }) {
-      CommonCircleButton({ ButtonImageName:'ic_public_back' })
-        .onClick(() => {
-          router.back()
-        })
+    Column() {
       Search({
         placeholder: '搜索内容',
         icon: '/resources/base/media/ic_public_search_filled.svg',
       })
-        .sharedTransition('search_component', {
-            duration: 300,
-            curve: Curve.Friction
-          })
         .defaultFocus(true)
         .layoutWeight(1)
         .searchButton('搜索')
         .onSubmit(async (value) => {
           this.searchKeyword = value
           EmitterUtil.post(EmitterConstants.EMITTER_SEARCH, value)
-          if(!value) {
+          if (!value) {
             ToastUtil.showToast('请输入搜索内容')
           }
         })
     }
-    .opacity(0.95)
-    .backdropBlur(50)
-    .padding({ left: 10, right: 20, top: px2vp(this.topRectHeight) })
-    .width('100%')
-    .backgroundColor(Color.Transparent)
+    .padding({ left: Constants.PADDING_EDGE_DEFAULT })
   }
 }

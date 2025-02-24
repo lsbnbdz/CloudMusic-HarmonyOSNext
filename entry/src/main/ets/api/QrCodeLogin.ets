@@ -25,27 +25,34 @@ export async function getQrCode(): Promise<string[]> {
   return [unikey,qrimg]
 }
 
-export async function checkQrLogin(key:string) {
+export async function checkQrLogin(key: string): Promise<boolean> {
   const timestamp = new Date().getTime()
   const rootUrl = await getApiUrl()
-  const url:string = `${rootUrl}/login/qr/check?key=${key}&timestamp=${timestamp}`
+  const url: string = `${rootUrl}/login/qr/check?key=${key}&timestamp=${timestamp}`
   const request = new HttpRequest(url)
-  await request.Request().then(async (data) => {
-    const code:number = data.result["code"]
-    if(code == 800 || code == 801) {
+  try {
+    const data = await request.Request()
+    const code: number = data.result["code"]
+    if (code == 800 || code == 801) {
       ToastUtil.showToast(data.result["message"])
-    }
-    else if(code == 803) { // success
-      let cookie:string = data.result["cookie"]
-      if(cookie) {
+      return false;
+    } else if (code == 803) { // success
+      let cookie: string = data.result["cookie"]
+      if (cookie) {
         cookie = removeHTTPOnly(cookie)
         cookie = cookie + '; OS=pc'
         AppStorage.setOrCreate('cookie', cookie)
-        getLoginStatus(cookie)
-      }
-      else {
+        const result = await getLoginStatus(cookie)
+        return result;
+      } else {
         ToastUtil.showToast('获取登录状态失败')
+        return false
       }
+    } else {
+      return false
     }
-  })
+  } catch (error) {
+    ToastUtil.showToast(`请求失败: ${error}`)
+    return false
+  }
 }

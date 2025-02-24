@@ -10,34 +10,34 @@ import { StorageConstants } from "../common/constants/StorageConstants"
  * 获取登录状态
  * @param cookie
  */
-export async function getLoginStatus(cookie: string) {
+export async function getLoginStatus(cookie: string): Promise<boolean> {
   try {
     const timestamp = new Date().getTime()
     const rootUrl = await getApiUrl()
-    const url:string = `${rootUrl}/login/status?timestamp=${timestamp}`
-    const request = new HttpRequest(url,false)
+    const url: string = `${rootUrl}/login/status?timestamp=${timestamp}`
+    const request = new HttpRequest(url, false)
     const userPref = StorageConstants.USER_PREF
 
-    request.Request().then((data) => {
-      const user:User = data.result as User
-      if(user.data.account.id) {
-        PreferencesUtils.putPreferenceValue(userPref, 'user', user)
-        PreferencesUtils.putPreferenceValue(userPref, 'cookie', cookie)
-        PreferencesUtils.putPreferenceValue(userPref, 'signTime', Date.now())
-        AppStorage.setOrCreate(StorageConstants.VIP_TYPE, user.data.account.vipType)
-        AppStorage.setOrCreate(StorageConstants.VALID_COOKIE, true)
-        AppStorage.setOrCreate(StorageConstants.USER, user)
-        promptAction.showToast({
-          message: '登录成功！'
-        })
-        router.back()
-      }
-      else {
-        ToastUtil.showToast('登录失败')
-      }
-    })
+    const data = await request.Request()
+    const user: User = data.result as User
+    if (user.data.account.id) {
+      PreferencesUtils.putPreferenceValue(userPref, 'user', user)
+      PreferencesUtils.putPreferenceValue(userPref, 'cookie', cookie)
+      PreferencesUtils.putPreferenceValue(userPref, 'signTime', Date.now())
+      AppStorage.setOrCreate(StorageConstants.VIP_TYPE, user.data.account.vipType)
+      AppStorage.setOrCreate(StorageConstants.VALID_COOKIE, true)
+      AppStorage.setOrCreate(StorageConstants.USER, user)
+      promptAction.showToast({
+        message: '登录成功！'
+      })
+      return true
+    } else {
+      ToastUtil.showToast('登录失败')
+      return false
+    }
   } catch (error) {
-    promptAction.showToast({ message:`获取登录状态失败: ${error}` })
+    promptAction.showToast({ message: `获取登录状态失败: ${error}` })
     LogUtil.error('获取登录状态失败', error.message)
+    return false
   }
 }

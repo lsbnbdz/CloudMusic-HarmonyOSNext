@@ -1,8 +1,6 @@
-import { router } from '@kit.ArkUI'
 import { Song } from '../common/entities/SongsResult'
 import { SongCard } from '../components/cards/SongCard'
-import { PlayList } from '../common/entities/PlayList'
-import { ListHead } from '../components/head/ListHead'
+import { playListClass } from '../common/entities/PlayList'
 import { DialogUtil, LogUtil, ToastUtil } from '@pura/harmony-utils'
 import { getPlayListSongs, PlayListOperation, subscribePlayList } from '../api/playListApi'
 import { BottomBarComponent } from '../components/play/BottomBarComponent'
@@ -10,9 +8,9 @@ import { DialogAction } from '@pura/harmony-utils/src/main/ets/entity/constraint
 import { formatNumber } from '../common/functions/commonFunction'
 import { playListToQueue } from '../common/functions/play/playListOp'
 import { AddToPlayListButton } from '../components/buttons/play/AddToPlayListButton'
-import { QuestionButton } from '../components/buttons/QuestionButton'
 import Constants from '../common/constants/Constants'
 import { ClickToLoadButton, LoadingMoreButton, NoMoreButton } from '../components/buttons/LoadMoreButtons'
+import { PlayListPageParam } from '../common/entities/PageParams'
 
 /**
  * 歌单二级页面
@@ -20,30 +18,45 @@ import { ClickToLoadButton, LoadingMoreButton, NoMoreButton } from '../component
 
 const TAG = '[PlayListPage] '
 
-@Entry
 @Component
-struct PlayListPage {
+export struct PlayListPage {
+  @State param: PlayListPageParam = {
+    playList: playListClass,
+    isShowHeart: false
+  }
   @StorageProp('bottomRectHeight') bottomRectHeight: number = 0
   @StorageProp('topRectHeight') topRectHeight: number = 0
   @StorageProp('set-hasAnimation') hasAnimation: boolean = true
-  @StorageProp('isPlayerLoading') isPlayerLoading:boolean = false
-
-  private playList: PlayList = Object(router.getParams())['playList']
-  private trackCount: number = Object(router.getParams())['trackCount']
-  private isShowHeart: boolean = Object(router.getParams())['isShowHeart']
+  @StorageProp('isPlayerLoading') isPlayerLoading: boolean = false
   private currentOffset: number = 0 // 歌曲偏移量
 
-  @State isSubscribed: boolean = this.playList.subscribed
+  @State isSubscribed: boolean = false
   @State list: Array<Song> = new Array()
+  @State filteredList: Array<Song> = new Array()
   @State hasMore: boolean = true
   @State hasLoaded: boolean = false // 判定是否已加载 避免重复加载
   @State isLoading: boolean = true
   @State isLoadingMore: boolean = false
   @State pageOpacity: number = 1
+  @State searchKeyword: string = ''
+  @State menuItem: NavigationMenuItem[] = [
+    {
+      value: '12',
+      icon: $r('app.media.ic_public_help'),
+      action: () => {
+        DialogUtil.showConfirmDialog({
+          title: '歌单操作',
+          message: '增删歌曲：左滑歌曲卡片\n\n' +
+            '收藏歌单：点击信息栏右边爱心图标'
+        })
+      }
+    }
+  ]
 
-  async onPageShow(): Promise<void> {
+  async aboutToAppear(): Promise<void> {
+    this.isSubscribed = this.param.playList.subscribed
     if (!this.hasLoaded) {
-      await this.loadSongs(30, 0)
+      await this.loadSongs(100, 0)
     }
   }
 
@@ -56,11 +69,12 @@ struct PlayListPage {
     }
 
     try {
-      const result = await getPlayListSongs(this.playList.id, offset)
+      LogUtil.info(TAG + 'loadSongs: ' + `limit: ${limit}, offset: ${offset}`)
+      const result = await getPlayListSongs(this.param.playList.id, this.param.playList.trackCount, offset)
       this.list = [...this.list, ...result] // 合并歌曲列表
       this.currentOffset += limit
 
-      if (this.list.length >= this.trackCount) {
+      if (this.list.length >= this.param.playList.trackCount) {
         this.hasMore = false
       }
     } catch (e) {
@@ -73,19 +87,23 @@ struct PlayListPage {
   }
 
   build() {
-    Stack({ alignContent: Alignment.Bottom }) {
+    NavDestination() {
+      Stack({ alignContent: Alignment.Bottom }) {
         Stack({ alignContent: Alignment.Top }) {
-          if (this.isLoading) {
-            Column() {
-              LoadingProgress().width(Constants.SIZE_LOADING_PROGRESS_DEFAULT)
-            }.height('100%').width('100%').justifyContent(FlexAlign.Center)
-          } else {
-            List() {
-              ListItem().height( px2vp(this.topRectHeight) + 50 )
+          List() {
+            ListItem() {
+             this.PlayListInfo()
+            }
+            .padding({ bottom: 15 })
+            if (this.isLoading) {
               ListItem() {
-                this.PlayListInfo()
+                Column() {
+                  LoadingProgress()
+                    .width(Constants.SIZE_LOADING_PROGRESS_CARD)
+                    .padding({ top: Constants.PADDING_EDGE_TEXT })
+                }.width('100%').justifyContent(FlexAlign.Center)
               }
-              .padding({ bottom: 15 })
+            } else {
               ListItem() {
                 Row() {
                   Button() {
@@ -94,7 +112,7 @@ struct PlayListPage {
                         LoadingProgress().height(35).padding({ left: 30 })
                       } else {
                         Image($r('app.media.ic_play_fill')).width(Constants.FONT_SIZE_COMMON).fillColor(Color.Gray)
-                        Text(`播放全部 (${this.trackCount})`).fontSize(Constants.FONT_SIZE_COMMON)
+                        Text(`播放全部 (${this.param.playList.trackCount})`).fontSize(Constants.FONT_SIZE_COMMON)
                       }
                     }
                     .height(Constants.HEIGHT_TEXT_BUTTON)
@@ -106,7 +124,7 @@ struct PlayListPage {
                     if (this.isPlayerLoading) {
                       ToastUtil.showToast('当前有正在加载的播放任务，请稍后再试')
                     } else {
-                      playListToQueue(this.playList.id, this.trackCount, 0)
+                      playListToQueue(this.param.playList.id, this.param.playList.trackCount, 0)
                     }
                   })
                 }
@@ -115,10 +133,35 @@ struct PlayListPage {
               }
               .padding({ left: 20, bottom: 10, right: 20 })
 
-              ForEach(this.list, (item: Song, index) => {
+              ListItem() {
+                Column() {
+                  Search({
+                    placeholder: '搜索歌单',
+                    icon: '/resources/base/media/ic_public_search_filled.svg'
+                  })
+                    .height(Constants.HEIGHT_SELECT)
+                    .width('100%')
+                    .searchButton('搜索')
+                    .margin({ left: Constants.PADDING_EDGE_DEFAULT })
+                    .onChange((value) => {
+                      if(value == '') {
+                        this.filteredList = []
+                        this.searchKeyword = ''
+                      }
+                    })
+                    .onSubmit((value) => {
+                      this.searchKeyword = value
+                      this.handelSearch()
+                    })
+                }
+                .padding({ left: 20, right: 20, bottom: 10 })
+                .justifyContent(FlexAlign.Center)
+              }
+
+              ForEach(this.searchKeyword ? this.filteredList : this.list, (item: Song, index) => {
                 ListItem() {
                   SongCard({ song: item, sid: index, hasAnimation: this.hasAnimation,
-                    isPlayList: true, playList: this.playList, index: index })
+                    isPlayList: true, playList: this.param.playList, index: index })
                 }
                 .swipeAction({ end: this.SwipeItem(item, index), edgeEffect: SwipeEdgeEffect.None })
               })
@@ -131,8 +174,11 @@ struct PlayListPage {
               } else if (this.hasMore) {
                 ListItem() {
                   ClickToLoadButton()
-                    .onClick(() => {
-                      this.loadSongs(30, this.currentOffset)
+                    .onClick(async () => {
+                      await this.loadSongs(100, this.currentOffset)
+                      if(this.searchKeyword) {
+                        this.handelSearch()
+                      }
                     })
                 }
               } else if (!this.hasMore) {
@@ -140,54 +186,31 @@ struct PlayListPage {
                   NoMoreButton()
                 }
               }
-              ListItem().height(px2vp(this.bottomRectHeight) + 80)
             }
-            .height('100%')
-            .layoutWeight(1)
-            .width('100%')
-            .scrollBar(BarState.Off)
+
+            ListItem().height(px2vp(this.bottomRectHeight) + 80)
           }
-          ListHead({
-            title: this.playList.name,
-            slot: this.HeadSlot.bind(this)
-          })
+          .cachedCount(5)
+          .height('100%')
+          .layoutWeight(1)
+          .width('100%')
+          .scrollBar(BarState.Off)
+          .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.BOTTOM])
         }
         .height('100%')
 
-      BottomBarComponent()
-      .padding({ left: 10, right: 10, bottom: px2vp(this.bottomRectHeight)})
-      .backgroundColor(Color.Transparent)
+        BottomBarComponent()
+          .padding(Constants.PADDING_EDGE_DEFAULT)
+          .backgroundColor(Color.Transparent)
+      }
+      .opacity(this.pageOpacity)
+      .width('100%')
+      .height('100%')
+      .backgroundColor($r('app.color.background'))
     }
-    .opacity(this.pageOpacity)
-    .width('100%')
-    .height('100%')
-    .backgroundColor($r('app.color.background'));
-  }
-
-  // 更多菜单
-  // @Builder
-  // PlayListMenu() {
-  //   Row() {
-  //     QuestionButton({ title: '歌单', msg: '歌单详情页支持左滑歌曲卡片进行操作', comSize: 25 })
-  //     Text('帮助')
-  //   }
-  //   .onClick(() => {
-  //     DialogUtil.showConfirmDialog({
-  //       title: '歌单',
-  //       message: '歌单详情页支持左滑歌曲卡片进行操作'
-  //     })
-  //   })
-  //   .padding({ left: 10, right: 10, top: 5, bottom: 5})
-  // }
-
-  @Builder
-  HeadSlot() {
-    QuestionButton({
-      title: '歌单',
-      msg: '增删歌曲：左滑歌曲卡片\n\n' +
-        '收藏歌单：点击信息栏右边爱心图标',
-      comSize: Constants.SIZE_ICON_BUTTON_HEAD
-    })
+    .title(this.param.playList.name)
+    .menus(this.menuItem)
+    .backgroundColor($r('app.color.background'))
   }
 
   @Builder PlayListInfo() {
@@ -199,7 +222,7 @@ struct PlayListPage {
               .width('100%')
               .borderRadius(10)
             LoadingProgress().width(40)
-            Image(`${this.playList.coverImgUrl}?parm=256y256`)
+            Image(`${this.param.playList.coverImgUrl}?param=256y256`)
               .width('100%')
               .borderRadius(10)
           }
@@ -210,16 +233,16 @@ struct PlayListPage {
         .width(80)
 
         Column() {
-          Text(this.playList.name)
+          Text(this.param.playList.name)
             .fontSize(18)
             .fontWeight(FontWeight.Medium)
             .width('100%')
             .padding({ bottom: 5 })
-          Text(`由 ${this.playList.creator.nickname} 创建`)
+          Text(`由 ${this.param.playList.creator.nickname} 创建`)
             .fontSize(12)
             .width('100%')
             .textAlign(TextAlign.Start)
-          Text(`${this.playList.trackCount}首歌曲     ${formatNumber(this.playList.playCount)}次播放`)
+          Text(`${this.param.playList.trackCount}首歌曲     ${formatNumber(this.param.playList.playCount)}次播放`)
             .fontSize(12)
             .width('100%')
             .textAlign(TextAlign.Start)
@@ -228,7 +251,7 @@ struct PlayListPage {
         .layoutWeight(1)
         .justifyContent(FlexAlign.SpaceEvenly)
 
-        if(this.isShowHeart) {
+        if(this.param.isShowHeart) {
           if (this.isSubscribed) {
             Image($r('app.media.ic_heart_filled')).fillColor(Color.Pink).width(25)
               .onClick(async () => {
@@ -237,7 +260,7 @@ struct PlayListPage {
           } else {
             Image($r('app.media.ic_heart_filled')).fillColor($r('app.color.main')).width(25)
               .onClick(async () => {
-                let res:boolean = await subscribePlayList(this.playList.id, 1)
+                let res:boolean = await subscribePlayList(this.param.playList.id, 1)
                 if(res) {
                   ToastUtil.showToast('成功收藏歌单')
                   this.isSubscribed = true
@@ -253,30 +276,11 @@ struct PlayListPage {
     .justifyContent(FlexAlign.Center)
   }
 
-  private UnSubScribe() {
-    DialogUtil.showPrimaryDialog({
-      title: '取消收藏歌单',
-      message: `《${this.playList.name}》`,
-      primaryButton: "取消",
-      secondaryButton: {
-        value: '确认',
-        fontColor: Color.Red,
-        action: async () => {
-          let res: boolean = await subscribePlayList(this.playList.id, 2)
-          LogUtil.info(TAG + 'res: ' + res)
-          if(res) {
-            ToastUtil.showToast('取消收藏歌单')
-            this.isSubscribed = false
-          }
-        }
-      }
-    })
-  }
   @Builder SwipeItem(song: Song, index: number) {
     Row() {
       AddToPlayListButton({ song: song })
       // Delete button
-      if (!this.isShowHeart) {
+      if (!this.param.isShowHeart) {
         Button() {
           Text('从歌单删除')
             .height('100%')
@@ -296,7 +300,7 @@ struct PlayListPage {
             onAction: async (action) => {
               if (action == DialogAction.TWO) {
                 try {
-                  await PlayListOperation('del', this.playList.id, song.id)
+                  await PlayListOperation('del', this.param.playList.id, song.id)
                   ToastUtil.showToast('删除成功')
                   this.list.splice(index, 1)
                 } catch (e) {
@@ -308,5 +312,38 @@ struct PlayListPage {
         })
       }
     }
+  }
+
+  private UnSubScribe() {
+    DialogUtil.showPrimaryDialog({
+      title: '取消收藏歌单',
+      message: `《${this.param.playList.name}》`,
+      primaryButton: "取消",
+      secondaryButton: {
+        value: '确认',
+        fontColor: Color.Red,
+        action: async () => {
+          let res: boolean = await subscribePlayList(this.param.playList.id, 2)
+          LogUtil.info(TAG + 'res: ' + res)
+          if(res) {
+            ToastUtil.showToast('取消收藏歌单')
+            this.isSubscribed = false
+          }
+        }
+      }
+    })
+  }
+
+  private handelSearch() {
+    if (this.searchKeyword.trim() === '') {
+      this.filteredList = [...this.list]
+      return
+    }
+    const keyword = this.searchKeyword.trim().toLowerCase()
+    this.filteredList = this.list.filter(song =>
+    song.name.toLowerCase().includes(keyword) ||
+    song.artists?.some(artist =>
+    artist.name.toLowerCase().includes(keyword)
+    ))
   }
 }

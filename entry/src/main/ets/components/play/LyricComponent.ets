@@ -71,7 +71,7 @@ export struct LyricComponent {
         value: 40
         }
       })
-      .padding({ top: px2vp(this.topRectHeight) + 30 })
+      .padding({ top: 30 })
       .edgeEffect(EdgeEffect.None)
       .scrollSnapAlign(ScrollSnapAlign.CENTER)
       .scrollBar(BarState.Off)

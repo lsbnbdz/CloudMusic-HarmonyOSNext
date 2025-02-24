@@ -1,86 +1,90 @@
-import { CommonHead } from '../../components/head/CommonHead';
 import { webview } from '@kit.ArkWeb';
 import { promptAction } from '@kit.ArkUI';
 import { getLoginStatus } from '../../api/getLoginStatus';
 import { DialogUtil, LogUtil, ToastUtil } from '@pura/harmony-utils';
-import { CommonCircleButton } from '../../components/buttons/CircleButton';
 import { MsgConstants } from '../../common/constants/MsgConstants';
 
 /**
  * 网页登录页面
  */
-@Entry
 @Component
-struct WebLogin {
+export struct WebLogin {
+  @Consume('pageInfos') pageInfos: NavPathStack
   @StorageProp('bottomRectHeight') bottomRectHeight: number = 0
   @State userAgent: string = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
   @State isLoading: boolean = true
   controller: webview.WebviewController = new webview.WebviewController()
 
   build() {
-    Stack() {
-      Column() {
-        CommonHead({ title: '登录'})
-        this.Bar()
-        Stack() {
-          Web({
-            src: '',
-            controller: this.controller
-          })
-            .javaScriptAccess(true)
-            .overScrollMode(OverScrollMode.ALWAYS)
-            .width('100%')
-            .height('100%')
-            .onProgressChange((e) => {
-              if (e.newProgress == 100) {
-                this.isLoading = false
-              }
+    NavDestination() {
+      Stack() {
+        Column() {
+          this.Bar()
+          Stack() {
+            Web({
+              src: '',
+              controller: this.controller
             })
-            .onControllerAttached(() => {
-              try {
-                this.controller.setCustomUserAgent(this.userAgent)
-                this.controller.loadUrl(`https://music.163.com/#/login`)
-              } catch (error) {
-                console.error('Login Web Error: ' + error.message)
-              }
-            })
+              .javaScriptAccess(true)
+              .cacheMode(CacheMode.Online)
+              .overScrollMode(OverScrollMode.ALWAYS)
+              .width('100%')
+              .height('100%')
+              .onProgressChange((e) => {
+                if (e.newProgress == 100) {
+                  this.isLoading = false
+                }
+              })
+              .onControllerAttached(() => {
+                try {
+                  this.controller.setCustomUserAgent(this.userAgent)
+                  this.controller.loadUrl(`https://music.163.com/#/login/`)
+                } catch (error) {
+                  console.error('Login Web Error: ' + error.message)
+                }
+              })
 
-          if(this.isLoading) {
-            Stack({ alignContent: Alignment.Center }) {
-              this.Loading()
+            if(this.isLoading) {
+              Stack({ alignContent: Alignment.Center }) {
+                this.Loading()
+              }
+              .height('100%')
+              .width('100%')
             }
-            .height('100%')
-            .width('100%')
           }
+          .width('100%')
+          .height('100%')
         }
-        .width('100%')
         .height('100%')
+        .width('100%')
       }
       .height('100%')
       .width('100%')
+      .backgroundColor($r('app.color.background'))
     }
-    .height('100%')
-    .width('100%')
+    .title('登录')
     .backgroundColor($r('app.color.background'))
-    .padding({ bottom: vp2px(this.bottomRectHeight) })
   }
 
-  async getCookie() {
+  async getCookie(): Promise<boolean> {
     try {
       let cookie = webview.WebCookieManager.fetchCookieSync('https://music.163.com')
       if (await this.checkValidCookie(cookie)) {
         cookie = cookie + '; OS=pc'
         AppStorage.setOrCreate("cookie",cookie)
-        console.log('Cookie => ' + cookie)
-        getLoginStatus(cookie)
+        LogUtil.info('Cookie => ' + cookie)
+        let result = await getLoginStatus(cookie)
+        return result
       } else {
         ToastUtil.showToast('获取登录信息失败，请确认是否已在网页内登录！')
+        return false
       }
     } catch (error) {
       console.error('获取Cookie失败', error.message)
       promptAction.showToast({
         message: '获取Cookie失败：' + error.message
       })
+      return false
     }
   }
 
@@ -135,8 +139,11 @@ struct WebLogin {
         Button('刷新').onClick(() => {
           this.controller.refresh()
         })
-        Button('获取登录信息').onClick(() => {
-          this.getCookie()
+        Button('获取登录信息').onClick(async () => {
+          let result = await this.getCookie()
+          if(result) {
+            this.pageInfos.pop()
+          }
         })
       }
     }

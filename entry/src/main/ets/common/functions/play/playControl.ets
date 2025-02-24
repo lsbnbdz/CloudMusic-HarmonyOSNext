@@ -118,15 +118,12 @@ export async function seekMusic(time: number) {
 export async function playQueue(index:number) {
   const queue = PlayQueueUtils.getQueue()
   const playqueue = queue[index]
-  const isLogged:boolean | undefined = AppStorage.get('isValidCookie')
+  PlayQueueUtils.setIndex(index)
+  const isLogged:boolean | undefined = AppStorage.get(StorageConstants.VALID_COOKIE)
   if(playqueue.playmode == 0) { // Play with file
-    playMusicWithFile(playqueue.fileName).then(() => {
-      PlayQueueUtils.setIndex(index)
-    })
+    playMusicWithFile(playqueue.fileName)
   } else { // Play with url
-    playMusicByUrl(playqueue.song, playqueue.artists, isLogged ? true : false).then(() => {
-      PlayQueueUtils.setIndex(index)
-    })
+    playMusicByUrl(playqueue.song, playqueue.artists, isLogged ? true : false)
   }
 }
 

@@ -8,6 +8,7 @@ export struct MeSheet {
   @StorageProp("User") user: User = UserClass
   @StorageProp("bottomRectHeight") bottomRectHeight: number = 0
   @Link isShowSheet:boolean
+  @Consume('pageInfos') pageInfos: NavPathStack
 
   build() {
     Column({ space: 20 }) {
@@ -16,7 +17,7 @@ export struct MeSheet {
         Text('未登录').NormalText(24)
         Button('登 录').LoginButton()
           .onClick(() => {
-            router.pushUrl({ url:'pages/login/LoginPage' })
+            this.pageInfos.pushPathByName('LoginPage', null)
           })
         } else {
         Column({ space: 20 }) {

@@ -22,9 +22,9 @@ export struct BottomBarComponent {
   @StorageProp('player-picurl') picUrl: string = ''
   @StorageProp('player-time') time: number = 0
   @StorageProp('player-currentLyric') currentLyric: string = ''
-
   @State componentOpacity: number = 0.8
   @State isShow: boolean = false
+  @Consume('pageInfos') pageInfos: NavPathStack
 
   build() {
     Row() {
@@ -33,7 +33,7 @@ export struct BottomBarComponent {
 
       Column({ space: 5 }) {
         Text(this.song.name).textStyle(18)
-        if(!this.currentLyric) {
+        if(!this.currentLyric || this.currentLyric === '暂无歌词') {
           Text(this.artists).textStyle(14).layoutWeight(1)
         }
         else {
@@ -57,6 +57,10 @@ export struct BottomBarComponent {
     .onClick(() => {
       if(this.isPlaying) {
         this.isShow = true
+
+        // this.getUIContext()?.animateTo({ duration: 300, curve: Curve.Friction }, () => {
+        //   this.pageInfos.pushPathByName('FullPlayerPage', null)
+        // })
       }
       else { ToastUtil.showToast('当前无正在播放歌曲') }
     })
@@ -118,6 +122,8 @@ struct ControlButtons {
 }
 
 @Extend(Image) function songImg() {
+  .sharedTransition('PlayerPic', { duration: 500 })
+  .geometryTransition('PlayerPic')
   .width(50)
   .height(50)
   .borderRadius(10)

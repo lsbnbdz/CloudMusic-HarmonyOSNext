@@ -82,6 +82,7 @@ export struct SearchSongsList {
       .width('100%')
       .scrollBar(BarState.Auto)
       .height('100%')
+      .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.BOTTOM])
     }
   }
 

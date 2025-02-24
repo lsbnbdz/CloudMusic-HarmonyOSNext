@@ -4,7 +4,7 @@ import { searchPlayLists } from "../../api/playListApi"
 import Constants from "../../common/constants/Constants"
 import { EmitterConstants } from "../../common/constants/EmitterConstants"
 import { PlayList } from "../../common/entities/PlayList"
-import { LoadingMoreButton, NoMoreButton } from "../buttons/LoadMoreButtons"
+import { ClickToLoadButton, LoadingMoreButton, NoMoreButton } from "../buttons/LoadMoreButtons"
 import { PlayListCard } from "../cards/PlayListCard"
 
 const TAG = "[SearchPlayListsList] "
@@ -59,7 +59,7 @@ export struct SearchPlayListsList {
           }
         } else if (this.hasMorePlayLists && this.searchKeyword) {
           ListItem() {
-            LoadingMoreButton()
+            ClickToLoadButton()
               .onClick(() => {
                 this.loadPlayLists(this.playListOffset)
               })
@@ -75,6 +75,7 @@ export struct SearchPlayListsList {
       .width('100%')
       .scrollBar(BarState.On)
       .height('100%')
+      .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.BOTTOM])
     }
   }
 

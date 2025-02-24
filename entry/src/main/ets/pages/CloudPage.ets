@@ -1,13 +1,13 @@
 import { Song } from '../common/entities/SongsResult'
 import { SongCard } from '../components/cards/SongCard'
 import { ListHead } from '../components/head/ListHead'
-
-import { LogUtil } from '@pura/harmony-utils'
+import { DialogUtil, LogUtil } from '@pura/harmony-utils'
 import { getCloudList } from '../api/playListApi'
 import { BottomBarComponent } from '../components/play/BottomBarComponent'
 import { AddToPlayListButton } from '../components/buttons/play/AddToPlayListButton'
 import { QuestionButton } from '../components/buttons/QuestionButton'
 import Constants from '../common/constants/Constants'
+import { ClickToLoadButton, LoadingMoreButton, NoMoreButton } from '../components/buttons/LoadMoreButtons'
 
 /**
  * 云盘
@@ -15,27 +15,35 @@ import Constants from '../common/constants/Constants'
 
 const TAG = '[CloudPage] '
 
-@Entry
 @Component
-struct PlayListPage {
+export struct CloudPage {
   @StorageProp('bottomRectHeight') bottomRectHeight: number = 0
   @StorageProp('topRectHeight') topRectHeight: number = 0
-
   @State list: Array<Song> = new Array()
   @State pageOpacity: number = 1
-
   @State hasMore: boolean = true
   @State hasLoaded: boolean = false
   @State isLoading: boolean = true
   @State isLoadingMore: boolean = false
-
+  @State menuItem: NavigationMenuItem[] = [
+    {
+      value: '',
+      icon: $r('app.media.ic_public_help'),
+      action: () => {
+        DialogUtil.showConfirmDialog({
+          title: '云盘',
+          message: '音乐云盘内歌曲仅支持单首播放、下载'
+        })
+      }
+    }
+  ]
   private currentOffset: number = 0
   hasAnimation:boolean | undefined = false
 
-  async onPageShow(): Promise<void> {
+  async aboutToAppear() {
     this.hasAnimation = AppStorage.get('set-hasAnimation')
     if (!this.hasLoaded) {
-      await this.loadSongs(20, 0)
+      await this.loadSongs(50, 0)
     }
   }
 
@@ -61,71 +69,61 @@ struct PlayListPage {
   }
 
   build() {
-    Stack({ alignContent: Alignment.Bottom }) {
-      Stack({ alignContent: Alignment.Top }) {
-        if (this.isLoading) {
-          Column() {
-            LoadingProgress().width(Constants.SIZE_LOADING_PROGRESS_DEFAULT)
-          }.height('100%').width('100%').justifyContent(FlexAlign.Center)
-        } else {
-          List() {
-            ListItem().height( px2vp(this.topRectHeight) + 50 )
-            ForEach(this.list, (item: Song, index) => {
-              ListItem() {
-                SongCard({ song: item, sid: index, hasAnimation: this.hasAnimation,
-                  isPlayList: false, index: index })
+    NavDestination() {
+      Stack({ alignContent: Alignment.Bottom }) {
+        Stack({ alignContent: Alignment.Top }) {
+          if (this.isLoading) {
+            Column() {
+              LoadingProgress().width(Constants.SIZE_LOADING_PROGRESS_DEFAULT)
+            }.height('100%').width('100%').justifyContent(FlexAlign.Center)
+          } else {
+            List() {
+              ForEach(this.list, (item: Song, index) => {
+                ListItem() {
+                  SongCard({ song: item, sid: index, hasAnimation: this.hasAnimation,
+                    isPlayList: false, index: index })
+                }
+                .swipeAction({ end: this.SwipeItem(item) })
+              })
+              if (this.isLoadingMore) {
+                ListItem() {
+                  LoadingMoreButton()
+                }
+              } else if (this.hasMore) {
+                ListItem() {
+                  ClickToLoadButton()
+                    .onClick(() => {
+                      this.loadSongs(30, this.currentOffset)
+                    })
+                }
+              } else if (!this.hasMore) {
+                ListItem() {
+                  NoMoreButton()
+                }
               }
-              .swipeAction({ end: this.SwipeItem(item) })
-            })
-            if (this.isLoadingMore) {
-              ListItem() {
-                Column() {
-                  LoadingProgress().width(Constants.SIZE_LOADING_PROGRESS_CARD)
-                }.justifyContent(FlexAlign.Center).width('100%').height(50)
-              }
-            } else if (this.hasMore) {
-              ListItem() {
-                Text("点击加载更多")
-                  .onClick(() => {
-                    this.loadSongs(30, this.currentOffset)
-                  })
-                  .padding({ top: 10, bottom: px2vp(this.bottomRectHeight) })
-                  .fontColor($r('app.color.reverse'))
-                  .width('100%')
-                  .textAlign(TextAlign.Center)
-              }
-            } else if (!this.hasMore) {
-              ListItem() {
-                Text('没有更多了~').fontSize(Constants.FONT_SIZE_COMMON).textAlign(TextAlign.Center).width('100%').height(50);
-              }
+              ListItem().height(px2vp(this.bottomRectHeight) + 80)
             }
-            ListItem().height(px2vp(this.bottomRectHeight) + 80)
+            .height('100%')
+            .layoutWeight(1)
+            .width('100%')
+            .scrollBar(BarState.Auto)
+            .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.BOTTOM])
           }
-          .height('100%')
-          .layoutWeight(1)
-          .width('100%')
-          .scrollBar(BarState.Auto)
         }
-        ListHead({
-          title: '音乐云盘',
-          slot: this.HeadSlot
-        })
+        .height('100%')
+
+        BottomBarComponent()
+          .padding(Constants.PADDING_EDGE_DEFAULT)
+          .backgroundColor(Color.Transparent)
       }
+      .opacity(this.pageOpacity)
+      .width('100%')
       .height('100%')
-
-      BottomBarComponent()
-        .padding({ left: 10, right: 10, bottom: px2vp(this.bottomRectHeight)})
-        .backgroundColor(Color.Transparent)
+      .backgroundColor($r('app.color.background'))
     }
-    .opacity(this.pageOpacity)
-    .width('100%')
-    .height('100%')
-    .backgroundColor($r('app.color.background'));
-  }
-
-  @Builder
-  HeadSlot() {
-    QuestionButton({ title: '云盘', msg: '音乐云盘内歌曲仅支持单首播放、下载', comSize: Constants.SIZE_ICON_BUTTON_HEAD })
+    .title('音乐云盘')
+    .menus(this.menuItem)
+    .backgroundColor($r('app.color.background'))
   }
 
   @Builder

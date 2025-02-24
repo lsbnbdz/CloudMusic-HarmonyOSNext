@@ -38,15 +38,15 @@ export default class EntryAbility extends UIAbility {
       getLoginInfo()
 
       let windowClass: window.Window = windowStage.getMainWindowSync(); // 获取应用主窗口
-      // 1. 设置窗口全屏
-      let isLayoutFullScreen = true;
-      windowClass.setWindowLayoutFullScreen(isLayoutFullScreen).then(() => {
-        console.info('Succeeded in setting the window layout to full-screen mode.');
-      }).catch((err: BusinessError) => {
-        console.error('Failed to set the window layout to full-screen mode. Cause:' + JSON.stringify(err));
-      });
+      // 设置窗口全屏
+      // let isLayoutFullScreen = true;
+      // windowClass.setWindowLayoutFullScreen(isLayoutFullScreen).then(() => {
+      //   console.info('Succeeded in setting the window layout to full-screen mode.');
+      // }).catch((err: BusinessError) => {
+      //   console.error('Failed to set the window layout to full-screen mode. Cause:' + JSON.stringify(err));
+      // });
 
-      // 2. 获取布局避让遮挡的区域
+      // 获取布局避让遮挡的区域
       let type = window.AvoidAreaType.TYPE_NAVIGATION_INDICATOR; // 以导航条避让为例
       let avoidArea = windowClass.getWindowAvoidArea(type);
       let bottomRectHeight = avoidArea.bottomRect.height; // 获取到导航条区域的高度
@@ -57,7 +57,7 @@ export default class EntryAbility extends UIAbility {
       let topRectHeight = avoidArea.topRect.height; // 获取状态栏区域高度
       AppStorage.setOrCreate('topRectHeight', topRectHeight);
 
-      // 3. 注册监听函数，动态获取避让区域数据
+      // 注册监听函数，动态获取避让区域数据
       windowClass.on('avoidAreaChange', (data) => {
         if (data.type === window.AvoidAreaType.TYPE_SYSTEM) {
           let topRectHeight = data.area.topRect.height;

@@ -1,54 +1,59 @@
 import { CommonHead } from '../../components/head/CommonHead'
 import { promptAction, router } from '@kit.ArkUI';
+import Constants from '../../common/constants/Constants';
 
 /**
  * 登录页面
  */
 
-@Entry
 @Component
-struct LoginPage {
+export struct LoginPage {
+  @Consume('pageInfos') pageInfos: NavPathStack
+
   build() {
-    Stack() {
-      Column({ space: 30 }) {
-        CommonHead({ title: '登录' })
+    NavDestination() {
+      Stack() {
+        Column({ space: 30 }) {
+          Text('登录账号')
+            .fontSize(20)
+            .fontWeight(FontWeight.Bold)
+            .fontColor($r('app.color.reverse'))
+            .padding({ bottom: 10 })
 
-        Text('登录账号')
-          .fontSize(20)
-          .fontWeight(FontWeight.Bold)
-          .fontColor($r('app.color.reverse'))
-          .padding({ bottom: 10 })
+          Row() {
+            // 网页登录
+            LoginTypeButton({
+              icon: $r('app.media.ic_celiakeyboard_default'),
+              bgColor: Color.Orange,
+              text: '网页登录',
+              ClickOp: () => {
+                this.pageInfos.replacePathByName('WebLogin', null)
+              }
+            })
 
-        Row() {
-          // 网页登录
-          LoginTypeButton({
-            icon: $r('app.media.ic_celiakeyboard_default'),
-            bgColor: Color.Orange,
-            text: '网页登录',
-            ClickOp: () => {
-              router.replaceUrl({ url:'pages/login/WebLogin' })
-            }
-          })
-
-          // 二维码登录
-          LoginTypeButton({
-            icon: $r('app.media.ic_public_input_code'),
-            bgColor: Color.Red,
-            text: '二维码登录',
-            ClickOp: () => {
-              router.replaceUrl({ url:'pages/login/QrCodeLogin' })
-            }
-          })
+            // 二维码登录
+            LoginTypeButton({
+              icon: $r('app.media.ic_public_input_code'),
+              bgColor: Color.Red,
+              text: '二维码登录',
+              ClickOp: () => {
+                this.pageInfos.replacePathByName('QrCodeLogin', null)
+              }
+            })
+          }
+          .width('80%')
+          .justifyContent(FlexAlign.SpaceEvenly)
         }
-        .width('80%')
-        .justifyContent(FlexAlign.SpaceEvenly)
+        .height('100%')
+        .width('100%')
       }
-      .height('100%')
+      .backgroundColor($r('app.color.background'))
       .width('100%')
+      .height('100%')
+      .padding({ top: Constants.PADDING_EDGE_TEXT })
     }
+    .title('登录')
     .backgroundColor($r('app.color.background'))
-    .width('100%')
-    .height('100%')
   }
 }
 

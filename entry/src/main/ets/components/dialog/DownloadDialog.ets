@@ -7,6 +7,7 @@ import FileDownloadUtils from "../../common/utils/file/FileDownloadUtils"
 import { LogUtil, ToastUtil } from "@pura/harmony-utils"
 import { PlayConstants } from "../../common/constants/PlayConstants"
 import Constants from "../../common/constants/Constants"
+import { StorageConstants } from "../../common/constants/StorageConstants"
 
 @CustomDialog
 export struct DownloadDialog {
@@ -21,12 +22,12 @@ export struct DownloadDialog {
   fileSize:number = -1
 
   @State songDownload:SongDownload = SongDownloadClass
-  @StorageProp('isValidCookie') isValidCookie:boolean = false
+  @StorageProp(StorageConstants.IS_LOGGED) isLogged: boolean = false
   @State succ:boolean = true
 
   async aboutToAppear(): Promise<void> {
     try {
-      const gotDownloadData: SongDownload = await getDownloadInfo(this.song.id, PlayConstants.QUALITY[this.quality], this.isValidCookie)
+      const gotDownloadData: SongDownload = await getDownloadInfo(this.song.id, PlayConstants.QUALITY[this.quality], this.isLogged)
       this.songDownload = gotDownloadData
       if(this.songDownload.data[0].url == null) { this.succ = false }
       this.fileSize = await convertSize(this.songDownload.data[0].size)
@@ -66,7 +67,7 @@ export struct DownloadDialog {
                 this.controller.close()
                 FileDownloadUtils.download(this.songDownload,this.song,this.artists)
               })
-            if (!this.isValidCookie) {
+            if (!this.isLogged) {
               Text('你尚未登录，将无法完整获取部分会员歌曲')
             }
           }

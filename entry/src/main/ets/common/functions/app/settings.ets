@@ -14,6 +14,18 @@ export async function initSettings() {
   const SetPerf: string = StorageConstants.SET_PERF
 
   /**
+   * Default HomePage Content
+   */
+  const isDefaultHomePageExist = await PreferencesUtils.hasPreferenceValue(SetPerf, StorageConstants.DEFAULT_PAGE_INDEX)
+  if(!isDefaultHomePageExist) {
+    await PreferencesUtils.putPreferenceValue(SetPerf, StorageConstants.DEFAULT_PAGE_INDEX, 0)
+    AppStorage.setOrCreate(StorageConstants.DEFAULT_PAGE_INDEX, 0)
+  } else {
+    const defaultIndex: number = await PreferencesUtils.getPreferenceValue(SetPerf, StorageConstants.DEFAULT_PAGE_INDEX, 0)
+    AppStorage.setOrCreate(StorageConstants.DEFAULT_PAGE_INDEX, defaultIndex)
+  }
+
+  /**
    * Custom api url
    */
   const isCustomApiUrlExist = await PreferencesUtils.hasPreferenceValue(SetPerf, 'isCustomApiUrl')
@@ -51,18 +63,6 @@ export async function initSettings() {
   } else {
     const playQuality: number = await PreferencesUtils.getPreferenceValue(SetPerf, StorageConstants.PLAY_QUALITY, 0)
     AppStorage.setOrCreate(StorageConstants.PLAY_QUALITY, playQuality)
-  }
-
-  /**
-   * Default HomePage Content
-   */
-  const isDefaultHomePageExist = await PreferencesUtils.hasPreferenceValue(SetPerf, StorageConstants.DEFAULT_PAGE_INDEX)
-  if(!isDefaultHomePageExist) {
-    await PreferencesUtils.putPreferenceValue(SetPerf, StorageConstants.DEFAULT_PAGE_INDEX, 0)
-    AppStorage.setOrCreate(StorageConstants.DEFAULT_PAGE_INDEX, 0)
-  } else {
-    const defaultIndex: number = await PreferencesUtils.getPreferenceValue(SetPerf, StorageConstants.DEFAULT_PAGE_INDEX, 0)
-    AppStorage.setOrCreate(StorageConstants.DEFAULT_PAGE_INDEX, defaultIndex)
   }
 }
 

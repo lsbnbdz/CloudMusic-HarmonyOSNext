@@ -3,6 +3,7 @@ import { BusinessError } from "@kit.BasicServicesKit"
 import { LogUtil, ToastUtil } from "@pura/harmony-utils"
 import { uint8ArrayToString } from "../../functions/commonFunction"
 import { MsgConstants } from "../../constants/MsgConstants"
+import { StorageConstants } from "../../constants/StorageConstants"
 
 /**
  * 网络请求工具类
@@ -26,7 +27,7 @@ export class HttpRequest {
    * @returns
    */
   public async Request(useCookie:boolean = true): Promise<http.HttpResponse> {
-    const cookie:string | undefined = await AppStorage.get('cookie')
+    const cookie:string | undefined = await AppStorage.get(StorageConstants.COOKIE)
     return new Promise((resolve, reject) => {
       let httpRequest = http.createHttp()
       httpRequest.request(

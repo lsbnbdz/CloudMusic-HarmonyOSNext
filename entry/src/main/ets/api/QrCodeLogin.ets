@@ -1,7 +1,7 @@
 import { LogUtil, ToastUtil } from "@pura/harmony-utils"
 import { getApiUrl, removeHTTPOnly } from "../common/functions/commonFunction"
 import { HttpRequest } from "../common/utils/request/HttpRequestUtils"
-import { getLoginStatus } from "./getLoginStatus"
+import { getLoginStatus } from "./loginApi"
 
 /**
  * 获取登录二维码
@@ -35,7 +35,7 @@ export async function checkQrLogin(key: string): Promise<boolean> {
     const code: number = data.result["code"]
     if (code == 800 || code == 801) {
       ToastUtil.showToast(data.result["message"])
-      return false;
+      return false
     } else if (code == 803) { // success
       let cookie: string = data.result["cookie"]
       if (cookie) {
@@ -43,7 +43,7 @@ export async function checkQrLogin(key: string): Promise<boolean> {
         cookie = cookie + '; OS=pc'
         AppStorage.setOrCreate('cookie', cookie)
         const result = await getLoginStatus(cookie)
-        return result;
+        return result
       } else {
         ToastUtil.showToast('获取登录状态失败')
         return false

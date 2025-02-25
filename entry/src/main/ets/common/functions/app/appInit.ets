@@ -1,5 +1,5 @@
-import { AppUtil, LogUtil } from "@pura/harmony-utils"
-import { getAnnouncement } from "../../../api/chenlvinApi"
+import { AppUtil, LogUtil, ToastUtil } from "@pura/harmony-utils"
+import { getAnnouncement, getPubCookie } from "../../../api/chenlvinApi"
 import { Song, SongClass } from "../../entities/SongsResult"
 import PlayQueueUtils from "../../utils/play/PlayQueueUtils"
 import PreferencesUtils from "../../utils/app/PreferencesUtils"
@@ -7,6 +7,7 @@ import { StorageConstants } from "../../constants/StorageConstants"
 import { notificationManager } from "@kit.NotificationKit"
 import { resourceManager } from "@kit.LocalizationKit"
 import { initSettings } from "./settings"
+import { getLoginStatus } from "../../../api/loginApi"
 
 /**
  * App初始化
@@ -14,8 +15,9 @@ import { initSettings } from "./settings"
 const TAG = '[appInit] '
 
 export async function appInit() {
-  await initApp()
-  await initSettings()
+  initSettings()
+  initUserInfo()
+  initApp()
   await initBasicInfo()
   await initPlayQueue()
   await audioPlayerInit()
@@ -27,6 +29,16 @@ async function initApp() {
   notificationManager.requestEnableNotification(AppUtil.getContext()).then(() => {
     LogUtil.info(TAG + '成功请求通知权限')
   })
+}
+
+async function initUserInfo() {
+  const cookie = await PreferencesUtils.getPreferenceValue<string>(StorageConstants.USER_PREF, 'cookie', '')
+  AppStorage.setOrCreate(StorageConstants.COOKIE, cookie)
+  getPubCookie()
+  let isLogged = await getLoginStatus(cookie)
+  if(!isLogged && cookie) {
+    ToastUtil.showToast('登录状态失效')
+  }
 }
 
 async function initBasicInfo() {

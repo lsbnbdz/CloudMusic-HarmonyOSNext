@@ -1,4 +1,4 @@
-import { DialogUtil, LogUtil} from "@pura/harmony-utils";
+import { DialogUtil, LogUtil, ToastUtil} from "@pura/harmony-utils";
 import { RecommendCards, RecommendCards_NotLogged, RecommendCards_Skeleton } from "../cards/RecommendCards";
 import { Announcement } from "../../common/entities/Announcement";
 import { User, UserClass } from "../../common/entities/User";
@@ -16,7 +16,7 @@ export struct Explore {
   @StorageLink('topList') topList: Array<TopListItem> = []
   @StorageProp('bottomRectHeight') bottomRectHeight: number = 0
   @StorageProp('topRectHeight') topRectHeight: number = 0
-  @StorageProp("isValidCookie") isValidCookie: boolean = false
+  @StorageProp(StorageConstants.IS_LOGGED) @Watch('getPlayLists') isLogged: boolean = false
   @StorageProp(StorageConstants.USER) user: User = UserClass
   @StorageProp('Announcement') announcement: Announcement = {
     code: -1,
@@ -34,14 +34,23 @@ export struct Explore {
       try {
         const toplist = await getTopList()
         this.topList = toplist
-        if(this.isValidCookie && this.user) {
-          const playlist = await getPlayLists(0)
-          this.playLists = playlist.playlist
-        }
+        await this.getPlayLists()
       } catch (e) {
         LogUtil.error('Error fetching playlists: ', e)
       } finally {
         this.isLoading = false
+      }
+    }
+  }
+
+  async getPlayLists() {
+    if(this.isLogged && this.user && this.playLists.length == 0) {
+      try {
+        const playlist = await getPlayLists(0)
+        this.playLists = playlist.playlist
+      } catch (e) {
+        ToastUtil.showToast('获取歌单列表失败')
+        LogUtil.error('Error fetching playlists: ', e.message)
       }
     }
   }
@@ -74,7 +83,7 @@ export struct Explore {
               if(this.isLoading) {
                 RecommendCards_Skeleton()
               } else {
-                if(this.isValidCookie && this.user) {
+                if(this.isLogged && this.user) {
                   RecommendCards()
                 }
                 else { RecommendCards_NotLogged() }

@@ -18,6 +18,16 @@ export class StorageConstants {
    */
   static readonly VALID_COOKIE: string = 'isValidCookie'
   /**
+   * Cookie
+   * @description AppStorage
+   */
+  static readonly COOKIE: string = 'cookie'
+  /**
+   * Is Logged
+   * @description AppStorage
+   */
+  static readonly IS_LOGGED: string = 'isLogged'
+  /**
    * 用户信息
    * @description AppStorage
    */

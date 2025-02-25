@@ -119,7 +119,7 @@ export async function playQueue(index:number) {
   const queue = PlayQueueUtils.getQueue()
   const playqueue = queue[index]
   PlayQueueUtils.setIndex(index)
-  const isLogged:boolean | undefined = AppStorage.get(StorageConstants.VALID_COOKIE)
+  const isLogged:boolean | undefined = AppStorage.get(StorageConstants.IS_LOGGED)
   if(playqueue.playmode == 0) { // Play with file
     playMusicWithFile(playqueue.fileName)
   } else { // Play with url
@@ -128,14 +128,14 @@ export async function playQueue(index:number) {
 }
 
 export async function playPre() {
-  let isValidCookie:boolean | undefined = await AppStorage.get('isValidCookie')
+  let isLogged: boolean | undefined = await AppStorage.get(StorageConstants.IS_LOGGED)
   let cycleMode = await getCycleMode()
   if(PlayQueueUtils.pre()) {
     const res = PlayQueueUtils.getQueueElement(PlayQueueUtils.currentQueueIndex)
     if(res.playmode == 0) {
       playMusicWithFile(res.fileName)
     } else {
-      playMusicByUrl(res.song, res.artists, isValidCookie?isValidCookie:false)
+      playMusicByUrl(res.song, res.artists, isLogged ? isLogged : false)
     }
   } else {
     if(cycleMode == 2) { playQueue(PlayQueueUtils.getQueueLength() - 1) }
@@ -147,7 +147,7 @@ export async function playPre() {
  * 播放下一首
  */
 export async function playNext() {
-  let isValidCookie:boolean | undefined = await AppStorage.get('isValidCookie')
+  let isLogged:boolean | undefined = await AppStorage.get('isLogged')
   let cycleMode = await getCycleMode()
   if(cycleMode == 3) {
     let queueLength = PlayQueueUtils.getQueueLength()
@@ -160,7 +160,7 @@ export async function playNext() {
     if(res.playmode == 0) {
       playMusicWithFile(res.fileName)
     } else {
-      playMusicByUrl(res.song, res.artists, isValidCookie ? isValidCookie:false)
+      playMusicByUrl(res.song, res.artists, isLogged ? isLogged:false)
     }
   } else {
     if(cycleMode == 2) { playQueue(0) }

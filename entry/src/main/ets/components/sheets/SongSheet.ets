@@ -1,4 +1,5 @@
 import Constants from "../../common/constants/Constants";
+import { StorageConstants } from "../../common/constants/StorageConstants";
 import { PlayList, playListClass } from "../../common/entities/PlayList";
 import { Song, SongClass } from "../../common/entities/SongsResult";
 import { changeDuration } from "../../common/functions/commonFunction";
@@ -9,13 +10,11 @@ import { DownloadDialog } from "../dialog/DownloadDialog";
 
 @Component
 export struct SongSheet {
-  song:Song = SongClass
-  picUrl:string = ''
-  artists:string = ''
-
-  @State duration:string = 'null'
-  @State qualitySelected:number = 3
-
+  @State duration: string = 'null'
+  @State qualitySelected: number = 3
+  song: Song = SongClass
+  picUrl: string = ''
+  artists: string = ''
   dialogController: CustomDialogController = new CustomDialogController({
     builder: DownloadDialog({
       song: this.song,
@@ -25,9 +24,9 @@ export struct SongSheet {
     }),
   })
 
-  @StorageProp("bottomRectHeight") bottomRectHeight: number = 0;
-  @StorageProp('isValidCookie') isValidCookie:boolean = false
-  @StorageProp('isPlayerLoading') isPlayerLoading:boolean = false
+  @StorageProp("bottomRectHeight") bottomRectHeight: number = 0
+  @StorageProp(StorageConstants.IS_LOGGED) isLogged: boolean = false
+  @StorageProp(StorageConstants.IS_PLAYER_LOADING) isPlayerLoading: boolean = false
   @Link isShowSheet:boolean
   @State isPicLoading:boolean = true
   @State isPlayList:boolean = false
@@ -89,7 +88,7 @@ export struct SongSheet {
               .onClick(async () => {
                 AppStorage.setOrCreate('isPlayerLoading', true)
                 this.isShowSheet = !this.isShowSheet
-                playMusicByUrl(this.song, this.artists, this.isValidCookie).then(() => {
+                playMusicByUrl(this.song, this.artists, this.isLogged).then(() => {
                   PlayQueueUtils.queueAdd(1, this.song, this.artists, '')
                   PlayQueueUtils.setIndex(PlayQueueUtils.currentQueueIndex + 1)
                   AppStorage.setOrCreate('isPlayerLoading', false)

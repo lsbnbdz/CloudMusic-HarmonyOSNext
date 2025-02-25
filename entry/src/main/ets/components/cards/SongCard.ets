@@ -9,11 +9,12 @@ import { playListToQueue } from "../../common/functions/play/playListOp"
 import { playMusicByUrl, playQueue } from "../../common/functions/play/playControl"
 import { LogUtil, PasteboardUtil, ToastUtil } from "@pura/harmony-utils"
 import { DownloadDialog } from "../dialog/DownloadDialog"
+import { StorageConstants } from "../../common/constants/StorageConstants"
 
 @Component
 export struct SongCard {
-  @StorageProp('isPlayerLoading') isPlayerLoading:boolean = false
-  @StorageProp('isValidCookie') isValidCookie:boolean = false
+  @StorageProp(StorageConstants.IS_PLAYER_LOADING) isPlayerLoading:boolean = false
+  @StorageProp(StorageConstants.IS_LOGGED) isLogged: boolean = false
   @State showPlayButton: boolean = true
   @State showAddQueueButton: boolean = true
   @State showSid: boolean = true
@@ -213,11 +214,6 @@ export struct SongCard {
     PlayQueueUtils.setIndex(PlayQueueUtils.currentQueueIndex + 1)
     playQueue(PlayQueueUtils.currentQueueIndex)
     AppStorage.setOrCreate('isPlayerLoading', false)
-    // playMusicByUrl(this.song, this.artists, this.isValidCookie).then(() => {
-    //   PlayQueueUtils.queueAdd(1, this.song, this.artists, '')
-    //   PlayQueueUtils.setIndex(PlayQueueUtils.currentQueueIndex + 1)
-    //   AppStorage.setOrCreate('isPlayerLoading', false)
-    // })
   }
 }
 

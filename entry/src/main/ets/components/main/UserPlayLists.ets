@@ -5,6 +5,7 @@ import { DialogUtil, LogUtil, ToastUtil } from "@pura/harmony-utils";
 import { Announcement } from "../../common/entities/Announcement";
 import { User, UserClass } from "../../common/entities/User";
 import Constants from "../../common/constants/Constants";
+import { StorageConstants } from "../../common/constants/StorageConstants";
 
 @Component
 export struct UserPlayLists {
@@ -12,7 +13,7 @@ export struct UserPlayLists {
   @StorageProp('bottomRectHeight') bottomRectHeight: number = 0
   @StorageProp('topRectHeight') topRectHeight: number = 0
   @StorageProp('User') user: User = UserClass
-  @StorageProp("isValidCookie") isValidCookie: boolean = false
+  @StorageProp(StorageConstants.IS_LOGGED) @Watch('getPlayLists') isLogged: boolean = false
   @StorageProp('Announcement') announcement: Announcement = {
     code: -1,
     data: { title:'', content: '' },
@@ -26,24 +27,29 @@ export struct UserPlayLists {
   @Consume('pageInfos') pageInfos: NavPathStack
 
   async aboutToAppear(): Promise<void> {
-    if(this.playLists.length == 0 && this.isValidCookie) {
+    if(this.playLists.length == 0 && this.isLogged) {
+      await this.getPlayLists()
+    }
+  }
+
+  async getPlayLists() {
+    if(this.isLogged && this.user && this.playLists.length == 0) {
       this.isLoading = true
       try {
-        const result = await getPlayLists(0)
-        this.playLists = result.playlist
+        const playlist = await getPlayLists(0)
+        this.playLists = playlist.playlist
       } catch (e) {
+        ToastUtil.showToast('获取歌单列表失败')
         LogUtil.error('Error fetching playlists: ', e.message)
       } finally {
         this.isLoading = false
       }
-    } else {
-
     }
   }
 
   build() {
     Column() {
-      if(this.isValidCookie && this.user && this.playLists.length > 0) {
+      if(this.isLogged && this.user && this.playLists.length > 0) {
         Refresh({ refreshing: this.isRefreshing}) {
           List({ space: 10 }) {
             if(this.announcement.visible) {
@@ -115,7 +121,7 @@ export struct UserPlayLists {
   }
 
   private async refreshContent() {
-    if (this.isValidCookie) {
+    if (this.isLogged) {
       this.isRefreshing = true
       const currentTime = new Date().getTime()
       if (currentTime - this.lastRefreshTime < this.refreshCooldown) {

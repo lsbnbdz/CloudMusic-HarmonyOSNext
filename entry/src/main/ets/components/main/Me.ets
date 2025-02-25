@@ -1,18 +1,19 @@
-import { DialogUtil } from "@pura/harmony-utils"
-import { logOut } from "../../api/LogOut"
+import { DialogUtil, ToastUtil } from "@pura/harmony-utils"
+import { logOut } from "../../api/loginApi"
 import Constants from "../../common/constants/Constants"
+import { StorageConstants } from "../../common/constants/StorageConstants"
 import { User, UserClass } from "../../common/entities/User"
 import { CircleImageButton } from "../buttons/CircleButton"
 
 @Component
 export struct Me {
-  @StorageProp("isValidCookie") isValidCookie: boolean = false
+  @StorageProp(StorageConstants.IS_LOGGED) isLogged: boolean = false
   @StorageProp('User') user: User = UserClass
   @Consume('pageInfos') pageInfos: NavPathStack
 
   build() {
     Column({ space: 10 }) {
-      if (this.isValidCookie && this.user) {
+      if (this.isLogged && this.user) {
         Row({ space: 20 }) {
           CircleImageButton({ imgUrl: this.user.data.profile.avatarUrl + '?param=256y256', wid: 64 })
           Text(this.user.data.profile.nickname).textStyle(Constants.FONT_SIZE_TITLE).fontWeight(FontWeight.Bold)
@@ -54,7 +55,7 @@ export struct Me {
 
       Column().padding(30)
 
-      if(this.isValidCookie) {
+      if(this.isLogged) {
         this.LoginButton($r('app.color.app_red'), '退出登录', () => {
           this.LogOut()
         })
@@ -109,7 +110,12 @@ export struct Me {
         value: '确认',
         fontColor: Color.Red,
         action: async () => {
-          logOut()
+          let result = await logOut()
+          if(result) {
+            ToastUtil.showToast('成功退出登录')
+          } else {
+            ToastUtil.showToast('退出登录时出错')
+          }
         }
       }
     })

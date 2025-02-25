@@ -1,6 +1,6 @@
 import { webview } from '@kit.ArkWeb';
 import { promptAction } from '@kit.ArkUI';
-import { getLoginStatus } from '../../api/getLoginStatus';
+import { getLoginStatus } from '../../api/loginApi';
 import { DialogUtil, LogUtil, ToastUtil } from '@pura/harmony-utils';
 import { MsgConstants } from '../../common/constants/MsgConstants';
 
@@ -150,7 +150,11 @@ export struct WebLogin {
         Button('获取登录信息').onClick(async () => {
           let result = await this.getCookie()
           if(result) {
+            ToastUtil.showToast('登录成功!')
             this.pageInfos.pop()
+          }
+          else {
+            ToastUtil.showToast('登录失败')
           }
         })
       }

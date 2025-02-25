@@ -27,7 +27,11 @@ export struct QrCodeLogin {
               .onClick(async () => {
                 await checkQrLogin(this.qrCode[0]).then((result) => {
                   if(result) {
+                    ToastUtil.showToast('登录成功!')
                     this.pageInfos.pop()
+                  }
+                  else {
+                    ToastUtil.showToast('登录失败!')
                   }
                 })
               })

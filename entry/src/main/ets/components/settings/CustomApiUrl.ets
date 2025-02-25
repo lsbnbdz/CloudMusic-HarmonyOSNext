@@ -24,7 +24,7 @@ export struct CustomApiUrl {
       .bindSheet(this.isShowSheet, this.Sheet(), {
         backgroundColor: $r('app.color.background'),
         preferType: SheetType.BOTTOM,
-        height: SheetSize.FIT_CONTENT,
+        height: SheetSize.MEDIUM,
         dragBar: true,
         onDisappear: () => {
           this.isShowSheet = false

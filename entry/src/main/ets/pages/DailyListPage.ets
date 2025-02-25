@@ -101,7 +101,14 @@ export struct DailyListPage {
                     })
                   }
                   .swipeAction({ end: this.SwipeItem(item.song) })
-                });
+                  .translate({ y: -40 })
+                  .animation({
+                    duration: 600,
+                    curve: Curve.LinearOutSlowIn
+                  })
+                  .translate({ y: 0 })
+                })
+
                 ListItem().height(px2vp(this.bottomRectHeight) + 80)
               }
               .height('100%')

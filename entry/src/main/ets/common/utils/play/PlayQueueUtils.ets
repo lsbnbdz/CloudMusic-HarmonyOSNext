@@ -1,4 +1,4 @@
-import { EmitterUtil, LogUtil } from '@pura/harmony-utils'
+import { EmitterUtil, LogUtil, ToastUtil } from '@pura/harmony-utils'
 import { EmitterConstants } from '../../constants/EmitterConstants'
 import { StorageConstants } from '../../constants/StorageConstants'
 import { PlayQueue } from '../../entities/PlayQueue'
@@ -115,6 +115,16 @@ class PlayQueueUtils {
 
   getQueue(): Array<PlayQueue> {
     return this.queue
+  }
+
+  getCurrentSong(): Song {
+    try {
+      if(this.queue[this.currentQueueIndex]) {
+        return this.queue[this.currentQueueIndex].song
+      } else return SongClass
+    } catch (e) {
+      return SongClass
+    }
   }
 
   async cleanQueue() {

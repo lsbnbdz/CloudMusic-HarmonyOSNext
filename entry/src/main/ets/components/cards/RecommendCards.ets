@@ -3,6 +3,7 @@ import { setHeartMode } from "../../api/songApi"
 import Constants from "../../common/constants/Constants"
 import { PlayList } from "../../common/entities/PlayList"
 import { playQueue } from "../../common/functions/play/playControl"
+import PlayQueueUtils from "../../common/utils/play/PlayQueueUtils"
 
 let cardWidth: number = 150
 
@@ -56,7 +57,7 @@ export struct RecommendCards {
               fontColor: Color.Red,
               action: async () => {
                 try {
-                  await setHeartMode(0, this.playLists[0].id)
+                  await setHeartMode(PlayQueueUtils.getCurrentSong().id, this.playLists[0].id)
                   playQueue(0)
                 } catch (e) {
                   ToastUtil.showToast('获取心动模式歌单失败')

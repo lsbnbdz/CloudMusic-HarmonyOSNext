@@ -3,6 +3,7 @@ import { Artist, Song } from "../entities/SongsResult"
 import { util } from "@kit.ArkTS"
 import { media } from "@kit.MediaKit"
 import { fileIo } from "@kit.CoreFileKit"
+import { StorageConstants } from "../constants/StorageConstants"
 
 /**
  * 通用函数
@@ -97,7 +98,7 @@ export function changeDuration(dur: number): string {
  * @returns
  */
 export async function isUsePubCookie(): Promise<boolean> {
-  const isUsePubCookie:boolean | undefined = AppStorage.get('set-isUsePubCookie')
+  const isUsePubCookie:boolean | undefined = AppStorage.get(StorageConstants.USE_PUBLIC_COOKIE)
   if(isUsePubCookie) return true
   else return false
 }

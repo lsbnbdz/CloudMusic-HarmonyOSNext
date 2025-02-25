@@ -2,6 +2,7 @@ import { EmitterUtil } from "@pura/harmony-utils"
 import { getLyric } from "../../../api/LyricApi"
 import { EmitterConstants } from "../../constants/EmitterConstants"
 import { Lyric } from "../../entities/Lyric"
+import { Song } from "../../entities/SongsResult"
 
 class LyricUtils {
   lyricString: string = ''
@@ -11,10 +12,16 @@ class LyricUtils {
   updateLyricInterval: number = 0
   isUpdating: boolean = false
 
-  async setLyric(songId: number) {
+  async setLyric(song: Song) {
     AppStorage.setOrCreate('player-currentLyric', '')
     this.currentLyricIndex = 0
-    let lyricArr = await getLyric(songId)
+    let lyricArr: string[] = []
+    if(song.artists[0].id == 0) {
+      this.lyricString = '[00:00:00] 暂无歌词'
+      lyricArr = ['[00:00:00] 暂无歌词']
+    } else {
+      lyricArr = await getLyric(song.id)
+    }
     await this.setLyricArr(lyricArr)
     EmitterUtil.post(EmitterConstants.EMITTER_LYRIC_UPDATE,'Lyric Updated')
   }

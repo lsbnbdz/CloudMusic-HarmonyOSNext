@@ -6,15 +6,8 @@ import Constants from "../../common/constants/Constants"
 @Component
 export struct PlayListCard {
   @Consume('pageInfos') pageInfos: NavPathStack
-  @State startOpacity:number = 1
-  @State startHeight:number = 60
   @State isShowHeart: boolean = true
   playList:PlayList = playListClass
-
-  aboutToAppear(): void {
-    this.startHeight = 120
-    this.startOpacity = 0.1
-  }
 
   build() {
     Button() {
@@ -29,16 +22,7 @@ export struct PlayListCard {
         .layoutWeight(1)
       }
       .width('100%')
-      .height(this.startHeight)
-      .opacity(this.startOpacity)
-      .onAppear( () => {
-        this.startHeight = 60
-        this.startOpacity = 1
-      })
-      .animation({
-        duration: 600,
-        curve: Curve.LinearOutSlowIn,
-      })
+      .height(60)
     }
     .backgroundColor(Color.Transparent)
     .borderRadius(5)
@@ -51,7 +35,7 @@ export struct PlayListCard {
         playList: this.playList,
         isShowHeart: this.isShowHeart
       }
-      if(this.pageInfos.size() == 0) {
+      if(this.pageInfos.size() < 2) {
         this.pageInfos.pushPathByName('PLayListPage', param, true)
       } else {
         this.pageInfos.replacePathByName('PLayListPage', param, true)

@@ -165,6 +165,12 @@ export struct PlayListPage {
                     isPlayList: true, playList: this.param.playList, index: index })
                 }
                 .swipeAction({ end: this.SwipeItem(item, index), edgeEffect: SwipeEdgeEffect.None })
+                .translate({ y: -40 })
+                .animation({
+                  duration: 600,
+                  curve: Curve.LinearOutSlowIn
+                })
+                .translate({ y: 0 })
               })
 
               // 添加加载更多
@@ -338,15 +344,20 @@ export struct PlayListPage {
   }
 
   private handelSearch() {
-    if (this.searchKeyword.trim() === '') {
-      this.filteredList = [...this.list]
-      return
+    try {
+      if (this.searchKeyword.trim() === '') {
+        this.filteredList = [...this.list]
+        return
+      }
+      const keyword = this.searchKeyword.trim().toLowerCase()
+      this.filteredList = this.list.filter(song =>
+      song.name.toLowerCase().includes(keyword) ||
+      song.artists?.some(artist =>
+      artist.name.toLowerCase().includes(keyword)
+      ))
+    } catch (e) {
+      ToastUtil.showToast('搜索时出错')
+      LogUtil.error(TAG + 'Error while handelSearch: ' + e.message)
     }
-    const keyword = this.searchKeyword.trim().toLowerCase()
-    this.filteredList = this.list.filter(song =>
-    song.name.toLowerCase().includes(keyword) ||
-    song.artists?.some(artist =>
-    artist.name.toLowerCase().includes(keyword)
-    ))
   }
 }

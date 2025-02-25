@@ -6,6 +6,7 @@ import PreferencesUtils from "../../utils/app/PreferencesUtils"
 import { StorageConstants } from "../../constants/StorageConstants"
 import { notificationManager } from "@kit.NotificationKit"
 import { resourceManager } from "@kit.LocalizationKit"
+import { initSettings } from "./settings"
 
 /**
  * App初始化
@@ -51,48 +52,6 @@ async function initPlayQueue() {
 }
 
 /**
- * 初始化设置项
- */
-async function initSettings() {
-  LogUtil.info(TAG + 'initSettings - 开始初始化设置')
-  const SetPerf: string = StorageConstants.SET_PERF
-
-  // customApiUrl
-  const isCustomApiUrlExist = await PreferencesUtils.hasPreferenceValue(SetPerf, 'isCustomApiUrl')
-  if (!isCustomApiUrlExist) {
-    await PreferencesUtils.putPreferenceValue(SetPerf, 'isCustomApiUrl', false)
-    await PreferencesUtils.putPreferenceValue(SetPerf,'customApiUrl','http://example.com:8080')
-    AppStorage.setOrCreate('set-isCustomApiUrl',false)
-    AppStorage.setOrCreate('set-customApiUrl','http://example.com:8080')
-  } else {
-    const isCustomApiUrl = await PreferencesUtils.getPreferenceValue(SetPerf, 'isCustomApiUrl', false)
-    const customApiUrl = await PreferencesUtils.getPreferenceValue(SetPerf, 'customApiUrl', 'http://example.com:8080')
-    AppStorage.setOrCreate('set-isCustomApiUrl',isCustomApiUrl)
-    AppStorage.setOrCreate('set-customApiUrl',customApiUrl)
-  }
-
-  // usePublicCookie
-  const isUsePubCookieExist = await PreferencesUtils.hasPreferenceValue(SetPerf, 'isUsePubCookie')
-  if (!isUsePubCookieExist) {
-    await PreferencesUtils.putPreferenceValue(SetPerf, 'isUsePubCookie', false)
-    AppStorage.setOrCreate('set-isUsePubCookie', false)
-  } else {
-    const isUsePubCookie = await PreferencesUtils.getPreferenceValue(SetPerf, 'isUsePubCookie', true)
-    AppStorage.setOrCreate('set-isUsePubCookie', isUsePubCookie)
-  }
-
-  // setPlayQuality
-  const isPlayQualityExist = await PreferencesUtils.hasPreferenceValue(SetPerf, 'playQuality')
-  if (!isPlayQualityExist) {
-    await PreferencesUtils.putPreferenceValue(SetPerf, 'playQuality', 0)
-    AppStorage.setOrCreate('set-playQuality', 0)
-  } else {
-    const playQuality:number = await PreferencesUtils.getPreferenceValue(SetPerf, 'playQuality', 0)
-    AppStorage.setOrCreate('set-playQuality', playQuality)
-  }
-}
-
-/**
  * 加载上一次的播放内容
  */
 async function loadSavedSong() {
@@ -116,10 +75,10 @@ async function loadSavedSong() {
     let currentIndex = await PreferencesUtils.getPreferenceValue<number>('Play', 'CurrentQueueIndex', 0)
     await PlayQueueUtils.setIndex(currentIndex)
   }
-  AppStorage.setOrCreate('player-mode', playMode)
-  AppStorage.setOrCreate('player-song',song)
-  AppStorage.setOrCreate('player-artists',artists)
-  AppStorage.setOrCreate('player-picurl',picUrl)
+  AppStorage.setOrCreate(StorageConstants.PLAY_MODE, playMode)
+  AppStorage.setOrCreate(StorageConstants.PLAY_SONG, song)
+  AppStorage.setOrCreate(StorageConstants.PLAY_ARTISTS, artists)
+  AppStorage.setOrCreate(StorageConstants.PIC_URL, picUrl)
 }
 
 /**

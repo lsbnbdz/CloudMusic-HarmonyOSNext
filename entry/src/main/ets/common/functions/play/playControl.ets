@@ -25,7 +25,7 @@ const pref = StorageConstants.QUEUE_PREF
 export async function playMusicByUrl(song:Song,artists:string,isLogged:boolean) {
   try {
     isThisSongLiked(song.id)
-    const quality:number | undefined = await AppStorage.get('set-playQuality')
+    const quality:number | undefined = await AppStorage.get(StorageConstants.PLAY_QUALITY)
     const songPlay:SongPlay = await getSongUrl(song.id, quality ? PlayConstants.QUALITY[quality] : "standard", isLogged)
     setPlayData(1, song, artists)
     let localPath: string = ''
@@ -33,7 +33,7 @@ export async function playMusicByUrl(song:Song,artists:string,isLogged:boolean) 
     try {
       if(song.name.length + artists.length >= 103) {
         try { tempArtists = artists.slice(0, 100 - song.name.length) }
-        catch (e) { artists = 'null' }
+        catch (e) { artists = '未知' }
       }
       localPath = await FileUtils.accessLocalFile(sanitizeFileName(`${tempArtists} - ${song.name}`))
     } catch (e) {}
@@ -50,7 +50,7 @@ export async function playMusicByUrl(song:Song,artists:string,isLogged:boolean) 
     }
     const picUrl:string = await getSongPicUrl(song)
     setPicUrl(picUrl)
-    LyricUtils.setLyric(song.id).then(() => {
+    LyricUtils.setLyric(song).then(() => {
       AVSessionUtils.setMetadata(song, artists, picUrl)
       AVSessionUtils.activate()
     })

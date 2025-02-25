@@ -1,13 +1,14 @@
 import { ExplainButton } from "../buttons/ExplainButton"
 import Constants from "../../common/constants/Constants"
 import PreferencesUtils from "../../common/utils/app/PreferencesUtils"
+import { StorageConstants } from "../../common/constants/StorageConstants"
 
 /**
  * 是否使用公共Cookie
  */
 @Component
 export struct UsePublicCookie {
-  @StorageLink('set-isUsePubCookie') isUsePubCookie: boolean = true
+  @StorageLink(StorageConstants.USE_PUBLIC_COOKIE) isUsePubCookie: boolean = true
   build() {
     Row() {
       Row({ space: 5 }) {
@@ -21,8 +22,8 @@ export struct UsePublicCookie {
       Toggle({ type: ToggleType.Switch, isOn:this.isUsePubCookie }).height(24).width(48)
         .onChange(() => {
           this.isUsePubCookie = !this.isUsePubCookie
-          AppStorage.setOrCreate('set-isUsePubCookie',this.isUsePubCookie)
-          PreferencesUtils.putPreferenceValue('Settings','isUsePubCookie',this.isUsePubCookie)
+          AppStorage.setOrCreate(StorageConstants.USE_PUBLIC_COOKIE,this.isUsePubCookie)
+          PreferencesUtils.putPreferenceValue('Settings',StorageConstants.USE_PUBLIC_COOKIE,this.isUsePubCookie)
         })
     }
     .width('100%')

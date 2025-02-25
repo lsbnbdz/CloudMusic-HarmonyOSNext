@@ -57,7 +57,7 @@ export struct UserPlayLists {
                 if(this.isLoading) {
                   this.Loading()
                 } else {
-                  ForEach(this.playLists, (item: PlayList) => {
+                  ForEach(this.playLists, (item: PlayList, index) => {
                     ListItem() {
                       PlayListCard({
                         playList: item,
@@ -84,11 +84,6 @@ export struct UserPlayLists {
     }
     .width('100%')
     .height('100%')
-  }
-
-  @Builder
-  itemLayout(playList: PlayList, index: number): void {
-    PlayListCard({ playList: playList })
   }
 
   @Builder

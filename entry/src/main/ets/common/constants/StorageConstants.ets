@@ -43,10 +43,10 @@ export class StorageConstants {
    */
   static readonly PLAY_COUNTDOWN_TIMER: string = 'play-countdown-timer'
   /**
-   * User LikeList
+   * 用户喜欢的音乐歌单
    * @description AppStorage
    */
-  static readonly PLAYLIST_LIKE: string = 'like-list'
+  static readonly PLAYLIST_LIKED: string = 'playlist-liked'
   /**
    * 播放器是否正在播放
    * @description AppStorage
@@ -124,4 +124,18 @@ export class StorageConstants {
    * @description AppStorage & Preference
    */
   static readonly CYCLE_MODE: string = 'cycleMode'
+  /**
+   * 默认页面index
+   * @description AppStorage & Preference
+   */
+  static readonly DEFAULT_PAGE_INDEX: string = 'defaultPageIndex'
+  /**
+   * 播放品质
+   * @description AppStorage & Preference
+   */
+  static readonly PLAY_QUALITY: string = 'playQuality'
+  /**
+   * 是否启用公共Cookie
+   */
+  static readonly USE_PUBLIC_COOKIE: string = 'usePublicCookie'
 }

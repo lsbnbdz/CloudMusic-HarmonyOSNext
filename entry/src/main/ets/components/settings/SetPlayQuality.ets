@@ -1,5 +1,6 @@
 import Constants from "../../common/constants/Constants"
 import { PlayConstants } from "../../common/constants/PlayConstants"
+import { StorageConstants } from "../../common/constants/StorageConstants"
 import { QualityType } from "../../common/entities/SongDownload"
 import PreferencesUtils from "../../common/utils/app/PreferencesUtils"
 
@@ -8,11 +9,11 @@ import PreferencesUtils from "../../common/utils/app/PreferencesUtils"
  */
 @Component
 export struct SetPlayQuality {
-  @StorageLink('set-playQuality') playQuality:QualityType = "standard"
+  @StorageLink(StorageConstants.PLAY_QUALITY) playQuality:QualityType = "standard"
   @State selected:number | undefined = 0
 
   async aboutToAppear(): Promise<void> {
-    this.selected = await AppStorage.get('set-playQuality')
+    this.selected = await AppStorage.get(StorageConstants.PLAY_QUALITY)
   }
   build() {
     Row() {
@@ -23,8 +24,8 @@ export struct SetPlayQuality {
         .width(100)
         .height(Constants.HEIGHT_SELECT)
         .onSelect((index: number) => {
-          AppStorage.setOrCreate('set-playQuality',index)
-          PreferencesUtils.putPreferenceValue('Settings', 'playQuality', index)
+          AppStorage.setOrCreate(StorageConstants.PLAY_QUALITY,index)
+          PreferencesUtils.putPreferenceValue('Settings', StorageConstants.PLAY_QUALITY, index)
         })
     }
     .width('100%')

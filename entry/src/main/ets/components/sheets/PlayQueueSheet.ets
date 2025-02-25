@@ -1,4 +1,4 @@
-import { DialogUtil, EmitterUtil, ToastUtil } from "@pura/harmony-utils"
+import { DialogUtil, EmitterUtil, LogUtil, ToastUtil } from "@pura/harmony-utils"
 import { DialogAction } from "@pura/harmony-utils/src/main/ets/entity/constraint"
 import { PlayQueue } from "../../common/entities/PlayQueue"
 import { playQueue } from "../../common/functions/play/playControl"
@@ -20,10 +20,10 @@ export struct PlayQueueSheet {
   @StorageLink('currentQueueIndex') currentQueueIndex: number = 0
   @StorageProp('bottomRectHeight') bottomRectHeight: number = 0
   @StorageProp('player-mode') playmode: number = 1
+  @StorageProp('UserPlayLists') playLists: Array<PlayList> = []
   @State isLoading: boolean = false
   @Link isShow: boolean
   @State dataSource: LazyData<PlayQueue> = new LazyData()
-  @StorageProp(StorageConstants.PLAYLIST_LIKE) likePlayList: PlayList = playListClass
   private scroller: Scroller = new Scroller()
 
   aboutToAppear(): void {
@@ -221,11 +221,12 @@ export struct PlayQueueSheet {
         action: async () => {
           this.isLoading = true
           try {
-            await setHeartMode(this.queue[this.currentQueueIndex].song.id, this.likePlayList.id)
+            await setHeartMode(this.queue[this.currentQueueIndex].song.id, this.playLists[0].id)
             playQueue(0)
             this.scroller.scrollToIndex(0)
           } catch (e) {
-            ToastUtil.showToast('获取心动模式歌单失败')
+            ToastUtil.showToast('获取心动歌单失败')
+            LogUtil.error('获取心动歌单失败: ' + e.message)
           } finally {
             this.dataSource.setData(this.queue)
             this.dataSource.notifyDataReload()

@@ -329,6 +329,7 @@ export struct PlayingCover {
               .height('60%')
               .borderRadius(5)
               .aspectRatio(1)
+              .shadow({ radius: 30, type: ShadowType.BLUR, offsetX: 20, offsetY: 20 })
               .onClick(() => {
                 this.tabsController.changeIndex(1)
               })
@@ -464,7 +465,6 @@ export struct PlayingCover {
       .layoutWeight(1.5)
 
       LyricComponent()
-        .padding({ top: px2vp(this.topRectHeight) })
         .width('100%')
         .layoutWeight(2)
     }

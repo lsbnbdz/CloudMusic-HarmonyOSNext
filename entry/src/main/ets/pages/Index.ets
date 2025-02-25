@@ -23,17 +23,15 @@ struct Index {
   @StorageProp('topRectHeight') topRectHeight: number = 0
   @StorageProp('bottomRectHeight') bottomRectHeight: number = 0
   @StorageProp(StorageConstants.DEVICE_TYPE) deviceType: resourceManager.DeviceType = resourceManager.DeviceType.DEVICE_TYPE_PHONE
-  @State index: number = 0
+  @StorageProp(StorageConstants.DEFAULT_PAGE_INDEX) index: number = 0
   @Provide('pageInfos') pageInfos: NavPathStack = new NavPathStack()
   private menuItems: NavigationMenuItem[] = [
     {
       value: '搜索',
       icon: $r('app.media.ic_public_search_filled'),
       action: () => {
-        if(this.pageInfos.size() == 0) {
-          this.pageInfos.pushPathByName('SearchPage', null, true)
-        }
-        this.pageInfos.replacePathByName('SearchPage', null, true)
+        this.pageInfos.clear()
+        this.pageInfos.pushPathByName('SearchPage', null, true)
       }
     }
   ]

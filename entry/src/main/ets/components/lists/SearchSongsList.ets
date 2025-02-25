@@ -57,6 +57,12 @@ export struct SearchSongsList {
             SongCard({ song: item, sid: index })
           }
           .swipeAction({ end: this.SwipeItem(item)})
+          .translate({ y: -40 })
+          .animation({
+            duration: 600,
+            curve: Curve.LinearOutSlowIn
+          })
+          .translate({ y: 0 })
         })
         // 添加加载更多
         if (this.isLoadingMore) {

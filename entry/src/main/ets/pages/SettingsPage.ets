@@ -4,6 +4,7 @@ import { CustomApiUrl } from '../components/settings/CustomApiUrl'
 import { RemoveCache } from '../components/settings/RemoveCache'
 import { Settings_Bottom, Settings_Feedback, Settings_Version } from '../components/settings/TextContent'
 import Constants from '../common/constants/Constants'
+import { SetDefaultHomePage } from '../components/settings/SetDefaultHomePage'
 
 /**
  * 设置页面
@@ -20,6 +21,7 @@ export struct SettingsPage {
         Column({ space: 10 }) {
           List({ space: 10 }) {
             ListItem() { SetPlayQuality() }.listItemStyle()
+            ListItem() { SetDefaultHomePage() }.listItemStyle()
             ListItem() { UsePublicCookie() }.listItemStyle()
             ListItem() { CustomApiUrl() }.listItemStyle()
             ListItem() { RemoveCache() }.listItemStyle()

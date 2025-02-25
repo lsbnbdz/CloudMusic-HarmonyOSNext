@@ -51,6 +51,12 @@ export struct SearchPlayListsList {
           ListItem() {
             PlayListCard({ playList: item })
           }
+          .translate({ y: -40 })
+          .animation({
+            duration: 600,
+            curve: Curve.LinearOutSlowIn
+          })
+          .translate({ y: 0 })
         })
         if (this.isLoadingMore) {
           ListItem() {

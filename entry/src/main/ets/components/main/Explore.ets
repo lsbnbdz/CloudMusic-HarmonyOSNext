@@ -60,10 +60,8 @@ export struct Explore {
             })
               .focusable(false)
               .onClick(() => {
-                if(this.pageInfos.size() == 0) {
-                  this.pageInfos.pushPathByName('SearchPage', null, true)
-                }
-                 this.pageInfos.replacePathByName('SearchPage', null, true)
+                this.pageInfos.clear()
+                this.pageInfos.pushPathByName('SearchPage', null, true)
               })
               .layoutWeight(1)
           }

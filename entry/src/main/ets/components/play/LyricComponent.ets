@@ -58,8 +58,8 @@ export struct LyricComponent {
                 seekMusic(item.time)
               })
               .animation({
-                duration: 300,
-                curve: Curve.FastOutSlowIn
+                duration: 500,
+                curve: Curve.LinearOutSlowIn
               })
           }
           .padding({ left: 20, right: 20 })

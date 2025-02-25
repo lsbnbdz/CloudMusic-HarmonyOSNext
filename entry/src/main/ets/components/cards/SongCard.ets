@@ -6,8 +6,8 @@ import { promptAction } from "@kit.ArkUI"
 import { PlayList, playListClass } from "../../common/entities/PlayList"
 import Constants from "../../common/constants/Constants"
 import { playListToQueue } from "../../common/functions/play/playListOp"
-import { playMusicByUrl } from "../../common/functions/play/playControl"
-import { PasteboardUtil, ToastUtil } from "@pura/harmony-utils"
+import { playMusicByUrl, playQueue } from "../../common/functions/play/playControl"
+import { LogUtil, PasteboardUtil, ToastUtil } from "@pura/harmony-utils"
 import { DownloadDialog } from "../dialog/DownloadDialog"
 
 @Component
@@ -17,16 +17,14 @@ export struct SongCard {
   @State showPlayButton: boolean = true
   @State showAddQueueButton: boolean = true
   @State showSid: boolean = true
-  @State startHeight: number = 60
-  @State startOpacity: number = 1
   @State picUrl: string = ''
   @State isPlayList: boolean = false
   @State playList: PlayList = playListClass
   @State index: number = 0
   @State reason: string = ''
-  song:Song = SongClass
-  sid:number = -1
-  artists:string = ''
+  song: Song = SongClass
+  sid: number = -1
+  artists: string = ''
 
   downloadDialogController: CustomDialogController = new CustomDialogController({
     builder: DownloadDialog({
@@ -38,7 +36,10 @@ export struct SongCard {
   })
 
   async aboutToAppear(): Promise<void> {
-    this.startHeight = 120; this.startOpacity = 0.1
+    if(this.song.artists[0].id == 0) {
+     this.artists = '未知'
+      this.song.artists[0] = {"id": 0, "name": '未知'}
+    }
     const artistsStr = await getArtists(this.song.artists)
     this.artists = artistsStr
     const picUrl = await getSongPicUrl(this.song)
@@ -74,7 +75,7 @@ export struct SongCard {
               if(this.reason) {
                 Text(this.reason).reasonText()
               }
-              Text(this.artists).textStyle(12).fontColor(Color.Gray)
+              Text(this.artists).textStyle(12).fontColor(Color.Gray).layoutWeight(1)
             }
             .width('100%')
           }
@@ -99,16 +100,7 @@ export struct SongCard {
           })
         }
       }
-      .height(this.startHeight)
-      .opacity(this.startOpacity)
-      .onAppear( () => {
-        this.startHeight = 60
-        this.startOpacity = 1
-      })
-      .animation({
-        duration: 600,
-        curve: Curve.LinearOutSlowIn,
-      })
+      .height(60)
     }
     .backgroundColor(Color.Transparent)
     .borderRadius(5)
@@ -217,11 +209,15 @@ export struct SongCard {
 
   private playSingleSong() {
     AppStorage.setOrCreate('isPlayerLoading', true)
-    playMusicByUrl(this.song, this.artists, this.isValidCookie).then(() => {
-      PlayQueueUtils.queueAdd(1, this.song, this.artists, '')
-      PlayQueueUtils.setIndex(PlayQueueUtils.currentQueueIndex + 1)
-      AppStorage.setOrCreate('isPlayerLoading', false)
-    })
+    PlayQueueUtils.queueAdd(1, this.song, this.artists, '')
+    PlayQueueUtils.setIndex(PlayQueueUtils.currentQueueIndex + 1)
+    playQueue(PlayQueueUtils.currentQueueIndex)
+    AppStorage.setOrCreate('isPlayerLoading', false)
+    // playMusicByUrl(this.song, this.artists, this.isValidCookie).then(() => {
+    //   PlayQueueUtils.queueAdd(1, this.song, this.artists, '')
+    //   PlayQueueUtils.setIndex(PlayQueueUtils.currentQueueIndex + 1)
+    //   AppStorage.setOrCreate('isPlayerLoading', false)
+    // })
   }
 }
 
@@ -240,10 +236,5 @@ export struct SongCard {
   .backgroundColor('#ffffd2d2')
   .borderRadius(5)
 }
-
-@Extend(Span) function menuSpanStyle() {
-  .fontSize(Constants.FONT_SIZE_COMMON)
-}
-
 
 

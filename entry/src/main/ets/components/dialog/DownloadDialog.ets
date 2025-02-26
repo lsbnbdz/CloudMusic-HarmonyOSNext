@@ -42,7 +42,7 @@ export struct DownloadDialog {
 
   build() {
     Column({ space: 10 }) {
-      Text('下载').textStyle(24)
+      Text('缓存').textStyle(24)
       Divider()
       if(this.succ) {
         Stack() {
@@ -57,13 +57,13 @@ export struct DownloadDialog {
             Text(`时长 ${this.duration}`).textStyle(12)
             Text(`音质: ${this.songDownload.data[0].level}     格式: ${this.songDownload.data[0].type}     大小: ${this.fileSize}MB`)
               .textStyle(12)
-            Button('获取下载地址').ButtonStyle()
+            Button('获取文件地址').ButtonStyle()
               .onClick(() => {
                 copyDownloadUrl(this.songDownload.data[0].url)
               })
-            Button('下载到本地').ButtonStyle()
+            Button('缓存至应用沙箱').ButtonStyle()
               .onClick(() => {
-                ToastUtil.showToast(`开始下载：${this.song.name}.${this.songDownload.data[0].type}`)
+                ToastUtil.showToast(`开始缓存：${this.song.name}.${this.songDownload.data[0].type}`)
                 this.controller.close()
                 FileDownloadUtils.download(this.songDownload,this.song,this.artists)
               })
@@ -74,7 +74,7 @@ export struct DownloadDialog {
           .opacity(this.isLoading ? 0 : 1)
         }
       } else {
-        Text('获取下载内容失败，原因可能如下：').textStyle(18)
+        Text('获取歌曲内容失败，原因可能如下：').textStyle(18)
         Text('- 此歌曲需要单曲付费或为数字专辑曲目\n' +
           '- 当前未登录账号，无法获取试听链接\n' +
           '- 当前登录账号非会员，公共Cookie失效').textStyle(14)

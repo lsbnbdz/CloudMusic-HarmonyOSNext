@@ -43,7 +43,7 @@ export struct Me {
       .itemColumnStyle()
 
       Column() {
-        this.ItemCard($r('app.media.ic_public_download_filled'), '下载', () => {
+        this.ItemCard($r('app.media.ic_public_folder_filled'), '缓存', () => {
           if(this.pageInfos.size() == 0) {
             this.pageInfos.pushPathByName('DownloadPage', null)
           } else {

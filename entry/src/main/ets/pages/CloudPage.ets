@@ -34,7 +34,7 @@ export struct CloudPage {
       action: () => {
         DialogUtil.showConfirmDialog({
           title: '云盘',
-          message: '音乐云盘内歌曲仅支持单首播放、下载'
+          message: '音乐云盘内歌曲仅支持单首播放、缓存'
         })
       }
     }

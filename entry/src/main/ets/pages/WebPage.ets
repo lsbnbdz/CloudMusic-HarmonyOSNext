@@ -1,24 +1,43 @@
 import { webview } from '@kit.ArkWeb';
-import { router } from '@kit.ArkUI';
 import { WebPageParam } from '../common/entities/PageParams';
 
 @Component
 export struct WebPage {
+  controller: webview.WebviewController = new webview.WebviewController()
   @State param: WebPageParam = {
     title: '',
     url: ''
   }
-  controller: webview.WebviewController = new webview.WebviewController()
+  menus: NavigationMenuItem[] = [
+    {
+      value: '刷新',
+      icon: $r('app.media.ic_public_refresh'),
+      action: () => {
+        this.controller.refresh()
+      }
+    }
+  ]
+
   build() {
     NavDestination() {
       Column() {
         Web({ src: this.param.url, controller: this.controller })
+          .allowWindowOpenMethod(true)
+          .horizontalScrollBarAccess(true)
+          .verticalScrollBarAccess(true)
+          .fileAccess(true)
+          .domStorageAccess(true)
+          .javaScriptAccess(true)
+          .imageAccess(true)
+          .onlineImageAccess(true)
           .width('100%')
           .layoutWeight(1)
+          .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
       }
       .height('100%')
       .width('100%')
     }
     .title(this.param.title)
+    .menus(this.menus)
   }
 }

@@ -31,7 +31,7 @@ export struct RemoveCache {
   private showDialog() {
     DialogUtil.showPrimaryDialog({
       title: '清理缓存',
-      message: '清理应用缓存，不会影响已下载的歌曲\n\n请勿在下载过程中清理，否则可能导致正在下载的内容异常',
+      message: '清理应用缓存，不会影响缓存到沙箱的歌曲\n\n请勿在缓存歌曲过程中清理，否则可能导致正在缓存的歌曲异常',
       primaryButton: "取消",
       secondaryButton: {
         fontColor: Color.Red,

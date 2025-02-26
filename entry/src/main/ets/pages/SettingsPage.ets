@@ -2,7 +2,9 @@ import { UsePublicCookie } from '../components/settings/UsePublicCookie'
 import { SetPlayQuality } from '../components/settings/SetPlayQuality'
 import { CustomApiUrl } from '../components/settings/CustomApiUrl'
 import { RemoveCache } from '../components/settings/RemoveCache'
-import { Settings_Bottom, Settings_Feedback, Settings_Version } from '../components/settings/TextContent'
+import {
+  OtherContents,
+  Settings_Bottom } from '../components/settings/TextContent'
 import Constants from '../common/constants/Constants'
 import { SetDefaultHomePage } from '../components/settings/SetDefaultHomePage'
 
@@ -20,14 +22,13 @@ export struct SettingsPage {
       Stack() {
         Column({ space: 10 }) {
           List({ space: 10 }) {
-            ListItem() { SetPlayQuality() }.listItemStyle()
-            ListItem() { SetDefaultHomePage() }.listItemStyle()
-            ListItem() { UsePublicCookie() }.listItemStyle()
-            ListItem() { CustomApiUrl() }.listItemStyle()
-            ListItem() { RemoveCache() }.listItemStyle()
-            ListItem() { Divider() }
-            ListItem() { Settings_Version() }.listItemStyle()
-            ListItem() { Settings_Feedback() }.listItemStyle()
+            ListItem() { SetPlayQuality().padding({ left: 10, right: 10 }) }.listItemStyle()
+            ListItem() { SetDefaultHomePage().padding({ left: 10, right: 10 }) }.listItemStyle()
+            ListItem() { UsePublicCookie().padding({ left: 10, right: 10 }) }.listItemStyle()
+            ListItem() { CustomApiUrl().padding({ left: 10, right: 10 }) }.listItemStyle()
+            ListItem() { RemoveCache().padding({ left: 10, right: 10 }) }.listItemStyle()
+            ListItem() { Divider().padding({ left: 20, right: 20 }) }
+            ListItem() { OtherContents() }.listItemStyle()
           }
           .scrollBar(BarState.Auto)
           .width('100%')
@@ -49,9 +50,13 @@ export struct SettingsPage {
   @Styles listItemStyle() {
     .backgroundColor($r('app.color.main'))
     .borderRadius(Constants.RADIUS_CARD)
-    .height(Constants.HEIGHT_SETTINGS_ITEM)
+    // .height(Constants.HEIGHT_SETTINGS_ITEM)
     .margin({ left: 20, right: 20 })
     .padding({ left: Constants.PADDING_EDGE_DEFAULT, right: Constants.PADDING_EDGE_DEFAULT })
+    .constraintSize({
+      minHeight: 60,
+      maxHeight: '100%'
+    })
   }
 }
 

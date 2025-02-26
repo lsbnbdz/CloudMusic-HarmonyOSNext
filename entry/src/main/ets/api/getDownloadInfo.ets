@@ -4,7 +4,7 @@ import { LogUtil } from "@pura/harmony-utils"
 import { getApiUrl, isUsePubCookie } from "../common/functions/commonFunction"
 
 /**
- * 获取音乐下载地址
+ * 获取音乐地址
  * @param songId 歌曲ID
  * @param quality 音质
  * @param isLogged 是否登录
@@ -23,6 +23,6 @@ export async function getDownloadInfo(songId: number, quality:QualityType, isLog
     return dataGot
   } catch (e) {
     LogUtil.error('Error fetching download info: ' + JSON.stringify(e))
-    throw new Error('获取下载链接失败')
+    throw new Error('获取歌曲链接失败')
   }
 }

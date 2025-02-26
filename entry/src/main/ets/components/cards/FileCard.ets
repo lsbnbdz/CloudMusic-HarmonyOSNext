@@ -14,7 +14,6 @@ import PlayQueueUtils from "../../common/utils/play/PlayQueueUtils"
 export struct FileCard {
   @State fileName: string = ''
   @State song: Song = SongClass
-  @Prop columnEnd: number = 0
   @Link list: string[]
 
   async aboutToAppear(): Promise<void> {
@@ -25,10 +24,8 @@ export struct FileCard {
     Button() {
       Column({ space: 5 }) {
         Text() {
-          if(this.columnEnd == 0) {
-            Span(this.song.artists[0].name).fontColor(Color.Gray)
-            Span(' - ')
-          }
+          Span(this.song.artists[0].name).fontColor(Color.Gray)
+          Span(' - ')
           Span(this.song.name)
         }
         .textStyle(16)
@@ -65,7 +62,7 @@ export struct FileCard {
           })
         })
 
-      MenuItem(this.MenuItem($r('app.media.ic_public_download_filled'), '保存至本地'))
+      MenuItem(this.MenuItem($r('app.media.ic_public_folder_filled'), '保存至本地'))
         .onClick(() => {
           FileUtils.saveFile(this.fileName)
         })
@@ -79,14 +76,19 @@ export struct FileCard {
         .onClick(async () => {
           DialogUtil.showPrimaryDialog({
             title: '删除文件',
-            message:`确定删除 "${this.fileName}" ?`,
+            message: `确定删除 "${this.fileName}" ?`,
             primaryButton: "取消",
-            secondaryButton: "删除",
-            onAction: async (action) => {
-              if(action == DialogAction.TWO) {
-                await FileUtils.deleteFile(this.fileName).then(async () => {
-                  this.list = await FileUtils.getFileName()
-                })
+            secondaryButton: {
+              value: '删除',
+              fontColor: Color.Red,
+              action: async () => {
+                try {
+                  await FileUtils.deleteFile(this.fileName).then(async () => {
+                    this.list = await FileUtils.getFileName()
+                  })
+                } catch (e) {
+                  ToastUtil.showToast('删除时出错')
+                }
               }
             }
           })

@@ -2,7 +2,7 @@ import { Explore } from '../components/main/Explore'
 import { BottomBarComponent } from '../components/play/BottomBarComponent';
 import Constants from '../common/constants/Constants';
 import { SettingsPage } from './SettingsPage';
-import { DownloadPage } from './DownloadPage';
+import { CachedPage } from './CachedPage';
 import { CloudPage } from './CloudPage';
 import { DailyListPage } from './DailyListPage';
 import { SearchPage } from './SearchPage';
@@ -16,10 +16,17 @@ import { UserPlayLists } from '../components/main/UserPlayLists';
 import { Me } from '../components/main/Me';
 import { resourceManager } from '@kit.LocalizationKit';
 import { StorageConstants } from '../common/constants/StorageConstants';
+import PreferencesUtils from '../common/utils/app/PreferencesUtils';
+import { WarrantyDialog } from '../components/dialog/WarrantyDialog';
 
 @Entry
 @Component
 struct Index {
+  warrantyDialogController: CustomDialogController = new CustomDialogController({
+    builder: WarrantyDialog(),
+    autoCancel: false
+  })
+
   @StorageProp('topRectHeight') topRectHeight: number = 0
   @StorageProp('bottomRectHeight') bottomRectHeight: number = 0
   @StorageProp(StorageConstants.DEVICE_TYPE) deviceType: resourceManager.DeviceType = resourceManager.DeviceType.DEVICE_TYPE_PHONE
@@ -36,14 +43,22 @@ struct Index {
     }
   ]
 
+  async aboutToAppear(): Promise<void> {
+    const isFirstLaunch = await PreferencesUtils.getPreferenceValue<boolean>(StorageConstants.USER_PREF, 'isFirstLaunch', true)
+    if(isFirstLaunch) {
+      this.warrantyDialogController.open()
+      PreferencesUtils.putPreferenceValue(StorageConstants.USER_PREF, 'isFirstLaunch', false)
+    }
+  }
+
   async build() {
     Navigation(this.pageInfos) {
       Stack({ alignContent: Alignment.Bottom }) {
-        if(this.index == 0) {
+        if (this.index == 0) {
           Explore()
-        } else if(this.index == 1) {
+        } else if (this.index == 1) {
           UserPlayLists()
-        } else if(this.index == 2) {
+        } else if (this.index == 2) {
           Me()
         }
 
@@ -71,7 +86,7 @@ struct Index {
       SettingsPage()
     }
     else if(name === 'DownloadPage') {
-      DownloadPage()
+      CachedPage()
     }
     else if(name === 'CloudPage') {
       CloudPage()

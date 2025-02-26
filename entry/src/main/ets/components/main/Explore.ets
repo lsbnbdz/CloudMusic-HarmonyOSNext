@@ -34,6 +34,7 @@ export struct Explore {
       try {
         const toplist = await getTopList()
         this.topList = toplist
+        this.isLoading = false
         await this.getPlayLists()
       } catch (e) {
         LogUtil.error('Error fetching playlists: ', e)

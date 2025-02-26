@@ -197,14 +197,19 @@ export struct PlayQueueSheet {
   private cleanPlayQueue() {
     DialogUtil.showPrimaryDialog({
       title: '确认',
-      message: '清空播放列表',
+      message: `清空播放列表`,
       primaryButton: "取消",
-      secondaryButton: "确认",
-      onAction: async (action) => {
-        if (action == DialogAction.TWO) {
-          PlayQueueUtils.cleanQueue()
-          this.dataSource.setData([])
-          this.dataSource.notifyDataReload()
+      secondaryButton: {
+        value: '确认',
+        fontColor: Color.Red,
+        action: async () => {
+          try {
+            PlayQueueUtils.cleanQueue()
+            this.dataSource.setData([])
+            this.dataSource.notifyDataReload()
+          } catch (e) {
+            ToastUtil.showToast('清空播放列表时出错')
+          }
         }
       }
     })

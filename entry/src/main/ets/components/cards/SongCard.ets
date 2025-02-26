@@ -6,8 +6,8 @@ import { promptAction } from "@kit.ArkUI"
 import { PlayList, playListClass } from "../../common/entities/PlayList"
 import Constants from "../../common/constants/Constants"
 import { playListToQueue } from "../../common/functions/play/playListOp"
-import { playMusicByUrl, playQueue } from "../../common/functions/play/playControl"
-import { LogUtil, PasteboardUtil, ToastUtil } from "@pura/harmony-utils"
+import { playQueue } from "../../common/functions/play/playControl"
+import { PasteboardUtil, ToastUtil } from "@pura/harmony-utils"
 import { DownloadDialog } from "../dialog/DownloadDialog"
 import { StorageConstants } from "../../common/constants/StorageConstants"
 
@@ -129,7 +129,7 @@ export struct SongCard {
               playListToQueue(this.playList.id, this.playList.trackCount, this.index)
             })
         }
-        MenuItem(this.MenuContent($r('app.media.ic_public_cloud_download'), '下载'))
+        MenuItem(this.MenuContent($r('app.media.ic_public_cloud_download'), '缓存至应用沙箱'))
           .onClick(() => {
             this.downloadDialogController.open()
           })

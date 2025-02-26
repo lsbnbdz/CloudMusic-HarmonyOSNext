@@ -305,9 +305,10 @@ export struct PlayListPage {
             title: '从歌单删除歌曲',
             message: `${song.name}`,
             primaryButton: "取消",
-            secondaryButton: "删除",
-            onAction: async (action) => {
-              if (action == DialogAction.TWO) {
+            secondaryButton: {
+              value: '删除',
+              fontColor: Color.Red,
+              action: async () => {
                 try {
                   await PlayListOperation('del', this.param.playList.id, song.id)
                   ToastUtil.showToast('删除成功')

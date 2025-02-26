@@ -1,3 +1,4 @@
+import Constants from "../../../common/constants/Constants"
 import { Song, SongClass } from "../../../common/entities/SongsResult"
 import { PlayListAddSheet } from "../../sheets/PlayListAddSheet"
 
@@ -42,10 +43,10 @@ export struct AddToPlayListCircleButton {
   @State isShowAddSheet: boolean = false
   @State song: Song = SongClass
   @State imgColor: Color | ResourceStr = $r('app.color.reverse')
-  @State imgWidth: number = 30
+  @State imgWidth: number = Constants.SIZE_ICON_BUTTON_BAR
 
   build() {
-    Image($r('app.media.ic_public_add_norm'))
+    Image($r('app.media.ic_files_new_folder'))
       .width(this.imgWidth)
       .fillColor(this.imgColor)
       .draggable(false)

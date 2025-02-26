@@ -8,6 +8,7 @@ import { notificationManager } from "@kit.NotificationKit"
 import { resourceManager } from "@kit.LocalizationKit"
 import { initSettings } from "./settings"
 import { getLoginStatus } from "../../../api/loginApi"
+import { WarrantyDialog } from "../../../components/dialog/WarrantyDialog"
 
 /**
  * App初始化
@@ -15,13 +16,13 @@ import { getLoginStatus } from "../../../api/loginApi"
 const TAG = '[appInit] '
 
 export async function appInit() {
-  initSettings()
+  await initSettings()
   initUserInfo()
   initApp()
-  await initBasicInfo()
-  await initPlayQueue()
-  await audioPlayerInit()
-  await loadSavedSong()
+  initBasicInfo()
+  initPlayQueue()
+  audioPlayerInit()
+  loadSavedSong()
   await getAnnouncement()
 }
 

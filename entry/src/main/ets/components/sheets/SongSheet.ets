@@ -115,7 +115,7 @@ export struct SongSheet {
         }
 
         Row({ space: 5 }) {
-          // 下载按钮
+          // 缓存按钮
           Button() {
             Row({ space: 5 }) {
               Image($r('app.media.ic_public_download_filled')).width(20).fillColor($r('app.color.reverse'))

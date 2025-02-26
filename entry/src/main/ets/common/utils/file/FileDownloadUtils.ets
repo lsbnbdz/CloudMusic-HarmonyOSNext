@@ -10,7 +10,7 @@ import { MsgConstants } from '../../constants/MsgConstants'
 import NotificationUtils from '../app/NotificationUtils'
 
 /**
- * 文件下载
+ * 文件缓存
  */
 
 const TAG = '[FileDownload] '
@@ -47,12 +47,12 @@ class FileDownloadUtils {
           downloadTask.on('complete', () => {
             FileUtils.moveFile(cachePath, descPath).then(() => {
               NotificationUtils.publish(song.id, MsgConstants.DOWNLOAD_COMPLETE, `${song.name}  - ${artists}`)
-              promptAction.showToast({ message: `下载完成: ${song.name}` })
+              promptAction.showToast({ message: `缓存完成: ${song.name}` })
             })
           })
         }).catch((err: BusinessError) => {
-          ToastUtil.showToast('下载出错: ' + err.message)
-          LogUtil.error(TAG + `下载出错: ${JSON.stringify(err)}`)
+          ToastUtil.showToast('缓存时出错: ' + err.message)
+          LogUtil.error(TAG + `缓存时出错: ${JSON.stringify(err)}`)
           FileUtils.deleteFile(`${artists} - ${song.name}.${songDownload.data[0].type}`)
         });
       } catch (error) {
@@ -61,7 +61,7 @@ class FileDownloadUtils {
         if (err.code == 13400002) {
           DialogUtil.showConfirmDialog({ title: '提示', message: `文件已存在` })
         } else {
-          DialogUtil.showConfirmDialog({ title: '下载失败', message: `${err.message}` })
+          DialogUtil.showConfirmDialog({ title: '缓存失败', message: `${err.message}` })
         }
         console.error(`Invoke downloadFile failed, code is ${err.code}, message is ${err.message}`);
       }

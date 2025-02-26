@@ -86,6 +86,8 @@ export struct UserPlayLists {
         .onRefreshing(async () => {
           await this.refreshContent()
         })
+      } else {
+        this.Loading()
       }
     }
     .width('100%')

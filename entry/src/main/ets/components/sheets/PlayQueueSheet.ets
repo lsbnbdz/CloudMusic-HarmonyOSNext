@@ -19,8 +19,8 @@ export struct PlayQueueSheet {
   @StorageProp('PlayQueue') queue: Array<PlayQueue> = []
   @StorageLink('currentQueueIndex') currentQueueIndex: number = 0
   @StorageProp('bottomRectHeight') bottomRectHeight: number = 0
-  @StorageProp('player-mode') playmode: number = 1
-  @StorageProp('UserPlayLists') playLists: Array<PlayList> = []
+  @StorageProp(StorageConstants.PLAY_MODE) playmode: number = 1
+  @StorageProp(StorageConstants.USER_PLAYLISTS) playLists: Array<PlayList> = []
   @State isLoading: boolean = false
   @Link isShow: boolean
   @State dataSource: LazyData<PlayQueue> = new LazyData()

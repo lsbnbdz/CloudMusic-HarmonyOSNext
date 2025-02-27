@@ -1,43 +1,48 @@
 import { DialogUtil, ToastUtil } from "@pura/harmony-utils"
 import { setHeartMode } from "../../api/songApi"
 import Constants from "../../common/constants/Constants"
+import { StorageConstants } from "../../common/constants/StorageConstants"
 import { PlayList } from "../../common/entities/PlayList"
 import { playQueue } from "../../common/functions/play/playControl"
 import PlayQueueUtils from "../../common/utils/play/PlayQueueUtils"
 
-let cardWidth: number = 150
+let cardWidth: number = 120
 
-@Builder function ContentButton() {
+@Builder function ContentButton(firText:string, secText:string, imgUrl:ResourceStr, onClick?: () => void ) {
   Button() {
     Column() {
-      Column() {}
-      .borderRadius(Constants.RADIUS_IMG)
-      .width('80%')
-      .height(Constants.FONT_SIZE_TITLE)
-      .backgroundColor($r('app.color.background'))
-      .alignSelf(ItemAlign.Start)
-      .padding({ left: Constants.PADDING_EDGE_DEFAULT, right: Constants.PADDING_EDGE_DEFAULT })
-
-      Column() {}
-      .borderRadius(Constants.RADIUS_IMG)
-      .width('80%')
-      .height(Constants.FONT_SIZE_COMMON)
-      .backgroundColor($r('app.color.background'))
-      .padding({ left: Constants.PADDING_EDGE_DEFAULT, right: Constants.PADDING_EDGE_DEFAULT })
+      Text(`${firText}`)
+        .width('100%')
+        .textStyle(Constants.FONT_SIZE_COMMON + 2, true)
+        .padding(Constants.PADDING_EDGE_DEFAULT)
+        .textShadow({ radius: 15 })
+      Text(`${secText}`)
+        .width('100%')
+        .textStyle(Constants.FONT_SIZE_BAR)
+        .textAlign(TextAlign.Center)
+        .backgroundColor(Color.Transparent)
+        .textShadow({ radius: 5 })
+        .borderRadius({ bottomLeft: Constants.RADIUS_IMG, bottomRight: Constants.RADIUS_IMG })
+        .height(Constants.FONT_SIZE_COMMON * 2)
+        .backdropBlur(100)
     }
     .justifyContent(FlexAlign.SpaceBetween)
     .height('100%')
     .width('100%')
-    .padding({ left: 10, right: 10, top: 15, bottom: 15 })
   }
-  .backgroundColor($r('app.color.main'))
+  .backgroundImage(imgUrl)
+  .backgroundImageSize(ImageSize.Cover)
   .buttonSty()
+  .onClick(onClick)
+  .clickEffect({ level: ClickEffectLevel.LIGHT, scale: 0.9 })
+  .width(cardWidth)
+  .height(cardWidth + 30)
 }
 
 @Component
 export struct RecommendCards {
   @Consume('pageInfos') pageInfos: NavPathStack
-  @StorageProp('UserPlayLists') playLists: Array<PlayList> = []
+  @StorageProp(StorageConstants.USER_PLAYLISTS) playLists: Array<PlayList> = []
   @Prop isLogged: boolean
 
   build() {
@@ -47,7 +52,7 @@ export struct RecommendCards {
        * 每日推荐卡片
        */
       ListItem() {
-        this.ContentButton(`每日推荐`,'符合你口味的\n新鲜好歌',$r('app.media.bg1'),() => {
+        ContentButton(`每日推荐`,'符合你口味的新鲜好歌',$r('app.media.bg1'),() => {
           if(this.pageInfos.size() == 0) {
             this.pageInfos.pushPathByName('DailyListPage', null)
           } else {
@@ -55,13 +60,12 @@ export struct RecommendCards {
           }
         })
       }
-      .width(cardWidth)
 
       /**
        * 音乐云盘卡片
        */
       ListItem() {
-        this.ContentButton(`我的音乐云盘`,`随时随地畅听`,$r('app.media.bg2'),() => {
+        ContentButton(`音乐云盘`,`随时随地畅听`,$r('app.media.bg2'),() => {
           if(this.isLogged) {
             if(this.pageInfos.size() == 0) {
               this.pageInfos.pushPathByName('CloudPage', null)
@@ -73,13 +77,12 @@ export struct RecommendCards {
           }
         })
       }
-      .width(cardWidth)
 
       /**
        * 心动歌单卡片
        */
       ListItem() {
-        this.ContentButton(`心动歌单`,`智能播放`,$r('app.media.bg3'), async () => {
+        ContentButton(`心动歌单`,`智能播放`,$r('app.media.bg3'), async () => {
           if(this.isLogged) {
             DialogUtil.showPrimaryDialog({
               title: '心动歌单',
@@ -103,7 +106,6 @@ export struct RecommendCards {
           }
         })
       }
-      .width(cardWidth)
 
       ListItem().width(5)
     }
@@ -112,39 +114,14 @@ export struct RecommendCards {
     .listDirection(Axis.Horizontal)
     .width('100%')
   }
-
-  @Builder
-  ContentButton(firText:string, secText:string, imgUrl:ResourceStr, onClick?: () => void ) {
-    Button() {
-      Column() {
-        Text(`${firText}`)
-          .width('100%')
-          .textStyle(Constants.FONT_SIZE_TITLE, true)
-        Text(`${secText}`)
-          .width('100%')
-          .textStyle(Constants.FONT_SIZE_COMMON)
-          .textAlign(TextAlign.Center)
-      }
-      .justifyContent(FlexAlign.SpaceBetween)
-      .height('100%')
-      .width('100%')
-      .padding({ left: 10, right: 10, top: 15, bottom: 15 })
-    }
-    .backgroundImage(imgUrl)
-    .backgroundImageSize(ImageSize.Cover)
-    .buttonSty()
-    .onClick(onClick)
-    .clickEffect({ level: ClickEffectLevel.LIGHT, scale: 0.9 })
-  }
 }
 
 @Extend(Button) function buttonSty() {
   .type(ButtonType.Normal)
-  .aspectRatio(1)
   .width('100%')
-  .borderRadius(15)
+  .borderRadius(Constants.RADIUS_IMG)
   .backgroundColor(Color.Transparent)
-  .backgroundBlurStyle(BlurStyle.BACKGROUND_THIN)
+  // .backgroundBlurStyle(BlurStyle.BACKGROUND_THIN)
 }
 
 @Extend(Text) function textStyle(size: number, isBold: boolean = false) {
@@ -160,20 +137,19 @@ export struct RecommendCards {
  */
 @Component
 export struct RecommendCards_Skeleton {
-
   build() {
     List({ space: 15 }) {
       ListItem().width(5)
       ListItem() {
-        ContentButton()
+        this.ContentSkeleton()
       }
       .width(cardWidth)
       ListItem() {
-        ContentButton()
+        this.ContentSkeleton()
       }
       .width(cardWidth)
       ListItem() {
-        ContentButton()
+        this.ContentSkeleton()
       }
       .width(cardWidth)
 
@@ -183,5 +159,43 @@ export struct RecommendCards_Skeleton {
     .scrollBar(BarState.Off)
     .listDirection(Axis.Horizontal)
     .width('100%')
+  }
+
+  @Builder ContentSkeleton() {
+    Button() {
+      Column() {
+        Column()
+          .backgroundColor($r('app.color.background'))
+          .alignSelf(ItemAlign.Start)
+          .width('70%')
+          .borderRadius(Constants.RADIUS_CARD)
+          .height(Constants.FONT_SIZE_COMMON + 3)
+          .padding(Constants.PADDING_EDGE_DEFAULT)
+        Column({ space: 3 }) {
+          Column()
+            .backgroundColor($r('app.color.background'))
+            .alignSelf(ItemAlign.Center)
+            .width('80%')
+            .borderRadius(Constants.RADIUS_CARD)
+            .height(Constants.FONT_SIZE_BAR - 2)
+            .padding(Constants.PADDING_EDGE_DEFAULT)
+          Column()
+            .backgroundColor($r('app.color.background'))
+            .alignSelf(ItemAlign.Center)
+            .width('80%')
+            .borderRadius(Constants.RADIUS_CARD)
+            .height(Constants.FONT_SIZE_BAR - 2)
+            .padding(Constants.PADDING_EDGE_DEFAULT)
+        }
+      }
+      .padding(Constants.PADDING_EDGE_DEFAULT)
+      .justifyContent(FlexAlign.SpaceBetween)
+      .height('100%')
+      .width('100%')
+    }
+    .buttonSty()
+    .backgroundColor($r('app.color.main'))
+    .width(cardWidth)
+    .height(cardWidth + 30)
   }
 }

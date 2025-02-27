@@ -1,6 +1,6 @@
 import { ExplainButton } from "../buttons/ExplainButton"
 import Constants from "../../common/constants/Constants"
-import PreferencesUtils from "../../common/utils/app/PreferencesUtils"
+import PreferencesUtils from "../../common/utils/data/PreferencesUtils"
 import { StorageConstants } from "../../common/constants/StorageConstants"
 
 /**

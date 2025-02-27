@@ -32,6 +32,7 @@ export struct TopListItemCard {
     .type(ButtonType.Normal)
     .width(120)
     .aspectRatio(1)
+    .clickEffect({ level: ClickEffectLevel.LIGHT, scale: 0.9 })
     .onClick(() => {
       let param: PlayListPageParam = {
         playList: {

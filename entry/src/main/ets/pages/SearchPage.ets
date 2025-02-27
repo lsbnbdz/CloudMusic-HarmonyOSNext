@@ -6,6 +6,7 @@ import { EmitterConstants } from '../common/constants/EmitterConstants';
 import Constants from '../common/constants/Constants';
 import { StorageConstants } from '../common/constants/StorageConstants';
 import { resourceManager } from '@kit.LocalizationKit';
+import { SearchHistoryComponent } from '../components/lists/SearchHistoryComponent';
 
 /**
  * 歌曲列表页（搜索结果）
@@ -15,9 +16,15 @@ const TAG = "[SearchPage] "
 @Component
 export struct SearchPage {
   @StorageProp(StorageConstants.DEVICE_TYPE) deviceType: resourceManager.DeviceType = resourceManager.DeviceType.DEVICE_TYPE_PHONE
+  @StorageLink(StorageConstants.SEARCH_HISTORY) searchHistory: string[] = []
   @State tabPageIndex: number = 0
-  @State searchKeyword: string = ''
+  @State @Watch('handleSearch') searchKeyword: string = ''
   private tabsController: TabsController = new TabsController()
+  private searchController: SearchController = new SearchController()
+
+  handleSearch() {
+    EmitterUtil.post(EmitterConstants.EMITTER_SEARCH, this.searchKeyword)
+  }
 
   build() {
     NavDestination() {
@@ -39,6 +46,9 @@ export struct SearchPage {
             }
             .height('100%')
             .width('100%')
+          }
+          else {
+            SearchHistoryComponent({ searchKeyword: this.searchKeyword })
           }
         }
         .height('100%')
@@ -90,15 +100,22 @@ export struct SearchPage {
       Search({
         placeholder: '搜索内容',
         icon: '/resources/base/media/ic_public_search_filled.svg',
+        controller: this.searchController
       })
         .defaultFocus(true)
         .layoutWeight(1)
         .searchButton('搜索')
+        .onChange((value) => {
+          if(!value) {
+            this.searchKeyword = ''
+          }
+        })
         .onSubmit(async (value) => {
-          this.searchKeyword = value
-          EmitterUtil.post(EmitterConstants.EMITTER_SEARCH, value)
           if (!value) {
             ToastUtil.showToast('请输入搜索内容')
+          } else {
+            this.searchKeyword = value
+            this.searchHistory.unshift(value)
           }
         })
     }

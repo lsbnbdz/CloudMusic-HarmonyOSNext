@@ -27,7 +27,7 @@ class AVSessionUtils {
     if(this.session) {
       return this.session
     }
-    let session = await avSession.createAVSession(this.context, 'playSession', 'audio')
+    let session = await avSession.createAVSession(this.context, 'cloudmusic', 'audio')
     try {
       let cycleMode: number | undefined = AppStorage.get('cycleMode')
       if(cycleMode) this.cycleMode = this.cycleMode
@@ -118,6 +118,10 @@ class AVSessionUtils {
     }
   }
 
+  private isFavorite(): boolean {
+    const is: boolean = AppStorage.get(StorageConstants.ISLIKED) as boolean
+    return is
+  }
   /**
    * 设置为播放状态
    */
@@ -126,7 +130,7 @@ class AVSessionUtils {
     let playbackState: avSession.AVPlaybackState = {
       state: avSession.PlaybackState.PLAYBACK_STATE_PLAY,
       loopMode: loopMode,
-      isFavorite: AppStorage.get(StorageConstants.ISLIKED) as boolean,
+      isFavorite: this.isFavorite(),
       position: {
         elapsedTime: time,
         updateTime: new Date().getTime()

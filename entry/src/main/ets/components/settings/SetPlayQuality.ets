@@ -2,7 +2,7 @@ import Constants from "../../common/constants/Constants"
 import { PlayConstants } from "../../common/constants/PlayConstants"
 import { StorageConstants } from "../../common/constants/StorageConstants"
 import { QualityType } from "../../common/entities/SongDownload"
-import PreferencesUtils from "../../common/utils/app/PreferencesUtils"
+import PreferencesUtils from "../../common/utils/data/PreferencesUtils"
 
 /**
  * 设置播放音质

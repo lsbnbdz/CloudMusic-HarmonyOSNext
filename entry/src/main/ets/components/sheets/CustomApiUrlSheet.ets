@@ -1,6 +1,6 @@
 import { ToastUtil } from "@pura/harmony-utils"
 import Constants from "../../common/constants/Constants"
-import PreferencesUtils from "../../common/utils/app/PreferencesUtils"
+import PreferencesUtils from "../../common/utils/data/PreferencesUtils"
 import { ExplainButton } from "../buttons/ExplainButton"
 
 /**

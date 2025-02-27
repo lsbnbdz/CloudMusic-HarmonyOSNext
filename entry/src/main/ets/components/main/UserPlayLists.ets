@@ -7,12 +7,16 @@ import { User, UserClass } from "../../common/entities/User";
 import Constants from "../../common/constants/Constants";
 import { StorageConstants } from "../../common/constants/StorageConstants";
 
+/**
+ * 用户歌单
+ */
+const TAG = '[UserPlayLists Component] '
 @Component
 export struct UserPlayLists {
-  @StorageLink('UserPlayLists') playLists: Array<PlayList> = []
+  @StorageLink(StorageConstants.USER_PLAYLISTS) playLists: Array<PlayList> = []
   @StorageProp('bottomRectHeight') bottomRectHeight: number = 0
   @StorageProp('topRectHeight') topRectHeight: number = 0
-  @StorageProp('User') user: User = UserClass
+  @StorageProp(StorageConstants.USER) user: User = UserClass
   @StorageProp(StorageConstants.IS_LOGGED) @Watch('getPlayLists') isLogged: boolean = false
   @StorageProp('Announcement') announcement: Announcement = {
     code: -1,
@@ -23,33 +27,36 @@ export struct UserPlayLists {
   @State isLoadingMore: boolean = false
   @State isRefreshing: boolean = false
   @State lastRefreshTime: number = 0
-  refreshCooldown: number = 5000
+  private refreshCooldown: number = 5000
   @Consume('pageInfos') pageInfos: NavPathStack
 
   async aboutToAppear(): Promise<void> {
-    if(this.playLists.length == 0 && this.isLogged) {
-      await this.getPlayLists()
+    try {
+      setTimeout(async () => {
+        await this.getPlayLists()
+      }, 500)
+    } catch (e) {
+      ToastUtil.showToast('获取歌单列表失败')
+      LogUtil.error('Error fetching playlists: ', e.message)
+    } finally {
+      this.isLoading = false
     }
   }
 
   async getPlayLists() {
     if(this.isLogged && this.user && this.playLists.length == 0) {
+      LogUtil.info(TAG + 'Start getPlayLists')
       this.isLoading = true
-      try {
-        const playlist = await getPlayLists(0)
-        this.playLists = playlist.playlist
-      } catch (e) {
-        ToastUtil.showToast('获取歌单列表失败')
-        LogUtil.error('Error fetching playlists: ', e.message)
-      } finally {
-        this.isLoading = false
-      }
+      const playlist = await getPlayLists(0)
+      this.playLists = playlist.playlist
+      this.isLoading = false
     }
+    else return
   }
 
   build() {
     Column() {
-      if(this.isLogged && this.user && this.playLists.length > 0) {
+      if(this.isLogged) {
         Refresh({ refreshing: this.isRefreshing}) {
           List({ space: 10 }) {
             if(this.announcement.visible) {
@@ -86,8 +93,6 @@ export struct UserPlayLists {
         .onRefreshing(async () => {
           await this.refreshContent()
         })
-      } else {
-        this.Loading()
       }
     }
     .width('100%')

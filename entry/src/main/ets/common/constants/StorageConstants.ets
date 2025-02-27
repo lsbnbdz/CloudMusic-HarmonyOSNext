@@ -18,20 +18,10 @@ export class StorageConstants {
    */
   static readonly VALID_COOKIE: string = 'isValidCookie'
   /**
-   * Cookie
-   * @description AppStorage
-   */
-  static readonly COOKIE: string = 'cookie'
-  /**
    * Is Logged
    * @description AppStorage
    */
   static readonly IS_LOGGED: string = 'isLogged'
-  /**
-   * 用户信息
-   * @description AppStorage
-   */
-  static readonly USER: string = 'User'
   /**
    * 是否为本地文件 - boolean
    * @description AppStorage
@@ -130,6 +120,26 @@ export class StorageConstants {
 
 
   /**
+   * Cookie
+   * @description AppStorage & Preference
+   */
+  static readonly COOKIE: string = 'cookie'
+  /**
+   * 用户信息
+   * @description AppStorage & Preference
+   */
+  static readonly USER: string = 'user'
+  /**
+   * 用户歌单
+   * @description AppStorage & Preference
+   */
+  static readonly USER_PLAYLISTS: string = 'userPlayLists'
+  /**
+   * 用户歌单
+   * @description AppStorage & Preference
+   */
+  static readonly TOPLISTS: string = 'topLists'
+  /**
    * 循环模式
    * @description AppStorage & Preference
    */
@@ -146,6 +156,12 @@ export class StorageConstants {
   static readonly PLAY_QUALITY: string = 'playQuality'
   /**
    * 是否启用公共Cookie
+   * @description AppStorage & Preference
    */
   static readonly USE_PUBLIC_COOKIE: string = 'usePublicCookie'
+  /**
+   * 历史搜索记录
+   * @description AppStorage & Preference
+   */
+  static readonly SEARCH_HISTORY: string = 'searchHistory'
 }

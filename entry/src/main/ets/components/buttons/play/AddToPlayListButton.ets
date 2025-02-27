@@ -46,19 +46,23 @@ export struct AddToPlayListCircleButton {
   @State imgWidth: number = Constants.SIZE_ICON_BUTTON_BAR
 
   build() {
-    Image($r('app.media.ic_files_new_folder'))
+    Image($r('app.media.ic_public_add_norm'))
       .width(this.imgWidth)
       .fillColor(this.imgColor)
       .draggable(false)
       .backgroundColor(Color.Transparent)
-      .onClick(() => { this.isShowAddSheet = !this.isShowAddSheet })
+      .onClick(() => {
+        this.isShowAddSheet = !this.isShowAddSheet
+      })
       .bindSheet(this.isShowAddSheet, this.Sheet(), {
         preferType: SheetType.CENTER,
         height: '80%',
         dragBar: false,
         showClose: false,
         backgroundColor: $r('app.color.background'),
-        onDisappear: () => { this.isShowAddSheet = false }
+        onDisappear: () => {
+          this.isShowAddSheet = false
+        }
       })
   }
 

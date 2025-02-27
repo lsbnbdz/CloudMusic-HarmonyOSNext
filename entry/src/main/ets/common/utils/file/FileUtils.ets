@@ -2,7 +2,7 @@ import { common } from '@kit.AbilityKit'
 import fileIo from '@ohos.file.fs'
 import {  FileUtil, LogUtil, PreviewUtil, ToastUtil } from '@pura/harmony-utils'
 import fs from '@ohos.file.fs'
-import fileUri from '@ohos.file.fileuri'
+import { fileUri } from '@kit.CoreFileKit'
 import { picker } from '@kit.CoreFileKit'
 import { BusinessError } from '@kit.BasicServicesKit'
 
@@ -122,6 +122,25 @@ class FileUtils {
     } catch (e) {
       LogUtil.error(TAG + '获取缓存大小失败: ' + e.message())
       return -1
+    }
+  }
+
+  async saveFilesToDirectory(uris: string[]): Promise<boolean> {
+    let result: boolean = false
+    try {
+      for (const uri of uris) {
+        let fileUriObject = new fileUri.FileUri(uri)
+        let file = fs.openSync(uri, fs.OpenMode.READ_WRITE | fs.OpenMode.CREATE)
+        let file2 = fs.openSync(this.filesDir + `/${fileUriObject.name}`, fs.OpenMode.READ_WRITE | fs.OpenMode.CREATE)
+        fs.copyFileSync(file.fd, file2.fd)
+        fs.closeSync(file)
+        fs.closeSync(file2)
+        result = true
+      }
+    } catch (e) {
+      ToastUtil.showToast('上传失败')
+    } finally {
+      return result
     }
   }
 }

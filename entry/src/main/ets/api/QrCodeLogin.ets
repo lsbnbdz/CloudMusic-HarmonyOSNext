@@ -1,4 +1,5 @@
 import { LogUtil, ToastUtil } from "@pura/harmony-utils"
+import { StorageConstants } from "../common/constants/StorageConstants"
 import { getApiUrl, removeHTTPOnly } from "../common/functions/commonFunction"
 import { HttpRequest } from "../common/utils/request/HttpRequestUtils"
 import { getLoginStatus } from "./loginApi"
@@ -41,7 +42,7 @@ export async function checkQrLogin(key: string): Promise<boolean> {
       if (cookie) {
         cookie = removeHTTPOnly(cookie)
         cookie = cookie + '; OS=pc'
-        AppStorage.setOrCreate('cookie', cookie)
+        AppStorage.setOrCreate(StorageConstants.COOKIE, cookie)
         const result = await getLoginStatus(cookie)
         return result
       } else {

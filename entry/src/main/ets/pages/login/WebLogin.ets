@@ -3,6 +3,7 @@ import { promptAction } from '@kit.ArkUI';
 import { getLoginStatus } from '../../api/loginApi';
 import { DialogUtil, LogUtil, ToastUtil } from '@pura/harmony-utils';
 import { MsgConstants } from '../../common/constants/MsgConstants';
+import { StorageConstants } from '../../common/constants/StorageConstants';
 
 /**
  * 网页登录页面
@@ -14,6 +15,20 @@ export struct WebLogin {
   @State userAgent: string = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
   @State isLoading: boolean = true
   controller: webview.WebviewController = new webview.WebviewController()
+  menus: NavigationMenuItem[] = [
+    {
+      value: 'refresh',
+      icon: $r('app.media.ic_public_refresh'),
+      action: () => {
+        this.controller.removeCache(true);
+        this.loadUrl() }
+    }
+  ]
+
+  private loadUrl() {
+    this.controller.setCustomUserAgent(this.userAgent)
+    this.controller.loadUrl(`https://music.163.com/#/login/`)
+  }
 
   build() {
     NavDestination() {
@@ -26,6 +41,7 @@ export struct WebLogin {
               controller: this.controller
             })
               .allowWindowOpenMethod(true)
+              .databaseAccess(true)
               .horizontalScrollBarAccess(true)
               .verticalScrollBarAccess(true)
               .fileAccess(true)
@@ -33,8 +49,6 @@ export struct WebLogin {
               .javaScriptAccess(true)
               .imageAccess(true)
               .onlineImageAccess(true)
-              .overviewModeAccess(true)
-              .cacheMode(CacheMode.Online)
               .overScrollMode(OverScrollMode.ALWAYS)
               .width('100%')
               .height('100%')
@@ -45,8 +59,7 @@ export struct WebLogin {
               })
               .onControllerAttached(() => {
                 try {
-                  this.controller.setCustomUserAgent(this.userAgent)
-                  this.controller.loadUrl(`https://music.163.com/#/login/`)
+                  this.loadUrl()
                 } catch (error) {
                   console.error('Login Web Error: ' + error.message)
                 }
@@ -70,6 +83,7 @@ export struct WebLogin {
       .width('100%')
       .backgroundColor($r('app.color.background'))
     }
+    .menus(this.menus)
     .title('登录')
     .backgroundColor($r('app.color.background'))
   }
@@ -79,7 +93,7 @@ export struct WebLogin {
       let cookie = webview.WebCookieManager.fetchCookieSync('https://music.163.com')
       if (await this.checkValidCookie(cookie)) {
         cookie = cookie + '; OS=pc'
-        AppStorage.setOrCreate("cookie",cookie)
+        AppStorage.setOrCreate(StorageConstants.COOKIE,cookie)
         LogUtil.info('Cookie => ' + cookie)
         let result = await getLoginStatus(cookie)
         return result
@@ -144,9 +158,6 @@ export struct WebLogin {
         })
       })
       Row({ space: 10 }) {
-        Button('刷新').onClick(() => {
-          this.controller.refresh()
-        })
         Button('获取登录信息').onClick(async () => {
           let result = await this.getCookie()
           if(result) {

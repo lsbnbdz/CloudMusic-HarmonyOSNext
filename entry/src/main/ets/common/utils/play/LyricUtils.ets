@@ -69,16 +69,18 @@ class LyricUtils {
   async parseLyricArray(lyricArr: string[]): Promise<Array<Lyric>> {
     if (lyricArr.length > 1) {
       return lyricArr.map(item => {
-        const match = item.match(/\[(\d+):(\d+)[.:](\d+)\](.*)/)
+        const match = item.match(/\[(\d+):(\d+)[.:](\d+)(?:-\d+)?\]\s*(.*)/)
         if (match) {
           const minutes = parseInt(match[1], 10) * 60 * 1000
           const seconds = parseInt(match[2], 10) * 1000
-          const milliseconds = parseInt(match[3], 10)
+          const millisecondsPart = match[3]
+          const milliseconds = parseInt(millisecondsPart, 10) * (millisecondsPart.length === 2 ? 10 : 1)
           const content = match[4]?.trim() || ""
           return { time: minutes + seconds + milliseconds, content } as Lyric
         }
         return { time: 0, content: "" }
-      }).filter(lyric => lyric.content)
+      })
+        .filter(lyric => lyric.content)
     }
     return [{ time: 0, content: '暂无歌词' }]
   }

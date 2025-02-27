@@ -3,7 +3,7 @@ import { EmitterConstants } from '../../constants/EmitterConstants'
 import { StorageConstants } from '../../constants/StorageConstants'
 import { PlayQueue } from '../../entities/PlayQueue'
 import { Song, SongClass } from '../../entities/SongsResult'
-import PreferencesUtils from '../app/PreferencesUtils'
+import PreferencesUtils from '../data/PreferencesUtils'
 
 /**
  * 播放列表工具

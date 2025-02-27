@@ -1,6 +1,6 @@
 import { LogUtil, ToastUtil } from "@pura/harmony-utils"
 import { StorageConstants } from "../../constants/StorageConstants"
-import PreferencesUtils from "../../utils/app/PreferencesUtils"
+import PreferencesUtils from "../../utils/data/PreferencesUtils"
 /**
  * 设置项
  */

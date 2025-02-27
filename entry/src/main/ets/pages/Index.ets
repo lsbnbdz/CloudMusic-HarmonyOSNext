@@ -16,7 +16,7 @@ import { UserPlayLists } from '../components/main/UserPlayLists';
 import { Me } from '../components/main/Me';
 import { resourceManager } from '@kit.LocalizationKit';
 import { StorageConstants } from '../common/constants/StorageConstants';
-import PreferencesUtils from '../common/utils/app/PreferencesUtils';
+import PreferencesUtils from '../common/utils/data/PreferencesUtils';
 import { WarrantyDialog } from '../components/dialog/WarrantyDialog';
 
 @Entry

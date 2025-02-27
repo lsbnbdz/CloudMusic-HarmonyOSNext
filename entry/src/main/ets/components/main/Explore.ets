@@ -1,5 +1,5 @@
 import { DialogUtil, LogUtil, ToastUtil} from "@pura/harmony-utils";
-import { RecommendCards, RecommendCards_NotLogged, RecommendCards_Skeleton } from "../cards/RecommendCards";
+import { RecommendCards, RecommendCards_Skeleton } from "../cards/RecommendCards";
 import { Announcement } from "../../common/entities/Announcement";
 import { User, UserClass } from "../../common/entities/User";
 import Constants from "../../common/constants/Constants";
@@ -12,12 +12,12 @@ import { getPlayLists } from "../../api/playListApi";
 
 @Component
 export struct Explore {
-  @StorageLink('UserPlayLists') playLists: Array<PlayList> = []
-  @StorageLink('topList') topList: Array<TopListItem> = []
+  @StorageProp(StorageConstants.IS_LOGGED) @Watch('getPlayLists') isLogged: boolean = false
+  @StorageLink(StorageConstants.USER_PLAYLISTS) playLists: Array<PlayList> = []
+  @StorageLink(StorageConstants.TOPLISTS) topList: Array<TopListItem> = []
+  @StorageProp(StorageConstants.USER) user: User = UserClass
   @StorageProp('bottomRectHeight') bottomRectHeight: number = 0
   @StorageProp('topRectHeight') topRectHeight: number = 0
-  @StorageProp(StorageConstants.IS_LOGGED) @Watch('getPlayLists') isLogged: boolean = false
-  @StorageProp(StorageConstants.USER) user: User = UserClass
   @StorageProp('Announcement') announcement: Announcement = {
     code: -1,
     data: { title:'', content: '' },
@@ -26,116 +26,152 @@ export struct Explore {
   @State isLoading: boolean = false
   @State isLoadingMore: boolean = false
   @State columnsTemplate: string = '1fr'
+  @State isRefreshing: boolean = false
+  @State lastRefreshTime: number = 0
+  private refreshCooldown: number = 5000
   @Consume('pageInfos') pageInfos: NavPathStack
 
   async aboutToAppear(): Promise<void> {
-    if (this.topList.length == 0) {
-      this.isLoading = true
-      try {
-        const toplist = await getTopList()
-        this.topList = toplist
-        this.isLoading = false
+    try {
+      setTimeout(async () => {
+        await this.getTopLists()
         await this.getPlayLists()
-      } catch (e) {
-        LogUtil.error('Error fetching playlists: ', e)
-      } finally {
-        this.isLoading = false
-      }
+      }, 500)
+    } catch (e) {
+      LogUtil.error('Error: ' + e.message)
     }
   }
 
+  private async getTopLists() {
+    if(this.topList.length == 0) {
+      this.isLoading = true
+      const toplist = await getTopList()
+      this.topList = toplist
+      this.isLoading = false
+    }
+    else return
+  }
+
   async getPlayLists() {
-    if(this.isLogged && this.user && this.playLists.length == 0) {
+    if(this.isLogged && this.playLists.length == 0) {
+      this.isLoading = true
+      const playlist = await getPlayLists(0)
+      this.playLists = playlist.playlist
+      this.isLoading = false
+    }
+    else return
+  }
+
+  private async refreshContent() {
+    this.isRefreshing = true
+    const currentTime = new Date().getTime()
+    if (currentTime - this.lastRefreshTime < this.refreshCooldown) {
+      ToastUtil.showToast('操作过于频繁，请5秒后再试')
+    } else {
       try {
-        const playlist = await getPlayLists(0)
-        this.playLists = playlist.playlist
+        const toplist = await getTopList()
+        this.topList = toplist
+        this.lastRefreshTime = currentTime
+        ToastUtil.showToast('刷新成功')
       } catch (e) {
-        ToastUtil.showToast('获取歌单列表失败')
-        LogUtil.error('Error fetching playlists: ', e.message)
+        ToastUtil.showToast('内容刷新失败: ' + e.message)
       }
     }
+    this.isRefreshing = false
   }
 
   build() {
     Column() {
-      Column({ space: 5 }) {
-        if(this.announcement.visible) {
-          this.Announcement()
-        }
-        Grid() {
-          GridItem() {
-            Search({
-              placeholder: '搜索内容',
-              icon: '/resources/base/media/ic_public_search_filled.svg',
-            })
-              .focusable(false)
-              .onClick(() => {
-                this.pageInfos.clear()
-                this.pageInfos.pushPathByName('SearchPage', null, true)
+      Refresh({ refreshing: this.isRefreshing}) {
+        Column({ space: 5 }) {
+          if (this.announcement.visible) {
+            this.Announcement()
+          }
+          Grid() {
+            GridItem() {
+              Search({
+                placeholder: '搜索内容',
+                icon: '/resources/base/media/ic_public_search_filled.svg',
               })
-              .layoutWeight(1)
-          }
-          .columnStart(0)
-          .columnEnd(1)
-          .padding({ left: 20, right: 20 })
-
-          GridItem() {
-            Column({ space: 10 }) {
-              if(this.isLoading) {
-                RecommendCards_Skeleton()
-              } else {
-                if(this.isLogged && this.user) {
-                  RecommendCards()
-                }
-                else { RecommendCards_NotLogged() }
-              }
-            }
-            .width('100%')
-          }
-          .columnStart(0)
-          .columnEnd(1)
-
-          GridItem() {
-            Text(`排行榜`).textStyle(18)
-          }
-          .columnStart(0)
-          .columnEnd(1)
-          .padding({ top: 20 })
-
-          if(this.isLoading) {
-            GridItem() {
-              this.Loading(300)
-            }
-            .columnStart(0)
-            .columnEnd(1)
-          } else {
-            GridItem() {
-              GridRow({ columns: { xs: 2, sm: 3, md: 2, lg: 3, xl: 3 } }) {
-                ForEach(this.topList, (item: TopListItem) => {
-                  GridCol() {
-                    TopListItemCard({ topListItem: item }).padding(Constants.PADDING_EDGE_DEFAULT)
-                  }
+                .clickEffect({ level: ClickEffectLevel.LIGHT, scale: 0.9 })
+                .focusable(false)
+                .onClick(() => {
+                  this.pageInfos.clear()
+                  this.pageInfos.pushPathByName('SearchPage', null, true)
                 })
-              }
+                .layoutWeight(1)
             }
-            .padding({ left: Constants.PADDING_EDGE_DEFAULT, right: Constants.PADDING_EDGE_DEFAULT })
-            .width('100%')
-          }
-
-          GridItem()
-            .height( px2vp(this.bottomRectHeight) + 80 )
             .columnStart(0)
             .columnEnd(1)
+            .padding({ left: 20, right: 20 })
+
+            GridItem() {
+              Column({ space: 10 }) {
+                if (this.isLoading) {
+                  RecommendCards_Skeleton()
+                } else {
+                  RecommendCards({ isLogged: this.isLogged })
+                }
+              }
+              .width('100%')
+            }
+            .columnStart(0)
+            .columnEnd(1)
+
+            GridItem() {
+              Text(`排行榜`).textStyle(18)
+            }
+            .columnStart(0)
+            .columnEnd(1)
+            .padding({ top: 20 })
+
+            if (this.isLoading) {
+              GridItem() {
+                this.Loading(300)
+              }
+              .columnStart(0)
+              .columnEnd(1)
+            } else {
+              GridItem() {
+                GridRow({
+                  columns: {
+                    xs: 2,
+                    sm: 3,
+                    md: 2,
+                    lg: 3,
+                    xl: 3
+                  }
+                }) {
+                  ForEach(this.topList, (item: TopListItem) => {
+                    GridCol() {
+                      TopListItemCard({ topListItem: item }).padding(Constants.PADDING_EDGE_DEFAULT)
+                    }
+                  })
+                }
+              }
+              .padding({ left: Constants.PADDING_EDGE_DEFAULT, right: Constants.PADDING_EDGE_DEFAULT })
+              .width('100%')
+            }
+
+            GridItem()
+              .height(px2vp(this.bottomRectHeight) + 80)
+              .columnStart(0)
+              .columnEnd(1)
+          }
+          .height('100%')
+          .width('100%')
+          .edgeEffect(EdgeEffect.Spring)
+          .scrollBar(BarState.On)
+          .rowsGap(15)
+          .columnsTemplate(this.columnsTemplate)
+          .layoutDirection(GridDirection.Column)
+          .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
         }
-        .height('100%')
-        .width('100%')
-        .edgeEffect(EdgeEffect.Spring)
-        .scrollBar(BarState.On)
-        .rowsGap(15)
-        .columnsTemplate(this.columnsTemplate)
-        .layoutDirection(GridDirection.Column)
-        .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
       }
+      .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
+      .onRefreshing(async () => {
+        await this.refreshContent()
+      })
     }
     .width('100%')
     .height('100%')

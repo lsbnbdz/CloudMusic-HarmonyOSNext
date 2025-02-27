@@ -1,7 +1,7 @@
 import { AbilityConstant, UIAbility, Want } from '@kit.AbilityKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { window } from '@kit.ArkUI';
-import PreferencesUtils from '../common/utils/app/PreferencesUtils';
+import PreferencesUtils from '../common/utils/data/PreferencesUtils';
 import { LogUtil } from '@pura/harmony-utils';
 import { appInit } from '../common/functions/app/appInit';
 import { StorageConstants } from '../common/constants/StorageConstants';

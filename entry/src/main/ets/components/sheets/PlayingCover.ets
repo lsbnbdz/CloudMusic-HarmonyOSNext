@@ -6,7 +6,7 @@ import { LoopModeButton } from "../buttons/play/LoopModeButton"
 import { PlayQueueButton } from "../buttons/play/PlayQueueButton"
 import { DownloadDialog } from "../dialog/DownloadDialog"
 import { LyricComponent } from "../play/LyricComponent"
-import { AVCastPicker } from "@kit.AVSessionKit"
+import { AVCastPicker, AVCastPickerStyle } from "@kit.AVSessionKit"
 import { TimerButton } from "../buttons/play/TimerButton"
 import { StorageConstants } from "../../common/constants/StorageConstants"
 import Constants from "../../common/constants/Constants"
@@ -107,10 +107,11 @@ export struct PlayingCover {
          * AVCastPicker
          */
         Column() {
-          AVCastPicker({ normalColor: Color.White })
+          AVCastPicker({ normalColor: Color.White, pickerStyle: AVCastPickerStyle.STYLE_MENU })
             .width(25)
             .height(25)
             .backgroundColor(Color.Transparent)
+            .opacity(1)
         }
         .width(30)
         .height(30)
@@ -124,7 +125,7 @@ export struct PlayingCover {
            * Download
            */
           Column() {
-            Image($r('app.media.ic_public_cloud_download'))
+            Image($r('app.media.ic_public_folder'))
               .fillColor(Color.White)
               .width(25)
               .draggable(false)
@@ -238,37 +239,23 @@ export struct PlayingCover {
   @Builder
   PlayButton() {
     // 上一首
-    Button() {
-      Image($r('app.media.ic_public_play_last')).buttonImgStyle()
-    }
-    .backgroundColor(Color.Transparent)
+    Image($r('app.media.ic_public_play_last')).buttonImgStyle()
     .onClick(() => {
       playPre()
     })
 
     // 暂停、继续
-    if (!this.isPaused) {
-      Button() {
-        Image($r('app.media.ic_public_pause')).buttonImgStyle()
-      }
-      .backgroundColor(Color.Transparent)
+    Image(!this.isPaused ? $r('app.media.ic_public_pause') : $r('app.media.ic_play_fill')).buttonImgStyle()
       .onClick(() => {
-        pauseMusic()
+        if(this.isPaused) {
+          resumeMusic()
+        } else {
+          pauseMusic()
+        }
       })
-    } else {
-      Button() {
-        Image($r('app.media.ic_play_fill')).buttonImgStyle()
-      }
-      .backgroundColor(Color.Transparent)
-      .onClick(() => {
-        resumeMusic()
-      })
-    }
+
     // 下一首
-    Button() {
-      Image($r('app.media.ic_public_play_next')).buttonImgStyle()
-    }
-    .backgroundColor(Color.Transparent)
+    Image($r('app.media.ic_public_play_next')).buttonImgStyle()
     .onClick(() => {
       playNext()
     })
@@ -483,6 +470,7 @@ export struct PlayingCover {
 }
 
 @Extend(Image) function buttonImgStyle() {
+  .clickEffect({ level: ClickEffectLevel.LIGHT, scale: 0.8 })
   .width(50)
   .fillColor(Color.White)
   .draggable(false)

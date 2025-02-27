@@ -2,7 +2,7 @@ import { LogUtil } from "@pura/harmony-utils"
 import { User } from "../common/entities/User"
 import { getApiUrl } from "../common/functions/commonFunction"
 import { HttpRequest } from "../common/utils/request/HttpRequestUtils"
-import PreferencesUtils from "../common/utils/app/PreferencesUtils"
+import PreferencesUtils from "../common/utils/data/PreferencesUtils"
 import { StorageConstants } from "../common/constants/StorageConstants"
 
 const TAG = '[loginApi] '
@@ -20,8 +20,8 @@ export async function getLoginStatus(cookie: string): Promise<boolean> {
     const user: User = data.result as User
     LogUtil.info(TAG + 'login status result: ' + JSON.stringify(data.result))
     if (user.data.account.id) {
-      PreferencesUtils.putPreferenceValue(userPref, 'user', user)
-      PreferencesUtils.putPreferenceValue(userPref, 'cookie', cookie)
+      PreferencesUtils.putPreferenceValue(userPref, StorageConstants.USER, user)
+      PreferencesUtils.putPreferenceValue(userPref, StorageConstants.COOKIE, cookie)
       AppStorage.setOrCreate(StorageConstants.VIP_TYPE, user.data.account.vipType)
       AppStorage.setOrCreate(StorageConstants.VALID_COOKIE, true)
       AppStorage.setOrCreate(StorageConstants.USER, user)
@@ -29,8 +29,13 @@ export async function getLoginStatus(cookie: string): Promise<boolean> {
       LogUtil.info(TAG + '获取登录状态成功: 已登录')
       return true
     } else {
+      await PreferencesUtils.delPreferenceValue(StorageConstants.USER_PREF, StorageConstants.USER)
+      await PreferencesUtils.delPreferenceValue(StorageConstants.USER_PREF, StorageConstants.COOKIE)
+      await PreferencesUtils.delPreferenceValue(StorageConstants.USER_PREF, StorageConstants.USER_PLAYLISTS)
       AppStorage.setOrCreate(StorageConstants.VALID_COOKIE, false)
+      AppStorage.setOrCreate(StorageConstants.COOKIE, '')
       AppStorage.setOrCreate(StorageConstants.IS_LOGGED, false)
+      AppStorage.setOrCreate(StorageConstants.USER_PLAYLISTS, [])
       LogUtil.info(TAG + '获取登录状态成功: 未登录')
       return false
     }
@@ -47,11 +52,13 @@ export async function logOut(): Promise<boolean> {
   try {
     let data = await request.Request()
     if(data.responseCode == 200) {
-      await PreferencesUtils.delPreferenceValue(StorageConstants.USER_PREF, 'user')
-      await PreferencesUtils.delPreferenceValue(StorageConstants.USER_PREF, 'cookie')
+      await PreferencesUtils.delPreferenceValue(StorageConstants.USER_PREF, StorageConstants.USER)
+      await PreferencesUtils.delPreferenceValue(StorageConstants.USER_PREF, StorageConstants.COOKIE)
+      await PreferencesUtils.delPreferenceValue(StorageConstants.USER_PREF, StorageConstants.USER_PLAYLISTS)
       AppStorage.setOrCreate(StorageConstants.VALID_COOKIE, false)
       AppStorage.setOrCreate(StorageConstants.COOKIE, '')
       AppStorage.setOrCreate(StorageConstants.IS_LOGGED, false)
+      AppStorage.setOrCreate(StorageConstants.USER_PLAYLISTS, [])
       return true
     } else {
       return false

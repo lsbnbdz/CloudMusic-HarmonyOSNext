@@ -1,5 +1,6 @@
 import { LogUtil, ToastUtil } from "@pura/harmony-utils"
 import { getPlayLists, PlayListOperation } from "../../api/playListApi"
+import { StorageConstants } from "../../common/constants/StorageConstants"
 import { PlayList } from "../../common/entities/PlayList"
 import { Song } from "../../common/entities/SongsResult"
 import { User, UserClass } from "../../common/entities/User"
@@ -15,22 +16,23 @@ const TAG = '[PlayListAddSheet] '
 export struct PlayListAddSheet {
   @StorageProp('currentQueueIndex') currentQueueIndex: number = 0
   @StorageProp('bottomRectHeight') bottomRectHeight: number = 0
-  @StorageProp('User') user: User = UserClass
+  @StorageProp(StorageConstants.USER) user: User = UserClass
   @State isLoading: boolean = false
-  @State playLists: Array<PlayList> = new Array()
+  @StorageLink(StorageConstants.USER_PLAYLISTS) playLists: Array<PlayList> = []
   @State songId: number = -1
   @Link isShow: boolean
 
   async aboutToAppear(): Promise<void> {
     this.isLoading = true
     try {
-      const result = await getPlayLists(0)
-      this.playLists = result.playlist
-      setTimeout(() => {
-        this.isLoading = false
-      }, 100)
+      if(this.playLists.length == 0) {
+        const result = await getPlayLists(0)
+        this.playLists = result.playlist
+      }
     } catch (e) {
       LogUtil.error(TAG + 'Error fetching playlists: ', e)
+    } finally {
+      this.isLoading = false
     }
   }
 

@@ -4,7 +4,7 @@ import { BottomBarComponent } from '../components/play/BottomBarComponent';
 import Constants from '../common/constants/Constants';
 import { resourceManager } from '@kit.LocalizationKit';
 import { StorageConstants } from '../common/constants/StorageConstants';
-import { LogUtil, ToastUtil } from '@pura/harmony-utils';
+import { DialogUtil, LogUtil, PickerUtil, ToastUtil } from '@pura/harmony-utils';
 
 /**
  * 缓存管理页
@@ -21,13 +21,45 @@ export struct CachedPage {
   @State fileList: string[] = []
   @State filteredList: Array<string> = new Array()
 
-  menus: NavigationMenuItem[] = [{
-    value: '搜索',
-    icon: $r('app.media.ic_public_search_filled'),
-    action: () => {
-      this.getUIContext().getFocusController().requestFocus('search')
+  menus: NavigationMenuItem[] = [
+    {
+      value: 'Search',
+      icon: $r('app.media.ic_public_search_filled'),
+      action: () => {
+        this.getUIContext().getFocusController().requestFocus('search')
+      }
+    },
+    {
+      value: 'Upload',
+      icon: $r('app.media.ic_public_upload_filled'),
+      action: () => {
+        PickerUtil.selectDocument({
+          maxSelectNumber: 9,
+          fileSuffixFilters: ['音频 | .mp3,.flac']
+        }).then(async (uris) => {
+          let result = await FileUtils.saveFilesToDirectory(uris)
+          if(result) {
+            ToastUtil.showToast('上传成功')
+            this.fileList = await FileUtils.getFileName()
+          }
+        })
+      }
+    },
+    {
+      value: 'Helper',
+      icon: $r('app.media.ic_public_help'),
+      action: () => {
+        DialogUtil.showConfirmDialog({
+          title: '上传文件',
+          message: '支持上传本机音频文件至缓存目录\n' +
+            '支持格式为.mp3 .flac\n\n' +
+            '文件名格式：歌手 - 歌名.mp3\n\n' +
+            '文件名格式不正确会导致无法识别\n' +
+            '在线播放时，将自动匹配文件名调取本地文件进行播放'
+        })
+      }
     }
-  }]
+  ]
 
   async aboutToAppear(): Promise<void> {
     this.fileList = await FileUtils.getFileName()

@@ -2,13 +2,15 @@ import { AppUtil, LogUtil, ToastUtil } from "@pura/harmony-utils"
 import { getAnnouncement, getPubCookie } from "../../../api/chenlvinApi"
 import { Song, SongClass } from "../../entities/SongsResult"
 import PlayQueueUtils from "../../utils/play/PlayQueueUtils"
-import PreferencesUtils from "../../utils/app/PreferencesUtils"
+import PreferencesUtils from "../../utils/data/PreferencesUtils"
 import { StorageConstants } from "../../constants/StorageConstants"
 import { notificationManager } from "@kit.NotificationKit"
 import { resourceManager } from "@kit.LocalizationKit"
 import { initSettings } from "./settings"
 import { getLoginStatus } from "../../../api/loginApi"
-import { WarrantyDialog } from "../../../components/dialog/WarrantyDialog"
+import { PlayList } from "../../entities/PlayList"
+import { TopListItem } from "../../entities/TopList"
+import { getLikeList } from "../../../api/songApi"
 
 /**
  * App初始化
@@ -16,10 +18,10 @@ import { WarrantyDialog } from "../../../components/dialog/WarrantyDialog"
 const TAG = '[appInit] '
 
 export async function appInit() {
+  initBasicInfo()
   await initSettings()
   initUserInfo()
   initApp()
-  initBasicInfo()
   initPlayQueue()
   audioPlayerInit()
   loadSavedSong()
@@ -36,6 +38,7 @@ async function initUserInfo() {
   const cookie = await PreferencesUtils.getPreferenceValue<string>(StorageConstants.USER_PREF, 'cookie', '')
   AppStorage.setOrCreate(StorageConstants.COOKIE, cookie)
   getPubCookie()
+  getLikeList()
   let isLogged = await getLoginStatus(cookie)
   if(!isLogged && cookie) {
     ToastUtil.showToast('登录状态失效')
@@ -43,15 +46,25 @@ async function initUserInfo() {
 }
 
 async function initBasicInfo() {
-  let empty: string[] = []
-  AppStorage.setOrCreate(StorageConstants.USER_LIKELIST, empty)
   let deviceType = await getDeviceTypeInfo()
   AppStorage.setOrCreate(StorageConstants.DEVICE_TYPE, deviceType)
+
+  let userLikeList: string[] = []
+  AppStorage.setOrCreate(StorageConstants.USER_LIKELIST, userLikeList)
+
+  let userPlayLists = await PreferencesUtils.getPreferenceValue<PlayList[]>(StorageConstants.USER_PREF, StorageConstants.USER_PLAYLISTS, [])
+  AppStorage.setOrCreate(StorageConstants.USER_PLAYLISTS, userPlayLists)
+
+  let topLists = await PreferencesUtils.getPreferenceValue<TopListItem[]>(StorageConstants.USER_PREF, StorageConstants.TOPLISTS, [])
+  AppStorage.setOrCreate(StorageConstants.TOPLISTS, topLists)
+
+  let searchHistory = await PreferencesUtils.getPreferenceValue<string[]>(StorageConstants.USER_PREF, StorageConstants.SEARCH_HISTORY, [])
+  AppStorage.setOrCreate(StorageConstants.SEARCH_HISTORY, searchHistory)
 }
 
 async function audioPlayerInit() {
   try {
-    AppStorage.setOrCreate('player-isplaying',false)
+    AppStorage.setOrCreate(StorageConstants.IS_PLAYING,false)
   } catch (e) {
     LogUtil.error(JSON.stringify(e))
   }

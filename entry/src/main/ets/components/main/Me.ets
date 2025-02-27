@@ -3,12 +3,13 @@ import { logOut } from "../../api/loginApi"
 import Constants from "../../common/constants/Constants"
 import { StorageConstants } from "../../common/constants/StorageConstants"
 import { User, UserClass } from "../../common/entities/User"
+import PreferencesUtils from "../../common/utils/data/PreferencesUtils"
 import { CircleImageButton } from "../buttons/CircleButton"
 
 @Component
 export struct Me {
   @StorageProp(StorageConstants.IS_LOGGED) isLogged: boolean = false
-  @StorageProp('User') user: User = UserClass
+  @StorageProp(StorageConstants.USER) user: User = UserClass
   @Consume('pageInfos') pageInfos: NavPathStack
 
   build() {

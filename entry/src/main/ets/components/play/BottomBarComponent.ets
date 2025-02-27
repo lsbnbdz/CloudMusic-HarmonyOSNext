@@ -54,6 +54,7 @@ export struct BottomBarComponent {
     .backgroundColor($r('app.color.main'))
     .opacity(this.isShow ? this.componentOpacity : this.componentOpacity)
     .height(80)
+    .clickEffect({ level: ClickEffectLevel.LIGHT, scale: 0.9 })
     .onClick(() => {
       if(this.isPlaying) {
         this.isShow = true

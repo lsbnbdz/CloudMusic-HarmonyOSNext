@@ -1,4 +1,4 @@
-import { EmitterUtil, LogUtil, ToastUtil } from "@pura/harmony-utils"
+import { LogUtil, ToastUtil } from "@pura/harmony-utils"
 import { PlayList, PlayListOperationRes, PlayListSearchResult } from "../common/entities/PlayList"
 import { CloudSongs, DailyListSongs, PlayListSongs } from "../common/entities/PlayListSongs"
 import { PlayQueue } from "../common/entities/PlayQueue"
@@ -7,7 +7,7 @@ import { User, UserClass } from "../common/entities/User"
 import { getApiUrl, getArtists } from "../common/functions/commonFunction"
 import { HttpRequest } from "../common/utils/request/HttpRequestUtils"
 import PlayQueueUtils from "../common/utils/play/PlayQueueUtils"
-import PreferencesUtils from "../common/utils/app/PreferencesUtils"
+import PreferencesUtils from "../common/utils/data/PreferencesUtils"
 import { JSON } from "@kit.ArkTS"
 import { StorageConstants } from "../common/constants/StorageConstants"
 
@@ -39,6 +39,7 @@ export async function getPlayLists(offset:number): Promise<PlayListsResult> {
     const dataGot:PlayListsResult = data.result as PlayListsResult
     hasMore = dataGot.more
     list = dataGot.playlist
+    PreferencesUtils.putPreferenceValue(StorageConstants.USER_PREF, StorageConstants.USER_PLAYLISTS, list)
   })
 
   const result: PlayListsResult = {

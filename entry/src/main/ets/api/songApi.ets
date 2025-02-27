@@ -7,8 +7,10 @@ import { SongDetail } from "../common/entities/SongDetail"
 import { QualityType } from "../common/entities/SongDownload"
 import { SongPlay } from "../common/entities/SongPlay"
 import { Song, SongsData } from "../common/entities/SongsResult"
+import { User } from "../common/entities/User"
 import { getApiUrl, getArtists, isUsePubCookie } from "../common/functions/commonFunction"
 import { playQueue } from "../common/functions/play/playControl"
+import PreferencesUtils from "../common/utils/data/PreferencesUtils"
 import PlayQueueUtils from "../common/utils/play/PlayQueueUtils"
 import { HttpRequest } from "../common/utils/request/HttpRequestUtils"
 import { DailySongRes } from "./playListApi"
@@ -136,18 +138,22 @@ export async function getDailySongs(useCookie: boolean = true): Promise<Array<Da
  * @param uid
  * @returns
  */
-export async function getLikeList(uid: number): Promise<string[]> {
-
+export async function getLikeList(): Promise<string[]> {
+  let user = await AppStorage.get(StorageConstants.USER) as User
   let list:Array<string> = []
   const rootUrl = await getApiUrl()
-  const url: string = `${rootUrl}/likelist?uid=${uid}&timestamp=${new Date().getTime()}`
+  const url: string = `${rootUrl}/likelist?uid=${user.data.account.id}&timestamp=${new Date().getTime()}`
   const request = new HttpRequest(url)
-  await request.Request().then((data) => {
-    const dataGot:string[] = data.result['ids'] as string[]
+  try {
+    const data = await request.RequestInStream()
+    const dataGot: string[] = data.result['ids'] as string[]
     list = dataGot
-  })
-  AppStorage.setOrCreate(StorageConstants.USER_LIKELIST, list)
-  return list
+  } catch (e) {
+
+  } finally {
+    AppStorage.setOrCreate(StorageConstants.USER_LIKELIST, list)
+    return list
+  }
 }
 
 /**

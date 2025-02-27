@@ -3,7 +3,7 @@ import { CircleImageButton } from '../buttons/CircleButton'
 import { ExplainButton } from '../buttons/ExplainButton'
 import { CustomApiUrlSheet } from '../sheets/CustomApiUrlSheet'
 import Constants from '../../common/constants/Constants'
-import PreferencesUtils from '../../common/utils/app/PreferencesUtils'
+import PreferencesUtils from '../../common/utils/data/PreferencesUtils'
 
 /**
  * 自定义API地址

@@ -6,7 +6,7 @@ import {getSongPicUrl, getSongUrl } from "../../../api/songApi";
 import { fetchMetadata, fetchSongInfo, sanitizeFileName } from "../commonFunction";
 import PlayQueueUtils from "../../utils/play/PlayQueueUtils";
 import AVSessionUtils from "../../utils/play/AVSessionUtils";
-import PreferencesUtils from "../../utils/app/PreferencesUtils";
+import PreferencesUtils from "../../utils/data/PreferencesUtils";
 import { fileIo } from "@kit.CoreFileKit";
 import { SongPlay } from "../../entities/SongPlay";
 import LyricUtils from "../../utils/play/LyricUtils";
@@ -22,7 +22,7 @@ import { isThisSongLiked } from "./songLike";
 const TAG = '[playerControl] '
 const pref = StorageConstants.QUEUE_PREF
 
-export async function playMusicByUrl(song:Song,artists:string,isLogged:boolean) {
+export async function playMusicByUrl(song: Song, artists: string, isLogged: boolean) {
   try {
     isThisSongLiked(song.id)
     const quality:number | undefined = await AppStorage.get(StorageConstants.PLAY_QUALITY)
@@ -95,19 +95,19 @@ export async function playMusicWithFile(fileName:string) {
 
 export async function stopMusic() {
   AudioPlayUtils.stop().then(() => {
-    AppStorage.setOrCreate('player-isplaying',false)
+    AppStorage.setOrCreate(StorageConstants.IS_PLAYING, false)
     AudioPlayUtils.mPlayer.release()
   })
 }
 
 export async function pauseMusic() {
   AudioPlayUtils.pause()
-  AppStorage.setOrCreate('player-ispaused',true)
+  AppStorage.setOrCreate(StorageConstants.IS_PAUSED, true)
 }
 
 export async function resumeMusic() {
   AudioPlayUtils.resume()
-  AppStorage.setOrCreate('player-ispaused',false)
+  AppStorage.setOrCreate(StorageConstants.IS_PAUSED, false)
 }
 
 export async function seekMusic(time: number) {
@@ -115,14 +115,14 @@ export async function seekMusic(time: number) {
   AudioPlayUtils.seek(time)
 }
 
-export async function playQueue(index:number) {
+export async function playQueue(index: number) {
   const queue = PlayQueueUtils.getQueue()
   const playqueue = queue[index]
   PlayQueueUtils.setIndex(index)
-  const isLogged:boolean | undefined = AppStorage.get(StorageConstants.IS_LOGGED)
   if(playqueue.playmode == 0) { // Play with file
     playMusicWithFile(playqueue.fileName)
   } else { // Play with url
+    const isLogged: boolean | undefined = AppStorage.get(StorageConstants.IS_LOGGED)
     playMusicByUrl(playqueue.song, playqueue.artists, isLogged ? true : false)
   }
 }
@@ -147,7 +147,7 @@ export async function playPre() {
  * 播放下一首
  */
 export async function playNext() {
-  let isLogged:boolean | undefined = await AppStorage.get('isLogged')
+  let isLogged:boolean | undefined = await AppStorage.get(StorageConstants.IS_LOGGED)
   let cycleMode = await getCycleMode()
   if(cycleMode == 3) {
     let queueLength = PlayQueueUtils.getQueueLength()

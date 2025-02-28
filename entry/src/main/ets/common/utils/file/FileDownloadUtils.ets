@@ -53,7 +53,7 @@ class FileDownloadUtils {
         }).catch((err: BusinessError) => {
           ToastUtil.showToast('缓存时出错: ' + err.message)
           LogUtil.error(TAG + `缓存时出错: ${JSON.stringify(err)}`)
-          FileUtils.deleteFile(`${artists} - ${song.name}.${songDownload.data[0].type}`)
+          FileUtils.deleteFile([`${artists} - ${song.name}.${songDownload.data[0].type}`])
         });
       } catch (error) {
         let err: BusinessError = error as BusinessError

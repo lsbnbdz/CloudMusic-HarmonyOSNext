@@ -18,7 +18,7 @@ import { getLikeList } from "../../../api/songApi"
 const TAG = '[appInit] '
 
 export async function appInit() {
-  initBasicInfo()
+  initLocalData()
   await initSettings()
   initUserInfo()
   initApp()
@@ -45,7 +45,7 @@ async function initUserInfo() {
   }
 }
 
-async function initBasicInfo() {
+async function initLocalData() {
   let deviceType = await getDeviceTypeInfo()
   AppStorage.setOrCreate(StorageConstants.DEVICE_TYPE, deviceType)
 

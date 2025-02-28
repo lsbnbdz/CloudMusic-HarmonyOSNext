@@ -20,6 +20,10 @@ export struct CachedPage {
   @State searchKeyword: string = ''
   @State fileList: string[] = []
   @State filteredList: Array<string> = new Array()
+  @State isSorted: boolean = false
+  @State isSelecting: boolean = false
+  @State selectedFiles: string[] = []
+  private originalOrderList: string[] = []
 
   menus: NavigationMenuItem[] = [
     {
@@ -33,16 +37,7 @@ export struct CachedPage {
       value: 'Upload',
       icon: $r('app.media.ic_public_upload_filled'),
       action: () => {
-        PickerUtil.selectDocument({
-          maxSelectNumber: 9,
-          fileSuffixFilters: ['音频 | .mp3,.flac']
-        }).then(async (uris) => {
-          let result = await FileUtils.saveFilesToDirectory(uris)
-          if(result) {
-            ToastUtil.showToast('上传成功')
-            this.fileList = await FileUtils.getFileName()
-          }
-        })
+        this.handleUpload()
       }
     },
     {
@@ -62,8 +57,7 @@ export struct CachedPage {
   ]
 
   async aboutToAppear(): Promise<void> {
-    this.fileList = await FileUtils.getFileName()
-    this.fileList.reverse()
+    this.refreshFileList()
   }
 
   build() {
@@ -95,11 +89,55 @@ export struct CachedPage {
               GridItem() {
                 if (this.fileList.length > 0) {
                   Row() {
-                    Text(`共 ${this.fileList.length} 首歌曲 (点击排序)`)
+                    Text(this.isSelecting ? `已选 ${this.selectedFiles.length} 项` : `共 ${this.fileList.length} 首歌曲`)
                       .fontSize(Constants.FONT_SIZE_COMMON)
-                      .onClick(() => {
-                        this.fileList.sort()
-                      })
+                    Row({ space: 20 }) {
+                      if(!this.isSelecting) {
+                        Image($r('app.media.ic_files_name_drive'))
+                          .width(Constants.SIZE_ICON_BUTTON_BAR)
+                          .aspectRatio(1)
+                          .fillColor(this.isSorted ? $r('app.color.blue') : Color.Gray)
+                          .onClick(() => {
+                            this.isSorted = !this.isSorted
+                            this.fileList = this.getSortedList(this.fileList)
+                            if (this.searchKeyword) {
+                              this.filteredList = this.getSortedList(this.filteredList)
+                            }
+                          })
+                      } else {
+                        if(this.selectedFiles.length > 0) {
+                          Image($r('app.media.ic_public_delete'))
+                            .width(Constants.SIZE_ICON_BUTTON_BAR)
+                            .aspectRatio(1)
+                            .fillColor(Color.Gray)
+                            .onClick(() => {
+                              this.handleDelete()
+                            })
+                          Image($r('app.media.ic_public_folder'))
+                            .width(Constants.SIZE_ICON_BUTTON_BAR)
+                            .aspectRatio(1)
+                            .fillColor(Color.Gray)
+                            .onClick(() => {
+                              FileUtils.saveFile(this.selectedFiles)
+                            })
+                        }
+                        CheckboxGroup({ group: 'fileCard' })
+                          .width(Constants.SIZE_ICON_BUTTON_BAR - 5)
+                          .height(Constants.SIZE_ICON_BUTTON_BAR - 5)
+                      }
+
+                      Image($r('app.media.ic_gallery_material_select_checkbox'))
+                        .width(Constants.SIZE_ICON_BUTTON_BAR)
+                        .aspectRatio(1)
+                        .fillColor(this.isSelecting ? $r('app.color.blue') : Color.Gray)
+                        .onClick(() => {
+                          animateTo({ duration: 100, curve: Curve.EaseInOut }, () => {
+                            this.isSelecting = !this.isSelecting
+                            this.selectedFiles = []
+                          })
+                        })
+                    }
+                    .height(30)
                   }
                   .justifyContent(FlexAlign.SpaceBetween)
                   .width('100%')
@@ -111,10 +149,23 @@ export struct CachedPage {
 
               GridItem() {
                 GridRow({ columns: { xs: 1, sm: 1, md: 1, lg: 2, xl: 2 } }) {
-                  ForEach(this.searchKeyword ? this.filteredList : this.fileList, (item: string, index: number) => {
+                  ForEach(this.searchKeyword ?
+                  this.getSortedList(this.filteredList) :
+                  this.getSortedList(this.fileList),
+                    (item: string, index: number) => {
                     GridCol() {
-                      FileCard({ fileName: item, list: this.fileList })
-                        .padding({ bottom: Constants.PADDING_EDGE_DEFAULT })
+                      Row({ space: 5 }) {
+                        FileCard({
+                          fileName: item,
+                          list: this.fileList
+                        })
+                          .layoutWeight(1)
+                        if(this.isSelecting) {
+                          this.CardCheckBox(item)
+                        }
+                      }
+                      .width('100%')
+                      .padding({ bottom: Constants.PADDING_EDGE_DEFAULT })
                     }
                   })
                 }
@@ -157,6 +208,7 @@ export struct CachedPage {
     .menus(this.menus)
     .backgroundColor($r('app.color.background'))
   }
+
   private handelSearch() {
     try {
       if (this.searchKeyword.trim() === '') {
@@ -164,12 +216,75 @@ export struct CachedPage {
         return
       }
       const keyword = this.searchKeyword.trim().toLowerCase()
-      this.filteredList = this.fileList.filter(string =>
-      string.toLowerCase().includes(keyword)
+      this.filteredList = this.getSortedList( // 保持当前排序状态
+        this.fileList.filter(string =>
+        string.toLowerCase().includes(keyword))
       )
     } catch (e) {
       ToastUtil.showToast('搜索时出错')
       LogUtil.error(TAG + 'Error while handelSearch: ' + e.message)
     }
+  }
+
+  private async refreshFileList() {
+    this.fileList = await FileUtils.getFileName()
+    this.originalOrderList = [...this.fileList]
+    this.isSelecting = false
+    this.selectedFiles = []
+  }
+
+  private async handleUpload() {
+    PickerUtil.selectDocument({
+      maxSelectNumber: 99,
+      fileSuffixFilters: ['音频 | .mp3,.flac']
+    }).then((uris) => {
+      FileUtils.saveFilesToDirectory(uris).then(async (result) => {
+        if(result) {
+          ToastUtil.showToast('上传成功')
+          await this.refreshFileList()
+        }
+      })
+    })
+  }
+
+  private getSortedList(list: string[]): string[] {
+    return this.isSorted ?
+    [...list].sort((a, b) => a.localeCompare(b)) :
+    this.originalOrderList.filter(f => list.includes(f))
+  }
+
+  private handleDelete() {
+    DialogUtil.showPrimaryDialog({
+      title: '确认',
+      message: `是否删除选中的 ${this.selectedFiles.length} 个文件?`,
+      primaryButton: "取消",
+      secondaryButton: {
+        value: '删除',
+        fontColor: Color.Red,
+        action: async () => {
+          FileUtils.deleteFile(this.selectedFiles).then(async () => {
+            await this.refreshFileList()
+          })
+        }
+      }
+    })
+  }
+
+  @Builder CardCheckBox(name: string) {
+    Checkbox({ group: 'fileCard' })
+      .shape(CheckBoxShape.ROUNDED_SQUARE)
+      .width(Constants.SIZE_ICON_BUTTON_BAR)
+      .aspectRatio(1)
+      .onChange((value) => {
+        if(value) {
+          animateTo({ duration: 100, curve: Curve.Ease }, () => {
+            this.selectedFiles.push(name)
+          })
+        } else {
+          animateTo({ duration: 100, curve: Curve.Ease }, () => {
+            this.selectedFiles = this.selectedFiles.filter(item => item !== name)
+          })
+        }
+      })
   }
 }

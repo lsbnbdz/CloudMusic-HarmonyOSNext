@@ -39,6 +39,7 @@ export async function getPlayLists(offset:number): Promise<PlayListsResult> {
     const dataGot:PlayListsResult = data.result as PlayListsResult
     hasMore = dataGot.more
     list = dataGot.playlist
+    AppStorage.setOrCreate(StorageConstants.USER_PLAYLISTS, list)
     PreferencesUtils.putPreferenceValue(StorageConstants.USER_PREF, StorageConstants.USER_PLAYLISTS, list)
   })
 

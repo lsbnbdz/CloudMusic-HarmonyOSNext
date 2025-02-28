@@ -31,7 +31,7 @@ export async function getLoginStatus(cookie: string): Promise<boolean> {
     } else {
       await PreferencesUtils.delPreferenceValue(StorageConstants.USER_PREF, StorageConstants.USER)
       await PreferencesUtils.delPreferenceValue(StorageConstants.USER_PREF, StorageConstants.COOKIE)
-      await PreferencesUtils.delPreferenceValue(StorageConstants.USER_PREF, StorageConstants.USER_PLAYLISTS)
+      // await PreferencesUtils.delPreferenceValue(StorageConstants.USER_PREF, StorageConstants.USER_PLAYLISTS)
       AppStorage.setOrCreate(StorageConstants.VALID_COOKIE, false)
       AppStorage.setOrCreate(StorageConstants.COOKIE, '')
       AppStorage.setOrCreate(StorageConstants.IS_LOGGED, false)

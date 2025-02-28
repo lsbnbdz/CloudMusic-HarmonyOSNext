@@ -43,13 +43,20 @@ class FileUtils {
     return ''
   }
 
-  async deleteFile(fileName:string) {
+  async deleteFile(fileNames: string[]) {
     try {
-      await FileUtil.unlink(this.filesDir + `/${fileName}`)
-      LogUtil.info(TAG + `成功删除文件: ${fileName}`)
-      ToastUtil.showToast(`成功删除文件: ${fileName}`)
+      let successCount = 0
+      for (const fileName of fileNames) {
+        try {
+          await FileUtil.unlink(this.filesDir + `/${fileName}`)
+          successCount++
+        } catch (e) {
+          LogUtil.error(TAG + `删除文件 ${fileName} 失败: ${JSON.stringify(e)}`)
+        }
+      }
+      ToastUtil.showToast(`成功删除 ${successCount}/${fileNames.length} 个文件`)
     } catch (e) {
-      LogUtil.error(TAG + `Delete file error: ${JSON.stringify(e)}`)
+      LogUtil.error(TAG + `Delete files error: ${JSON.stringify(e)}`)
     }
   }
 
@@ -73,23 +80,26 @@ class FileUtils {
     }
   }
 
-  async saveFile(fileName:string) {
+  async saveFile(fileNames: string[]) {
     try {
-      let thisFilePath = this.filesDir + `/${fileName}`
-      let saveOption = new picker.DocumentSaveOptions()
-      saveOption.newFileNames = [fileName]
       let filePicker = new picker.DocumentViewPicker()
+      let saveOption = new picker.DocumentSaveOptions()
+      saveOption.newFileNames = fileNames
+
       filePicker.save(saveOption).then((uris) => {
-        let uri = uris[0]
-        let descFile = fs.openSync(uri, fs.OpenMode.READ_WRITE | fs.OpenMode.CREATE)
-        fs.copyFile(thisFilePath, descFile.fd).then(() => {
-          fs.closeSync(descFile.fd)
-          ToastUtil.showToast('保存文件成功')
-        }).catch((err: Error) => {
-          LogUtil.error(TAG + '拷贝文件失败: ' + err.message)
-        }).catch((err: Error) => {
-          LogUtil.error(TAG + 'File Picker 出错: ' + err.message)
+        uris.forEach(async (uri, index) => {
+          try {
+            let srcPath = this.filesDir + `/${fileNames[index]}`
+            let descFile = fs.openSync(uri, fs.OpenMode.READ_WRITE | fs.OpenMode.CREATE)
+            await fs.copyFile(srcPath, descFile.fd)
+            fs.closeSync(descFile.fd)
+          } catch (err) {
+            LogUtil.error(TAG + `文件 ${fileNames[index]} 保存失败: ${err.message}`)
+          }
         })
+        ToastUtil.showToast(`成功保存 ${uris.length} 个文件`)
+      }).catch((err: Error) => {
+        LogUtil.error(TAG + 'File Picker 出错: ' + err.message)
       })
     } catch (e) {
       LogUtil.error(TAG + '保存文件出错: ' + e.message())
@@ -125,7 +135,7 @@ class FileUtils {
     }
   }
 
-  async saveFilesToDirectory(uris: string[]): Promise<boolean> {
+  async saveFilesToDirectory(uris: string[]) {
     let result: boolean = false
     try {
       for (const uri of uris) {

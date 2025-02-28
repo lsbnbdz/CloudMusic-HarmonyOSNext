@@ -64,7 +64,7 @@ export struct FileCard {
 
       MenuItem(this.MenuItem($r('app.media.ic_public_folder_filled'), '保存至本地'))
         .onClick(() => {
-          FileUtils.saveFile(this.fileName)
+          FileUtils.saveFile([this.fileName])
         })
 
       MenuItem(this.MenuItem($r('app.media.ic_public_app_filled'), '文件预览'))
@@ -83,7 +83,7 @@ export struct FileCard {
               fontColor: Color.Red,
               action: async () => {
                 try {
-                  await FileUtils.deleteFile(this.fileName).then(async () => {
+                  await FileUtils.deleteFile([this.fileName]).then(async () => {
                     this.list = await FileUtils.getFileName()
                   })
                 } catch (e) {

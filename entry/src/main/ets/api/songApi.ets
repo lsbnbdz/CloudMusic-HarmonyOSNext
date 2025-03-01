@@ -65,11 +65,9 @@ export async function getSongUrl(songId: number, quality:QualityType, isLogged:b
   const rootUrl = await getApiUrl()
   const url:string = `${rootUrl}/song/url/v1?id=${songId}&level=${quality}`
   let usePubCookie:boolean = false
-  if(isLogged) { usePubCookie = await isUsePubCookie() }
   const request = new HttpRequest(url)
   try {
-    const data = usePubCookie ? await request.RequestWithVipType() : await request.Request()
-    LogUtil.info(TAG + JSON.stringify(data.result))
+    const data = await request.Request()
     if(data.result["code"] == 200) {
       const dataGot: SongPlay = data.result as SongPlay
       return dataGot

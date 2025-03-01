@@ -16,9 +16,9 @@ import { StorageConstants } from "../constants/StorageConstants"
  */
 export async function getApiUrl(): Promise<string | undefined> {
   let rootUrl:string | undefined = Constants.ROOT_URL
-  const isCustomApiUrl:boolean | undefined = await AppStorage.get('set-isCustomApiUrl')
+  const isCustomApiUrl:boolean | undefined = await AppStorage.get(StorageConstants.IS_CUSTOM_API_URL)
   if(isCustomApiUrl) {
-    rootUrl = await AppStorage.get('set-customApiUrl')
+    rootUrl = await AppStorage.get(StorageConstants.CUSTOM_API_URL)
   }
   return rootUrl
 }

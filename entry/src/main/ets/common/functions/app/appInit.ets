@@ -35,13 +35,13 @@ async function initApp() {
 }
 
 async function initUserInfo() {
-  const cookie = await PreferencesUtils.getPreferenceValue<string>(StorageConstants.USER_PREF, 'cookie', '')
+  const cookie = await PreferencesUtils.getPreferenceValue<string>(StorageConstants.USER_PREF, StorageConstants.COOKIE, '')
   AppStorage.setOrCreate(StorageConstants.COOKIE, cookie)
-  getPubCookie()
-  getLikeList()
   let isLogged = await getLoginStatus(cookie)
   if(!isLogged && cookie) {
     ToastUtil.showToast('登录状态失效')
+  } else {
+    getLikeList()
   }
 }
 

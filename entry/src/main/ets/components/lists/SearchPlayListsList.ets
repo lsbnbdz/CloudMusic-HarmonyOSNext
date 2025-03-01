@@ -1,5 +1,4 @@
 import { EmitterUtil, LogUtil } from "@pura/harmony-utils"
-
 import { searchPlayLists } from "../../api/playListApi"
 import Constants from "../../common/constants/Constants"
 import { EmitterConstants } from "../../common/constants/EmitterConstants"

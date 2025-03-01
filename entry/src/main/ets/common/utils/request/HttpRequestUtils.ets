@@ -3,7 +3,7 @@ import { BusinessError } from "@kit.BasicServicesKit"
 import { LogUtil, ToastUtil } from "@pura/harmony-utils"
 import { uint8ArrayToString } from "../../functions/commonFunction"
 import { MsgConstants } from "../../constants/MsgConstants"
-import { StorageConstants } from "../../constants/StorageConstants"
+import { getCookie } from "../../functions/get"
 
 /**
  * 网络请求工具类
@@ -27,7 +27,7 @@ export class HttpRequest {
    * @returns
    */
   public async Request(useCookie:boolean = true): Promise<http.HttpResponse> {
-    const cookie:string | undefined = await AppStorage.get(StorageConstants.COOKIE)
+    const cookie = await getCookie()
     return new Promise((resolve, reject) => {
       let httpRequest = http.createHttp()
       httpRequest.request(
@@ -66,33 +66,44 @@ export class HttpRequest {
    * @returns
    */
   public async RequestInStream(useCookie:boolean = true): Promise<http.HttpResponse> {
-    const cookie:string | undefined = await AppStorage.get('cookie')
+    const cookie = await getCookie()
     return new Promise((resolve, reject) => {
       let httpRequest = http.createHttp()
 
       // 创建一个存储所有接收数据的容器
-      let resView = new Uint8Array(0);
+      let resView = new Uint8Array(0)
 
       // 当收到数据时
       httpRequest.on('dataReceive', (data: ArrayBuffer) => {
-        const newView = new Uint8Array(resView.length + data.byteLength);
+        const newView = new Uint8Array(resView.length + data.byteLength)
         newView.set(resView, 0);
-        newView.set(new Uint8Array(data), resView.length);
+        newView.set(new Uint8Array(data), resView.length)
         resView = newView
-      });
+      })
 
       // 当数据接收完毕时
       httpRequest.on('dataEnd', () => {
         let resultString = uint8ArrayToString(resView)
         try {
-          const result:string = JSON.parse(resultString);
+          const result:string = JSON.parse(resultString)
           const data: http.HttpResponse = {
             result: result,
             responseCode: 200,
             header: {},
             resultType: http.HttpDataType.OBJECT,
             cookies: "",
-            performanceTiming: {dnsTiming: 0, tcpTiming: 0, tlsTiming: 0, firstSendTiming: 0, firstReceiveTiming: 0, totalFinishTiming: 0, redirectTiming: 0, responseHeaderTiming: 0, responseBodyTiming: 0, totalTiming: 0}
+            performanceTiming: {
+              dnsTiming: 0,
+              tcpTiming: 0,
+              tlsTiming: 0,
+              firstSendTiming: 0,
+              firstReceiveTiming: 0,
+              totalFinishTiming: 0,
+              redirectTiming: 0,
+              responseHeaderTiming: 0,
+              responseBodyTiming: 0,
+              totalTiming: 0
+            }
           }
           resolve(data)
         } catch (err) {
@@ -102,7 +113,7 @@ export class HttpRequest {
           },1000)
           reject(err)
         }
-      });
+      })
 
       // 发起请求
       let streamInfo: http.HttpRequestOptions = {
@@ -116,47 +127,7 @@ export class HttpRequest {
         connectTimeout: 15000,
         readTimeout: 15000,
       }
-      httpRequest.requestInStream(this.url, streamInfo);
-    });
-  }
-
-  /**
-   * Http请求 (根据VipType)
-   * @returns
-   */
-  public async RequestWithVipType(): Promise<http.HttpResponse> {
-    const vipType:number | undefined = await AppStorage.get('vipType')
-    let cookie:string | undefined = ''
-    if(vipType == 0) { cookie = await AppStorage.get('pubCookie') }
-    else { cookie = await AppStorage.get('cookie') }
-    return new Promise((resolve, reject) => {
-      let httpRequest = http.createHttp()
-      httpRequest.request(
-        this.url,
-        {
-          method: http.RequestMethod.GET,
-          header: {
-            'Content-Type': 'application/json',
-            'cookie': cookie
-          },
-          usingCache: this.usingCache,
-          expectDataType: http.HttpDataType.OBJECT,
-          connectTimeout: 15000,
-          readTimeout: 15000,
-        }, (err: BusinessError, data: http.HttpResponse) => {
-        if (!err) {
-          httpRequest.destroy()
-          resolve(data)  // 返回请求数据
-        } else {
-          LogUtil.error(TAG + 'HttpRequest Error: '+ `Url: ${this.url}` + JSON.stringify(err))
-          httpRequest.off('headersReceive')
-          httpRequest.destroy()
-          reject(err)  // 出现错误时reject
-          setTimeout(() => {
-            ToastUtil.showToast(`${MsgConstants.HTTP_ERROR}`, { duration: 4000 })
-          },1000)
-        }
-      })
+      httpRequest.requestInStream(this.url, streamInfo)
     })
   }
 }

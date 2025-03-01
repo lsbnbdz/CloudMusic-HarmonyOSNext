@@ -3,7 +3,6 @@ import { logOut } from "../../api/loginApi"
 import Constants from "../../common/constants/Constants"
 import { StorageConstants } from "../../common/constants/StorageConstants"
 import { User, UserClass } from "../../common/entities/User"
-import PreferencesUtils from "../../common/utils/data/PreferencesUtils"
 import { CircleImageButton } from "../buttons/CircleButton"
 
 @Component

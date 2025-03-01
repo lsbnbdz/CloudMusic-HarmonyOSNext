@@ -15,7 +15,7 @@ export struct CustomApiUrl {
     Column({ space: 5 }) {
       Row() {
         Row({ space: 5 }) {
-          Text('API服务器设置').LeftText()
+          Text('API服务器与Cookie设置').LeftText()
         }
         CircleImageButton({ imgUrl: $r('app.media.ic_public_arrow_right'), })
       }

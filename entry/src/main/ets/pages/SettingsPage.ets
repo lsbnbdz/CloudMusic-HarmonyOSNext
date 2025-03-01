@@ -7,6 +7,7 @@ import {
   Settings_Bottom } from '../components/settings/TextContent'
 import Constants from '../common/constants/Constants'
 import { SetDefaultHomePage } from '../components/settings/SetDefaultHomePage'
+import { MixWithOthers } from '../components/settings/MixWithOthers'
 
 /**
  * 设置页面
@@ -22,9 +23,14 @@ export struct SettingsPage {
       Stack() {
         Column({ space: 10 }) {
           List({ space: 10 }) {
-            ListItem() { SetPlayQuality().padding({ left: 10, right: 10 }) }.listItemStyle()
             ListItem() { SetDefaultHomePage().padding({ left: 10, right: 10 }) }.listItemStyle()
-            ListItem() { UsePublicCookie().padding({ left: 10, right: 10 }) }.listItemStyle()
+            ListItem() {
+              Column({ space: 20 }) {
+                SetPlayQuality()
+                MixWithOthers()
+              }
+              .padding(10)
+            }.listItemStyle()
             ListItem() { CustomApiUrl().padding({ left: 10, right: 10 }) }.listItemStyle()
             ListItem() { RemoveCache().padding({ left: 10, right: 10 }) }.listItemStyle()
             ListItem() { Divider().padding({ left: 20, right: 20 }) }
@@ -50,7 +56,6 @@ export struct SettingsPage {
   @Styles listItemStyle() {
     .backgroundColor($r('app.color.main'))
     .borderRadius(Constants.RADIUS_CARD)
-    // .height(Constants.HEIGHT_SETTINGS_ITEM)
     .margin({ left: 20, right: 20 })
     .padding({ left: Constants.PADDING_EDGE_DEFAULT, right: Constants.PADDING_EDGE_DEFAULT })
     .constraintSize({

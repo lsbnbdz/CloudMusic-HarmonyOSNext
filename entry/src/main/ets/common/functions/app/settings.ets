@@ -11,58 +11,96 @@ const TAG = '[settings] '
  */
 export async function initSettings() {
   LogUtil.info(TAG + '开始初始化设置')
-  const SetPerf: string = StorageConstants.SET_PERF
+  const SetPerf = StorageConstants.SET_PERF
 
-  /**
-   * Default HomePage Content
-   */
-  const isDefaultHomePageExist = await PreferencesUtils.hasPreferenceValue(SetPerf, StorageConstants.DEFAULT_PAGE_INDEX)
-  if(!isDefaultHomePageExist) {
-    await PreferencesUtils.putPreferenceValue(SetPerf, StorageConstants.DEFAULT_PAGE_INDEX, 0)
-    AppStorage.setOrCreate(StorageConstants.DEFAULT_PAGE_INDEX, 0)
+  // 并行处理无依赖的配置项
+  await Promise.all([
+  // 默认主页
+    (async () => {
+      const exists = await PreferencesUtils.hasPreferenceValue(SetPerf, StorageConstants.DEFAULT_PAGE_INDEX)
+      const value = exists
+        ? await PreferencesUtils.getPreferenceValue(SetPerf, StorageConstants.DEFAULT_PAGE_INDEX, 0)
+        : 0
+      if (!exists) await PreferencesUtils.putPreferenceValue(SetPerf, StorageConstants.DEFAULT_PAGE_INDEX, 0)
+      AppStorage.setOrCreate(StorageConstants.DEFAULT_PAGE_INDEX, value)
+    })(),
+
+    // // Cookie设置
+    // (async () => {
+    //   const exists = await PreferencesUtils.hasPreferenceValue(SetPerf, StorageConstants.USE_PUBLIC_COOKIE)
+    //   const value = exists
+    //     ? await PreferencesUtils.getPreferenceValue(SetPerf, StorageConstants.USE_PUBLIC_COOKIE, true)
+    //     : false
+    //   if (!exists) await PreferencesUtils.putPreferenceValue(SetPerf, StorageConstants.USE_PUBLIC_COOKIE, false)
+    //   AppStorage.setOrCreate(StorageConstants.USE_PUBLIC_COOKIE, value)
+    // })(),
+
+    // 播放质量
+    (async () => {
+      const exists = await PreferencesUtils.hasPreferenceValue(SetPerf, StorageConstants.PLAY_QUALITY)
+      const value = exists
+        ? await PreferencesUtils.getPreferenceValue(SetPerf, StorageConstants.PLAY_QUALITY, 0)
+        : 0
+      if (!exists) await PreferencesUtils.putPreferenceValue(SetPerf, StorageConstants.PLAY_QUALITY, 0)
+      AppStorage.setOrCreate(StorageConstants.PLAY_QUALITY, value)
+    })()
+  ])
+
+  // 处理关联配置项（自定义API URL）
+  const results = await Promise.all([
+    PreferencesUtils.hasPreferenceValue(SetPerf, StorageConstants.IS_CUSTOM_API_URL),
+    PreferencesUtils.hasPreferenceValue(SetPerf, StorageConstants.IS_CUSTOM_COOKIE),
+    PreferencesUtils.hasPreferenceValue(SetPerf, StorageConstants.MIX_WITH_OTHERS)
+  ])
+  const isCustomApiExist = results[0]
+  const isCustomCookieExist = results[1]
+  const isMixExist = results[2]
+
+  // 自定义API设置
+  if (!isCustomApiExist) {
+    await Promise.all([
+      PreferencesUtils.putPreferenceValue(SetPerf, StorageConstants.IS_CUSTOM_API_URL, false),
+      PreferencesUtils.putPreferenceValue(SetPerf, StorageConstants.CUSTOM_API_URL, 'http://example.com:8080')
+    ])
+    AppStorage.setOrCreate(StorageConstants.IS_CUSTOM_API_URL, false)
+    AppStorage.setOrCreate(StorageConstants.CUSTOM_API_URL, 'http://example.com:8080')
   } else {
-    const defaultIndex: number = await PreferencesUtils.getPreferenceValue(SetPerf, StorageConstants.DEFAULT_PAGE_INDEX, 0)
-    AppStorage.setOrCreate(StorageConstants.DEFAULT_PAGE_INDEX, defaultIndex)
+    const customResults = await Promise.all([
+      PreferencesUtils.getPreferenceValue(SetPerf, StorageConstants.IS_CUSTOM_API_URL, false),
+      PreferencesUtils.getPreferenceValue(SetPerf, StorageConstants.CUSTOM_API_URL, 'http://example.com:8080')
+    ])
+    const isCustom = customResults[0]
+    const url = customResults[1]
+    AppStorage.setOrCreate(StorageConstants.IS_CUSTOM_API_URL, isCustom)
+    AppStorage.setOrCreate(StorageConstants.CUSTOM_API_URL, url)
   }
 
-  /**
-   * Custom api url
-   */
-  const isCustomApiUrlExist = await PreferencesUtils.hasPreferenceValue(SetPerf, 'isCustomApiUrl')
-  if (!isCustomApiUrlExist) {
-    await PreferencesUtils.putPreferenceValue(SetPerf, 'isCustomApiUrl', false)
-    await PreferencesUtils.putPreferenceValue(SetPerf,'customApiUrl','http://example.com:8080')
-    AppStorage.setOrCreate('set-isCustomApiUrl',false)
-    AppStorage.setOrCreate('set-customApiUrl','http://example.com:8080')
+  // 自定义Cookie设置
+  if (!isCustomCookieExist) {
+    await Promise.all([
+      PreferencesUtils.putPreferenceValue(SetPerf, StorageConstants.IS_CUSTOM_COOKIE, false),
+      PreferencesUtils.putPreferenceValue(SetPerf, StorageConstants.CUSTOM_COOKIE, 'MUSIC_U=')
+    ])
+    AppStorage.setOrCreate(StorageConstants.IS_CUSTOM_COOKIE, false)
+    AppStorage.setOrCreate(StorageConstants.CUSTOM_COOKIE, 'MUSIC_U=')
   } else {
-    const isCustomApiUrl = await PreferencesUtils.getPreferenceValue(SetPerf, 'isCustomApiUrl', false)
-    const customApiUrl = await PreferencesUtils.getPreferenceValue(SetPerf, 'customApiUrl', 'http://example.com:8080')
-    AppStorage.setOrCreate('set-isCustomApiUrl',isCustomApiUrl)
-    AppStorage.setOrCreate('set-customApiUrl',customApiUrl)
+    const customResults = await Promise.all([
+      PreferencesUtils.getPreferenceValue(SetPerf, StorageConstants.IS_CUSTOM_COOKIE, false),
+      PreferencesUtils.getPreferenceValue(SetPerf, StorageConstants.CUSTOM_COOKIE, 'MUSIC_U=')
+    ])
+    const isCustom = customResults[0]
+    const cookie = customResults[1]
+    AppStorage.setOrCreate(StorageConstants.IS_CUSTOM_COOKIE, isCustom)
+    AppStorage.setOrCreate(StorageConstants.CUSTOM_COOKIE, cookie)
   }
 
-  /**
-   * Use public cookie
-   */
-  const isUsePubCookieExist = await PreferencesUtils.hasPreferenceValue(SetPerf, StorageConstants.USE_PUBLIC_COOKIE)
-  if (!isUsePubCookieExist) {
-    await PreferencesUtils.putPreferenceValue(SetPerf, StorageConstants.USE_PUBLIC_COOKIE, false)
-    AppStorage.setOrCreate(StorageConstants.USE_PUBLIC_COOKIE, false)
+  // 混音设置
+  if (!isMixExist) {
+    await PreferencesUtils.putPreferenceValue(SetPerf, StorageConstants.MIX_WITH_OTHERS, false)
+    AppStorage.setOrCreate(StorageConstants.MIX_WITH_OTHERS, false)
   } else {
-    const isUsePubCookie = await PreferencesUtils.getPreferenceValue(SetPerf, StorageConstants.USE_PUBLIC_COOKIE, true)
-    AppStorage.setOrCreate(StorageConstants.USE_PUBLIC_COOKIE, isUsePubCookie)
-  }
-
-  /**
-   * Set play quality
-   */
-  const isPlayQualityExist = await PreferencesUtils.hasPreferenceValue(SetPerf, StorageConstants.PLAY_QUALITY)
-  if (!isPlayQualityExist) {
-    await PreferencesUtils.putPreferenceValue(SetPerf, StorageConstants.PLAY_QUALITY, 0)
-    AppStorage.setOrCreate(StorageConstants.PLAY_QUALITY, 0)
-  } else {
-    const playQuality: number = await PreferencesUtils.getPreferenceValue(SetPerf, StorageConstants.PLAY_QUALITY, 0)
-    AppStorage.setOrCreate(StorageConstants.PLAY_QUALITY, playQuality)
+    const mixValue = await PreferencesUtils.getPreferenceValue(SetPerf, StorageConstants.MIX_WITH_OTHERS, false)
+    AppStorage.setOrCreate(StorageConstants.MIX_WITH_OTHERS, mixValue)
   }
 }
 

@@ -13,9 +13,7 @@ import { StorageConstants } from "../../common/constants/StorageConstants";
 const TAG = '[UserPlayLists Component] '
 @Component
 export struct UserPlayLists {
-  @StorageLink(StorageConstants.USER_PLAYLISTS) playLists: Array<PlayList> = []
   @StorageProp('bottomRectHeight') bottomRectHeight: number = 0
-  @StorageProp('topRectHeight') topRectHeight: number = 0
   @StorageProp(StorageConstants.USER) user: User = UserClass
   @StorageProp(StorageConstants.IS_LOGGED) @Watch('getPlayLists') isLogged: boolean = false
   @StorageProp('Announcement') announcement: Announcement = {
@@ -23,6 +21,7 @@ export struct UserPlayLists {
     data: { title:'', content: '' },
     visible: false
   }
+  @StorageLink(StorageConstants.USER_PLAYLISTS) playLists: Array<PlayList> = []
   @State isLoading: boolean = false
   @State isLoadingMore: boolean = false
   @State isRefreshing: boolean = false

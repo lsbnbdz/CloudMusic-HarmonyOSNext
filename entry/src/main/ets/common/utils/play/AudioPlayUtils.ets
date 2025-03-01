@@ -5,6 +5,8 @@ import AVSessionUtils from './AVSessionUtils'
 import { completeDo } from '../../functions/play/playControl'
 import { changeDuration } from '../../functions/commonFunction'
 import LyricUtils from './LyricUtils'
+import { audio } from '@kit.AudioKit'
+import { StorageConstants } from '../../constants/StorageConstants'
 
 /**
  * 音频播放工具
@@ -15,6 +17,8 @@ const TAG = '[AudioPlayUtils] '
 class AudioPlayUtils {
   mPlayer: EfAVPlayer = new EfAVPlayer()
   updateAvSession = 0
+  audioManager = audio.getAudioManager()
+  audioSessionManager: audio.AudioSessionManager = this.audioManager.getSessionManager()
 
   async init() {
     try {
@@ -38,20 +42,25 @@ class AudioPlayUtils {
   }
 
   async play() {
-    LyricUtils.startInterval()
-    ContinuousTask.startTask()
-    await this.mPlayer.play()
-    AVSessionUtils.playState(this.mPlayer.currentTime)
+    try {
+      this.setAudioSession()
+      LyricUtils.startInterval()
+      ContinuousTask.startTask()
+      await this.mPlayer.play()
+      AVSessionUtils.playState(this.mPlayer.currentTime)
 
-    this.updateAvSession = setInterval(() => {
-      if(this.mPlayer.state == 'playing') {
-        AVSessionUtils.playState(this.mPlayer.currentTime)
-      }
-    }, 1000)
+      this.updateAvSession = setInterval(() => {
+        if (this.mPlayer.state == 'playing') {
+          AVSessionUtils.playState(this.mPlayer.currentTime)
+        }
+      }, 1000)
 
-    this.mPlayer.onTimeUpdate((time) => {
-      AppStorage.setOrCreate('player-time',time)
-    })
+      this.mPlayer.onTimeUpdate((time) => {
+        AppStorage.setOrCreate('player-time', time)
+      })
+    } catch (e) {
+      LogUtil.error(TAG + 'Error while playing: ' + e.message)
+    }
   }
 
   async stop() {
@@ -87,12 +96,25 @@ class AudioPlayUtils {
   onState() {
     this.mPlayer.onStateChange(async (state) => {
       if(state == 'prepared') { this.play(); }
-      if(state == 'playing') { AppStorage.setOrCreate('player-isplaying', true); AppStorage.setOrCreate('player-ispaused', false); }
+      if(state == 'playing') {
+        AppStorage.setOrCreate('player-isplaying', true)
+        AppStorage.setOrCreate('player-ispaused', false)
+      }
       if(state == 'paused') { this.clearInterval(); AppStorage.setOrCreate('player-ispaused', true); AVSessionUtils.pauseState(this.mPlayer.currentTime) }
       if(state == 'idle') { this.clearInterval(); AVSessionUtils.deactive() }
       if(state == 'stopped') { this.clearInterval(); AppStorage.setOrCreate('player-ispaused', true); ContinuousTask.stopTask() }
       if(state == 'completed') { this.clearInterval(); AppStorage.setOrCreate('player-ispaused', true); ContinuousTask.stopTask(); completeDo() }
     })
+  }
+
+  async setAudioSession() {
+    let isMixWithOthers = await AppStorage.get(StorageConstants.MIX_WITH_OTHERS) as boolean
+    const strategy: audio.AudioSessionStrategy = {
+      concurrencyMode: isMixWithOthers ?
+      audio.AudioConcurrencyMode.CONCURRENCY_MIX_WITH_OTHERS :
+      audio.AudioConcurrencyMode.CONCURRENCY_DEFAULT
+    }
+    await this.audioSessionManager.activateAudioSession(strategy)
   }
 }
 

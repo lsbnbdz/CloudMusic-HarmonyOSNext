@@ -164,4 +164,17 @@ export class StorageConstants {
    * @description AppStorage & Preference
    */
   static readonly SEARCH_HISTORY: string = 'searchHistory'
+  /**
+   * 和其他应用同时播放
+   * @description AppStorage & Preference
+   */
+  static readonly MIX_WITH_OTHERS: string = 'mixWithOthers'
+  /**
+   * 自定义API Url & Cookie
+   * @description AppStorage & Preference
+   */
+  static readonly CUSTOM_API_URL: string = 'customApiUrl'
+  static readonly IS_CUSTOM_API_URL: string = 'isCustomApiUrl'
+  static readonly CUSTOM_COOKIE: string = 'customCookie'
+  static readonly IS_CUSTOM_COOKIE: string = 'isCustomCookie'
 }

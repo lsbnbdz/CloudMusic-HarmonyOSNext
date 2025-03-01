@@ -13,8 +13,6 @@ import { getPlayLists } from "../../api/playListApi";
 @Component
 export struct Explore {
   @StorageProp(StorageConstants.IS_LOGGED) @Watch('getPlayLists') isLogged: boolean = false
-  @StorageLink(StorageConstants.USER_PLAYLISTS) playLists: Array<PlayList> = []
-  @StorageLink(StorageConstants.TOPLISTS) topList: Array<TopListItem> = []
   @StorageProp(StorageConstants.USER) user: User = UserClass
   @StorageProp('bottomRectHeight') bottomRectHeight: number = 0
   @StorageProp('topRectHeight') topRectHeight: number = 0
@@ -23,13 +21,15 @@ export struct Explore {
     data: { title:'', content: '' },
     visible: false
   }
+  @StorageLink(StorageConstants.USER_PLAYLISTS) playLists: Array<PlayList> = []
+  @StorageLink(StorageConstants.TOPLISTS) topList: Array<TopListItem> = []
   @State isLoading: boolean = false
   @State isLoadingMore: boolean = false
   @State columnsTemplate: string = '1fr'
   @State isRefreshing: boolean = false
   @State lastRefreshTime: number = 0
-  private refreshCooldown: number = 5000
   @Consume('pageInfos') pageInfos: NavPathStack
+  private refreshCooldown: number = 5000
 
   async aboutToAppear(): Promise<void> {
     try {

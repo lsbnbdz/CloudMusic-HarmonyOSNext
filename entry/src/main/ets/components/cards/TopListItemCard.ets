@@ -51,7 +51,7 @@ export struct TopListItemCard {
         },
         isShowHeart: false
       }
-      if(this.pageInfos.size() == 0) {
+      if(this.pageInfos.size() < 2) {
         this.pageInfos.pushPathByName('PLayListPage', param, true)
       } else {
         this.pageInfos.replacePathByName('PLayListPage', param, true)

@@ -1,5 +1,5 @@
 import { AppUtil, LogUtil, ToastUtil } from "@pura/harmony-utils"
-import { getAnnouncement, getPubCookie } from "../../../api/chenlvinApi"
+import { getAnnouncement } from "../../../api/chenlvinApi"
 import { Song, SongClass } from "../../entities/SongsResult"
 import PlayQueueUtils from "../../utils/play/PlayQueueUtils"
 import PreferencesUtils from "../../utils/data/PreferencesUtils"
@@ -18,17 +18,18 @@ import { getLikeList } from "../../../api/songApi"
 const TAG = '[appInit] '
 
 export async function appInit() {
-  initLocalData()
+  AppStorage.setOrCreate(StorageConstants.APP_LOADING, true)
   await initSettings()
-  initUserInfo()
-  initApp()
-  initPlayQueue()
-  audioPlayerInit()
   loadSavedSong()
-  await getAnnouncement()
+  initPermission()
+  initLocalData()
+  getAnnouncement()
+  await initUserInfo()
+  await initPlayQueue()
+  AppStorage.setOrCreate(StorageConstants.APP_LOADING, false)
 }
 
-async function initApp() {
+async function initPermission() {
   notificationManager.requestEnableNotification(AppUtil.getContext()).then(() => {
     LogUtil.info(TAG + '成功请求通知权限')
   })
@@ -60,14 +61,6 @@ async function initLocalData() {
 
   let searchHistory = await PreferencesUtils.getPreferenceValue<string[]>(StorageConstants.USER_PREF, StorageConstants.SEARCH_HISTORY, [])
   AppStorage.setOrCreate(StorageConstants.SEARCH_HISTORY, searchHistory)
-}
-
-async function audioPlayerInit() {
-  try {
-    AppStorage.setOrCreate(StorageConstants.IS_PLAYING,false)
-  } catch (e) {
-    LogUtil.error(JSON.stringify(e))
-  }
 }
 
 /**

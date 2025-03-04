@@ -64,7 +64,6 @@ export async function searchSongs(searchKeyword:string, offset:number): Promise<
 export async function getSongUrl(songId: number, quality:QualityType, isLogged:boolean): Promise<SongPlay> {
   const rootUrl = await getApiUrl()
   const url:string = `${rootUrl}/song/url/v1?id=${songId}&level=${quality}`
-  let usePubCookie:boolean = false
   const request = new HttpRequest(url)
   try {
     const data = await request.Request()

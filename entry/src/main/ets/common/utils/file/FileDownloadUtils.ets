@@ -17,7 +17,8 @@ const TAG = '[FileDownload] '
 
 class FileDownloadUtils {
   context = getContext(this) as common.UIAbilityContext
-  filesDir = this.context.filesDir
+  // filesDir = this.context.filesDir
+  filesDir = FileUtils.getUserDir()
   cacheDir = this.context.cacheDir
 
   async download(songDownload:SongDownload, song:Song, artists:string) {
@@ -63,7 +64,7 @@ class FileDownloadUtils {
         } else {
           DialogUtil.showConfirmDialog({ title: '缓存失败', message: `${err.message}` })
         }
-        console.error(`Invoke downloadFile failed, code is ${err.code}, message is ${err.message}`);
+        LogUtil.error(TAG + '下载出错: ' + err.message)
       }
     }
   }

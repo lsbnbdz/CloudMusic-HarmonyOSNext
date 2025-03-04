@@ -72,7 +72,7 @@ export struct SearchHistoryComponent {
     })
     .padding(Constants.PADDING_EDGE_DEFAULT)
     .margin({ right: Constants.PADDING_EDGE_DEFAULT, bottom: Constants.PADDING_EDGE_DEFAULT })
-    .borderRadius(5)
+    .borderRadius(10)
     .backgroundColor($r('app.color.main'))
   }
 }

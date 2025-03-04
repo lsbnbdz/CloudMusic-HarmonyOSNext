@@ -11,14 +11,16 @@ const TAG = '[loginApi] '
  * @param cookie
  */
 export async function getLoginStatus(cookie: string): Promise<boolean> {
+  let code: number = -1
   try {
     const rootUrl = await getApiUrl()
     const url: string = `${rootUrl}/login/status?timestamp=${new Date().getTime()}`
     const request = new HttpRequest(url, false)
     const userPref = StorageConstants.USER_PREF
     const data = await request.Request()
+    code = data.responseCode
     const user: User = data.result as User
-    LogUtil.info(TAG + 'login status result: ' + JSON.stringify(data.result))
+    AppStorage.setOrCreate(StorageConstants.VALID_API_URL, true)
     if (user.data.account.id) {
       PreferencesUtils.putPreferenceValue(userPref, StorageConstants.USER, user)
       PreferencesUtils.putPreferenceValue(userPref, StorageConstants.COOKIE, cookie)
@@ -41,6 +43,12 @@ export async function getLoginStatus(cookie: string): Promise<boolean> {
     }
   } catch (error) {
     LogUtil.error('获取登录状态失败: ', error.message)
+    if(code == 200) {
+      AppStorage.setOrCreate(StorageConstants.VALID_COOKIE, false)
+      AppStorage.setOrCreate(StorageConstants.VALID_API_URL, true)
+    } else {
+      AppStorage.setOrCreate(StorageConstants.VALID_API_URL, false)
+    }
     return false
   }
 }

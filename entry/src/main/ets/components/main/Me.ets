@@ -9,27 +9,37 @@ import { CircleImageButton } from "../buttons/CircleButton"
 export struct Me {
   @StorageProp(StorageConstants.IS_LOGGED) isLogged: boolean = false
   @StorageProp(StorageConstants.USER) user: User = UserClass
+  @StorageProp(StorageConstants.VALID_API_URL) isValidAPI: boolean = true
+  @StorageProp(StorageConstants.VALID_COOKIE) isValidCookie: boolean = true
+  @StorageProp(StorageConstants.APP_LOADING) appLoading: boolean = true
   @Consume('pageInfos') pageInfos: NavPathStack
 
   build() {
     Column({ space: 10 }) {
-      if (this.isLogged && this.user) {
-        Row({ space: 20 }) {
-          CircleImageButton({ imgUrl: this.user.data.profile.avatarUrl + '?param=256y256', wid: 64 })
-          Text(this.user.data.profile.nickname).textStyle(Constants.FONT_SIZE_TITLE).fontWeight(FontWeight.Bold)
+      Column() {
+        if (this.isLogged && this.user) {
+          Row({ space: 20 }) {
+            CircleImageButton({ imgUrl: this.user.data.profile.avatarUrl + '?param=256y256', wid: 64 })
+            Text(this.user.data.profile.nickname).textStyle(Constants.FONT_SIZE_TITLE).fontWeight(FontWeight.Bold)
+          }
+          .justifyContent(FlexAlign.Center)
+          .width('100%')
+          .padding({ bottom: 10 })
+        } else if(!this.isValidAPI || !this.isValidCookie) {
+          Text('服务不可用\n请检查API服务器和Cookie设置').textStyle(Constants.FONT_SIZE_TITLE).fontWeight(FontWeight.Bold)
+        } else if(this.appLoading) {
+          LoadingProgress().width(40)
+        } else {
+          Row({ space: 20 }) {
+            CircleImageButton({ imgUrl: $r('app.media.ic_user_portrait'), wid: 64 })
+            Text('未登录').textStyle(Constants.FONT_SIZE_TITLE).fontWeight(FontWeight.Bold)
+          }
+          .justifyContent(FlexAlign.Center)
+          .width('100%')
+          .padding({ bottom: 10 })
         }
-        .justifyContent(FlexAlign.Center)
-        .width('100%')
-        .padding({ bottom: 10 })
-      } else {
-        Row({ space: 20 }) {
-          CircleImageButton({ imgUrl: $r('app.media.ic_user_portrait'), wid: 64 })
-          Text('未登录').textStyle(Constants.FONT_SIZE_TITLE).fontWeight(FontWeight.Bold)
-        }
-        .justifyContent(FlexAlign.Center)
-        .width('100%')
-        .padding({ bottom: 10 })
       }
+      .height(80)
 
       Column() {
         this.ItemCard($r('app.media.ic_public_settings_filled'), '设置', () => {
@@ -55,16 +65,17 @@ export struct Me {
 
       Column().padding(30)
 
-      if(this.isLogged) {
-        this.LoginButton($r('app.color.app_red'), '退出登录', () => {
-          this.LogOut()
-        })
-      } else {
-        this.LoginButton(Color.Blue, '登 录', () => {
-          this.pageInfos.pushPathByName('LoginPage', null, true)
-        })
+      if(this.isValidAPI && !this.appLoading) {
+        if(this.isLogged) {
+          this.LoginButton($r('app.color.app_red'), '退出登录', () => {
+            this.LogOut()
+          })
+        } else {
+          this.LoginButton(Color.Blue, '登 录', () => {
+            this.pageInfos.pushPathByName('LoginPage', null, true)
+          })
+        }
       }
-
     }
     .width('100%')
     .height('100%')

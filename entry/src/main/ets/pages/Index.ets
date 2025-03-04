@@ -16,8 +16,10 @@ import { UserPlayLists } from '../components/main/UserPlayLists';
 import { Me } from '../components/main/Me';
 import { resourceManager } from '@kit.LocalizationKit';
 import { StorageConstants } from '../common/constants/StorageConstants';
-import PreferencesUtils from '../common/utils/data/PreferencesUtils';
 import { WarrantyDialog } from '../components/dialog/WarrantyDialog';
+import { TopListPage } from './TopListPage';
+import { ApiDialog } from '../components/dialog/ApiDialog';
+import PreferencesUtils from '../common/utils/data/PreferencesUtils';
 
 @Entry
 @Component
@@ -27,10 +29,16 @@ struct Index {
     autoCancel: false
   })
 
+  apiDialogController: CustomDialogController = new CustomDialogController({
+    builder: ApiDialog(),
+    autoCancel: false
+  })
+
   @StorageProp('topRectHeight') topRectHeight: number = 0
   @StorageProp('bottomRectHeight') bottomRectHeight: number = 0
   @StorageProp(StorageConstants.DEVICE_TYPE) deviceType: resourceManager.DeviceType = resourceManager.DeviceType.DEVICE_TYPE_PHONE
   @StorageProp(StorageConstants.DEFAULT_PAGE_INDEX) index: number = 0
+  @StorageProp(StorageConstants.VALID_API_URL) @Watch('checkApi') validApiUrl: boolean = true
   @Provide('pageInfos') pageInfos: NavPathStack = new NavPathStack()
   private menuItems: NavigationMenuItem[] = [
     {
@@ -43,12 +51,21 @@ struct Index {
     }
   ]
 
+  checkApi() {
+    if(!this.validApiUrl) {
+      this.apiDialogController.open()
+    }
+  }
+
   async aboutToAppear(): Promise<void> {
+    this.checkApi()
     const isFirstLaunch = await PreferencesUtils.getPreferenceValue<boolean>(StorageConstants.USER_PREF, 'isFirstLaunch', true)
     if(isFirstLaunch) {
+      this.apiDialogController.open()
       this.warrantyDialogController.open()
       PreferencesUtils.putPreferenceValue(StorageConstants.USER_PREF, 'isFirstLaunch', false)
     }
+
   }
 
   async build() {
@@ -111,6 +128,9 @@ struct Index {
     }
     else if(name === 'WebPage') {
       WebPage({ param: param as WebPageParam })
+    }
+    else if(name == 'TopListPage') {
+      TopListPage()
     }
   }
 

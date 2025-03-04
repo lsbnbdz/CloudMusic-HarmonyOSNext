@@ -3,6 +3,16 @@
  */
 export class StorageConstants {
   /**
+   * 初始化应用
+   * @description AppStorage
+   */
+  static readonly APP_LOADING: string = 'isAppLoading'
+  /**
+   * API URL 是否有效
+   * @description AppStorage
+   */
+  static readonly VALID_API_URL: string = 'isValidApiUrl'
+  /**
    * 设备类型
    * @description AppStorage
    */
@@ -174,7 +184,6 @@ export class StorageConstants {
    * @description AppStorage & Preference
    */
   static readonly CUSTOM_API_URL: string = 'customApiUrl'
-  static readonly IS_CUSTOM_API_URL: string = 'isCustomApiUrl'
   static readonly CUSTOM_COOKIE: string = 'customCookie'
   static readonly IS_CUSTOM_COOKIE: string = 'isCustomCookie'
   /**

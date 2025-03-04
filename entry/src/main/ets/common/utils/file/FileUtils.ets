@@ -2,7 +2,7 @@ import { common } from '@kit.AbilityKit'
 import fileIo from '@ohos.file.fs'
 import {  FileUtil, LogUtil, PreviewUtil, ToastUtil } from '@pura/harmony-utils'
 import fs from '@ohos.file.fs'
-import { fileUri } from '@kit.CoreFileKit'
+import { Environment, fileUri } from '@kit.CoreFileKit'
 import { picker } from '@kit.CoreFileKit'
 import { BusinessError } from '@kit.BasicServicesKit'
 
@@ -13,7 +13,8 @@ const TAG = '[FileUtils] '
 
 class FileUtils {
   context = getContext(this) as common.UIAbilityContext
-  filesDir = this.context.filesDir
+  // filesDir = this.context.filesDir
+  filesDir = this.getUserDir()
   cacheDir = this.context.cacheDir
 
   async getFilesDir() {
@@ -151,6 +152,21 @@ class FileUtils {
       ToastUtil.showToast('上传失败')
     } finally {
       return result
+    }
+  }
+
+  getUserDir() {
+    let dir: string = ''
+    try {
+      if (canIUse('SystemCapability.FileManagement.File.Environment.FolderObtain')) {
+        dir = Environment.getUserDownloadDir()
+      } else {
+        dir = this.context.filesDir
+      }
+    } catch (e) {
+      ToastUtil.showToast('获取公共目录失败: ' + e.message)
+    } finally {
+      return dir
     }
   }
 }

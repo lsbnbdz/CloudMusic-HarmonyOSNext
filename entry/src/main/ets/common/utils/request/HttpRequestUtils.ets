@@ -1,9 +1,10 @@
 import { http } from "@kit.NetworkKit"
 import { BusinessError } from "@kit.BasicServicesKit"
-import { LogUtil, ToastUtil } from "@pura/harmony-utils"
+import { LogUtil } from "@pura/harmony-utils"
 import { uint8ArrayToString } from "../../functions/commonFunction"
 import { MsgConstants } from "../../constants/MsgConstants"
 import { getCookie } from "../../functions/get"
+import { promptAction } from "@kit.ArkUI"
 
 /**
  * 网络请求工具类
@@ -52,9 +53,10 @@ export class HttpRequest {
           httpRequest.off('headersReceive')
           httpRequest.destroy()
           reject(err)  // 出现错误时reject
-          setTimeout(() => {
-            ToastUtil.showToast(`${MsgConstants.HTTP_ERROR} ${this.url}`, { duration: 4000 })
-          },1000)
+          promptAction.showToast({
+            message: `${MsgConstants.HTTP_ERROR}:\n\n${this.url}`,
+            duration: 5000
+          })
         }
       })
     })
@@ -108,10 +110,11 @@ export class HttpRequest {
           resolve(data)
         } catch (err) {
           LogUtil.error(TAG + 'Error: ' + this.url + '\nerr: ' + err)
-          setTimeout(() => {
-            ToastUtil.showToast(`${MsgConstants.HTTP_ERROR} ${this.url}`, { duration: 4000 })
-          },1000)
           reject(err)
+          promptAction.showToast({
+            message: `${MsgConstants.HTTP_ERROR}:\n\n${this.url}`,
+            duration: 5000
+          })
         }
       })
 

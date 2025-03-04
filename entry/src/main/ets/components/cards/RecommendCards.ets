@@ -6,19 +6,19 @@ import { PlayList } from "../../common/entities/PlayList"
 import { playQueue } from "../../common/functions/play/playControl"
 import PlayQueueUtils from "../../common/utils/play/PlayQueueUtils"
 
-let cardWidth: number = 120
+let cardWidth: number = 150
 
 @Builder function ContentButton(firText:string, secText:string, imgUrl:ResourceStr, onClick?: () => void ) {
   Button() {
     Column() {
       Text(`${firText}`)
         .width('100%')
-        .textStyle(Constants.FONT_SIZE_COMMON + 2, true)
+        .textStyle(Constants.FONT_SIZE_TITLE, true)
         .padding(Constants.PADDING_EDGE_DEFAULT)
         .textShadow({ radius: 15 })
       Text(`${secText}`)
         .width('100%')
-        .textStyle(Constants.FONT_SIZE_BAR)
+        .textStyle(Constants.FONT_SIZE_COMMON - 3)
         .textAlign(TextAlign.Center)
         .backgroundColor(Color.Transparent)
         .textShadow({ radius: 5 })
@@ -169,7 +169,7 @@ export struct RecommendCards_Skeleton {
           .alignSelf(ItemAlign.Start)
           .width('70%')
           .borderRadius(Constants.RADIUS_CARD)
-          .height(Constants.FONT_SIZE_COMMON + 3)
+          .height(Constants.FONT_SIZE_TITLE)
           .padding(Constants.PADDING_EDGE_DEFAULT)
         Column({ space: 3 }) {
           Column()

@@ -2,7 +2,7 @@ export class AppConstants {
   /**
    * App Version
    */
-  static readonly VERSION: string = '1.3.2'
+  static readonly VERSION: string = '1.3.3'
   /**
    * Version Description
    */

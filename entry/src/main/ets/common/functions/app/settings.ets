@@ -15,7 +15,17 @@ export async function initSettings() {
 
   // 并行处理无依赖的配置项
   await Promise.all([
-  // 默认主页
+    // API地址
+    (async () => {
+      const exists = await PreferencesUtils.hasPreferenceValue(SetPerf, StorageConstants.CUSTOM_API_URL)
+      const value = exists
+        ? await PreferencesUtils.getPreferenceValue(SetPerf, StorageConstants.CUSTOM_API_URL, '')
+        : 'https://'
+      if (!exists) await PreferencesUtils.putPreferenceValue(SetPerf, StorageConstants.CUSTOM_API_URL, '')
+      AppStorage.setOrCreate(StorageConstants.CUSTOM_API_URL, value)
+    })(),
+
+    // 默认主页
     (async () => {
       const exists = await PreferencesUtils.hasPreferenceValue(SetPerf, StorageConstants.DEFAULT_PAGE_INDEX)
       const value = exists
@@ -24,16 +34,6 @@ export async function initSettings() {
       if (!exists) await PreferencesUtils.putPreferenceValue(SetPerf, StorageConstants.DEFAULT_PAGE_INDEX, 0)
       AppStorage.setOrCreate(StorageConstants.DEFAULT_PAGE_INDEX, value)
     })(),
-
-    // // Cookie设置
-    // (async () => {
-    //   const exists = await PreferencesUtils.hasPreferenceValue(SetPerf, StorageConstants.USE_PUBLIC_COOKIE)
-    //   const value = exists
-    //     ? await PreferencesUtils.getPreferenceValue(SetPerf, StorageConstants.USE_PUBLIC_COOKIE, true)
-    //     : false
-    //   if (!exists) await PreferencesUtils.putPreferenceValue(SetPerf, StorageConstants.USE_PUBLIC_COOKIE, false)
-    //   AppStorage.setOrCreate(StorageConstants.USE_PUBLIC_COOKIE, value)
-    // })(),
 
     // 播放质量
     (async () => {
@@ -59,32 +59,11 @@ export async function initSettings() {
 
   // 处理关联配置项（自定义API URL）
   const results = await Promise.all([
-    PreferencesUtils.hasPreferenceValue(SetPerf, StorageConstants.IS_CUSTOM_API_URL),
     PreferencesUtils.hasPreferenceValue(SetPerf, StorageConstants.IS_CUSTOM_COOKIE),
     PreferencesUtils.hasPreferenceValue(SetPerf, StorageConstants.MIX_WITH_OTHERS)
   ])
-  const isCustomApiExist = results[0]
-  const isCustomCookieExist = results[1]
-  const isMixExist = results[2]
-
-  // 自定义API设置
-  if (!isCustomApiExist) {
-    await Promise.all([
-      PreferencesUtils.putPreferenceValue(SetPerf, StorageConstants.IS_CUSTOM_API_URL, false),
-      PreferencesUtils.putPreferenceValue(SetPerf, StorageConstants.CUSTOM_API_URL, 'http://example.com:8080')
-    ])
-    AppStorage.setOrCreate(StorageConstants.IS_CUSTOM_API_URL, false)
-    AppStorage.setOrCreate(StorageConstants.CUSTOM_API_URL, 'http://example.com:8080')
-  } else {
-    const customResults = await Promise.all([
-      PreferencesUtils.getPreferenceValue(SetPerf, StorageConstants.IS_CUSTOM_API_URL, false),
-      PreferencesUtils.getPreferenceValue(SetPerf, StorageConstants.CUSTOM_API_URL, 'http://example.com:8080')
-    ])
-    const isCustom = customResults[0]
-    const url = customResults[1]
-    AppStorage.setOrCreate(StorageConstants.IS_CUSTOM_API_URL, isCustom)
-    AppStorage.setOrCreate(StorageConstants.CUSTOM_API_URL, url)
-  }
+  const isCustomCookieExist = results[0]
+  const isMixExist = results[1]
 
   // 自定义Cookie设置
   if (!isCustomCookieExist) {

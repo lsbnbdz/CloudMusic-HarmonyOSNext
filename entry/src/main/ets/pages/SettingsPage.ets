@@ -1,6 +1,6 @@
 import { UsePublicCookie } from '../components/settings/UsePublicCookie'
 import { SetPlayQuality } from '../components/settings/SetPlayQuality'
-import { CustomApiUrl } from '../components/settings/CustomApiUrl'
+import { SetApiUrl } from '../components/settings/CustomApiUrl'
 import { RemoveCache } from '../components/settings/RemoveCache'
 import {
   OtherContents,
@@ -35,7 +35,7 @@ export struct SettingsPage {
             ListItem() {
               Column({ space: 20 }) {
                 SongClickAction()
-                CustomApiUrl()
+                SetApiUrl()
               }
               .padding(10)
             }.listItemStyle()

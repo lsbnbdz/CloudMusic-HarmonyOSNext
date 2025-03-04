@@ -13,6 +13,7 @@ import { getPlayLists } from "../../api/playListApi";
 @Component
 export struct Explore {
   @StorageProp(StorageConstants.IS_LOGGED) @Watch('getPlayLists') isLogged: boolean = false
+  @StorageProp(StorageConstants.VALID_API_URL) validApiUrl: boolean = true
   @StorageProp(StorageConstants.USER) user: User = UserClass
   @StorageProp('bottomRectHeight') bottomRectHeight: number = 0
   @StorageProp('topRectHeight') topRectHeight: number = 0
@@ -43,7 +44,7 @@ export struct Explore {
   }
 
   private async getTopLists() {
-    if(this.topList.length == 0) {
+    if(this.topList.length == 0 && this.validApiUrl) {
       this.isLoading = true
       const toplist = await getTopList()
       this.topList = toplist
@@ -53,7 +54,7 @@ export struct Explore {
   }
 
   async getPlayLists() {
-    if(this.isLogged && this.playLists.length == 0) {
+    if(this.isLogged && this.playLists.length == 0 && this.validApiUrl) {
       this.isLoading = true
       const playlist = await getPlayLists(0)
       this.playLists = playlist.playlist
@@ -101,8 +102,6 @@ export struct Explore {
                 })
                 .layoutWeight(1)
             }
-            .columnStart(0)
-            .columnEnd(1)
             .padding({ left: 20, right: 20 })
 
             GridItem() {
@@ -115,48 +114,64 @@ export struct Explore {
               }
               .width('100%')
             }
-            .columnStart(0)
-            .columnEnd(1)
 
             GridItem() {
-              Text(`排行榜`).textStyle(18)
-            }
-            .columnStart(0)
-            .columnEnd(1)
-            .padding({ top: 20 })
-
-            if (this.isLoading) {
-              GridItem() {
-                this.Loading(300)
-              }
-              .columnStart(0)
-              .columnEnd(1)
-            } else {
-              GridItem() {
-                GridRow({
-                  columns: {
-                    xs: 2,
-                    sm: 3,
-                    md: 2,
-                    lg: 3,
-                    xl: 3
+              Column({ space: 5 }) {
+                this.Intro('排行榜', () => {
+                  this.pageInfos.pushPathByName('TopListPage', null)
+                })
+                // 排行榜
+                if (this.isLoading) {
+                  GridItem() {
+                    this.Loading(300)
                   }
-                }) {
-                  ForEach(this.topList, (item: TopListItem) => {
-                    GridCol() {
-                      TopListItemCard({ topListItem: item }).padding(Constants.PADDING_EDGE_DEFAULT)
-                    }
-                  })
+                } else {
+                  List() {
+                    ListItem().width(15)
+                    ForEach(this.topList.slice(0, 5), (item: TopListItem, index) => {
+                      ListItem() {
+                        TopListItemCard({ topListItem: item }).padding(5)
+                      }
+                    })
+                    ListItem() {
+                      Button() {
+                        Column({ space: 5 }) {
+                          Stack({ alignContent: Alignment.Center }) {
+                            Image($r('app.media.bg4'))
+                              .width(120)
+                              .aspectRatio(1)
+                              .borderRadius(Constants.RADIUS_IMG)
+                              .draggable(false)
+                            Text('更多排行')
+                              .fontSize(Constants.FONT_SIZE_COMMON + 3)
+                              .fontWeight(FontWeight.Bold)
+                              .fontColor(Color.White)
+                          }
+                          .width(120)
+                          .aspectRatio(1)
+                          .backgroundColor(Color.Transparent)
+                        }
+                      }
+                      .backgroundColor(Color.Transparent)
+                      .borderRadius(Constants.RADIUS_CARD)
+                      .type(ButtonType.Normal)
+                      .width(120)
+                      .aspectRatio(1)
+                      .clickEffect({ level: ClickEffectLevel.LIGHT, scale: 0.9 })
+                      .onClick(() => { this.pageInfos.pushPathByName('TopListPage', null) })
+                    }.padding(5)
+                    ListItem().width(15)
+                  }
+                  .listDirection(Axis.Horizontal)
+                  .scrollBar(BarState.Off)
+                  .width('100%')
                 }
               }
-              .padding({ left: Constants.PADDING_EDGE_DEFAULT, right: Constants.PADDING_EDGE_DEFAULT })
-              .width('100%')
             }
+            .padding({ top: 20 })
 
             GridItem()
               .height(px2vp(this.bottomRectHeight) + 115)
-              .columnStart(0)
-              .columnEnd(1)
           }
           .height('100%')
           .width('100%')
@@ -208,12 +223,25 @@ export struct Explore {
     }
     .backgroundColor('#fff8b8b8')
   }
+
+  @Builder Intro(title: string, action: () => void) {
+    Row({ space: 5 }) {
+      Text(title)
+        .textStyle(18)
+      Image($r('app.media.ic_public_arrow_right'))
+        .width(Constants.SIZE_ICON_BUTTON_BAR)
+        .fillColor($r('app.color.reverse'))
+    }
+    .width('100%')
+    .justifyContent(FlexAlign.Start)
+    .clickEffect({ level: ClickEffectLevel.LIGHT, scale: 0.9 })
+    .onClick(action)
+  }
 }
 
 @Extend(Text) function textStyle(size: number) {
-  .width('100%')
   .fontSize(size)
   .fontWeight(FontWeight.Bold)
   .fontColor($r('app.color.reverse'))
-  .padding({ left: 20, right: 20 })
+  .padding({ left: 20 })
 }

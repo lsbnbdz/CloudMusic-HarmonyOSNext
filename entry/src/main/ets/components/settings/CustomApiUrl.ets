@@ -1,12 +1,12 @@
 import { CircleImageButton } from '../buttons/CircleButton'
-import { CustomApiUrlSheet } from '../sheets/CustomApiUrlSheet'
+import { SetApiSheet } from '../sheets/CustomApiUrlSheet'
 import Constants from '../../common/constants/Constants'
 
 /**
  * 自定义API地址
  */
 @Component
-export struct CustomApiUrl {
+export struct SetApiUrl {
   @State isShowSheet: boolean = false
   build() {
     Column({ space: 5 }) {
@@ -36,7 +36,7 @@ export struct CustomApiUrl {
 
   @Builder
   Sheet() {
-    CustomApiUrlSheet({ isShowSheet: this.isShowSheet })
+    SetApiSheet({ isShowSheet: this.isShowSheet })
   }
 }
 

@@ -10,6 +10,7 @@ import PlayQueueUtils from "../common/utils/play/PlayQueueUtils"
 import PreferencesUtils from "../common/utils/data/PreferencesUtils"
 import { JSON } from "@kit.ArkTS"
 import { StorageConstants } from "../common/constants/StorageConstants"
+import { Personalized, PersonalListItem } from "../common/entities/Personalized"
 
 /**
  * 歌单类API
@@ -180,19 +181,16 @@ export async function PlayListOperation(op:OperationType, pid:number, tracks:num
   const request = new HttpRequest(url)
   await request.Request().then((data) => {
     const dataGot:PlayListOperationRes = data.result as PlayListOperationRes
-
-    LogUtil.info(TAG + JSON.stringify(dataGot))
     if(dataGot.body) {
       if (dataGot.body.code == 200) {
-        LogUtil.info(TAG + 'PlayListOperation Success')
         return true
       } else {
-        LogUtil.info(TAG + 'PlayListOperation Error: ' + dataGot.body.message)
+        LogUtil.error(TAG + 'PlayListOperation Error: ' + dataGot.body.message)
         throw new Error(dataGot.body.message.toString())
       }
     }
     else {
-      LogUtil.info(TAG + 'PlayListOperation Error: ' + data.result["message"])
+      LogUtil.error(TAG + 'PlayListOperation Error: ' + data.result["message"])
       throw new Error(data.result["message"])
     }
   })
@@ -215,7 +213,6 @@ export async function getCloudList(offset:number): Promise<Array<Song>> {
   const url:string = `${rootUrl}/user/cloud?limit=50&offset=${offset}`
   const request = new HttpRequest(url)
   await request.RequestInStream().then((data) => {
-    LogUtil.info(TAG + 'got data: ' + JSON.stringify(data.result))
     const dataGot:CloudSongs = data.result as CloudSongs
     for(let song of dataGot.data) {
       list.push({
@@ -242,7 +239,6 @@ export async function searchPlayLists(keyword: string, offset:number): Promise<P
   const request = new HttpRequest(url)
   await request.RequestInStream().then((data) => {
     const dataGot:PlayListSearchResult = data.result as PlayListSearchResult
-    LogUtil.info(TAG + 'searchPlayLists - dataGot: ' + JSON.stringify(dataGot))
     hasMore = dataGot.result.hasMore
     list = dataGot.result.playlists
   })
@@ -264,7 +260,6 @@ export async function subscribePlayList(id: number, mode: number): Promise<boole
   const url: string = `${rootUrl}/playlist/subscribe?t=${mode}&id=${id}&timestamps=${new Date().getTime()}`
   const request = new HttpRequest(url)
   await request.Request(true).then((data) => {
-    LogUtil.info(TAG + 'subscribe playlist result: ' + JSON.stringify(data.result))
     if(data.responseCode == 200) {
       res = true
     } else if(data.responseCode == 401) {
@@ -274,4 +269,18 @@ export async function subscribePlayList(id: number, mode: number): Promise<boole
     }
   })
   return res
+}
+
+export async function getPersonalizedList(): Promise<Array<PersonalListItem>> {
+  let list: Array<PersonalListItem> = []
+  const rootUrl = await getApiUrl()
+  const url: string = `${rootUrl}/personalized?limit=10`
+  const request = new HttpRequest(url)
+  await request.RequestInStream().then((data) => {
+    const dataGot = data.result as Personalized
+    list = dataGot.result
+    AppStorage.setOrCreate(StorageConstants.PERSONALIZED_LIST, list)
+    PreferencesUtils.putPreferenceValue(StorageConstants.USER_PREF, StorageConstants.PERSONALIZED_LIST, list)
+  })
+  return list
 }

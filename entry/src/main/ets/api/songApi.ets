@@ -71,7 +71,6 @@ export async function getSongUrl(songId: number, quality:QualityType, isLogged:b
       const dataGot: SongPlay = data.result as SongPlay
       return dataGot
     } else {
-      LogUtil.info(TAG + 'code: ' + data.result["code"])
       throw new Error(`${data.result["code"]} - ${data.result["message"]}`)
     }
   } catch (e) {

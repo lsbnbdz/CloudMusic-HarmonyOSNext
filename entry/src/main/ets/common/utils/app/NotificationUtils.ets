@@ -24,11 +24,8 @@ class NotificationUtils {
           text: text,
         }
       },
-    }).then(() => {
-      LogUtil.info(TAG + '成功发送通知')
-    })
-      .catch((err:Error) => {
-      LogUtil.info(TAG + '发送通知失败' + err.message)
+    }).catch((err:Error) => {
+      LogUtil.error(TAG + '发送通知失败' + err.message)
     })
   }
 

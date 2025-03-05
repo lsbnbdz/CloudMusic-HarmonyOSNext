@@ -20,6 +20,7 @@ import { WarrantyDialog } from '../components/dialog/WarrantyDialog';
 import { TopListPage } from './TopListPage';
 import { ApiDialog } from '../components/dialog/ApiDialog';
 import PreferencesUtils from '../common/utils/data/PreferencesUtils';
+import { DebugPage } from './DebugPage';
 
 @Entry
 @Component
@@ -131,6 +132,9 @@ struct Index {
     }
     else if(name == 'TopListPage') {
       TopListPage()
+    }
+    else if(name == 'DebugPage') {
+      DebugPage()
     }
   }
 

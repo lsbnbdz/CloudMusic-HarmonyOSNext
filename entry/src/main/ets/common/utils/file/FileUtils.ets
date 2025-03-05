@@ -73,9 +73,7 @@ class FileUtils {
 
   async moveFile(from:string, to:string) {
     try {
-      FileUtil.moveFile(from, to).then(() => {
-        LogUtil.info(TAG + '成功移动文件')
-      })
+      FileUtil.moveFile(from, to)
     } catch (e) {
       LogUtil.error(TAG + '移动文件时出错 move file error: ' + e.message())
     }

@@ -34,19 +34,15 @@ class AVSessionUtils {
       else this.cycleMode = 0
 
       session.on('play', () => {
-        LogUtil.info(TAG + '播控中心点击事件: Play')
         resumeMusic()
       });
       session.on('pause', () => {
-        LogUtil.info(TAG + '播控中心点击事件: Pause')
         pauseMusic()
       });
       session.on('playNext', () => {
-        LogUtil.info(TAG + '播控中心点击事件: PlayNext')
         playNext()
       });
       session.on('playPrevious', () => {
-        LogUtil.info(TAG + '播控中心点击事件: PlayPrevious')
         playPre()
       });
       session.on('seek', (time) => {

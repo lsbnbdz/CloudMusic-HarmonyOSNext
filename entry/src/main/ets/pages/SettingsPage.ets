@@ -1,4 +1,3 @@
-import { UsePublicCookie } from '../components/settings/UsePublicCookie'
 import { SetPlayQuality } from '../components/settings/SetPlayQuality'
 import { SetApiUrl } from '../components/settings/CustomApiUrl'
 import { RemoveCache } from '../components/settings/RemoveCache'

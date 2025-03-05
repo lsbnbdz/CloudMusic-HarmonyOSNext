@@ -39,7 +39,16 @@ export struct OtherContents {
 
   build() {
     Column() {
-      TextContent('当前版本', AppConstants.VERSION + AppConstants.VER_DESC)
+      Column() {
+        TextContent('当前版本', AppConstants.VERSION + AppConstants.VER_DESC)
+      }
+      .gesture(
+        TapGesture({
+          count: 5
+        }).onAction(() => {
+          this.pageInfos.pushDestinationByName('DebugPage', null)
+        })
+      )
       TextContent('建议反馈', '', () => {
         let param: WebPageParam = {
           title: '建议反馈', url: 'https://www.wjx.cn/vm/PeLnYfc.aspx#'

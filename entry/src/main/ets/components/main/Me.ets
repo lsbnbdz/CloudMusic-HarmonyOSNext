@@ -25,8 +25,8 @@ export struct Me {
           .justifyContent(FlexAlign.Center)
           .width('100%')
           .padding({ bottom: 10 })
-        } else if(!this.isValidAPI || !this.isValidCookie) {
-          Text('服务不可用\n请检查API服务器和Cookie设置').textStyle(Constants.FONT_SIZE_TITLE).fontWeight(FontWeight.Bold)
+        } else if((!this.isValidAPI)) {
+          Text('服务不可用\n请检查API服务器设置').textStyle(Constants.FONT_SIZE_TITLE).fontWeight(FontWeight.Bold)
         } else if(this.appLoading) {
           LoadingProgress().width(40)
         } else {

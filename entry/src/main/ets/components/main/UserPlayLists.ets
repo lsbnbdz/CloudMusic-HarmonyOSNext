@@ -44,7 +44,6 @@ export struct UserPlayLists {
 
   async getPlayLists() {
     if(this.isLogged && this.user && this.playLists.length == 0) {
-      LogUtil.info(TAG + 'Start getPlayLists')
       this.isLoading = true
       const playlist = await getPlayLists(0)
       this.playLists = playlist.playlist

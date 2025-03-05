@@ -50,7 +50,8 @@ export struct PlayListPage {
         DialogUtil.showConfirmDialog({
           title: '歌单操作',
           message: '增删歌曲：左滑歌曲卡片\n\n' +
-            '收藏歌单：点击信息栏右边爱心图标'
+            '收藏歌单：点击信息栏右边爱心图标\n\n' +
+            '搜索歌单：接口限制，仅支持搜索已加载的部分歌曲'
         })
       }
     }
@@ -72,7 +73,6 @@ export struct PlayListPage {
     }
 
     try {
-      LogUtil.info(TAG + 'loadSongs: ' + `limit: ${limit}, offset: ${offset}`)
       const result = await getPlayListSongs(this.param.playList.id, this.param.playList.trackCount, offset)
       this.list = [...this.list, ...result] // 合并歌曲列表
       this.currentOffset += limit
@@ -334,7 +334,6 @@ export struct PlayListPage {
         fontColor: Color.Red,
         action: async () => {
           let res: boolean = await subscribePlayList(this.param.playList.id, 2)
-          LogUtil.info(TAG + 'res: ' + res)
           if(res) {
             ToastUtil.showToast('取消收藏歌单')
             this.isSubscribed = false

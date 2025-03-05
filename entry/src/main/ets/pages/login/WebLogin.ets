@@ -94,7 +94,6 @@ export struct WebLogin {
       if (await this.checkValidCookie(cookie)) {
         cookie = cookie + '; OS=pc'
         AppStorage.setOrCreate(StorageConstants.COOKIE,cookie)
-        LogUtil.info('Cookie => ' + cookie)
         let result = await getLoginStatus(cookie)
         return result
       } else {
@@ -118,7 +117,6 @@ export struct WebLogin {
       if (hasMusicU && hasCsrf) {
         return true
       } else {
-        LogUtil.info('Cookie 无效: ', cookie)
         return false
       }
     } catch (error) {

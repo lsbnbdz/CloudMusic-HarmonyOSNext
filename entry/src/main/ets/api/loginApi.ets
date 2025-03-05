@@ -28,7 +28,6 @@ export async function getLoginStatus(cookie: string): Promise<boolean> {
       AppStorage.setOrCreate(StorageConstants.VALID_COOKIE, true)
       AppStorage.setOrCreate(StorageConstants.USER, user)
       AppStorage.setOrCreate(StorageConstants.IS_LOGGED, true)
-      LogUtil.info(TAG + '获取登录状态成功: 已登录')
       return true
     } else {
       await PreferencesUtils.delPreferenceValue(StorageConstants.USER_PREF, StorageConstants.USER)
@@ -38,7 +37,6 @@ export async function getLoginStatus(cookie: string): Promise<boolean> {
       AppStorage.setOrCreate(StorageConstants.COOKIE, '')
       AppStorage.setOrCreate(StorageConstants.IS_LOGGED, false)
       AppStorage.setOrCreate(StorageConstants.USER_PLAYLISTS, [])
-      LogUtil.info(TAG + '获取登录状态成功: 未登录')
       return false
     }
   } catch (error) {

@@ -24,7 +24,6 @@ class AudioPlayUtils {
     try {
       await this.mPlayer.init({ immediately: false, loop: false })
       this.onState()
-      LogUtil.info(TAG + '播放器初始化完成')
     } catch (e) {
       LogUtil.error(TAG + '播放器初始化失败')
       throw new Error(e)
@@ -67,25 +66,21 @@ class AudioPlayUtils {
     this.clearInterval()
     this.mPlayer.stop()
     ContinuousTask.stopTask()
-    LogUtil.info(TAG + '停止播放')
   }
 
   async pause() {
     this.clearInterval()
     this.mPlayer.pause()
-    LogUtil.info(TAG + '暂停播放')
   }
 
   async resume() {
     this.play()
-    LogUtil.info(TAG + '继续播放')
   }
 
   async seek(time: number) {
     this.mPlayer.currentTime = time
     this.mPlayer.seek(time)
     AVSessionUtils.playState(time)
-    LogUtil.info(TAG + `跳转至 ${time} ( ${changeDuration(time)} )`)
   }
 
   clearInterval() {

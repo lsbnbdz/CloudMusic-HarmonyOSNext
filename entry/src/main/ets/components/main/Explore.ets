@@ -8,7 +8,9 @@ import { getTopList } from "../../api/topListApi";
 import { TopListItemCard } from "../cards/TopListItemCard";
 import { StorageConstants } from "../../common/constants/StorageConstants";
 import { PlayList } from "../../common/entities/PlayList";
-import { getPlayLists } from "../../api/playListApi";
+import { getPersonalizedList, getPlayLists } from "../../api/playListApi";
+import { PersonalListItem } from "../../common/entities/Personalized";
+import { PersonalizedCard } from "../cards/PersonalizedCard";
 
 @Component
 export struct Explore {
@@ -24,8 +26,9 @@ export struct Explore {
   }
   @StorageLink(StorageConstants.USER_PLAYLISTS) playLists: Array<PlayList> = []
   @StorageLink(StorageConstants.TOPLISTS) topList: Array<TopListItem> = []
+  @StorageLink(StorageConstants.PERSONALIZED_LIST) personalizedList: Array<PersonalListItem> = []
   @State isLoading: boolean = false
-  @State isLoadingMore: boolean = false
+  @State isLoadingPersonalized: boolean = false
   @State columnsTemplate: string = '1fr'
   @State isRefreshing: boolean = false
   @State lastRefreshTime: number = 0
@@ -37,6 +40,7 @@ export struct Explore {
       setTimeout(async () => {
         await this.getTopLists()
         await this.getPlayLists()
+        await this.getPersonalizedList()
       }, 500)
     } catch (e) {
       LogUtil.error('Error: ' + e.message)
@@ -63,6 +67,15 @@ export struct Explore {
     else return
   }
 
+  async getPersonalizedList() {
+    if(this.isLogged && this.personalizedList.length == 0) {
+      this.isLoadingPersonalized = true
+      this.personalizedList = await getPersonalizedList()
+      this.isLoadingPersonalized = false
+    }
+    else return
+  }
+
   private async refreshContent() {
     this.isRefreshing = true
     const currentTime = new Date().getTime()
@@ -72,6 +85,8 @@ export struct Explore {
       try {
         const toplist = await getTopList()
         this.topList = toplist
+        const personalizedlist = await getPersonalizedList()
+        this.personalizedList = personalizedlist
         this.lastRefreshTime = currentTime
         ToastUtil.showToast('刷新成功')
       } catch (e) {
@@ -160,6 +175,32 @@ export struct Explore {
                       .clickEffect({ level: ClickEffectLevel.LIGHT, scale: 0.9 })
                       .onClick(() => { this.pageInfos.pushPathByName('TopListPage', null) })
                     }.padding(5)
+                    ListItem().width(15)
+                  }
+                  .listDirection(Axis.Horizontal)
+                  .scrollBar(BarState.Off)
+                  .width('100%')
+                }
+              }
+            }
+            .padding({ top: 20 })
+
+            GridItem() {
+              Column({ space: 5 }) {
+                this.Intro('推荐歌单', () => {})
+                // 推荐歌单
+                if (this.isLoadingPersonalized) {
+                  GridItem() {
+                    this.Loading(300)
+                  }
+                } else {
+                  List() {
+                    ListItem().width(15)
+                    ForEach(this.personalizedList, (item: PersonalListItem, index) => {
+                      ListItem() {
+                        PersonalizedCard({ item: item }).padding(5)
+                      }
+                    })
                     ListItem().width(15)
                   }
                   .listDirection(Axis.Horizontal)

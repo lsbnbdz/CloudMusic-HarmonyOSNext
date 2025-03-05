@@ -68,13 +68,12 @@ export struct PlayListAddSheet {
                 .width('100%')
                 .height(60)
                 .onClick(async () => {
-                  LogUtil.info(TAG + 'songId: ' + this.songId)
                   try {
                     await PlayListOperation('add', item.id, this.songId)
                     ToastUtil.showToast('成功添加到歌单')
                     this.isShow = false
                   } catch (e) {
-                    LogUtil.info(TAG + 'Add to PlayList Error: ' + e)
+                    LogUtil.error(TAG + 'Add to PlayList Error: ' + e)
                     ToastUtil.showToast(e.message)
                   }
                 })

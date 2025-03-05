@@ -31,7 +31,6 @@ class PlayQueueUtils {
       AppStorage.setOrCreate('currentQueueIndex',this.currentQueueIndex)
       AppStorage.setOrCreate('PlayQueue',this.queue)
       AppStorage.setOrCreate('cycleMode', circleMode)
-      LogUtil.info(TAG + '初始化播放列表成功')
     } catch (e) {
       LogUtil.error(TAG + '初始化播放列表 init playqueue error: ' + e.message())
     }

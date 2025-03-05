@@ -192,4 +192,9 @@ export class StorageConstants {
    * @description AppStorage & Preference
    */
   static readonly SONG_CLICK_ACTION: string = 'songClickAction'
+  /**
+   * 个性化推荐歌单
+   * @description AppStorage & Preference
+   */
+  static readonly PERSONALIZED_LIST: string = 'personalizedList'
 }

@@ -10,7 +10,6 @@ const TAG = '[settings] '
  * 初始化应用设置
  */
 export async function initSettings() {
-  LogUtil.info(TAG + '开始初始化设置')
   const SetPerf = StorageConstants.SET_PERF
 
   // 并行处理无依赖的配置项

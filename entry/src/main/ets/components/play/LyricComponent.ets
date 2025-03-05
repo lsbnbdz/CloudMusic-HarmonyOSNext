@@ -58,7 +58,7 @@ export struct LyricComponent {
                 seekMusic(item.time)
               })
               .animation({
-                duration: 500,
+                duration: 300,
                 curve: Curve.LinearOutSlowIn
               })
           }

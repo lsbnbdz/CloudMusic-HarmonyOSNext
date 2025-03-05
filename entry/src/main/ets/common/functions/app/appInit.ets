@@ -11,6 +11,7 @@ import { getLoginStatus } from "../../../api/loginApi"
 import { PlayList } from "../../entities/PlayList"
 import { TopListItem } from "../../entities/TopList"
 import { getLikeList } from "../../../api/songApi"
+import { PersonalListItem } from "../../entities/Personalized"
 
 /**
  * App初始化
@@ -20,18 +21,17 @@ const TAG = '[appInit] '
 export async function appInit() {
   AppStorage.setOrCreate(StorageConstants.APP_LOADING, true)
   await initSettings()
+  await initPlayQueue()
   loadSavedSong()
   initPermission()
   initLocalData()
   getAnnouncement()
   await initUserInfo()
-  await initPlayQueue()
   AppStorage.setOrCreate(StorageConstants.APP_LOADING, false)
 }
 
 async function initPermission() {
   notificationManager.requestEnableNotification(AppUtil.getContext()).then(() => {
-    LogUtil.info(TAG + '成功请求通知权限')
   })
 }
 
@@ -47,20 +47,22 @@ async function initUserInfo() {
 }
 
 async function initLocalData() {
-  let deviceType = await getDeviceTypeInfo()
-  AppStorage.setOrCreate(StorageConstants.DEVICE_TYPE, deviceType)
-
   let userLikeList: string[] = []
   AppStorage.setOrCreate(StorageConstants.USER_LIKELIST, userLikeList)
 
-  let userPlayLists = await PreferencesUtils.getPreferenceValue<PlayList[]>(StorageConstants.USER_PREF, StorageConstants.USER_PLAYLISTS, [])
-  AppStorage.setOrCreate(StorageConstants.USER_PLAYLISTS, userPlayLists)
+  const results = await Promise.all([
+    getDeviceTypeInfo(),
+    PreferencesUtils.getPreferenceValue<PlayList[]>(StorageConstants.USER_PREF, StorageConstants.USER_PLAYLISTS, []),
+    PreferencesUtils.getPreferenceValue<TopListItem[]>(StorageConstants.USER_PREF, StorageConstants.TOPLISTS, []),
+    PreferencesUtils.getPreferenceValue<PersonalListItem[]>(StorageConstants.USER_PREF, StorageConstants.PERSONALIZED_LIST, []),
+    PreferencesUtils.getPreferenceValue<string[]>(StorageConstants.USER_PREF, StorageConstants.SEARCH_HISTORY, [])
+  ])
 
-  let topLists = await PreferencesUtils.getPreferenceValue<TopListItem[]>(StorageConstants.USER_PREF, StorageConstants.TOPLISTS, [])
-  AppStorage.setOrCreate(StorageConstants.TOPLISTS, topLists)
-
-  let searchHistory = await PreferencesUtils.getPreferenceValue<string[]>(StorageConstants.USER_PREF, StorageConstants.SEARCH_HISTORY, [])
-  AppStorage.setOrCreate(StorageConstants.SEARCH_HISTORY, searchHistory)
+  AppStorage.setOrCreate(StorageConstants.DEVICE_TYPE, results[0])
+  AppStorage.setOrCreate(StorageConstants.USER_PLAYLISTS, results[1])
+  AppStorage.setOrCreate(StorageConstants.TOPLISTS, results[2])
+  AppStorage.setOrCreate(StorageConstants.PERSONALIZED_LIST, results[3])
+  AppStorage.setOrCreate(StorageConstants.SEARCH_HISTORY, results[4])
 }
 
 /**

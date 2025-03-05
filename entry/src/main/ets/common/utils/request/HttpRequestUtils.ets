@@ -19,7 +19,6 @@ export class HttpRequest {
   constructor(url: string, usingCache?:boolean) {
     this.url = url
     if(usingCache) { this.usingCache = usingCache }
-    LogUtil.info(TAG + 'HTTPRequest: ' + url)
   }
 
   /**
@@ -45,7 +44,6 @@ export class HttpRequest {
           readTimeout: 15000,
         }, (err: BusinessError, data: http.HttpResponse) => {
         if (!err) {
-          LogUtil.info(TAG + '[RESULT] ' + JSON.stringify(data.result))
           httpRequest.destroy()
           resolve(data)  // 返回请求数据
         } else {

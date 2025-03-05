@@ -14,9 +14,8 @@ class PreferencesUtils {
     try {
       const preference = await preferences.getPreferences(context, name)
       this.preferencesMap.set(name,preference)
-      LogUtil.info(TAG + `加载 Preference ${name} 成功`)
     } catch (e) {
-      LogUtil.info(TAG + `加载 Preference ${name} 失败: ${JSON.stringify(e)}`)
+      LogUtil.error(TAG + `加载 Preference ${name} 失败: ${JSON.stringify(e)}`)
       throw new Error(`加载 Preference ${name} 失败: ${JSON.stringify(e)}`)
     }
   }
@@ -31,7 +30,6 @@ class PreferencesUtils {
       const preference = this.preferencesMap.get(name)
       await preference?.put(key, value)
       await preference?.flush()
-      LogUtil.info(TAG + `保存 Preference ${name} 成功`)
     } catch (e) {
       LogUtil.error(TAG + `保存 Preference ${name} 失败: ${JSON.stringify(e)}`)
     }
@@ -40,17 +38,15 @@ class PreferencesUtils {
   // 读取数据
   async getPreferenceValue<T extends preferences.ValueType>(name: string, key: string, defaultValue: T): Promise<T> {
     if (!this.preferencesMap.has(name)) {
-      throw new Error(TAG + `Preference ${name} 尚未初始化`);
+      throw new Error(TAG + `Preference ${name} 尚未初始化`)
     }
     try {
-      LogUtil.info(TAG + `开始读取 Preference ${name}.${key}`);
-      const preference = this.preferencesMap.get(name);
-      const value = await preference?.get(key, defaultValue);
-      LogUtil.info(TAG + `读取 Preference ${name}.${key}=${JSON.stringify(value)} 成功`);
+      const preference = this.preferencesMap.get(name)
+      const value = await preference?.get(key, defaultValue)
       return value as T;
     } catch (e) {
-      LogUtil.error(TAG + `读取 Preference ${name} 失败: ${JSON.stringify(e)}`);
-      throw new Error(TAG + `无法读取 Preference ${name}.${key}`);
+      LogUtil.error(TAG + `读取 Preference ${name} 失败: ${JSON.stringify(e)}`)
+      throw new Error(TAG + `无法读取 Preference ${name}.${key}`)
     }
   }
 
@@ -65,7 +61,6 @@ class PreferencesUtils {
       const preference = this.preferencesMap.get(name)
       await preference?.delete(key)
       await preference?.flush()
-      LogUtil.info(TAG + `删除 Preference ${name}.${key} 成功`)
     } catch (e) {
       LogUtil.error(TAG + `删除 Preference ${name} 失败: ${JSON.stringify(e)}`)
     }

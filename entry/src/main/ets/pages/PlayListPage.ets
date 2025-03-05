@@ -5,7 +5,7 @@ import { DialogUtil, LogUtil, ToastUtil } from '@pura/harmony-utils'
 import { getPlayListSongs, PlayListOperation, subscribePlayList } from '../api/playListApi'
 import { BottomBarComponent } from '../components/play/BottomBarComponent'
 import { DialogAction } from '@pura/harmony-utils/src/main/ets/entity/constraint'
-import { formatNumber } from '../common/functions/commonFunction'
+import { formatNumber } from '../common/functions/common/convert'
 import { playListToQueue } from '../common/functions/play/playListOp'
 import { AddToPlayListButton } from '../components/buttons/play/AddToPlayListButton'
 import Constants from '../common/constants/Constants'
@@ -51,7 +51,7 @@ export struct PlayListPage {
           title: '歌单操作',
           message: '增删歌曲：左滑歌曲卡片\n\n' +
             '收藏歌单：点击信息栏右边爱心图标\n\n' +
-            '搜索歌单：接口限制，仅支持搜索已加载的部分歌曲'
+            '搜索歌单：本地搜索，仅支持搜索已加载的部分歌曲'
         })
       }
     }
@@ -151,6 +151,7 @@ export struct PlayListPage {
               .padding({ left: 20, right: 20, bottom: 10 })
               .justifyContent(FlexAlign.Center)
             }
+
 
             if (this.isLoading) {
               ForEach([1, 2, 3, 4, 5, 6, 7, 8, 9, 10], () => {

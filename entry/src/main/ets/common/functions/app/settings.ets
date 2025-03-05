@@ -16,12 +16,12 @@ export async function initSettings() {
   await Promise.all([
     // API地址
     (async () => {
-      const exists = await PreferencesUtils.hasPreferenceValue(SetPerf, StorageConstants.CUSTOM_API_URL)
+      const exists = await PreferencesUtils.hasPreferenceValue(SetPerf, StorageConstants.API_URL)
       const value = exists
-        ? await PreferencesUtils.getPreferenceValue(SetPerf, StorageConstants.CUSTOM_API_URL, '')
-        : 'https://'
-      if (!exists) await PreferencesUtils.putPreferenceValue(SetPerf, StorageConstants.CUSTOM_API_URL, '')
-      AppStorage.setOrCreate(StorageConstants.CUSTOM_API_URL, value)
+        ? await PreferencesUtils.getPreferenceValue(SetPerf, StorageConstants.API_URL, 'https://api-ncm.chenlvin.cc')
+        : 'https://api-ncm.chenlvin.cc'
+      if (!exists) await PreferencesUtils.putPreferenceValue(SetPerf, StorageConstants.API_URL, '')
+      AppStorage.setOrCreate(StorageConstants.API_URL, value)
     })(),
 
     // 默认主页

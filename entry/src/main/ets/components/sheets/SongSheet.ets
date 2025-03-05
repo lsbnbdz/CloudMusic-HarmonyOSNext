@@ -2,7 +2,7 @@ import Constants from "../../common/constants/Constants";
 import { StorageConstants } from "../../common/constants/StorageConstants";
 import { PlayList, playListClass } from "../../common/entities/PlayList";
 import { Song, SongClass } from "../../common/entities/SongsResult";
-import { changeDuration } from "../../common/functions/commonFunction";
+import { changeDuration } from "../../common/functions/common/convert";
 import { playMusicByUrl } from "../../common/functions/play/playControl";
 import { playListToQueue } from "../../common/functions/play/playListOp";
 import PlayQueueUtils from "../../common/utils/play/PlayQueueUtils";

@@ -4,9 +4,9 @@ import { JSON } from "@kit.ArkTS";
 import Constants from "../common/constants/Constants";
 import { resourceManager } from "@kit.LocalizationKit";
 import { AppConstants } from "../common/constants/AppConstants";
-import { getApiUrl } from "../common/functions/commonFunction";
 import { promptAction } from "@kit.ArkUI";
 import { HttpRequest } from "../common/utils/request/HttpRequestUtils";
+import { getApiUrl } from "../common/functions/common/get";
 
 @Component
 export struct DebugPage {

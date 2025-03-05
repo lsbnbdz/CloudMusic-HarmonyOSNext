@@ -8,3 +8,4 @@ import LyricUtils from "../../utils/play/LyricUtils";
 export function getLyricObjects(): Lyric[] {
   return LyricUtils.lyricObjects
 }
+

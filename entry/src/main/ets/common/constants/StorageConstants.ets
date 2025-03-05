@@ -183,7 +183,7 @@ export class StorageConstants {
    * 自定义API Url & Cookie
    * @description AppStorage & Preference
    */
-  static readonly CUSTOM_API_URL: string = 'customApiUrl'
+  static readonly API_URL: string = 'apiUrl'
   static readonly CUSTOM_COOKIE: string = 'customCookie'
   static readonly IS_CUSTOM_COOKIE: string = 'isCustomCookie'
   /**

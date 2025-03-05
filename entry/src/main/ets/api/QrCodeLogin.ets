@@ -1,6 +1,7 @@
-import { LogUtil, ToastUtil } from "@pura/harmony-utils"
+import { ToastUtil } from "@pura/harmony-utils"
 import { StorageConstants } from "../common/constants/StorageConstants"
-import { getApiUrl, removeHTTPOnly } from "../common/functions/commonFunction"
+import { removeHTTPOnly } from "../common/functions/common/convert"
+import { getApiUrl } from "../common/functions/common/get"
 import { HttpRequest } from "../common/utils/request/HttpRequestUtils"
 import { getLoginStatus } from "./loginApi"
 

@@ -1,7 +1,7 @@
 import { QualityType, SongDownload } from "../common/entities/SongDownload"
 import { HttpRequest } from "../common/utils/request/HttpRequestUtils"
 import { LogUtil } from "@pura/harmony-utils"
-import { getApiUrl, isUsePubCookie } from "../common/functions/commonFunction"
+import { getApiUrl } from "../common/functions/common/get"
 
 /**
  * 获取音乐地址

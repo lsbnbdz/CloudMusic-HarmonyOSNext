@@ -1,23 +1,8 @@
-import Constants from "../constants/Constants"
-import { Artist, Song } from "../entities/SongsResult"
+import { Artist, Song } from "../../entities/SongsResult"
 import { util } from "@kit.ArkTS"
 import { media } from "@kit.MediaKit"
 import { fileIo } from "@kit.CoreFileKit"
-import { StorageConstants } from "../constants/StorageConstants"
-
-/**
- * 通用函数
- */
-
-/**
- * 获取网易云API Url
- * （根据用户设置）
- * @returns string - ApiUrl
- */
-export async function getApiUrl(): Promise<string | undefined> {
-  return AppStorage.get(StorageConstants.CUSTOM_API_URL)
-}
-
+import { StorageConstants } from "../../constants/StorageConstants"
 /**
  * 获取metadata
  * @param fileUrl
@@ -86,16 +71,6 @@ export function changeDuration(dur: number): string {
   const minutes = Math.floor(seconds / 60)
   const remainingSeconds = seconds % 60
   return `${minutes}:${remainingSeconds < 10 ? '0' + remainingSeconds : remainingSeconds}`
-}
-
-/**
- * 是否使用公共Cookie（根据用户设置）
- * @returns
- */
-export async function isUsePubCookie(): Promise<boolean> {
-  const isUsePubCookie:boolean | undefined = AppStorage.get(StorageConstants.USE_PUBLIC_COOKIE)
-  if(isUsePubCookie) return true
-  else return false
 }
 
 /**

@@ -22,7 +22,7 @@ export struct PersonalizedCard {
         .height(80)
         .borderRadius(Constants.RADIUS_IMG)
 
-      Column() {
+      Column({ space: 5 }) {
         Text(this.item.name)
           .fontColor($r('app.color.reverse'))
           .fontWeight(FontWeight.Bold)
@@ -30,8 +30,16 @@ export struct PersonalizedCard {
           .width('100%')
           .textAlign(TextAlign.Start)
           .lineHeight(22)
+          .maxLines(3)
+          .textOverflow({ overflow: TextOverflow.Ellipsis })
+        if(this.item.copywriter) {
+          Text(this.item.copywriter)
+            .reasonText()
+        }
       }
+      .height(80)
       .layoutWeight(1)
+      .justifyContent(FlexAlign.SpaceBetween)
     }
     .padding(Constants.PADDING_EDGE_DEFAULT)
     .width(250)
@@ -49,7 +57,7 @@ export struct PersonalizedCard {
           subscribed: false,
           creator: {
             userId: 0,
-            nickname: '官方'
+            nickname: '推荐歌单'
           }
         },
         isShowHeart: false
@@ -61,4 +69,13 @@ export struct PersonalizedCard {
       }
     })
   }
+}
+
+@Extend(Text) function reasonText() {
+  .alignSelf(ItemAlign.Start)
+  .fontColor('#ffff3232')
+  .fontSize(10)
+  .padding(2)
+  .backgroundColor('#ffffd2d2')
+  .borderRadius(5)
 }

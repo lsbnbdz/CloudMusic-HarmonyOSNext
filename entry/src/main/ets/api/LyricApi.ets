@@ -1,7 +1,7 @@
 import { LyricResult } from "../common/entities/Lyric";
-import { getApiUrl } from "../common/functions/commonFunction";
 import { HttpRequest } from "../common/utils/request/HttpRequestUtils";
 import LyricUtils from "../common/utils/play/LyricUtils";
+import { getApiUrl } from "../common/functions/common/get";
 
 /**
  * 歌词类API

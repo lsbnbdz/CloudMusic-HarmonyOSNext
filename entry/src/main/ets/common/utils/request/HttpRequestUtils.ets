@@ -1,9 +1,9 @@
 import { http } from "@kit.NetworkKit"
 import { BusinessError } from "@kit.BasicServicesKit"
 import { LogUtil } from "@pura/harmony-utils"
-import { uint8ArrayToString } from "../../functions/commonFunction"
+import { uint8ArrayToString } from "../../functions/common/convert"
 import { MsgConstants } from "../../constants/MsgConstants"
-import { getCookie } from "../../functions/get"
+import { getCookie } from "../../functions/common/get"
 import { promptAction } from "@kit.ArkUI"
 
 /**

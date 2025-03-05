@@ -4,13 +4,13 @@ import { CloudSongs, DailyListSongs, PlayListSongs } from "../common/entities/Pl
 import { PlayQueue } from "../common/entities/PlayQueue"
 import { Artist, Song } from "../common/entities/SongsResult"
 import { User, UserClass } from "../common/entities/User"
-import { getApiUrl, getArtists } from "../common/functions/commonFunction"
+import { getArtists } from "../common/functions/common/convert"
 import { HttpRequest } from "../common/utils/request/HttpRequestUtils"
 import PlayQueueUtils from "../common/utils/play/PlayQueueUtils"
 import PreferencesUtils from "../common/utils/data/PreferencesUtils"
-import { JSON } from "@kit.ArkTS"
 import { StorageConstants } from "../common/constants/StorageConstants"
 import { Personalized, PersonalListItem } from "../common/entities/Personalized"
+import { getApiUrl } from "../common/functions/common/get"
 
 /**
  * 歌单类API
@@ -266,6 +266,7 @@ export async function subscribePlayList(id: number, mode: number): Promise<boole
       ToastUtil.showToast('无法操作当前歌单')
     } else {
       ToastUtil.showToast('操作失败')
+      LogUtil.error(TAG + 'Error: ' + JSON.stringify(data.result))
     }
   })
   return res

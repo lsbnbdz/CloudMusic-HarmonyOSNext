@@ -1,5 +1,5 @@
 import { DialogUtil, ToastUtil } from "@pura/harmony-utils"
-import { logOut } from "../../api/loginApi"
+import { getLoginStatus, logOut } from "../../api/loginApi"
 import Constants from "../../common/constants/Constants"
 import { StorageConstants } from "../../common/constants/StorageConstants"
 import { User, UserClass } from "../../common/entities/User"
@@ -11,8 +11,17 @@ export struct Me {
   @StorageProp(StorageConstants.USER) user: User = UserClass
   @StorageProp(StorageConstants.VALID_API_URL) isValidAPI: boolean = true
   @StorageProp(StorageConstants.VALID_COOKIE) isValidCookie: boolean = true
+  @StorageProp(StorageConstants.COOKIE) cookie: string = ''
   @StorageProp(StorageConstants.APP_LOADING) appLoading: boolean = true
   @Consume('pageInfos') pageInfos: NavPathStack
+
+  async aboutToAppear(): Promise<void> {
+    if(this.isValidAPI && this.cookie && !this.isLogged) {
+      this.appLoading = true
+      await getLoginStatus(this.cookie)
+      this.appLoading = false
+    }
+  }
 
   build() {
     Column({ space: 10 }) {

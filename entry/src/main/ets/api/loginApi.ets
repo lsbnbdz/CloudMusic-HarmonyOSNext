@@ -1,9 +1,9 @@
 import { LogUtil } from "@pura/harmony-utils"
 import { User } from "../common/entities/User"
-import { getApiUrl } from "../common/functions/commonFunction"
 import { HttpRequest } from "../common/utils/request/HttpRequestUtils"
 import PreferencesUtils from "../common/utils/data/PreferencesUtils"
 import { StorageConstants } from "../common/constants/StorageConstants"
+import { getApiUrl } from "../common/functions/common/get"
 
 const TAG = '[loginApi] '
 /**

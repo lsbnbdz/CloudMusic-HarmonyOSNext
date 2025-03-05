@@ -1,5 +1,5 @@
 import { Song, SongClass } from "../../common/entities/SongsResult"
-import { changeDuration } from "../../common/functions/commonFunction"
+import { changeDuration } from "../../common/functions/common/convert"
 import { pauseMusic, playNext, playPre, resumeMusic, seekMusic } from "../../common/functions/play/playControl"
 import { AddToPlayListCircleButton } from "../buttons/play/AddToPlayListButton"
 import { LoopModeButton } from "../buttons/play/LoopModeButton"

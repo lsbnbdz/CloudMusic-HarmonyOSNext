@@ -10,7 +10,14 @@ export struct WebPage {
   }
   menus: NavigationMenuItem[] = [
     {
-      value: '刷新',
+      value: 'back',
+      icon: $r('app.media.ic_public_back'),
+      action: () => {
+        this.controller.backward()
+      }
+    },
+    {
+      value: 'refresh',
       icon: $r('app.media.ic_public_refresh'),
       action: () => {
         this.controller.refresh()
@@ -32,6 +39,7 @@ export struct WebPage {
           .onlineImageAccess(true)
           .width('100%')
           .layoutWeight(1)
+          .darkMode(WebDarkMode.Auto)
           .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
       }
       .height('100%')

@@ -1,6 +1,6 @@
 import { EmitterUtil } from "@pura/harmony-utils"
 import { Lyric } from "../../common/entities/Lyric"
-import { getLyricObjects } from "../../common/functions/play/lyricOp"
+import { getLyricObjects } from "../../common/functions/play/lyric"
 import { seekMusic } from "../../common/functions/play/playControl"
 import { LengthUnit } from "@kit.ArkUI"
 import { EmitterConstants } from "../../common/constants/EmitterConstants"
@@ -62,6 +62,7 @@ export struct LyricComponent {
                 curve: Curve.LinearOutSlowIn
               })
           }
+          .clickEffect({ level: ClickEffectLevel.LIGHT, scale: 0.9 })
           .padding({ left: 20, right: 20 })
         })
       }

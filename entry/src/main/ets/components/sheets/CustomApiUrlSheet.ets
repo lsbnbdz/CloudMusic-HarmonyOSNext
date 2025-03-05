@@ -1,7 +1,8 @@
 import { DialogUtil, ToastUtil } from "@pura/harmony-utils"
 import Constants from "../../common/constants/Constants"
 import { StorageConstants } from "../../common/constants/StorageConstants"
-import { openInWeb } from "../../common/functions/app/open"
+import { checkValidUrl } from "../../common/functions/common/get"
+import { openInWeb } from "../../common/functions/common/open"
 import PreferencesUtils from "../../common/utils/data/PreferencesUtils"
 import { ExplainButton } from "../buttons/ExplainButton"
 
@@ -13,7 +14,8 @@ import { ExplainButton } from "../buttons/ExplainButton"
 export struct SetApiSheet {
   @StorageLink(StorageConstants.IS_CUSTOM_COOKIE) isCustomCookie: boolean = false
   @StorageProp(StorageConstants.CUSTOM_COOKIE) customCookie: string = ''
-  @StorageProp(StorageConstants.CUSTOM_API_URL) customApiUrl: string = ''
+  @StorageProp(StorageConstants.API_URL) customApiUrl: string = ''
+  @StorageProp(StorageConstants.VALID_API_URL) validApiUrl: boolean = false
   @StorageProp('bottomRectHeight') bottomRectHeight: number = 0
   @Link isShowSheet: boolean
 
@@ -26,6 +28,16 @@ export struct SetApiSheet {
         .padding({ top: Constants.PADDING_EDGE_TEXT, left: Constants.PADDING_EDGE_TEXT, right: Constants.PADDING_EDGE_TEXT })
 
       this.SetApiUrl()
+      Text() {
+        Span(`当前API服务器状态: `)
+        Span(`${this.validApiUrl ? '可用' : '不可用'}`)
+          .fontWeight(FontWeight.Bold)
+      }
+      .width('100%')
+      .textAlign(TextAlign.Center)
+      .fontColor($r('app.color.reverse'))
+      .fontSize(Constants.FONT_SIZE_COMMON)
+      .padding({ bottom: 30 })
 
       this.SetCookie()
     }
@@ -119,6 +131,7 @@ export struct SetApiSheet {
             .layoutWeight(4)
             .onChange((text) => this.customCookie = text)
             .borderRadius(Constants.RADIUS_IMG)
+            .height(60)
           Button('设置')
             .backgroundColor($r('app.color.app_red'))
             .layoutWeight(1)
@@ -140,16 +153,17 @@ export struct SetApiSheet {
   }
 
   setCustomApiUrl() {
-    AppStorage.setOrCreate(StorageConstants.CUSTOM_API_URL,this.customApiUrl)
-    PreferencesUtils.putPreferenceValue(StorageConstants.SET_PERF ,StorageConstants.CUSTOM_API_URL,this.customApiUrl)
+    AppStorage.setOrCreate(StorageConstants.API_URL,this.customApiUrl)
+    PreferencesUtils.putPreferenceValue(StorageConstants.SET_PERF ,StorageConstants.API_URL,this.customApiUrl)
     ToastUtil.showToast('设置成功')
+    checkValidUrl()
   }
 
   setCustomCookie() {
     let cookie = this.customCookie + '; OS=pc'
     AppStorage.setOrCreate(StorageConstants.CUSTOM_COOKIE, cookie)
     PreferencesUtils.putPreferenceValue(StorageConstants.SET_PERF ,StorageConstants.CUSTOM_COOKIE, cookie)
-    ToastUtil.showToast('设置成功，Cookie：\n' + cookie)
+    ToastUtil.showToast('设置成功')
   }
 }
 

@@ -1,5 +1,5 @@
 import { SetPlayQuality } from '../components/settings/SetPlayQuality'
-import { SetApiUrl } from '../components/settings/CustomApiUrl'
+import { SetApiUrl } from '../components/settings/SetApiUrl'
 import { RemoveCache } from '../components/settings/RemoveCache'
 import {
   OtherContents,

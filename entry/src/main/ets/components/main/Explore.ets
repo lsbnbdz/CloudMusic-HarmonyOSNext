@@ -131,7 +131,7 @@ export struct Explore {
             }
 
             GridItem() {
-              Column({ space: 5 }) {
+              Column({ space: 15 }) {
                 this.Intro('排行榜', () => {
                   this.pageInfos.pushPathByName('TopListPage', null)
                 })
@@ -155,7 +155,7 @@ export struct Explore {
                             Image($r('app.media.bg4'))
                               .width(120)
                               .aspectRatio(1)
-                              .borderRadius(Constants.RADIUS_IMG)
+                              .borderRadius(Constants.RADIUS_CARD)
                               .draggable(false)
                             Text('更多排行')
                               .fontSize(Constants.FONT_SIZE_COMMON + 3)
@@ -195,14 +195,17 @@ export struct Explore {
                   }
                 } else {
                   List() {
-                    ListItem().width(15)
+                    ListItem().width(5)
+                    ListItem().width(5)
                     ForEach(this.personalizedList, (item: PersonalListItem, index) => {
                       ListItem() {
                         PersonalizedCard({ item: item }).padding(5)
                       }
                     })
-                    ListItem().width(15)
+                    ListItem().width(5)
+                    ListItem().width(5)
                   }
+                  .lanes(2)
                   .listDirection(Axis.Horizontal)
                   .scrollBar(BarState.Off)
                   .width('100%')
@@ -217,7 +220,7 @@ export struct Explore {
           .height('100%')
           .width('100%')
           .edgeEffect(EdgeEffect.Spring)
-          .scrollBar(BarState.On)
+          .scrollBar(BarState.Off)
           .rowsGap(15)
           .columnsTemplate(this.columnsTemplate)
           .layoutDirection(GridDirection.Column)

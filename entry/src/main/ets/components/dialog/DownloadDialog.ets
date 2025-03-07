@@ -8,6 +8,7 @@ import { LogUtil, ToastUtil } from "@pura/harmony-utils"
 import { PlayConstants } from "../../common/constants/PlayConstants"
 import Constants from "../../common/constants/Constants"
 import { StorageConstants } from "../../common/constants/StorageConstants"
+import { getSongPicUrl } from "../../api/songApi"
 
 @CustomDialog
 export struct DownloadDialog {
@@ -43,6 +44,9 @@ export struct DownloadDialog {
   }
 
   async aboutToAppear(): Promise<void> {
+    if(!this.picUrl) {
+      this.picUrl = await getSongPicUrl(this.song.id)
+    }
     await this.handleInfo()
   }
 

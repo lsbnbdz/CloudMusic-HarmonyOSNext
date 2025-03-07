@@ -7,6 +7,8 @@ import { playQueue } from '../common/functions/play/playControl'
 import { AddToPlayListButton } from '../components/buttons/play/AddToPlayListButton'
 import { getDailySongs } from '../api/songApi'
 import Constants from '../common/constants/Constants'
+import { resourceManager } from '@kit.LocalizationKit'
+import { StorageConstants } from '../common/constants/StorageConstants'
 
 /**
  * 每日推荐歌单页面
@@ -18,7 +20,7 @@ const TAG = '[DailyListPage] '
 export struct DailyListPage {
   @StorageProp('bottomRectHeight') bottomRectHeight: number = 0
   @StorageProp('topRectHeight') topRectHeight: number = 0
-
+  @StorageProp(StorageConstants.DEVICE_TYPE) deviceType: resourceManager.DeviceType = resourceManager.DeviceType.DEVICE_TYPE_PHONE
   @State list: Array<DailySongRes> = new Array()
   @State hasLoaded: boolean = false
   @State isLoading: boolean = true
@@ -97,7 +99,8 @@ export struct DailyListPage {
                       sid: index,
                       isPlayList: false,
                       index: index,
-                      reason: item.reason
+                      reason: item.reason,
+                      picUrl: item.picUrl
                     })
                   }
                   .swipeAction({ end: this.SwipeItem(item.song) })
@@ -124,9 +127,11 @@ export struct DailyListPage {
         }
         .height('100%')
 
-        BottomBarComponent()
-          .padding(Constants.PADDING_EDGE_DEFAULT)
-          .backgroundColor(Color.Transparent)
+        if(this.deviceType == resourceManager.DeviceType.DEVICE_TYPE_PHONE) {
+          BottomBarComponent()
+            .padding(Constants.PADDING_EDGE_DEFAULT)
+            .backgroundColor(Color.Transparent)
+        }
 
         if(this.loadingPlayList) {
           Column() {
@@ -169,7 +174,7 @@ export struct DailyListPage {
   }
 
   @Builder SwipeItem(song: Song) {
-    AddToPlayListButton({ song: song })
+    AddToPlayListButton({ songId: song.id })
   }
 
 }

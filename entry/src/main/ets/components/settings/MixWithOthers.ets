@@ -1,7 +1,7 @@
 import Constants from "../../common/constants/Constants"
 import { StorageConstants } from "../../common/constants/StorageConstants"
 import PreferencesUtils from "../../common/utils/data/PreferencesUtils"
-import AudioPlayUtils from "../../common/utils/play/AudioPlayUtils"
+import AVPlayerUtils from "../../common/utils/play/AVPlayerUtils"
 
 /**
  * 和其他应用同时播放
@@ -20,7 +20,7 @@ export struct MixWithOthers {
         .width(48)
         .onChange((isOn) => {
           this.isActived = isOn
-          AudioPlayUtils.setAudioSession()
+          AVPlayerUtils.setAudioSession()
         })
         .selectedColor($r('app.color.app_red'))
     }

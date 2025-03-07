@@ -13,8 +13,7 @@ const TAG = '[FileUtils] '
 
 class FileUtils {
   context = getContext(this) as common.UIAbilityContext
-  // filesDir = this.context.filesDir
-  filesDir = this.getUserDir()
+  filesDir = this.context.filesDir
   cacheDir = this.context.cacheDir
 
   async getFilesDir() {

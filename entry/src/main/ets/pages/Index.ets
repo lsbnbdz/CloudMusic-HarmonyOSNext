@@ -35,6 +35,8 @@ struct Index {
     autoCancel: false
   })
 
+  tabController: TabsController = new TabsController()
+
   @StorageProp('topRectHeight') topRectHeight: number = 0
   @StorageProp('bottomRectHeight') bottomRectHeight: number = 0
   @StorageProp(StorageConstants.DEVICE_TYPE) deviceType: resourceManager.DeviceType = resourceManager.DeviceType.DEVICE_TYPE_PHONE
@@ -72,13 +74,19 @@ struct Index {
   async build() {
     Navigation(this.pageInfos) {
       Stack({ alignContent: Alignment.Bottom }) {
-        if (this.index == 0) {
-          Explore()
-        } else if (this.index == 1) {
-          UserPlayLists()
-        } else if (this.index == 2) {
-          Me()
+        Tabs({ controller: this.tabController }) {
+          TabContent() { Explore() }
+          TabContent() { UserPlayLists() }
+          TabContent() { Me() }
         }
+        .height('100%')
+        .width('100%')
+        .barHeight(0)
+        .edgeEffect(EdgeEffect.None)
+        .animationDuration(300)
+        .onAnimationStart((from, target) => {
+          this.index = target
+        })
 
         BottomBarComponent()
           .padding({ left: Constants.PADDING_EDGE_DEFAULT, right: Constants.PADDING_EDGE_DEFAULT, bottom: px2vp(this.bottomRectHeight) + 35 })
@@ -160,7 +168,7 @@ struct Index {
     }
     .layoutWeight(1)
     .onClick(() => {
-      this.index = index
+      this.tabController.changeIndex(index)
     })
   }
 }

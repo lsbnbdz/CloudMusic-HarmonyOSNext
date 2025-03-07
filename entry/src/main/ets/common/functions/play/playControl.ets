@@ -1,9 +1,8 @@
 import { EmitterUtil, FileUtil, LogUtil, RandomUtil, ToastUtil } from "@pura/harmony-utils";
 import { Song } from "../../entities/SongsResult";
-import AudioPlayUtils from "../../utils/play/AudioPlayUtils";
 import FileUtils from "../../utils/file/FileUtils";
 import {getSongPicUrl, getSongUrl } from "../../../api/songApi";
-import { fetchMetadata, fetchSongInfo, sanitizeFileName } from "../commonFunction";
+import { fetchMetadata, fetchSongInfo, sanitizeFileName } from "../common/convert";
 import PlayQueueUtils from "../../utils/play/PlayQueueUtils";
 import AVSessionUtils from "../../utils/play/AVSessionUtils";
 import PreferencesUtils from "../../utils/data/PreferencesUtils";
@@ -15,6 +14,7 @@ import { EmitterConstants } from "../../constants/EmitterConstants";
 import { StorageConstants } from "../../constants/StorageConstants";
 import { JSON } from "@kit.ArkTS";
 import { isThisSongLiked } from "./songLike";
+import AVPlayerUtils from "../../utils/play/AVPlayerUtils";
 
 /**
  * 音频播放控制方法
@@ -40,15 +40,17 @@ export async function playMusicByUrl(song: Song, artists: string, isLogged: bool
 
     if(localPath != '') { // 是否存在本地文件
       AppStorage.setOrCreate(StorageConstants.PLAY_IS_LOCALFILE, true)
-      await AudioPlayUtils.setUrl(localPath)
+      // await AVPlayerUtils.setUrl(localPath)
+      await AVPlayerUtils.setUrl(localPath)
     } else if(songPlay.data[0].url) {
       AppStorage.setOrCreate(StorageConstants.PLAY_IS_LOCALFILE, false)
-      await AudioPlayUtils.setUrl(songPlay.data[0].url)
+      // await AVPlayerUtils.setUrl(songPlay.data[0].url)
+      await AVPlayerUtils.setUrl(songPlay.data[0].url)
     } else {
       ToastUtil.showToast('获取播放资源失败')
       playNext()
     }
-    const picUrl:string = await getSongPicUrl(song)
+    const picUrl:string = await getSongPicUrl(song.id)
     setPicUrl(picUrl)
     LyricUtils.setLyric(song).then(() => {
       AVSessionUtils.setMetadata(song, artists, picUrl)
@@ -76,7 +78,7 @@ export async function playMusicWithFile(fileName:string) {
     if(FileUtil.accessSync(fileUrl)) {
       setPlayData(0, song, song.artists[0].name, fileName)
       setPicUrl('/resources/base/media/app.media.ic_public_music.svg')
-      await AudioPlayUtils.setUrl(fdPath)
+      await AVPlayerUtils.setUrl(fdPath)
       LyricUtils.setLyricArr([])
       LyricUtils.lyricString = ''
       AVSessionUtils.setMetadata(song,song.artists[0].name,`$r('app.media.ic_public_music.svg')`)
@@ -94,25 +96,26 @@ export async function playMusicWithFile(fileName:string) {
 }
 
 export async function stopMusic() {
-  AudioPlayUtils.stop().then(() => {
+  AVPlayerUtils.stop().then(() => {
     AppStorage.setOrCreate(StorageConstants.IS_PLAYING, false)
-    AudioPlayUtils.mPlayer.release()
+    AVPlayerUtils.release()
   })
 }
 
 export async function pauseMusic() {
-  AudioPlayUtils.pause()
+  AVPlayerUtils.pause()
   AppStorage.setOrCreate(StorageConstants.IS_PAUSED, true)
 }
 
 export async function resumeMusic() {
-  AudioPlayUtils.resume()
+  // AudioPlayUtils.resume()
+  AVPlayerUtils.play()
   AppStorage.setOrCreate(StorageConstants.IS_PAUSED, false)
 }
 
 export async function seekMusic(time: number) {
-  AudioPlayUtils.play()
-  AudioPlayUtils.seek(time)
+  AVPlayerUtils.play()
+  AVPlayerUtils.seek(time)
 }
 
 export async function playQueue(index: number) {

@@ -4,7 +4,6 @@ import { playListClass } from '../common/entities/PlayList'
 import { DialogUtil, LogUtil, ToastUtil } from '@pura/harmony-utils'
 import { getPlayListSongs, PlayListOperation, subscribePlayList } from '../api/playListApi'
 import { BottomBarComponent } from '../components/play/BottomBarComponent'
-import { DialogAction } from '@pura/harmony-utils/src/main/ets/entity/constraint'
 import { formatNumber } from '../common/functions/common/convert'
 import { playListToQueue } from '../common/functions/play/playListOp'
 import { AddToPlayListButton } from '../components/buttons/play/AddToPlayListButton'
@@ -14,6 +13,7 @@ import { PlayListPageParam } from '../common/entities/PageParams'
 import { PlayListCard_Skeleton } from '../components/cards/PlayListCard'
 import { StorageConstants } from '../common/constants/StorageConstants'
 import { resourceManager } from '@kit.LocalizationKit'
+import { PlayListSongItem } from '../common/entities/PlayListSongs'
 
 /**
  * 歌单二级页面
@@ -34,8 +34,8 @@ export struct PlayListPage {
   private currentOffset: number = 0 // 歌曲偏移量
 
   @State isSubscribed: boolean = false
-  @State list: Array<Song> = new Array()
-  @State filteredList: Array<Song> = new Array()
+  @State list: PlayListSongItem[] = new Array()
+  @State filteredList: PlayListSongItem[] = new Array()
   @State hasMore: boolean = true
   @State hasLoaded: boolean = false // 判定是否已加载 避免重复加载
   @State isLoading: boolean = true
@@ -160,19 +160,34 @@ export struct PlayListPage {
                 }
               })
             } else {
-              ForEach(this.searchKeyword ? this.filteredList : this.list, (item: Song, index) => {
-                ListItem() {
-                  SongCard({ song: item, sid: index,
-                    isPlayList: true, playList: this.param.playList, index: index })
+              ForEach(this.searchKeyword ? this.filteredList : this.list,
+                (item: PlayListSongItem, index) => {
+                  ListItem() {
+                    SongCard({
+                      song: {
+                        id: item.id,
+                        artists: item.ar,
+                        name: item.name,
+                        duration: item.dt,
+                        alias: []
+                      },
+                      sid: this.list.indexOf(item),
+                      isPlayList: true,
+                      playList: this.param.playList,
+                      picUrl: item.al.picUrl,
+                      index: this.list.indexOf(item)
+                    })
+                  }
+                  .key(item.id.toString())
+                  .swipeAction({ end: this.SwipeItem(item, this.list.indexOf(item)) })
+                  .translate({ y: -40 })
+                  .animation({
+                    duration: 600,
+                    curve: Curve.LinearOutSlowIn
+                  })
+                  .translate({ y: 0 })
                 }
-                .swipeAction({ end: this.SwipeItem(item, index), edgeEffect: SwipeEdgeEffect.None })
-                .translate({ y: -40 })
-                .animation({
-                  duration: 600,
-                  curve: Curve.LinearOutSlowIn
-                })
-                .translate({ y: 0 })
-              })
+              )
 
               // 添加加载更多
               if (this.isLoadingMore) {
@@ -286,9 +301,9 @@ export struct PlayListPage {
     .justifyContent(FlexAlign.Center)
   }
 
-  @Builder SwipeItem(song: Song, index: number) {
+  @Builder SwipeItem(listSong: PlayListSongItem, index: number) {
     Row() {
-      AddToPlayListButton({ song: song })
+      AddToPlayListButton({ songId: listSong.id })
       // Delete button
       if (!this.param.isShowHeart) {
         Button() {
@@ -304,14 +319,14 @@ export struct PlayListPage {
         .onClick(() => {
           DialogUtil.showPrimaryDialog({
             title: '从歌单删除歌曲',
-            message: `${song.name}`,
+            message: `${listSong.name}`,
             primaryButton: "取消",
             secondaryButton: {
               value: '删除',
               fontColor: Color.Red,
               action: async () => {
                 try {
-                  await PlayListOperation('del', this.param.playList.id, song.id)
+                  await PlayListOperation('del', this.param.playList.id, listSong.id)
                   ToastUtil.showToast('删除成功')
                   this.list.splice(index, 1)
                 } catch (e) {
@@ -346,19 +361,22 @@ export struct PlayListPage {
 
   private handelSearch() {
     try {
-      if (this.searchKeyword.trim() === '') {
-        this.filteredList = [...this.list]
+      if (!this.searchKeyword) {
+        this.filteredList = []
         return
       }
-      const keyword = this.searchKeyword.trim().toLowerCase()
-      this.filteredList = this.list.filter(song =>
-      song.name.toLowerCase().includes(keyword) ||
-      song.artists?.some(artist =>
-      artist.name.toLowerCase().includes(keyword)
-      ))
+      const keyword = this.searchKeyword.toLowerCase()
+      this.filteredList = this.list.filter((item: PlayListSongItem) => {
+        const idMatch = item.id.toString().includes(keyword)
+        const artistMatch = item.ar.some(artist =>
+        artist.name.toLowerCase().includes(keyword)
+        )
+        return idMatch || artistMatch
+      })
     } catch (e) {
-      ToastUtil.showToast('搜索时出错')
-      LogUtil.error(TAG + 'Error while handelSearch: ' + e.message)
+      ToastUtil.showToast('搜索时出错: ' + (e as Error).message)
+      LogUtil.error(TAG + 'Error while handelSearch: ' + (e as Error).message)
     }
   }
+
 }

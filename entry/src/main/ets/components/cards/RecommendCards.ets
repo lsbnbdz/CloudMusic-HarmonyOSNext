@@ -7,6 +7,7 @@ import { playQueue } from "../../common/functions/play/playControl"
 import PlayQueueUtils from "../../common/utils/play/PlayQueueUtils"
 
 let cardWidth: number = 150
+let cardRadius: number = 5
 
 @Builder function ContentButton(firText:string, secText:string, imgUrl:ResourceStr, onClick?: () => void ) {
   Button() {
@@ -22,7 +23,7 @@ let cardWidth: number = 150
         .textAlign(TextAlign.Center)
         .backgroundColor(Color.Transparent)
         .textShadow({ radius: 5 })
-        .borderRadius({ bottomLeft: Constants.RADIUS_IMG, bottomRight: Constants.RADIUS_IMG })
+        .borderRadius({ bottomLeft: cardRadius, bottomRight: cardRadius })
         .height(Constants.FONT_SIZE_COMMON * 2)
         .backdropBlur(100)
     }
@@ -119,7 +120,7 @@ export struct RecommendCards {
 @Extend(Button) function buttonSty() {
   .type(ButtonType.Normal)
   .width('100%')
-  .borderRadius(Constants.RADIUS_IMG)
+  .borderRadius(cardRadius)
   .backgroundColor(Color.Transparent)
   // .backgroundBlurStyle(BlurStyle.BACKGROUND_THIN)
 }
@@ -168,7 +169,7 @@ export struct RecommendCards_Skeleton {
           .backgroundColor($r('app.color.background'))
           .alignSelf(ItemAlign.Start)
           .width('70%')
-          .borderRadius(Constants.RADIUS_CARD)
+          .borderRadius(cardRadius)
           .height(Constants.FONT_SIZE_TITLE)
           .padding(Constants.PADDING_EDGE_DEFAULT)
         Column({ space: 3 }) {
@@ -176,14 +177,14 @@ export struct RecommendCards_Skeleton {
             .backgroundColor($r('app.color.background'))
             .alignSelf(ItemAlign.Center)
             .width('80%')
-            .borderRadius(Constants.RADIUS_CARD)
+            .borderRadius(cardRadius)
             .height(Constants.FONT_SIZE_BAR - 2)
             .padding(Constants.PADDING_EDGE_DEFAULT)
           Column()
             .backgroundColor($r('app.color.background'))
             .alignSelf(ItemAlign.Center)
             .width('80%')
-            .borderRadius(Constants.RADIUS_CARD)
+            .borderRadius(cardRadius)
             .height(Constants.FONT_SIZE_BAR - 2)
             .padding(Constants.PADDING_EDGE_DEFAULT)
         }

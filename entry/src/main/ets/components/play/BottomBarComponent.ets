@@ -1,6 +1,6 @@
 import { ToastUtil } from "@pura/harmony-utils"
 import { Song, SongClass } from "../../common/entities/SongsResult"
-import { pauseMusic, playQueue, resumeMusic } from "../../common/functions/play/playControl"
+import { pauseMusic, playNext, playPre, playQueue, resumeMusic } from "../../common/functions/play/playControl"
 import playQueueUtils from "../../common/utils/play/PlayQueueUtils"
 import { PlayQueueButton } from "../buttons/play/PlayQueueButton"
 import { PlayingCover } from "../sheets/PlayingCover"
@@ -29,7 +29,7 @@ export struct BottomBarComponent {
   build() {
     Row() {
       if(this.playmode == 0) { Image($r('app.media.ic_public_music')).fillColor($r('app.color.reverse')).songImg() }
-      else { Image(this.picUrl + '?param=256y256').songImg() }
+      else { Image(this.picUrl + '?param=512y512').songImg() }
 
       Column({ space: 5 }) {
         Text(this.song.name).textStyle(18)

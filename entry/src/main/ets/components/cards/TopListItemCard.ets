@@ -23,7 +23,7 @@ export struct TopListItemCard {
         Image(this.topListItem.coverImgUrl)
           .width(120)
           .aspectRatio(1)
-          .borderRadius(Constants.RADIUS_IMG)
+          .borderRadius(Constants.RADIUS_CARD)
           .draggable(false)
       }
     }

@@ -8,6 +8,7 @@ import Constants from '../common/constants/Constants'
 import { ClickToLoadButton, LoadingMoreButton, NoMoreButton } from '../components/buttons/LoadMoreButtons'
 import { resourceManager } from '@kit.LocalizationKit'
 import { StorageConstants } from '../common/constants/StorageConstants'
+import { PlayListSongItem } from '../common/entities/PlayListSongs'
 
 /**
  * 云盘
@@ -21,7 +22,7 @@ export struct CloudPage {
   @StorageProp('topRectHeight') topRectHeight: number = 0
   @StorageProp(StorageConstants.DEVICE_TYPE) deviceType: resourceManager.DeviceType = resourceManager.DeviceType.DEVICE_TYPE_PHONE
   private currentOffset: number = 0
-  @State list: Array<Song> = new Array()
+  @State list: Array<PlayListSongItem> = new Array()
   @State pageOpacity: number = 1
   @State hasMore: boolean = true
   @State hasLoaded: boolean = false
@@ -77,10 +78,20 @@ export struct CloudPage {
             }.height('100%').width('100%').justifyContent(FlexAlign.Center)
           } else {
             List() {
-              ForEach(this.list, (item: Song, index) => {
+              ForEach(this.list, (item: PlayListSongItem, index) => {
                 ListItem() {
-                  SongCard({ song: item, sid: index,
-                    isPlayList: false, index: index })
+                  SongCard({
+                    song: {
+                      id: item.id,
+                      artists: item.ar,
+                      name: item.name,
+                      duration: item.dt,
+                      alias: []
+                    },
+                    sid: this.list.indexOf(item),
+                    isPlayList: false,
+                    picUrl: item.al.picUrl
+                  })
                 }
                 .swipeAction({ end: this.SwipeItem(item) })
                 .translate({ y: -40 })
@@ -135,7 +146,7 @@ export struct CloudPage {
   }
 
   @Builder
-  SwipeItem(song: Song) {
-    AddToPlayListButton({ song: song })
+  SwipeItem(listSong: PlayListSongItem) {
+    AddToPlayListButton({ songId: listSong.id })
   }
 }

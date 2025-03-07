@@ -1,6 +1,6 @@
 import { LogUtil, ToastUtil } from "@pura/harmony-utils"
 import { PlayList, PlayListOperationRes, PlayListSearchResult } from "../common/entities/PlayList"
-import { CloudSongs, DailyListSongs, PlayListSongs } from "../common/entities/PlayListSongs"
+import { CloudSongs, DailyListSongs, PlayListSongItem, PlayListSongs } from "../common/entities/PlayListSongs"
 import { PlayQueue } from "../common/entities/PlayQueue"
 import { Artist, Song } from "../common/entities/SongsResult"
 import { User, UserClass } from "../common/entities/User"
@@ -74,20 +74,14 @@ class SongC {
  * @param offset 偏移
  * @returns list 歌曲列表
  */
-export async function getPlayListSongs(listId: number, trackCount: number, offset: number): Promise<Array<Song>> {
-  let list: Array<Song> = []
+export async function getPlayListSongs(listId: number, trackCount: number, offset: number): Promise<Array<PlayListSongItem>> {
+  let list: PlayListSongItem[] = []
   const rootUrl = await getApiUrl()
   const url:string = `${rootUrl}/playlist/track/all?id=${listId}&limit=100&offset=${offset}&timestamp=${new Date().getTime()}`
   const request = new HttpRequest(url)
   await request.RequestInStream().then((data) => {
     const dataGot: PlayListSongs = data.result as PlayListSongs
-    list = dataGot.songs.map(song => new SongC(
-      song.id,
-      song.name,
-      song.ar,
-      song.dt,
-      []
-    ))
+    list = dataGot.songs
   })
   return list
 }
@@ -198,8 +192,9 @@ export async function PlayListOperation(op:OperationType, pid:number, tracks:num
 }
 
 export interface DailySongRes {
-  song:Song
-  reason:string
+  song: Song
+  reason: string
+  picUrl: string
 }
 
 /**
@@ -207,21 +202,15 @@ export interface DailySongRes {
  * @param offset 偏移
  * @returns list 歌曲列表
  */
-export async function getCloudList(offset:number): Promise<Array<Song>> {
-  let list:Array<Song> = new Array()
+export async function getCloudList(offset: number): Promise<Array<PlayListSongItem>> {
+  let list:Array<PlayListSongItem> = new Array()
   const rootUrl = await getApiUrl()
   const url:string = `${rootUrl}/user/cloud?limit=50&offset=${offset}`
   const request = new HttpRequest(url)
   await request.RequestInStream().then((data) => {
     const dataGot:CloudSongs = data.result as CloudSongs
-    for(let song of dataGot.data) {
-      list.push({
-        id: song.simpleSong.id,
-        name: song.simpleSong.name,
-        artists: song.simpleSong.ar,
-        duration: song.simpleSong.dt,
-        alias: []
-      })
+    for(let item of dataGot.data) {
+      list.push(item.simpleSong)
     }
   })
   return list

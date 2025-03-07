@@ -83,9 +83,9 @@ export async function getSongUrl(songId: number, quality:QualityType, isLogged:b
  * @param song 歌曲类
  * @returns string 歌曲Url
  */
-export async function getSongPicUrl(song: Song): Promise<string> {
+export async function getSongPicUrl(songId: number): Promise<string> {
   const rootUrl = await getApiUrl()
-  const url: string = `${rootUrl}/song/detail?ids=${song.id}`
+  const url: string = `${rootUrl}/song/detail?ids=${songId}`
   const request = new HttpRequest(url)
   try {
     const data = await request.Request()
@@ -120,7 +120,8 @@ export async function getDailySongs(useCookie: boolean = true): Promise<Array<Da
             duration: song.dt,
             alias: []
           },
-          reason: song.reason
+          reason: song.reason,
+          picUrl: song.al.picUrl
         })
       }
     }

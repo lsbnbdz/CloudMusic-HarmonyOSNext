@@ -11,10 +11,6 @@
     {
       "name": "REASON_KEEP_BACKGROUND_RUNNING",
       "value": "后台播放和下载"
-    },
-    {
-      "name": "REASON_DOWNLOAD_DIRECTORY",
-      "value": "访问下载目录"
     }
   ]
 }

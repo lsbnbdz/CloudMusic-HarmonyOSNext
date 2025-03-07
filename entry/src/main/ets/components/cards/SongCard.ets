@@ -1,6 +1,5 @@
-import { getSongPicUrl } from "../../api/songApi"
 import { Song, SongClass } from "../../common/entities/SongsResult"
-import { changeDuration, getArtists } from "../../common/functions/commonFunction"
+import { changeDuration, getArtists } from "../../common/functions/common/convert"
 import PlayQueueUtils from "../../common/utils/play/PlayQueueUtils"
 import { promptAction } from "@kit.ArkUI"
 import { PlayList, playListClass } from "../../common/entities/PlayList"
@@ -10,15 +9,14 @@ import { playQueue } from "../../common/functions/play/playControl"
 import { PasteboardUtil, ToastUtil } from "@pura/harmony-utils"
 import { DownloadDialog } from "../dialog/DownloadDialog"
 import { StorageConstants } from "../../common/constants/StorageConstants"
+import VibratorUtils from "../../common/utils/system/VibratorUtils"
 
 @Component
-@Reusable
 export struct SongCard {
   @StorageProp(StorageConstants.IS_PLAYER_LOADING) isPlayerLoading: boolean = false
   @StorageProp(StorageConstants.SONG_CLICK_ACTION) clickAction: number = 0
-  @State showPlayButton: boolean = true
+  @StorageProp(StorageConstants.PLAY_SONG) playSong: Song = SongClass
   @State showAddQueueButton: boolean = true
-  @State showSid: boolean = true
   @State picUrl: string = ''
   @State isPlayList: boolean = false
   @State playList: PlayList = playListClass
@@ -45,25 +43,37 @@ export struct SongCard {
     }
     const artistsStr = await getArtists(this.song.artists)
     this.artists = artistsStr
-    const picUrl = await getSongPicUrl(this.song)
-    this.picUrl = picUrl
+    // const picUrl = await getSongPicUrl(this.song)
+    // this.picUrl = picUrl
   }
 
   build() {
     Button() {
       Row() {
         Row() {
-          Text(`${this.sid + 1}`)
-            .width(40)
-            .fontWeight(FontWeight.Bold)
-          Image(this.picUrl + '?param=100y100')
-            .width(50)
-            .padding({ right: 10 })
-            .borderRadius(5)
-            .draggable(false)
+          if(this.sid != -1) {
+            Text(`${this.sid + 1}`)
+              .width(40)
+              .fontWeight(FontWeight.Bold)
+          }
+          if(this.picUrl) {
+            Image(this.picUrl + '?param=100y100')
+              .width(50)
+              .padding({ right: 10 })
+              .borderRadius(5)
+              .draggable(false)
+          }
           Column({ space: 5 }) {
             Row({ space: 5 }) {
-              Text(this.song.name).textStyle(16)
+              if(this.song.id == this.playSong.id) {
+                Image($r('app.media.songplaying'))
+                  .height(Constants.FONT_SIZE_COMMON)
+                  .width(30)
+              }
+              Text(this.song.name)
+                .textStyle(16)
+                .fontColor(this.song.id == this.playSong.id ? $r('app.color.app_red') : $r('app.color.reverse'))
+                .fontWeight(this.song.id == this.playSong.id ? FontWeight.Bold : FontWeight.Normal)
               if(this.song.alias.length > 0) {
                 Text(`(${this.song.alias[0]})`)
                   .layoutWeight(1)
@@ -113,8 +123,11 @@ export struct SongCard {
     .width('100%')
     .height(60)
     .padding({ left: 20, right: 20 })
+    // Card 点击
     .onClick(async () => {
-      if(this.clickAction == 0) {
+      if(this.song.id == this.playSong.id) {
+        return
+      } else if(this.clickAction == 0) {
         this.isShowMenu = true
       } else if(this.clickAction == 1) {
         this.playSingleSong()
@@ -128,7 +141,10 @@ export struct SongCard {
     .gesture(
       LongPressGesture({
         duration: 500
-      }).onAction(() => { this.isShowMenu = true })
+      }).onAction(() => {
+        VibratorUtils.startCount('sharp', 1, 100)
+        this.isShowMenu = true
+      })
     )
   }
 
@@ -149,13 +165,10 @@ export struct SongCard {
               playListToQueue(this.playList.id, this.playList.trackCount, this.index)
             })
         }
-        MenuItem(this.MenuContent($r('app.media.ic_public_cloud_download'), '缓存至应用沙箱'))
+        MenuItem(this.MenuContent($r('app.media.ic_public_cloud_download'), '缓存至本地'))
           .onClick(() => {
             this.downloadDialogController.open()
           })
-        MenuItem() {
-          Text('左滑歌曲卡片进行歌单操作').textStyle(12).textAlign(TextAlign.Center).width('100%')
-        }
       }
     }
     .width('80%')
@@ -167,10 +180,12 @@ export struct SongCard {
 
   @Builder MenuInfo() {
     Row() {
-      Image(this.picUrl + '?param=100y100')
-        .width(Constants.SIZE_IMG_CARD)
-        .padding({ right: Constants.PADDING_EDGE_DEFAULT })
-        .borderRadius(Constants.RADIUS_IMG)
+      if(this.picUrl) {
+        Image(this.picUrl + '?param=100y100')
+          .width(Constants.SIZE_IMG_CARD)
+          .padding({ right: Constants.PADDING_EDGE_DEFAULT })
+          .borderRadius(Constants.RADIUS_IMG)
+      }
       Column({ space: 5 }) {
         Row({ space: 5 }) {
           Text(this.song.name)
@@ -182,8 +197,6 @@ export struct SongCard {
               .layoutWeight(1)
               .fontSize(Constants.FONT_SIZE_COMMON)
               .fontColor(Color.Gray)
-              .maxLines(1)
-              .textOverflow({ overflow: TextOverflow.Ellipsis })
           }
         }
         .width('100%')
@@ -239,9 +252,9 @@ export struct SongCard {
       playQueue(PlayQueueUtils.currentQueueIndex)
       setTimeout(() => {
         AppStorage.setOrCreate('isPlayerLoading', false)
-      }, 1000)
+      }, 500)
     } else {
-      ToastUtil.showToast('当前有正在加载的播放任务，请稍后再试', { duration: 5000 })
+      promptAction.showToast({ message: '当前有正在加载的播放任务，请稍后再试', duration: 3000})
     }
   }
 
@@ -251,7 +264,7 @@ export struct SongCard {
       await playListToQueue(this.playList.id, this.playList.trackCount, this.index)
       this.isPlayerLoading = false
     } else {
-      ToastUtil.showToast('当前有正在加载的播放任务，请稍后再试', { duration: 5000 })
+      promptAction.showToast({ message: '当前有正在加载的播放任务，请稍后再试', duration: 3000})
     }
   }
 }

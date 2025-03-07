@@ -7,7 +7,7 @@ import { promptAction } from '@kit.ArkUI'
 import { changeb2Mb, sanitizeFileName } from '../../functions/common/convert'
 import FileUtils from './FileUtils'
 import { MsgConstants } from '../../constants/MsgConstants'
-import NotificationUtils from '../app/NotificationUtils'
+import NotificationUtils from '../system/NotificationUtils'
 
 /**
  * 文件缓存
@@ -17,8 +17,7 @@ const TAG = '[FileDownload] '
 
 class FileDownloadUtils {
   context = getContext(this) as common.UIAbilityContext
-  // filesDir = this.context.filesDir
-  filesDir = FileUtils.getUserDir()
+  filesDir = this.context.filesDir
   cacheDir = this.context.cacheDir
 
   async download(songDownload:SongDownload, song:Song, artists:string) {

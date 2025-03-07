@@ -51,9 +51,9 @@ export struct SearchSongsList {
       .justifyContent(FlexAlign.Center)
     } else {
       List() {
-        ForEach(this.songList, (item: Song, index) => {
+        ForEach(this.songList, (item: Song) => {
           ListItem() {
-            SongCard({ song: item, sid: index })
+            SongCard({ song: item })
           }
           .swipeAction({ end: this.SwipeItem(item)})
           .translate({ y: -40 })
@@ -91,7 +91,7 @@ export struct SearchSongsList {
   }
 
   @Builder SwipeItem(song: Song) {
-    AddToPlayListButton({ song: song })
+    AddToPlayListButton({ songId: song.id })
   }
 
   async loadSongs(offset: number): Promise<void> {

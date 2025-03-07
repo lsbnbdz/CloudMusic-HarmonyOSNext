@@ -49,7 +49,7 @@ export struct PlayQueueSheet {
         Row() {
           Row({ space: 15 }) {
             Text() {
-              Span('播放列表' + this.currentQueueIndex).fontSize(Constants.FONT_SIZE_TITLE).fontColor(Color.Gray).fontWeight(FontWeight.Bold)
+              Span('播放列表').fontSize(Constants.FONT_SIZE_TITLE).fontColor(Color.Gray).fontWeight(FontWeight.Bold)
               Span(`  (${this.queue.length})`).fontSize(Constants.FONT_SIZE_COMMON).fontColor(Color.Gray)
             }
 
@@ -166,6 +166,7 @@ export struct PlayQueueSheet {
               .width('100%')
               .justifyContent(FlexAlign.SpaceAround)
             }
+            .clickEffect({ level: ClickEffectLevel.LIGHT, scale: 0.9 })
           }, (item: PlayQueue, index) => item.song.id.toString() + index)
 
           ListItem().height(px2vp(this.bottomRectHeight))

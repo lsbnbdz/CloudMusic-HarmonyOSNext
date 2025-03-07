@@ -5,7 +5,7 @@ import { PlayListAddSheet } from "../../sheets/PlayListAddSheet"
 @Component
 export struct AddToPlayListButton {
   @State isShowAddSheet: boolean = false
-  @State song: Song = SongClass
+  @State songId: number = -1
 
   build() {
     Button() {
@@ -34,7 +34,7 @@ export struct AddToPlayListButton {
   }
 
   @Builder Sheet() {
-    PlayListAddSheet({ isShow: this.isShowAddSheet, songId: this.song.id })
+    PlayListAddSheet({ isShow: this.isShowAddSheet, songId: this.songId })
   }
 }
 

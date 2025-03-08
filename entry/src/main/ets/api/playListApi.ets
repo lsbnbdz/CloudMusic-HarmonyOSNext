@@ -11,6 +11,7 @@ import PreferencesUtils from "../common/utils/data/PreferencesUtils"
 import { StorageConstants } from "../common/constants/StorageConstants"
 import { Personalized, PersonalListItem } from "../common/entities/Personalized"
 import { getApiUrl } from "../common/functions/common/get"
+import { JSON } from "@kit.ArkTS"
 
 /**
  * 歌单类API
@@ -74,10 +75,11 @@ class SongC {
  * @param offset 偏移
  * @returns list 歌曲列表
  */
-export async function getPlayListSongs(listId: number, trackCount: number, offset: number): Promise<Array<PlayListSongItem>> {
+export async function getPlayListSongs(listId: number, trackCount: number, offset: number, timestamp: boolean = true): Promise<Array<PlayListSongItem>> {
   let list: PlayListSongItem[] = []
   const rootUrl = await getApiUrl()
-  const url:string = `${rootUrl}/playlist/track/all?id=${listId}&limit=100&offset=${offset}&timestamp=${new Date().getTime()}`
+  const suffix = timestamp ? `&timestamp=${new Date().getTime()}` : ''
+  const url:string = `${rootUrl}/playlist/track/all?id=${listId}&limit=100&offset=${offset}${suffix}`
   const request = new HttpRequest(url)
   await request.RequestInStream().then((data) => {
     const dataGot: PlayListSongs = data.result as PlayListSongs
@@ -101,19 +103,19 @@ export async function putPlayListInQueue(listId: number, trackCount: number, lim
     let data = await request.RequestInStream()
     let dataResult: PlayListSongs = data.result as PlayListSongs
     for (let item of dataResult.songs) {
-      let artists = await getArtists(item.ar)
-      let tempSong: Song = {
-        id: item.id,
-        name: item.name,
-        artists: item.ar,
-        duration: item.dt,
-        alias: []
-      }
+      // let artists = await getArtists(item.ar)
       tempQueue.push({
         playmode: 1,
-        song: tempSong,
-        artists: artists,
-        fileName: ''
+        song: {
+          id: item.id,
+          name: item.name,
+          artists: item.ar,
+          duration: item.dt,
+          alias: []
+        },
+        artists: item.ar[0].name,
+        fileName: '',
+        picUrl: item.al.picUrl
       })
     }
     if(first) {
@@ -151,7 +153,8 @@ export async function PlayDailySongs(): Promise<void> {
         playmode: 1,
         song: tempSong,
         artists: artists,
-        fileName: ''
+        fileName: '',
+        picUrl: item.al.picUrl
       })
     }
   })
@@ -169,27 +172,27 @@ type OperationType = 'add' | 'del'
  * @param pid - 歌单id
  * @param tracks - 歌曲id(多个用,隔开)
  */
-export async function PlayListOperation(op:OperationType, pid:number, tracks:number):Promise<boolean> {
+export async function PlayListOperation(op:OperationType, pid:number, tracks:number): Promise<boolean> {
   const rootUrl = await getApiUrl()
   const url:string = `${rootUrl}/playlist/tracks?op=${op}&pid=${pid}&tracks=${tracks}&timestamp=${new Date().getTime()}`
   const request = new HttpRequest(url)
-  await request.Request().then((data) => {
-    const dataGot:PlayListOperationRes = data.result as PlayListOperationRes
-    if(dataGot.body) {
-      if (dataGot.body.code == 200) {
-        return true
-      } else {
-        LogUtil.error(TAG + 'PlayListOperation Error: ' + dataGot.body.message)
-        throw new Error(dataGot.body.message.toString())
-      }
+  return request.Request().then((data) => {
+    const dataGot: PlayListOperationRes = data.result as PlayListOperationRes
+    LogUtil.info(TAG + 'data result: ' + JSON.stringify(data.result))
+    if(dataGot.body.code === 200) {
+      return true
     }
     else {
-      LogUtil.error(TAG + 'PlayListOperation Error: ' + data.result["message"])
-      throw new Error(data.result["message"])
+      LogUtil.error(TAG + `Error code: ${dataGot.body.code}, Message: ${dataGot.body.message}`)
+      ToastUtil.showToast(`${dataGot.body.message}`)
+      return false
     }
+  }).catch((err: Error) => {
+    LogUtil.error(TAG + 'Operation failed: ' + err.message)
+    return false
   })
-  return false
 }
+
 
 export interface DailySongRes {
   song: Song
@@ -261,6 +264,10 @@ export async function subscribePlayList(id: number, mode: number): Promise<boole
   return res
 }
 
+/**
+ * Get personalized list
+ * @returns Array<PersonalListItem>
+ */
 export async function getPersonalizedList(): Promise<Array<PersonalListItem>> {
   let list: Array<PersonalListItem> = []
   const rootUrl = await getApiUrl()
@@ -273,4 +280,42 @@ export async function getPersonalizedList(): Promise<Array<PersonalListItem>> {
     PreferencesUtils.putPreferenceValue(StorageConstants.USER_PREF, StorageConstants.PERSONALIZED_LIST, list)
   })
   return list
+}
+
+/**
+ * 删除歌单
+ * @param pid
+ */
+export async function deletePlayList(pid: number): Promise<boolean>{
+  try {
+    const rootUrl = await getApiUrl()
+    const url: string = `${rootUrl}/playlist/delete?id=${pid}&timestamp=${new Date().getTime()}`
+    const request = new HttpRequest(url)
+    const data = await request.Request()
+    if(data.result["code"] == 200) {
+      return true
+    } else return false
+  } catch (e) {
+    LogUtil.error(TAG + 'deletePlayList Error: ' + e.message)
+    return false
+  }
+}
+
+/**
+ * 创建歌单 —— 不可用 illegal
+ * @param name
+ * @param isPrivacy
+ */
+export async function createPlayList(name: string, isPrivacy: boolean) {
+  try {
+    const rootUrl = await getApiUrl()
+    const url: string = `${rootUrl}/playlist/create?name=${encodeURIComponent(name)}${isPrivacy ? '&privacy=10' : ''}&timestamp=${new Date().getTime()}`
+    LogUtil.info(TAG + 'request Url: ' + url)
+    const request = new HttpRequest(url)
+    const data = await request.Request()
+    LogUtil.info(TAG + JSON.stringify(data.result))
+  } catch (e) {
+    LogUtil.error(TAG + 'createPlayList Error: ' + e.message)
+
+  }
 }

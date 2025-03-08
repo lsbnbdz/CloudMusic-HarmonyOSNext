@@ -16,7 +16,7 @@ const TAG = "[SearchSongsList] "
 export struct SearchSongsList {
   @StorageProp('bottomRectHeight') bottomRectHeight: number = 0
   @StorageProp('topRectHeight') topRectHeight: number = 0
-  @Prop searchKeyword: string = ''
+  @Link @Watch('handleSearch') searchKeyword: string
   @State songList: Array<Song> = []
   @State songOffset: number = 0
   @State hasMoreSongs: boolean = true
@@ -28,16 +28,22 @@ export struct SearchSongsList {
     if(this.searchKeyword) {
       await this.loadSongs(0)
     }
-    EmitterUtil.onSubscribe(EmitterConstants.EMITTER_SEARCH, async (keyword: string) => {
-      this.searchKeyword = keyword
-      this.songList = []
-      this.songOffset = 0
-      await this.loadSongs(0)
-    })
+    // EmitterUtil.onSubscribe(EmitterConstants.EMITTER_SEARCH, async (keyword: string) => {
+    //   this.searchKeyword = keyword
+    //   this.songList = []
+    //   this.songOffset = 0
+    //   await this.loadSongs(0)
+    // })
   }
 
   aboutToDisappear(): void {
     EmitterUtil.unSubscribe(EmitterConstants.EMITTER_SEARCH)
+  }
+
+  async handleSearch() {
+    this.songList = []
+    this.songOffset = 0
+    await this.loadSongs(0)
   }
 
   build() {

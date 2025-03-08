@@ -1,6 +1,7 @@
 import { EmitterUtil } from "@pura/harmony-utils"
 import { getLyric } from "../../../api/LyricApi"
 import { EmitterConstants } from "../../constants/EmitterConstants"
+import { StorageConstants } from "../../constants/StorageConstants"
 import { Lyric } from "../../entities/Lyric"
 import { Song } from "../../entities/SongsResult"
 
@@ -40,7 +41,7 @@ class LyricUtils {
     else {
       this.isUpdating = true
       this.updateLyricInterval = setInterval(() => {
-        let time: number | undefined = AppStorage.get('player-time')
+        let time: number | undefined = AppStorage.get(StorageConstants.PLAY_TIME)
         if (time) {
          let newIndex = this.updateCurrentLyricIndex(time, this.lyricObjects)
           if(newIndex != this.currentLyricIndex) {

@@ -33,9 +33,3 @@ export async function getLyric(songId: number): Promise<string[]> {
   lyricArr = lyric.split('\n')
   return lyricArr
 }
-
-// export async function setLyric(songId: number) {
-//   let lyricArr = await getLyric(songId)
-//   AppStorage.setOrCreate('player-lyric',lyricArr)
-//   EmitterUtil.post(Constants.EMITTER_LYRIC_UPDATE,'Lyric Updated')
-// }

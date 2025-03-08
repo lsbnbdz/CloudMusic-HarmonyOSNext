@@ -6,6 +6,7 @@ import { PlayList } from "./PlayList";
 export interface PlayListPageParam {
   playList: PlayList
   isShowHeart: boolean
+  useTimestamp: boolean
 }
 
 /**

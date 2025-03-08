@@ -1,8 +1,7 @@
-import { Song } from '../common/entities/SongsResult'
 import { SongCard } from '../components/cards/SongCard'
-import { playListClass } from '../common/entities/PlayList'
+import { PlayList, playListClass } from '../common/entities/PlayList'
 import { DialogUtil, LogUtil, ToastUtil } from '@pura/harmony-utils'
-import { getPlayListSongs, PlayListOperation, subscribePlayList } from '../api/playListApi'
+import { deletePlayList, getPlayListSongs, PlayListOperation, subscribePlayList } from '../api/playListApi'
 import { BottomBarComponent } from '../components/play/BottomBarComponent'
 import { formatNumber } from '../common/functions/common/convert'
 import { playListToQueue } from '../common/functions/play/playListOp'
@@ -14,6 +13,8 @@ import { PlayListCard_Skeleton } from '../components/cards/PlayListCard'
 import { StorageConstants } from '../common/constants/StorageConstants'
 import { resourceManager } from '@kit.LocalizationKit'
 import { PlayListSongItem } from '../common/entities/PlayListSongs'
+import { User, UserClass } from '../common/entities/User'
+import { promptAction } from '@kit.ArkUI'
 
 /**
  * 歌单二级页面
@@ -25,14 +26,16 @@ const TAG = '[PlayListPage] '
 export struct PlayListPage {
   @State param: PlayListPageParam = {
     playList: playListClass,
-    isShowHeart: false
+    isShowHeart: false,
+    useTimestamp: true
   }
   @StorageProp('bottomRectHeight') bottomRectHeight: number = 0
   @StorageProp('topRectHeight') topRectHeight: number = 0
-  @StorageProp('isPlayerLoading') isPlayerLoading: boolean = false
+  @StorageProp(StorageConstants.IS_PLAYER_LOADING) isPlayerLoading: boolean = false
+  @StorageProp(StorageConstants.USER) user: User = UserClass
   @StorageProp(StorageConstants.DEVICE_TYPE) deviceType: resourceManager.DeviceType = resourceManager.DeviceType.DEVICE_TYPE_PHONE
-  private currentOffset: number = 0 // 歌曲偏移量
-
+  @StorageProp(StorageConstants.USER_PLAYLISTS) userPlayLists: PlayList[] = []
+  @Consume('pageInfos') pageInfos: NavPathStack
   @State isSubscribed: boolean = false
   @State list: PlayListSongItem[] = new Array()
   @State filteredList: PlayListSongItem[] = new Array()
@@ -44,24 +47,28 @@ export struct PlayListPage {
   @State searchKeyword: string = ''
   @State menuItem: NavigationMenuItem[] = [
     {
-      value: '12',
+      value: 'help',
       icon: $r('app.media.ic_public_help'),
-      action: () => {
-        DialogUtil.showConfirmDialog({
-          title: '歌单操作',
-          message: '增删歌曲：左滑歌曲卡片\n\n' +
-            '收藏歌单：点击信息栏右边爱心图标\n\n' +
-            '搜索歌单：本地搜索，仅支持搜索已加载的部分歌曲'
-        })
-      }
+      action: this.helpButtonAction
     }
   ]
+  private currentOffset: number = 0 // 歌曲偏移量
+  private useTimestamp: boolean = true
 
   async aboutToAppear(): Promise<void> {
     this.isSubscribed = this.param.playList.subscribed
     if (!this.hasLoaded) {
       await this.loadSongs(100, 0)
     }
+  }
+
+  private helpButtonAction() {
+    DialogUtil.showConfirmDialog({
+      title: '歌单操作',
+      message: '增删歌曲：左滑歌曲卡片\n\n' +
+        '收藏歌单：点击信息栏右边爱心图标\n\n' +
+        '歌单内搜索：本地搜索，仅支持搜索已加载的部分歌曲'
+    })
   }
 
   async loadSongs(limit: number, offset: number): Promise<void> {
@@ -73,7 +80,7 @@ export struct PlayListPage {
     }
 
     try {
-      const result = await getPlayListSongs(this.param.playList.id, this.param.playList.trackCount, offset)
+      const result = await getPlayListSongs(this.param.playList.id, this.param.playList.trackCount, offset, this.useTimestamp)
       this.list = [...this.list, ...result] // 合并歌曲列表
       this.currentOffset += limit
 
@@ -121,38 +128,23 @@ export struct PlayListPage {
                     playListToQueue(this.param.playList.id, this.param.playList.trackCount, 0)
                   }
                 })
+
+                // 删除歌单
+                if(this.user.data.account.id == this.param.playList.userId &&
+                  this.param.playList.id != this.userPlayLists[0].id) {
+                  Image($r('app.media.ic_public_delete'))
+                    .width(20)
+                    .clickEffect({ level: ClickEffectLevel.LIGHT, scale: 0.9 })
+                    .fillColor($r('app.color.app_red'))
+                    .onClick(() => {
+                      this.deleteButtonAction()
+                    })
+                }
               }
               .justifyContent(FlexAlign.SpaceBetween)
               .width('100%')
             }
             .padding({ left: 20, bottom: 10, right: 20 })
-
-            ListItem() {
-              Column() {
-                Search({
-                  placeholder: '搜索歌单',
-                  icon: '/resources/base/media/ic_public_search_filled.svg'
-                })
-                  .height(Constants.HEIGHT_SELECT)
-                  .width('100%')
-                  .searchButton('搜索')
-                  .margin({ left: Constants.PADDING_EDGE_DEFAULT })
-                  .onChange((value) => {
-                    if(value == '') {
-                      this.filteredList = []
-                      this.searchKeyword = ''
-                    }
-                  })
-                  .onSubmit((value) => {
-                    this.searchKeyword = value
-                    this.handelSearch()
-                  })
-              }
-              .padding({ left: 20, right: 20, bottom: 10 })
-              .justifyContent(FlexAlign.Center)
-            }
-
-
             if (this.isLoading) {
               ForEach([1, 2, 3, 4, 5, 6, 7, 8, 9, 10], () => {
                 ListItem() {
@@ -160,34 +152,36 @@ export struct PlayListPage {
                 }
               })
             } else {
-              ForEach(this.searchKeyword ? this.filteredList : this.list,
-                (item: PlayListSongItem, index) => {
-                  ListItem() {
-                    SongCard({
-                      song: {
-                        id: item.id,
-                        artists: item.ar,
-                        name: item.name,
-                        duration: item.dt,
-                        alias: []
-                      },
-                      sid: this.list.indexOf(item),
-                      isPlayList: true,
-                      playList: this.param.playList,
-                      picUrl: item.al.picUrl,
-                      index: this.list.indexOf(item)
+              ListItemGroup({ header: this.SearchComponent() }) {
+                ForEach(this.searchKeyword ? this.filteredList : this.list,
+                  (item: PlayListSongItem, index) => {
+                    ListItem() {
+                      SongCard({
+                        song: {
+                          id: item.id,
+                          artists: item.ar,
+                          name: item.name,
+                          duration: item.dt,
+                          alias: []
+                        },
+                        sid: this.list.indexOf(item),
+                        isPlayList: true,
+                        playList: this.param.playList,
+                        picUrl: item.al.picUrl,
+                        index: this.list.indexOf(item)
+                      })
+                    }
+                    .key(item.id.toString())
+                    .swipeAction({ end: this.SwipeItem(item, this.list.indexOf(item)) })
+                    .translate({ y: -40 })
+                    .animation({
+                      duration: 600,
+                      curve: Curve.LinearOutSlowIn
                     })
-                  }
-                  .key(item.id.toString())
-                  .swipeAction({ end: this.SwipeItem(item, this.list.indexOf(item)) })
-                  .translate({ y: -40 })
-                  .animation({
-                    duration: 600,
-                    curve: Curve.LinearOutSlowIn
-                  })
-                  .translate({ y: 0 })
-                }
-              )
+                    .translate({ y: 0 })
+                  },(item: PlayListSongItem) => item.id.toString()
+                )
+              }
 
               // 添加加载更多
               if (this.isLoadingMore) {
@@ -219,6 +213,7 @@ export struct PlayListPage {
           .width('100%')
           .scrollBar(BarState.Off)
           .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.BOTTOM])
+          .sticky(StickyStyle.Header | StickyStyle.Footer)
         }
         .height('100%')
 
@@ -236,6 +231,32 @@ export struct PlayListPage {
     .title(this.param.playList.name)
     .menus(this.menuItem)
     .backgroundColor($r('app.color.background'))
+  }
+
+  @Builder SearchComponent() {
+    Column() {
+      Search({
+        placeholder: '搜索歌名或歌手',
+        icon: '/resources/base/media/ic_public_search_filled.svg'
+      })
+        .backgroundBlurStyle(BlurStyle.Thin)
+        .height(Constants.HEIGHT_SELECT)
+        .width('100%')
+        .searchButton('搜索')
+        .margin({ left: Constants.PADDING_EDGE_DEFAULT })
+        .onChange((value) => {
+          if(value == '') {
+            this.filteredList = []
+            this.searchKeyword = ''
+          }
+        })
+        .onSubmit((value) => {
+          this.searchKeyword = value
+          this.handelSearch()
+        })
+    }
+    .padding({ left: 20, right: 20, top: 10, bottom: 10 })
+    .justifyContent(FlexAlign.Center)
   }
 
   @Builder PlayListInfo() {
@@ -263,7 +284,7 @@ export struct PlayListPage {
             .fontWeight(FontWeight.Medium)
             .width('100%')
             .padding({ bottom: 5 })
-          Text(`由 ${this.param.playList.creator.nickname} 创建`)
+          Text(`来自 ${this.param.playList.creator.nickname}`)
             .fontSize(12)
             .width('100%')
             .textAlign(TextAlign.Start)
@@ -379,4 +400,28 @@ export struct PlayListPage {
     }
   }
 
+  private deleteButtonAction() {
+    DialogUtil.showPrimaryDialog({
+      title: '确认删除歌单',
+      message:`《${this.param.playList.name}》`,
+      primaryButton: "取消",
+      secondaryButton: {
+        value: '删除',
+        fontColor: Color.Red,
+        action: async () => {
+          await this.handleDelete()
+        }
+      }
+    })
+  }
+
+  private async handleDelete() {
+    const result = await deletePlayList(this.param.playList.id)
+    if(result) {
+      promptAction.showToast({ message: '成功删除歌单', duration: 4000 })
+      this.pageInfos.pop()
+    } else {
+      promptAction.showToast({ message: '删除歌单失败', duration: 4000 })
+    }
+  }
 }

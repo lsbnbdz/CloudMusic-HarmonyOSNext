@@ -21,7 +21,7 @@ export struct SongClickAction {
       .bindSheet(this.isShowSheet, this.Sheet(), {
         backgroundColor: $r('app.color.background'),
         preferType: SheetType.BOTTOM,
-        height: SheetSize.MEDIUM,
+        detents: [SheetSize.FIT_CONTENT, SheetSize.MEDIUM, SheetSize.LARGE],
         dragBar: true,
         onDisappear: () => {
           this.isShowSheet = false

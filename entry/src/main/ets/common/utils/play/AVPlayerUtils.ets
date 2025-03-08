@@ -60,7 +60,7 @@ class AVPlayerUtils {
         }
       }, 1000)
       avPlayer.on('timeUpdate', (time: number) => {
-        AppStorage.setOrCreate('player-time', time)
+        AppStorage.setOrCreate(StorageConstants.PLAY_TIME, time)
       })
     } catch (e) {
       LogUtil.error(TAG + '播放错误: ' + e.message)

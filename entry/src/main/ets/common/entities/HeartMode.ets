@@ -6,11 +6,17 @@ interface Artist {
   id: number
 }
 
+interface Album {
+  picUrl: string
+  name: string
+}
+
 interface SongInfo {
   id: number
   name: string
   ar: Artist[]
   dt: number
+  al: Album
 }
 
 interface ResultData {

@@ -88,6 +88,11 @@ export class StorageConstants {
    */
   static readonly PLAY_ARTISTS: string = 'player-artists'
   /**
+   * 当前播放的时间
+   * @description AppStorage
+   */
+  static readonly PLAY_TIME: string = 'player-time'
+  /**
    * 歌曲封面Url
    * @description AppStorage
    */

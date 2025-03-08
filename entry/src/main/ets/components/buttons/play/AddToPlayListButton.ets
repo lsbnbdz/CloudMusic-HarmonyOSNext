@@ -40,7 +40,7 @@ export struct AddToPlayListButton {
 
 @Component
 export struct AddToPlayListCircleButton {
-  @State isShowAddSheet: boolean = false
+  @Link isShowAddSheet: boolean
   @State song: Song = SongClass
   @State imgColor: Color | ResourceStr = $r('app.color.reverse')
   @State imgWidth: number = Constants.SIZE_ICON_BUTTON_BAR
@@ -56,10 +56,11 @@ export struct AddToPlayListCircleButton {
       })
       .bindSheet(this.isShowAddSheet, this.Sheet(), {
         preferType: SheetType.CENTER,
-        height: '80%',
+        detents: [SheetSize.MEDIUM, SheetSize.LARGE],
         dragBar: false,
         showClose: false,
-        backgroundColor: $r('app.color.background'),
+        backgroundColor: Color.Transparent,
+        blurStyle: BlurStyle.Regular,
         onDisappear: () => {
           this.isShowAddSheet = false
         }

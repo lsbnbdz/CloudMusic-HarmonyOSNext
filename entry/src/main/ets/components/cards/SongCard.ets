@@ -6,7 +6,7 @@ import { PlayList, playListClass } from "../../common/entities/PlayList"
 import Constants from "../../common/constants/Constants"
 import { playListToQueue } from "../../common/functions/play/playListOp"
 import { playQueue } from "../../common/functions/play/playControl"
-import { PasteboardUtil, ToastUtil } from "@pura/harmony-utils"
+import { PasteboardUtil } from "@pura/harmony-utils"
 import { DownloadDialog } from "../dialog/DownloadDialog"
 import { StorageConstants } from "../../common/constants/StorageConstants"
 import VibratorUtils from "../../common/utils/system/VibratorUtils"
@@ -43,8 +43,6 @@ export struct SongCard {
     }
     const artistsStr = await getArtists(this.song.artists)
     this.artists = artistsStr
-    // const picUrl = await getSongPicUrl(this.song)
-    // this.picUrl = picUrl
   }
 
   build() {
@@ -55,6 +53,7 @@ export struct SongCard {
             Text(`${this.sid + 1}`)
               .width(40)
               .fontWeight(FontWeight.Bold)
+              .textAlign(TextAlign.JUSTIFY)
           }
           if(this.picUrl) {
             Image(this.picUrl + '?param=100y100')
@@ -73,7 +72,7 @@ export struct SongCard {
               Text(this.song.name)
                 .textStyle(16)
                 .fontColor(this.song.id == this.playSong.id ? $r('app.color.app_red') : $r('app.color.reverse'))
-                .fontWeight(this.song.id == this.playSong.id ? FontWeight.Bold : FontWeight.Normal)
+                .fontWeight(this.song.id == this.playSong.id ? FontWeight.Bold : FontWeight.Medium)
               if(this.song.alias.length > 0) {
                 Text(`(${this.song.alias[0]})`)
                   .layoutWeight(1)
@@ -110,8 +109,7 @@ export struct SongCard {
           }
           .backgroundColor(Color.Transparent)
           .onClick(() => {
-            PlayQueueUtils.queueAdd(1, this.song, this.artists, '')
-            promptAction.showToast({ message: '成功添加至播放列表' })
+            this.addToQueue()
           })
         }
       }
@@ -160,11 +158,15 @@ export struct SongCard {
             this.playSingleSong()
           })
         if(this.isPlayList) {
-          MenuItem(this.MenuContent($r('app.media.ic_public_play_norm'), '播放歌单'))
+          MenuItem(this.MenuContent($r('app.media.ic_public_play_norm'), '随歌单播放'))
             .onClick(() => {
               playListToQueue(this.playList.id, this.playList.trackCount, this.index)
             })
         }
+        MenuItem(this.MenuContent($r('app.media.ic_public_add_norm'), '添加到下一首'))
+          .onClick(() => {
+            this.addToQueue()
+          })
         MenuItem(this.MenuContent($r('app.media.ic_public_cloud_download'), '缓存至本地'))
           .onClick(() => {
             this.downloadDialogController.open()
@@ -213,7 +215,6 @@ export struct SongCard {
     .layoutWeight(1)
     .onClick(() => {
       PasteboardUtil.setDataText(this.song.name + ' - ' + this.artists)
-      ToastUtil.showToast('已复制歌名与歌手信息至剪贴板', { duration: 3000 })
     })
   }
 
@@ -242,6 +243,11 @@ export struct SongCard {
     .justifyContent(FlexAlign.Center)
     .height(Constants.HEIGHT_MENU_ITEM_DEFAULT)
     .padding({ left: Constants.PADDING_EDGE_TEXT, right: Constants.PADDING_EDGE_TEXT })
+  }
+
+  private addToQueue() {
+    PlayQueueUtils.queueAdd(1, this.song, this.artists, '', this.picUrl)
+    promptAction.showToast({ message: '成功添加到下一首播放', duration: 3000 })
   }
 
   private playSingleSong() {

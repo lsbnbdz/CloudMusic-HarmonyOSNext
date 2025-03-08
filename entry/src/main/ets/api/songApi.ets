@@ -194,7 +194,8 @@ export async function setHeartMode(id: number, pid: number): Promise<void> {
       playmode: 1,
       song: tempSong,
       artists: artists,
-      fileName: ''
+      fileName: '',
+      picUrl: item.songInfo.al.picUrl
     })
   }
   await PlayQueueUtils.cleanQueue()

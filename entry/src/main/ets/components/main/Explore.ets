@@ -120,15 +120,41 @@ export struct Explore {
             .padding({ left: 20, right: 20 })
 
             GridItem() {
-              Column({ space: 10 }) {
-                if (this.isLoading) {
-                  RecommendCards_Skeleton()
+              if (this.isLoading) {
+                RecommendCards_Skeleton()
+              } else {
+                RecommendCards({ isLogged: this.isLogged })
+              }
+            }
+
+            GridItem() {
+              Column({ space: 5 }) {
+                this.Intro('推荐歌单', () => {})
+                // 推荐歌单
+                if (this.isLoadingPersonalized) {
+                  GridItem() {
+                    this.Loading(300)
+                  }
                 } else {
-                  RecommendCards({ isLogged: this.isLogged })
+                  List() {
+                    ListItem().width(5)
+                    ListItem().width(5)
+                    ForEach(this.personalizedList, (item: PersonalListItem, index) => {
+                      ListItem() {
+                        PersonalizedCard({ item: item }).padding(5)
+                      }
+                    })
+                    ListItem().width(5)
+                    ListItem().width(5)
+                  }
+                  .lanes(2)
+                  .listDirection(Axis.Horizontal)
+                  .scrollBar(BarState.Off)
+                  .width('100%')
                 }
               }
-              .width('100%')
             }
+            .padding({ top: 20 })
 
             GridItem() {
               Column({ space: 15 }) {
@@ -183,36 +209,6 @@ export struct Explore {
                 }
               }
             }
-            .padding({ top: 20 })
-
-            GridItem() {
-              Column({ space: 5 }) {
-                this.Intro('推荐歌单', () => {})
-                // 推荐歌单
-                if (this.isLoadingPersonalized) {
-                  GridItem() {
-                    this.Loading(300)
-                  }
-                } else {
-                  List() {
-                    ListItem().width(5)
-                    ListItem().width(5)
-                    ForEach(this.personalizedList, (item: PersonalListItem, index) => {
-                      ListItem() {
-                        PersonalizedCard({ item: item }).padding(5)
-                      }
-                    })
-                    ListItem().width(5)
-                    ListItem().width(5)
-                  }
-                  .lanes(2)
-                  .listDirection(Axis.Horizontal)
-                  .scrollBar(BarState.Off)
-                  .width('100%')
-                }
-              }
-            }
-            .padding({ top: 20 })
 
             GridItem()
               .height(px2vp(this.bottomRectHeight) + 115)

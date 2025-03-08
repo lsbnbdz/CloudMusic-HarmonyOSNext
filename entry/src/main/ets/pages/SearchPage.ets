@@ -1,8 +1,7 @@
-import { EmitterUtil, ToastUtil } from '@pura/harmony-utils';
+import { ToastUtil } from '@pura/harmony-utils';
 import { BottomBarComponent } from '../components/play/BottomBarComponent';
 import { SearchPlayListsList } from '../components/lists/SearchPlayListsList';
 import { SearchSongsList } from '../components/lists/SearchSongsList';
-import { EmitterConstants } from '../common/constants/EmitterConstants';
 import Constants from '../common/constants/Constants';
 import { StorageConstants } from '../common/constants/StorageConstants';
 import { resourceManager } from '@kit.LocalizationKit';
@@ -18,12 +17,14 @@ export struct SearchPage {
   @StorageProp(StorageConstants.DEVICE_TYPE) deviceType: resourceManager.DeviceType = resourceManager.DeviceType.DEVICE_TYPE_PHONE
   @StorageLink(StorageConstants.SEARCH_HISTORY) searchHistory: string[] = []
   @State tabPageIndex: number = 0
-  @State @Watch('handleSearch') searchKeyword: string = ''
+  @State keyword: string = ''
+  @State @Watch('syncKeyword') searchKeyword: string = ''
   private tabsController: TabsController = new TabsController()
   private searchController: SearchController = new SearchController()
 
-  handleSearch() {
-    EmitterUtil.post(EmitterConstants.EMITTER_SEARCH, this.searchKeyword)
+  syncKeyword() {
+    this.keyword = this.searchKeyword
+    this.searchController.stopEditing()
   }
 
   build() {
@@ -75,7 +76,9 @@ export struct SearchPage {
     Button() {
       Text(content)
         .fontColor(this.tabPageIndex == toIndex ? '#ffee6f6f' : $r('app.color.reverse'))
+        .fontWeight(FontWeight.Medium)
     }
+    .layoutWeight(1)
     .padding({ left: 10, right: 10, top: 5, bottom: 5 })
     .backgroundColor(Color.Transparent)
     .animation({ duration: 200 })
@@ -99,6 +102,7 @@ export struct SearchPage {
     Column() {
       Search({
         placeholder: '搜索内容',
+        value: this.keyword,
         icon: '/resources/base/media/ic_public_search_filled.svg',
         controller: this.searchController
       })

@@ -26,17 +26,17 @@ export class HttpRequest {
    * @param useCookie 是否使用cookie (boolean)
    * @returns
    */
-  public async Request(useCookie:boolean = true): Promise<http.HttpResponse> {
+  public async Request(useCookie: boolean = true, method: string = 'get'): Promise<http.HttpResponse> {
     const cookie = await getCookie()
     return new Promise((resolve, reject) => {
       let httpRequest = http.createHttp()
       httpRequest.request(
         this.url,
         {
-          method: http.RequestMethod.GET,
+          method: method == 'post' ? http.RequestMethod.POST : http.RequestMethod.GET,
           header: {
             'Content-Type': 'application/json',
-            'cookie': useCookie ? cookie : '',
+            'cookie': useCookie ? cookie : ''
           },
           usingCache: this.usingCache,
           expectDataType: http.HttpDataType.OBJECT,

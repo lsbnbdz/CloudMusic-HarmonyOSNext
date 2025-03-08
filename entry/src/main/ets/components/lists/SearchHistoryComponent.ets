@@ -1,6 +1,4 @@
-import { EmitterUtil } from "@pura/harmony-utils";
 import Constants from "../../common/constants/Constants";
-import { EmitterConstants } from "../../common/constants/EmitterConstants";
 import { StorageConstants } from "../../common/constants/StorageConstants";
 import PreferencesUtils from "../../common/utils/data/PreferencesUtils";
 
@@ -62,7 +60,6 @@ export struct SearchHistoryComponent {
     }
     .onClick(() => {
       this.searchKeyword = text
-      EmitterUtil.post(EmitterConstants.EMITTER_SEARCH, text)
     })
     .justifyContent(FlexAlign.SpaceAround)
     .clickEffect({ level: ClickEffectLevel.LIGHT, scale: 0.8 })

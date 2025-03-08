@@ -33,7 +33,8 @@ export struct PlayListCard {
     .onClick(() => {
       let param: PlayListPageParam = {
         playList: this.playList,
-        isShowHeart: this.isShowHeart
+        isShowHeart: this.isShowHeart,
+        useTimestamp: true
       }
       if(this.pageInfos.size() < 2) {
         this.pageInfos.pushPathByName('PLayListPage', param, true)

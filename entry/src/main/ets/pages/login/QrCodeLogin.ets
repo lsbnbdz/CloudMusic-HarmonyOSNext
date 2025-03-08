@@ -1,14 +1,24 @@
 import { ToastUtil } from '@pura/harmony-utils';
 import { checkQrLogin, getQrCode } from '../../api/QrCodeLogin';
 import Constants from '../../common/constants/Constants';
+import { promptAction } from '@kit.ArkUI';
 
 @Component
 export struct QrCodeLogin {
   @Consume('pageInfos') pageInfos: NavPathStack
+  @State first: boolean = true
   @State qrCode:string[] = []
 
   async aboutToAppear() {
-    this.qrCode = await getQrCode()
+    if(this.first) {
+      try {
+        this.qrCode = await getQrCode()
+      } catch (e) {
+        promptAction.showToast({ message: '获取二维码出错: ' + e.message })
+      } finally {
+        this.first = false
+      }
+    } else return
   }
 
   build() {
@@ -29,9 +39,6 @@ export struct QrCodeLogin {
                   if(result) {
                     ToastUtil.showToast('登录成功!')
                     this.pageInfos.pop()
-                  }
-                  else {
-                    ToastUtil.showToast('登录失败!')
                   }
                 })
               })

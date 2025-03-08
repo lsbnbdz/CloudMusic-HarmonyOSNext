@@ -49,7 +49,8 @@ export struct TopListItemCard {
             nickname: '官方'
           }
         },
-        isShowHeart: false
+        isShowHeart: false,
+        useTimestamp: false
       }
       if(this.pageInfos.size() < 2) {
         this.pageInfos.pushPathByName('PLayListPage', param, true)

@@ -69,8 +69,8 @@ export struct PlayListAddSheet {
                 .height(60)
                 .onClick(async () => {
                   try {
-                    await PlayListOperation('add', item.id, this.songId)
-                    ToastUtil.showToast('成功添加到歌单')
+                    const result = await PlayListOperation('add', item.id, this.songId)
+                    if(result) ToastUtil.showToast('成功添加到歌单')
                     this.isShow = false
                   } catch (e) {
                     LogUtil.error(TAG + 'Add to PlayList Error: ' + e)
@@ -84,7 +84,6 @@ export struct PlayListAddSheet {
           ListItem().height(px2vp(this.bottomRectHeight))
         }
         .layoutWeight(1)
-        .height('100%')
         .width('100%')
       }
     }

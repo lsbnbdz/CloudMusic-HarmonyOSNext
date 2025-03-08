@@ -10,20 +10,20 @@ import { AVCastPicker, AVCastPickerStyle } from "@kit.AVSessionKit"
 import { TimerButton } from "../buttons/play/TimerButton"
 import { StorageConstants } from "../../common/constants/StorageConstants"
 import Constants from "../../common/constants/Constants"
-import { SetPlayQuality } from "../settings/SetPlayQuality"
 import { PasteboardUtil, ToastUtil } from "@pura/harmony-utils"
 import { resourceManager } from "@kit.LocalizationKit"
-
+import { PlayerActionSheet } from "./PlayerActionSheet"
 @Component
 export struct PlayingCover {
   @StorageProp('topRectHeight') topRectHeight: number = 0
-  @StorageProp('player-mode') playmode: number = 1
-  @StorageProp('player-song') song: Song = SongClass
-  @StorageProp('player-artists') artists: string = ''
-  @StorageProp('player-ispaused') isPaused: boolean = false
-  @StorageProp('player-picurl') picUrl: string = ''
-  @StorageProp('player-time') time: number = 0
-  @StorageProp('player-lyric') lyricArr: string[] = []
+  @StorageProp('bottomRectHeight') bottomRectHeight: number = 0
+  @StorageProp(StorageConstants.PLAY_MODE) playmode: number = 1
+  @StorageProp(StorageConstants.PLAY_SONG) song: Song = SongClass
+  @StorageProp(StorageConstants.PLAY_ARTISTS) artists: string = ''
+  @StorageProp(StorageConstants.IS_PAUSED) isPaused: boolean = false
+  @StorageProp(StorageConstants.PIC_URL) picUrl: string = ''
+  @StorageProp(StorageConstants.PLAY_TIME ) time: number = 0
+  @StorageProp(StorageConstants.ISLIKED) isLiked: boolean = false
   @StorageProp(StorageConstants.PLAY_COUNTDOWN_WORKING) isTimerWorking: boolean = false
   @StorageProp(StorageConstants.PLAY_IS_LOCALFILE) isLocalFile: boolean = false
   @StorageProp(StorageConstants.DEVICE_TYPE) deviceType: resourceManager.DeviceType = resourceManager.DeviceType.DEVICE_TYPE_PHONE
@@ -34,16 +34,14 @@ export struct PlayingCover {
   @State sliderMovingTime: number = 0
   @State tabPageIndex: number = 0
   @State totalOpacity: number = 0
-  @State isShowPopup: boolean = false
-  private artists1: string = ''
-  private song1: Song = SongClass
-  private picUrl1: string = ''
-  private tabsController: TabsController = new TabsController()
+  @State isShowMenu: boolean = false
+  @State isShowTimer: boolean = false
+  @State isShowAddSheet: boolean = false
   private dialogController: CustomDialogController = new CustomDialogController({
     builder: DownloadDialog({
-      song: this.song1,
-      picUrl: this.picUrl1,
-      artists: this.artists1,
+      song: this.song,
+      picUrl: this.picUrl,
+      artists: this.artists,
       duration: changeDuration(this.song.duration)
     }),
   })
@@ -119,7 +117,7 @@ export struct PlayingCover {
         /**
          * Clock-Timer
          */
-        TimerButton({ isTimerWorking: this.isTimerWorking })
+        TimerButton({ isTimerWorking: this.isTimerWorking, isShow: this.isShowTimer })
         if (this.playmode == 1) {
           /**
            * Download
@@ -131,20 +129,16 @@ export struct PlayingCover {
               .draggable(false)
               .backgroundColor(Color.Transparent)
               .onClick(() => {
-                this.song1 = this.song
-                this.artists1 = this.artists
-                this.picUrl1 = this.picUrl
                 this.dialogController.open()
               })
           }
           .width(30)
           .height(30)
-
           /**
            * AddToPlayList
            */
           Column() {
-            AddToPlayListCircleButton({ song: this.song, imgColor: Color.White, imgWidth: 24 })
+            AddToPlayListCircleButton({ song: this.song, imgColor: Color.White, imgWidth: 24, isShowAddSheet: this.isShowAddSheet })
           }
           .width(30)
           .height(30)
@@ -270,16 +264,22 @@ export struct PlayingCover {
       Button({ type: ButtonType.Circle }) { Image($r('app.media.ic_public_arrow_down_0')).draggable(false).fillColor(Color.White).width(Constants.SIZE_ICON_BUTTON_COMMON).aspectRatio(1) }
       .backgroundColor(Color.Transparent)
       .onClick(() => { this.isShow = false })
+
       Button({ type: ButtonType.Circle }) { Image($r('app.media.ic_public_more_list')).draggable(false).fillColor(Color.White).width(Constants.SIZE_ICON_BUTTON_COMMON).aspectRatio(1) }
       .backgroundColor(Color.Transparent)
-      .bindPopup(this.isShowPopup, {
-        builder: this.MorePopup(),
-        onWillDismiss: () => {
-          this.isShowPopup = false
+      .bindSheet(this.isShowMenu, this.MenuSheet(), {
+        backgroundColor: Color.Transparent,
+        height: SheetSize.FIT_CONTENT,
+        showClose: false,
+        detents: [SheetSize.FIT_CONTENT, SheetSize.MEDIUM],
+        blurStyle: BlurStyle.Regular,
+        preferType: SheetType.CENTER,
+        onDisappear: () => {
+          this.isShowMenu = false
         }
       })
       .onClick(() => {
-        this.isShowPopup = true
+        this.isShowMenu = true
       })
     }
     .position({ top: 0 })
@@ -317,9 +317,6 @@ export struct PlayingCover {
               .borderRadius(5)
               .aspectRatio(1)
               .shadow({ radius: 30, type: ShadowType.BLUR, offsetX: 20, offsetY: 20 })
-              .onClick(() => {
-                this.tabsController.changeIndex(1)
-              })
           }
           else {
             Column()
@@ -357,22 +354,6 @@ export struct PlayingCover {
         direction: SwipeDirection.Vertical
       }).onAction(() => { this.isShow = false })
     )
-  }
-
-  /**
-   * Menu
-   */
-  @Builder
-  MorePopup() {
-    Column({ space: Constants.PADDING_EDGE_DEFAULT }) {
-      SetPlayQuality()
-    }
-    .constraintSize({
-      minWidth: 200,
-      maxWidth: 400
-    })
-    .width('80%')
-    .padding({ left: Constants.PADDING_EDGE_TEXT, right: Constants.PADDING_EDGE_TEXT, top: Constants.PADDING_EDGE_DEFAULT, bottom: Constants.PADDING_EDGE_DEFAULT })
   }
 
   @Builder PhoneUI() {
@@ -459,6 +440,10 @@ export struct PlayingCover {
     .height('100%')
     .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
   }
+
+  @Builder MenuSheet() {
+    PlayerActionSheet({ isShow: this.isShowMenu, isShowTimer: this.isShowTimer, isShowAddSheet: this.isShowAddSheet })
+  }
 }
 
 @Extend(Text) function textStyle(size:number) {
@@ -475,3 +460,4 @@ export struct PlayingCover {
   .fillColor(Color.White)
   .draggable(false)
 }
+

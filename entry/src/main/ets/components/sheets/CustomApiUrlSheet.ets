@@ -43,6 +43,10 @@ export struct SetApiSheet {
     }
     .padding({ left: Constants.PADDING_EDGE_DEFAULT, right: Constants.PADDING_EDGE_DEFAULT, bottom: px2vp(this.bottomRectHeight) + Constants.PADDING_EDGE_TEXT })
     .width('100%')
+    .constraintSize({
+      minWidth: 200,
+      maxWidth: 600
+    })
   }
 
   @Builder SetApiUrl() {
@@ -126,15 +130,16 @@ export struct SetApiSheet {
       .padding({ left: Constants.PADDING_EDGE_TEXT, right: Constants.PADDING_EDGE_TEXT })
 
       if(this.isCustomCookie) {
-        Row({ space: 10 }) {
-          TextInput({ text: this.customCookie })
-            .layoutWeight(4)
+        Column({ space: 10 }) {
+          TextArea({ text: this.customCookie })
+            .width('100%')
             .onChange((text) => this.customCookie = text)
             .borderRadius(Constants.RADIUS_IMG)
-            .height(60)
+            .height(150)
+            .textAlign(TextAlign.Start)
           Button('设置')
             .backgroundColor($r('app.color.app_red'))
-            .layoutWeight(1)
+            .width(100)
             .onClick(() => {
               this.setCustomCookie()
             })
@@ -160,7 +165,10 @@ export struct SetApiSheet {
   }
 
   setCustomCookie() {
-    let cookie = this.customCookie + '; OS=pc'
+    let cookie = this.customCookie.trim()
+    if (!cookie.endsWith('; OS=pc')) {
+      cookie += '; OS=pc'
+    }
     AppStorage.setOrCreate(StorageConstants.CUSTOM_COOKIE, cookie)
     PreferencesUtils.putPreferenceValue(StorageConstants.SET_PERF ,StorageConstants.CUSTOM_COOKIE, cookie)
     ToastUtil.showToast('设置成功')

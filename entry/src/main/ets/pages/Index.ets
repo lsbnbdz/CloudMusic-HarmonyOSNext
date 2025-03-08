@@ -21,6 +21,7 @@ import { TopListPage } from './TopListPage';
 import { ApiDialog } from '../components/dialog/ApiDialog';
 import PreferencesUtils from '../common/utils/data/PreferencesUtils';
 import { DebugPage } from './DebugPage';
+import { AddPlayListDialog } from '../components/dialog/AddPlayListDialog';
 
 @Entry
 @Component
@@ -35,6 +36,11 @@ struct Index {
     autoCancel: false
   })
 
+  addPlayListController: CustomDialogController = new CustomDialogController({
+    builder: AddPlayListDialog(),
+    autoCancel: true
+  })
+
   tabController: TabsController = new TabsController()
 
   @StorageProp('topRectHeight') topRectHeight: number = 0
@@ -43,16 +49,30 @@ struct Index {
   @StorageProp(StorageConstants.DEFAULT_PAGE_INDEX) index: number = 0
   @StorageProp(StorageConstants.VALID_API_URL) @Watch('checkApi') validApiUrl: boolean = true
   @Provide('pageInfos') pageInfos: NavPathStack = new NavPathStack()
-  private menuItems: NavigationMenuItem[] = [
-    {
-      value: '搜索',
-      icon: $r('app.media.ic_public_search_filled'),
-      action: () => {
-        this.pageInfos.clear()
-        this.pageInfos.pushPathByName('SearchPage', null, true)
-      }
+
+  private getMenuItems(): NavigationMenuItem[] {
+    let items: NavigationMenuItem[] = []
+    if(this.index == 0 || this.index == 1) {
+      items.push({
+        value: 'Search',
+        icon: $r('app.media.ic_public_search_filled'),
+        action: () => {
+          this.pageInfos.clear()
+          this.pageInfos.pushPathByName('SearchPage', null, true)
+        }
+      })
     }
-  ]
+    // if(this.index == 1) {
+    //   items.unshift({
+    //     value: 'Add',
+    //     icon: $r('app.media.ic_public_add_filled'),
+    //     action: () => {
+    //       this.addPlayListController.open()
+    //     }
+    //   })
+    // }
+    return items
+  }
 
   checkApi() {
     if(!this.validApiUrl) {
@@ -100,7 +120,7 @@ struct Index {
     .mode(NavigationMode.Auto)
     .titleMode(NavigationTitleMode.Mini)
     .title(this.index == 0 ? '发现' : this.index == 1 ? '歌单' : '我的')
-    .menus(this.menuItems)
+    .menus(this.getMenuItems())
     .hideBackButton(true)
     .backgroundColor($r('app.color.background'))
     .navDestination(this.PageMap)

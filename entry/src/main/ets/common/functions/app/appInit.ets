@@ -12,6 +12,7 @@ import { PlayList } from "../../entities/PlayList"
 import { TopListItem } from "../../entities/TopList"
 import { getLikeList } from "../../../api/songApi"
 import { PersonalListItem } from "../../entities/Personalized"
+import { pauseMusic, playQueue } from "../play/playControl"
 
 /**
  * App初始化

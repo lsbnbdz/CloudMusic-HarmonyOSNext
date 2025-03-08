@@ -100,10 +100,12 @@ export struct DownloadDialog {
           .opacity(this.isLoading ? 0 : 1)
         }
       } else {
-        Text('获取歌曲内容失败，原因可能如下：').textStyle(18)
+        Text('获取歌曲内容失败, 原因可能如下：').textStyle(Constants.FONT_SIZE_COMMON)
         Text('- 此歌曲需要单曲付费或为数字专辑曲目\n' +
-          '- 当前未登录账号，无法获取试听链接\n' +
-          '- 当前登录账号非会员，公共Cookie失效').textStyle(14)
+          '- 当前未登录账号\n' +
+          '- 当前登录账号未拥有会员')
+          .textStyle(Constants.FONT_SIZE_COMMON - 1)
+          .textAlign(TextAlign.Start)
       }
     }
     .backgroundColor(Color.Transparent)

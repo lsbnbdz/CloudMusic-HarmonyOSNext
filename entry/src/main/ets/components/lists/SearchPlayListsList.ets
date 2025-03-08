@@ -12,7 +12,7 @@ export struct SearchPlayListsList {
   @StorageProp('bottomRectHeight') bottomRectHeight: number = 0
   @StorageProp('topRectHeight') topRectHeight: number = 0
   @State playLists: Array<PlayList> = []
-  @Prop searchKeyword: string = ''
+  @Link @Watch('handleSearch') searchKeyword: string
   @State playListOffset: number = 0
   @State hasMorePlayLists: boolean = true
   @State hasPlayListLoaded: boolean = false
@@ -23,16 +23,16 @@ export struct SearchPlayListsList {
     if(this.searchKeyword) {
       await this.loadPlayLists(0)
     }
-    EmitterUtil.onSubscribe(EmitterConstants.EMITTER_SEARCH, async (keyword: string) => {
-      this.searchKeyword = keyword
-      this.playLists = []
-      this.playListOffset = 0
-      await this.loadPlayLists(0)
-    })
   }
 
   aboutToDisappear(): void {
     EmitterUtil.unSubscribe(EmitterConstants.EMITTER_SEARCH)
+  }
+
+  async handleSearch() {
+    this.playLists = []
+    this.playListOffset = 0
+    await this.loadPlayLists(0)
   }
 
   build() {

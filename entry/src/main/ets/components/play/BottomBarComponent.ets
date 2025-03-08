@@ -1,10 +1,10 @@
 import { ToastUtil } from "@pura/harmony-utils"
 import { Song, SongClass } from "../../common/entities/SongsResult"
-import { pauseMusic, playNext, playPre, playQueue, resumeMusic } from "../../common/functions/play/playControl"
+import { pauseMusic, playQueue, resumeMusic } from "../../common/functions/play/playControl"
 import playQueueUtils from "../../common/utils/play/PlayQueueUtils"
 import { PlayQueueButton } from "../buttons/play/PlayQueueButton"
 import { PlayingCover } from "../sheets/PlayingCover"
-import { router } from "@kit.ArkUI"
+import { StorageConstants } from "../../common/constants/StorageConstants"
 
 /**
  * 底部播控组件
@@ -13,14 +13,14 @@ import { router } from "@kit.ArkUI"
 export struct BottomBarComponent {
   @StorageProp('topRectHeight') topRectHeight: number = 0
   @StorageProp('bottomRectHeight') bottomRectHeight: number = 0
-  @StorageLink('player-isplaying') isPlaying: boolean = false
-  @StorageProp('player-mode') playmode: number = 1
-  @StorageProp('player-fileName') fileName: string = ''
-  @StorageProp('player-song') song: Song = SongClass
-  @StorageProp('player-artists') artists: string = ''
-  @StorageProp('player-ispaused') isPaused: boolean = true
-  @StorageProp('player-picurl') picUrl: string = ''
-  @StorageProp('player-time') time: number = 0
+  @StorageLink(StorageConstants.IS_PLAYING) isPlaying: boolean = false
+  @StorageProp(StorageConstants.PLAY_MODE) playmode: number = 1
+  @StorageProp(StorageConstants.PLAY_FILE_NAME) fileName: string = ''
+  @StorageProp(StorageConstants.PLAY_SONG) song: Song = SongClass
+  @StorageProp(StorageConstants.PLAY_ARTISTS) artists: string = ''
+  @StorageProp(StorageConstants.IS_PAUSED) isPaused: boolean = true
+  @StorageProp(StorageConstants.PIC_URL) picUrl: string = ''
+  @StorageProp(StorageConstants.PLAY_TIME) time: number = 0
   @StorageProp('player-currentLyric') currentLyric: string = ''
   @State componentOpacity: number = 0.8
   @State isShow: boolean = false
@@ -32,12 +32,12 @@ export struct BottomBarComponent {
       else { Image(this.picUrl + '?param=512y512').songImg() }
 
       Column({ space: 5 }) {
-        Text(this.song.name).textStyle(18)
+        Text(this.song.name).textStyle(18).textOverflow({ overflow: TextOverflow.MARQUEE }).fontWeight(FontWeight.Medium)
         if(!this.currentLyric || this.currentLyric === '暂无歌词') {
-          Text(this.artists).textStyle(14).layoutWeight(1)
+          Text(this.artists).textStyle(14).textOverflow({ overflow: TextOverflow.MARQUEE }).layoutWeight(1)
         }
         else {
-          Text(this.currentLyric).textStyle(14).textOverflow({ overflow: TextOverflow.Ellipsis }).layoutWeight(1)
+          Text(this.currentLyric).textStyle(14).textOverflow({ overflow: TextOverflow.MARQUEE }).layoutWeight(1)
         }
       }
       .padding({ top: 15, bottom: 15 })

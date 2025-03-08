@@ -1,5 +1,5 @@
 import { avSession } from "@kit.AVSessionKit";
-import { AppUtil, LogUtil, ToastUtil } from "@pura/harmony-utils";
+import { AppUtil, LogUtil } from "@pura/harmony-utils";
 import { StorageConstants } from "../../constants/StorageConstants";
 import { Song, SongClass } from "../../entities/SongsResult";
 import { changeCycleMode,

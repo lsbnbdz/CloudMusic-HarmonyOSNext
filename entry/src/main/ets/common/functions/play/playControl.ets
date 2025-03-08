@@ -13,8 +13,9 @@ import { PlayConstants } from "../../constants/PlayConstants";
 import { EmitterConstants } from "../../constants/EmitterConstants";
 import { StorageConstants } from "../../constants/StorageConstants";
 import { JSON } from "@kit.ArkTS";
-import { isThisSongLiked } from "./songLike";
 import AVPlayerUtils from "../../utils/play/AVPlayerUtils";
+import { isThisSongLiked } from "./songLike";
+
 
 /**
  * 音频播放控制方法
@@ -22,7 +23,7 @@ import AVPlayerUtils from "../../utils/play/AVPlayerUtils";
 const TAG = '[playerControl] '
 const pref = StorageConstants.QUEUE_PREF
 
-export async function playMusicByUrl(song: Song, artists: string, isLogged: boolean) {
+export async function playMusicByUrl(song: Song, artists: string, isLogged: boolean, picUrl: string = '') {
   try {
     isThisSongLiked(song.id)
     const quality:number | undefined = await AppStorage.get(StorageConstants.PLAY_QUALITY)
@@ -40,17 +41,17 @@ export async function playMusicByUrl(song: Song, artists: string, isLogged: bool
 
     if(localPath != '') { // 是否存在本地文件
       AppStorage.setOrCreate(StorageConstants.PLAY_IS_LOCALFILE, true)
-      // await AVPlayerUtils.setUrl(localPath)
       await AVPlayerUtils.setUrl(localPath)
     } else if(songPlay.data[0].url) {
       AppStorage.setOrCreate(StorageConstants.PLAY_IS_LOCALFILE, false)
-      // await AVPlayerUtils.setUrl(songPlay.data[0].url)
       await AVPlayerUtils.setUrl(songPlay.data[0].url)
     } else {
       ToastUtil.showToast('获取播放资源失败')
       playNext()
     }
-    const picUrl:string = await getSongPicUrl(song.id)
+    if(!picUrl) {
+      picUrl = await getSongPicUrl(song.id)
+    }
     setPicUrl(picUrl)
     LyricUtils.setLyric(song).then(() => {
       AVSessionUtils.setMetadata(song, artists, picUrl)
@@ -108,7 +109,6 @@ export async function pauseMusic() {
 }
 
 export async function resumeMusic() {
-  // AudioPlayUtils.resume()
   AVPlayerUtils.play()
   AppStorage.setOrCreate(StorageConstants.IS_PAUSED, false)
 }
@@ -126,7 +126,7 @@ export async function playQueue(index: number) {
     playMusicWithFile(playqueue.fileName)
   } else { // Play with url
     const isLogged: boolean | undefined = AppStorage.get(StorageConstants.IS_LOGGED)
-    playMusicByUrl(playqueue.song, playqueue.artists, isLogged ? true : false)
+    playMusicByUrl(playqueue.song, playqueue.artists, isLogged ? true : false, playqueue.picUrl)
   }
 }
 
@@ -138,7 +138,7 @@ export async function playPre() {
     if(res.playmode == 0) {
       playMusicWithFile(res.fileName)
     } else {
-      playMusicByUrl(res.song, res.artists, isLogged ? isLogged : false)
+      playMusicByUrl(res.song, res.artists, isLogged ? isLogged : false, res.picUrl)
     }
   } else {
     if(cycleMode == 2) { playQueue(PlayQueueUtils.getQueueLength() - 1) }
@@ -163,7 +163,7 @@ export async function playNext() {
     if(res.playmode == 0) {
       playMusicWithFile(res.fileName)
     } else {
-      playMusicByUrl(res.song, res.artists, isLogged ? isLogged:false)
+      playMusicByUrl(res.song, res.artists, isLogged ? isLogged:false, res.picUrl)
     }
   } else {
     if(cycleMode == 2) { playQueue(0) }
@@ -222,7 +222,7 @@ export async function getCycleMode(): Promise<number> {
  */
 async function getPlayTime(): Promise<number> {
   let resTime = 0
-  let elapsedTime:number | undefined = await AppStorage.get('player-time')
+  let elapsedTime:number | undefined = await AppStorage.get(StorageConstants.PLAY_TIME)
   if(elapsedTime) {
     resTime = elapsedTime
   }

@@ -60,7 +60,8 @@ export struct PersonalizedCard {
             nickname: '推荐歌单'
           }
         },
-        isShowHeart: false
+        isShowHeart: false,
+        useTimestamp: false
       }
       if(this.pageInfos.size() < 2) {
         this.pageInfos.pushPathByName('PLayListPage', param, true)

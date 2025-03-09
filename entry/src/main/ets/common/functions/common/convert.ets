@@ -38,12 +38,13 @@ export async function fetchSongInfo(fileName: string): Promise<Song> {
     }
   ]
 
-  let song:Song = {
+  let song: Song = {
     id: -1,
     name: songName,
     artists: artists,
     duration: -1,
-    alias: []
+    alias: [],
+    fee: 0
   }
   return song
 }

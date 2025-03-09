@@ -28,12 +28,6 @@ export struct SearchSongsList {
     if(this.searchKeyword) {
       await this.loadSongs(0)
     }
-    // EmitterUtil.onSubscribe(EmitterConstants.EMITTER_SEARCH, async (keyword: string) => {
-    //   this.searchKeyword = keyword
-    //   this.songList = []
-    //   this.songOffset = 0
-    //   await this.loadSongs(0)
-    // })
   }
 
   aboutToDisappear(): void {

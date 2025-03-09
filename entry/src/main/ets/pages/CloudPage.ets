@@ -86,11 +86,12 @@ export struct CloudPage {
                       artists: item.ar,
                       name: item.name,
                       duration: item.dt,
-                      alias: []
+                      alias: [],
+                      fee: item.fee
                     },
                     sid: this.list.indexOf(item),
                     isPlayList: false,
-                    picUrl: item.al.picUrl
+                    picUrl: item.al?.picUrl ?? $r('app.media.ic_public_music')
                   })
                 }
                 .swipeAction({ end: this.SwipeItem(item) })

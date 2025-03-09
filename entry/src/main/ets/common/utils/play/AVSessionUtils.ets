@@ -20,7 +20,7 @@ class AVSessionUtils {
   private cycleMode: number = 0
   private currentSong: Song = SongClass
   private currentArtists: string = ''
-  private currentPic: string = ''
+  private currentPic: string | ResourceStr  = ''
   private lyric: string = ''
 
   async createSession(): Promise<avSession.AVSession> {
@@ -71,7 +71,7 @@ class AVSessionUtils {
    * @param artists
    * @param picUrl
    */
-  async setMetadata(song: Song, artists: string, picUrl: string) {
+  async setMetadata(song: Song, artists: string, picUrl: string | ResourceStr) {
     this.currentSong = song
     this.currentArtists = artists
     this.currentPic = picUrl
@@ -80,7 +80,7 @@ class AVSessionUtils {
     let metadata: avSession.AVMetadata = {
       assetId: `${song.id}`,
       title: song.name,
-      mediaImage: picUrl,
+      mediaImage: typeof picUrl === 'string' ? picUrl : '/resources/base/media/app.media.ic_public_music.svg',
       artist: artists != 'null' ? artists : '未知',
       duration: song.duration,
       lyric: this.lyric

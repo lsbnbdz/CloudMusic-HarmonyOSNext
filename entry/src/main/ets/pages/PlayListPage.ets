@@ -166,12 +166,13 @@ export struct PlayListPage {
                           artists: item.ar,
                           name: item.name,
                           duration: item.dt,
-                          alias: []
+                          alias: [],
+                          fee: item.fee
                         },
                         sid: this.list.indexOf(item),
                         isPlayList: true,
                         playList: this.param.playList,
-                        picUrl: item.al.picUrl,
+                        picUrl: item.al?.picUrl ?? $r('app.media.ic_public_music'),
                         index: this.list.indexOf(item)
                       })
                     }
@@ -216,6 +217,7 @@ export struct PlayListPage {
           .layoutWeight(1)
           .width('100%')
           .scrollBar(BarState.Off)
+          .edgeEffect(EdgeEffect.Spring)
           .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.BOTTOM])
           .sticky(StickyStyle.Header | StickyStyle.Footer)
           // Scroll(this.observableScroller.getScroller()) {

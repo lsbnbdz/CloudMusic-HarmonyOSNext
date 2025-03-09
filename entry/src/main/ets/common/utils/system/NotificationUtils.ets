@@ -1,5 +1,6 @@
 import { notificationManager } from "@kit.NotificationKit"
 import { LogUtil } from "@pura/harmony-utils"
+import { BusinessError } from "@kit.BasicServicesKit"
 
 /**
  * 通知类
@@ -12,7 +13,7 @@ class NotificationUtils {
    * @param text
    */
   publish(id: number, title: string, text: string) {
-    let contentType = notificationManager.ContentType.NOTIFICATION_CONTENT_BASIC_TEXT
+    const contentType = notificationManager.ContentType.NOTIFICATION_CONTENT_BASIC_TEXT
     notificationManager.publish({
       id: id,
       deliveryTime: new Date().getTime(),
@@ -26,6 +27,30 @@ class NotificationUtils {
       },
     }).catch((err:Error) => {
       LogUtil.error(TAG + '发送通知失败' + err.message)
+    })
+  }
+
+  download(id: number, title: string, fileName: string, progress: number) {
+    let notificationRequest: notificationManager.NotificationRequest = {
+      id: id,
+      content: {
+        notificationContentType: notificationManager.ContentType.NOTIFICATION_CONTENT_BASIC_TEXT  ,
+        normal: {
+          title: title,
+          text: fileName
+        }
+      },
+      template: {
+        name: 'downloadTemplate',
+        data: { title: title, fileName: fileName, progressValue: progress }
+      }
+    }
+
+    notificationManager.publish(notificationRequest, (err: BusinessError) => {
+      if(err) {
+        LogUtil.error(TAG + 'Error: ' + err.message)
+        return
+      }
     })
   }
 

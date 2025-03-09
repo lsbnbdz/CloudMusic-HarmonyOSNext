@@ -14,6 +14,7 @@ export interface PlayListSongItem {
   dt: number
   al: Album
   ar: Artist[]
+  fee: number
 }
 
 export interface PlayListSongs {
@@ -30,6 +31,7 @@ interface DailySong {
   al: Album
   ar: Artist[]
   reason: string
+  fee: number
 }
 
 interface Data {

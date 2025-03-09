@@ -53,6 +53,7 @@ struct Index {
   @StorageProp(StorageConstants.DEFAULT_PAGE_INDEX) index: number = 0
   @StorageProp(StorageConstants.VALID_API_URL) @Watch('checkApi') validApiUrl: boolean = true
   @Provide('pageInfos') pageInfos: NavPathStack = new NavPathStack()
+  @State tabCurrentIndex: number = 0
 
   private paddingStart: LengthMetrics = LengthMetrics.vp(16);
   private paddingEnd: LengthMetrics = LengthMetrics.vp(16);
@@ -88,6 +89,9 @@ struct Index {
   }
 
   async aboutToAppear(): Promise<void> {
+    setTimeout(() => {
+      this.tabCurrentIndex = this.index
+    }, 1)
     this.checkApi()
     const isFirstLaunch = await PreferencesUtils.getPreferenceValue<boolean>(StorageConstants.USER_PREF, 'isFirstLaunch', true)
     if(isFirstLaunch) {

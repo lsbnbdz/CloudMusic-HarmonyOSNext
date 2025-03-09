@@ -1,5 +1,6 @@
 import { LogUtil, ToastUtil } from "@pura/harmony-utils"
 import { getPlayLists, PlayListOperation } from "../../api/playListApi"
+import Constants from "../../common/constants/Constants"
 import { StorageConstants } from "../../common/constants/StorageConstants"
 import { PlayList } from "../../common/entities/PlayList"
 import { Song } from "../../common/entities/SongsResult"
@@ -17,10 +18,13 @@ export struct PlayListAddSheet {
   @StorageProp('currentQueueIndex') currentQueueIndex: number = 0
   @StorageProp('bottomRectHeight') bottomRectHeight: number = 0
   @StorageProp(StorageConstants.USER) user: User = UserClass
-  @State isLoading: boolean = false
   @StorageLink(StorageConstants.USER_PLAYLISTS) playLists: Array<PlayList> = []
+  @State isLoading: boolean = false
+  @State isRefreshing: boolean = false
+  @State lastRefreshTime: number = 0
   @State songId: number = -1
   @Link isShow: boolean
+  private refreshCooldown: number = 5000
 
   async aboutToAppear(): Promise<void> {
     this.isLoading = true
@@ -39,7 +43,8 @@ export struct PlayListAddSheet {
   build() {
     Column({ space: 10 }) {
       Text('添加到歌单')
-        .fontSize(18)
+        .fontSize(Constants.FONT_SIZE_COMMON)
+        .fontWeight(FontWeight.Bold)
       if(this.isLoading) {
         Column() {
           LoadingProgress().width(40)
@@ -47,55 +52,77 @@ export struct PlayListAddSheet {
         .width('100%')
       }
       else {
-        List() {
-          ForEach(this.playLists, (item: PlayList, index) => {
-            if(item.userId == this.user.data.profile.userId) {
-              ListItem() {
-                Button() {
-                  Row({ space: 15 }) {
-                    Image(`${item.coverImgUrl}?param=256y256`).width(50).borderRadius(15)
-                    Column({ space: 8 }) {
-                      Text(item.name).textStyle(16)
-                      Text(`${item.trackCount} 首歌曲`).textStyle(12)
+        Refresh({ refreshing: this.isRefreshing }) {
+          List() {
+            ForEach(this.playLists, (item: PlayList, index) => {
+              if (item.userId == this.user.data.profile.userId) {
+                ListItem() {
+                  Button() {
+                    Row({ space: 15 }) {
+                      Image(`${item.coverImgUrl}?param=256y256`).width(40).borderRadius(15)
+                      Column({ space: 8 }) {
+                        Text(item.name)
+                          .fontSize(Constants.FONT_SIZE_COMMON)
+                          .fontWeight(FontWeight.Medium)
+                          .textAlign(TextAlign.Start)
+                          .width('100%')
+                        Text(`${item.trackCount} 首歌曲`)
+                          .fontSize(12)
+                          .textAlign(TextAlign.Start)
+                          .width('100%')
+                      }
+                      .layoutWeight(1)
                     }
-                    .layoutWeight(1)
+                    .width('100%')
                   }
+                  .backgroundColor(Color.Transparent)
+                  .borderRadius(5)
+                  .type(ButtonType.Normal)
                   .width('100%')
+                  .height(60)
+                  .onClick(async () => {
+                    try {
+                      const result = await PlayListOperation('add', item.id, this.songId)
+                      if (result) ToastUtil.showToast('成功添加到歌单')
+                      this.isShow = false
+                    } catch (e) {
+                      LogUtil.error(TAG + 'Add to PlayList Error: ' + e)
+                      ToastUtil.showToast(e.message)
+                    }
+                  })
                 }
-                .backgroundColor(Color.Transparent)
-                .borderRadius(5)
-                .type(ButtonType.Normal)
-                .width('100%')
-                .height(60)
-                .onClick(async () => {
-                  try {
-                    const result = await PlayListOperation('add', item.id, this.songId)
-                    if(result) ToastUtil.showToast('成功添加到歌单')
-                    this.isShow = false
-                  } catch (e) {
-                    LogUtil.error(TAG + 'Add to PlayList Error: ' + e)
-                    ToastUtil.showToast(e.message)
-                  }
-                })
+                .padding({ left: 15, right: 15 })
               }
-              .padding({ left: 15, right: 15 })
-            }
-          })
-          ListItem().height(px2vp(this.bottomRectHeight))
+            })
+            ListItem().height(px2vp(this.bottomRectHeight))
+          }
+          .layoutWeight(1)
+          .width('100%')
         }
-        .layoutWeight(1)
-        .width('100%')
+        .height('100%')
+        .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
+        .onRefreshing(async () => {
+          await this.handleRefresh()
+        })
       }
     }
     .padding({ top:15 })
     .width('100%')
   }
-}
 
-@Extend(Text) function textStyle(size: number) {
-  .fontSize(size)
-  .alignSelf(ItemAlign.Start)
-  .fontColor($r('app.color.reverse'))
-  .maxLines(1)
-  .textOverflow({ overflow: TextOverflow.Ellipsis })
+  private async handleRefresh() {
+    this.isRefreshing = true
+    const currentTime = new Date().getTime()
+    if (currentTime - this.lastRefreshTime < this.refreshCooldown) {
+      ToastUtil.showToast('操作过于频繁，请5秒后再试')
+    } else {
+      try {
+        await getPlayLists(0)
+        this.lastRefreshTime = currentTime
+        ToastUtil.showToast('刷新成功')
+      } catch (e) {
+      }
+    }
+    this.isRefreshing = false
+  }
 }

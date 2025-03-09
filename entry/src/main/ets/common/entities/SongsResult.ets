@@ -13,6 +13,7 @@ export interface Song {
   artists: Artist[]
   duration: number
   alias: string[]
+  fee: number
 }
 
 interface Result {
@@ -35,5 +36,6 @@ export const SongClass: Song = {
     }
   ],
   duration: 0,
-  alias: []
+  alias: [],
+  fee: 0
 }

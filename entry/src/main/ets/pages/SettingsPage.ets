@@ -3,7 +3,7 @@ import { SetApiUrl } from '../components/settings/SetApiUrl'
 import { RemoveCache } from '../components/settings/RemoveCache'
 import {
   OtherContents,
-  Settings_Bottom } from '../components/settings/TextContent'
+  Settings_Bottom, TextContents} from '../components/settings/TextContent'
 import Constants from '../common/constants/Constants'
 import { SetDefaultHomePage } from '../components/settings/SetDefaultHomePage'
 import { MixWithOthers } from '../components/settings/MixWithOthers'
@@ -40,15 +40,15 @@ export struct SettingsPage {
             }.listItemStyle()
             ListItem() { RemoveCache().padding({ left: 10, right: 10 }) }.listItemStyle()
             ListItem() { Divider().padding({ left: 20, right: 20 }) }
+            ListItem() { TextContents() }.listItemStyle()
             ListItem() { OtherContents() }.listItemStyle()
+            ListItem() { Settings_Bottom() }
           }
           .scrollBar(BarState.Auto)
           .width('100%')
           .height('100%')
           .layoutWeight(1)
           .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
-
-          Settings_Bottom()
         }
       }
       .width('100%')

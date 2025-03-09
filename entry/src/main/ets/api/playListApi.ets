@@ -26,7 +26,7 @@ export interface PlayListsResult {
   playlist:PlayList[]
 }
 /**
- * 获取歌单列表
+ * 获取用户歌单列表
  * @param offset - 偏移量
  * @returns list
  */
@@ -103,7 +103,7 @@ export async function putPlayListInQueue(listId: number, trackCount: number, lim
     let data = await request.RequestInStream()
     let dataResult: PlayListSongs = data.result as PlayListSongs
     for (let item of dataResult.songs) {
-      // let artists = await getArtists(item.ar)
+      let artists = await getArtists(item.ar)
       tempQueue.push({
         playmode: 1,
         song: {
@@ -111,11 +111,12 @@ export async function putPlayListInQueue(listId: number, trackCount: number, lim
           name: item.name,
           artists: item.ar,
           duration: item.dt,
-          alias: []
+          alias: [],
+          fee: item.fee
         },
-        artists: item.ar[0].name,
+        artists: artists,
         fileName: '',
-        picUrl: item.al.picUrl
+        picUrl: item.al.picUrl ?? $r('app.media.ic_public_music')
       })
     }
     if(first) {
@@ -147,14 +148,15 @@ export async function PlayDailySongs(): Promise<void> {
         name: item.name,
         artists: item.ar,
         duration: item.dt,
-        alias: []
+        alias: [],
+        fee: item.fee
       }
       queue.push({
         playmode: 1,
         song: tempSong,
         artists: artists,
         fileName: '',
-        picUrl: item.al.picUrl
+        picUrl: item.al?.picUrl ?? $r('app.media.ic_public_music')
       })
     }
   })
@@ -271,7 +273,7 @@ export async function subscribePlayList(id: number, mode: number): Promise<boole
 export async function getPersonalizedList(): Promise<Array<PersonalListItem>> {
   let list: Array<PersonalListItem> = []
   const rootUrl = await getApiUrl()
-  const url: string = `${rootUrl}/personalized?limit=10`
+  const url: string = `${rootUrl}/personalized?limit=10&timestamp=${new Date().getTime()}`
   const request = new HttpRequest(url)
   await request.RequestInStream().then((data) => {
     const dataGot = data.result as Personalized

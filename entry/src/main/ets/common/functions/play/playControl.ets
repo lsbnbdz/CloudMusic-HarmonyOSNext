@@ -23,7 +23,7 @@ import { isThisSongLiked } from "./songLike";
 const TAG = '[playerControl] '
 const pref = StorageConstants.QUEUE_PREF
 
-export async function playMusicByUrl(song: Song, artists: string, isLogged: boolean, picUrl: string = '') {
+export async function playMusicByUrl(song: Song, artists: string, isLogged: boolean, picUrl: string | ResourceStr = '') {
   try {
     isThisSongLiked(song.id)
     const quality:number | undefined = await AppStorage.get(StorageConstants.PLAY_QUALITY)
@@ -78,13 +78,13 @@ export async function playMusicWithFile(fileName:string) {
     }
     if(FileUtil.accessSync(fileUrl)) {
       setPlayData(0, song, song.artists[0].name, fileName)
-      setPicUrl('/resources/base/media/app.media.ic_public_music.svg')
+      setPicUrl($r('app.media.ic_public_music'))
       await AVPlayerUtils.setUrl(fdPath)
       LyricUtils.setLyricArr([])
       LyricUtils.lyricString = ''
       AVSessionUtils.setMetadata(song,song.artists[0].name,`$r('app.media.ic_public_music.svg')`)
       AVSessionUtils.activate()
-      saveCurrentSongInfo(0, song, song.artists[0].name, '/resources/base/media/app.media.ic_public_music.svg')
+      saveCurrentSongInfo(0, song, song.artists[0].name, $r('app.media.ic_public_music'))
       EmitterUtil.post(EmitterConstants.EMITTER_LYRIC_UPDATE,'Lyric Updated')
     } else {
       ToastUtil.showToast('未找到文件')
@@ -249,14 +249,14 @@ async function setPlayData(mode: number, song:Song, artists: string, fileName: s
  * 设定歌曲封面
  * @param picUrl
  */
-async function setPicUrl(picUrl: string) {
+async function setPicUrl(picUrl: string | ResourceStr) {
   AppStorage.setOrCreate('player-picurl', picUrl)
 }
 
 /**
  * 保存当前播放的歌曲信息
  */
-export async function saveCurrentSongInfo(playMode: number, song: Song, artists: string, imgUrl: string) {
+export async function saveCurrentSongInfo(playMode: number, song: Song, artists: string, imgUrl: string | ResourceStr) {
   await PreferencesUtils.putPreferenceValue('Play','hasCurrentSong', true)
   await PreferencesUtils.putPreferenceValue('Play','PlayMode', playMode)
   await PreferencesUtils.putPreferenceValue('Play','CurrentSong', song)

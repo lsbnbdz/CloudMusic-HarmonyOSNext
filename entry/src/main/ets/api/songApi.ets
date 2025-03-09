@@ -199,7 +199,7 @@ export async function setHeartMode(id: number, pid: number): Promise<void> {
       song: tempSong,
       artists: artists,
       fileName: '',
-      picUrl: item.songInfo.al.picUrl ?? '/resources/base/media/app.media.ic_public_music.svg'
+      picUrl: item.songInfo.al.picUrl ?? $r('app.media.ic_public_music')
     })
   }
   await PlayQueueUtils.cleanQueue()

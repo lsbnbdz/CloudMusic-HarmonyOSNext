@@ -17,7 +17,7 @@ export struct SongCard {
   @StorageProp(StorageConstants.SONG_CLICK_ACTION) clickAction: number = 0
   @StorageProp(StorageConstants.PLAY_SONG) playSong: Song = SongClass
   @State showAddQueueButton: boolean = true
-  @State picUrl: string = ''
+  @State picUrl: string | ResourceStr = ''
   @State isPlayList: boolean = false
   @State playList: PlayList = playListClass
   @State index: number = 0
@@ -245,7 +245,7 @@ export struct SongCard {
   }
 
   private addToQueue() {
-    PlayQueueUtils.queueAdd(1, this.song, this.artists, '', this.picUrl)
+    PlayQueueUtils.queueAdd(1, this.song, this.artists, '', this.picUrl ?? $r('app.media.ic_public_music'))
     promptAction.showToast({ message: '成功添加到下一首播放', duration: 3000 })
   }
 

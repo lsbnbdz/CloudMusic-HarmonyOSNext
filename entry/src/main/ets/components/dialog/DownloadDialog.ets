@@ -17,7 +17,7 @@ export struct DownloadDialog {
   @State songDownload:SongDownload = SongDownloadClass
   @State succ:boolean = true
   @State song: Song = SongClass
-  @State picUrl: string = ''
+  @State picUrl: string | ResourceStr = ''
   @State artists: string = ''
   @State duration: string = ''
   @State quality: number = 3 // Constants.QUALITY[quality] -> string

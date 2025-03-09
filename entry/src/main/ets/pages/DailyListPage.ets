@@ -100,7 +100,7 @@ export struct DailyListPage {
                       isPlayList: false,
                       index: index,
                       reason: item.reason,
-                      picUrl: item.picUrl ?? '/resources/base/media/app.media.ic_public_music.svg'
+                      picUrl: item.picUrl ?? $r('app.media.ic_public_music')
                     })
                   }
                   .swipeAction({ end: this.SwipeItem(item.song) })

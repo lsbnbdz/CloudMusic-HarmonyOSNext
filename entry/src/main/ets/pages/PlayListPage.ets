@@ -168,7 +168,7 @@ export struct PlayListPage {
                         sid: this.list.indexOf(item),
                         isPlayList: true,
                         playList: this.param.playList,
-                        picUrl: item.al?.picUrl ?? '/resources/base/media/app.media.ic_public_music.svg',
+                        picUrl: item.al?.picUrl ?? $r('app.media.ic_public_music'),
                         index: this.list.indexOf(item)
                       })
                     }

@@ -91,7 +91,7 @@ export struct CloudPage {
                     },
                     sid: this.list.indexOf(item),
                     isPlayList: false,
-                    picUrl: item.al.picUrl
+                    picUrl: item.al?.picUrl ?? '/resources/base/media/app.media.ic_public_music.svg'
                   })
                 }
                 .swipeAction({ end: this.SwipeItem(item) })

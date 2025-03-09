@@ -80,6 +80,8 @@ export struct PlayQueueSheet {
               this.scrollToCurrent()
             })
 
+            Text(`(${this.currentQueueIndex+1})`).fontColor(Color.Gray)
+
             Button({ type: ButtonType.Circle }) {
               Image($r('app.media.ic_public_delete_filled')).width(Constants.SIZE_ICON_BUTTON_BAR - 5).fillColor(Color.Gray)
             }
@@ -103,6 +105,7 @@ export struct PlayQueueSheet {
                   .padding({ right: 10 })
                   .fontWeight(FontWeight.Bold)
                   .textAlign(TextAlign.End)
+                  .width('12%')
                 // 本地文件
                 if (item.playmode == 0) {
                   Image($r('app.media.ic_public_todo')).width(20).fillColor(Color.Green)

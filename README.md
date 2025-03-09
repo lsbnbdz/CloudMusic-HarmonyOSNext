@@ -2,9 +2,12 @@
 
 🎵 云音汇 | ✨ 鸿蒙原生应用 🎼 第三方云音乐客户端 
 
-AppGallery邀请尝鲜：https://docs.chenlvin.cc/cloudmusic/#/
+本分支根据**[CloudMusic-HarmonyOSNext](https://github.com/Chenlvin/CloudMusic-HarmonyOSNext)**进行改版（原版适合平板和手机，但本版本只适合手机使用），在界面上与原版的主要差别是去除tabs切换组件，并增加悬浮按钮，切换tab的操作依靠悬浮按钮手势操作：
+- 按住悬浮按钮`左滑/右滑`：左/右切换tab
+- 按住悬浮按钮`上滑/下滑`：切换上一首/下一首
+- `单击`悬浮按钮：返回置顶
+- `双击`悬浮按钮：播放/暂停
 
-**[!] 由于AppGallery的复审机制可能会导致尝鲜应用下架，建议自行编译或使用hap安装。**
 
 ### 技术特性
 - ArkTS 语言开发
@@ -59,17 +62,25 @@ AppGallery邀请尝鲜：https://docs.chenlvin.cc/cloudmusic/#/
 
 
 ### 界面预览：
-<img src="./images/01.jpg" width="60%" />
 <img src="./images/02.jpg" width="60%" />
 <br>
 <img src="./images/03.jpg" width="20%" />
 <img src="./images/04.jpg" width="20%" />
-<img src="./images/05.jpg" width="20%" />
-<img src="./images/06.jpg" width="20%" />
-<img src="./images/07.jpg" width="20%" />
 
+<img src="./images/001.jpg" width="20%" />
+
+<img src="./images/002.jpg" width="20%" />
+
+<img src="./images/003.jpg" width="20%" />
+
+<img src="./images/004.jpg" width="20%" />
+
+<img src="./images/005.jpg" width="20%" />
+
+<video src="./images/006.mp4" width='20%'></video>
 
 ### 开源许可：
+
 Copyright (c) 2024-present Chenlvin
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the “Software”), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:

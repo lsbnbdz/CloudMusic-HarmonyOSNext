@@ -22,10 +22,14 @@ import { ApiDialog } from '../components/dialog/ApiDialog';
 import PreferencesUtils from '../common/utils/data/PreferencesUtils';
 import { DebugPage } from './DebugPage';
 import { AddPlayListDialog } from '../components/dialog/AddPlayListDialog';
+import { LengthMetrics } from '@kit.ArkUI';
+import { myCustomTitle } from '../components/custom/CustomTitle';
 
 @Entry
 @Component
 struct Index {
+
+  @State titleOpacity: number[] = [1, 1, 1]
   warrantyDialogController: CustomDialogController = new CustomDialogController({
     builder: WarrantyDialog(),
     autoCancel: false
@@ -49,6 +53,9 @@ struct Index {
   @StorageProp(StorageConstants.DEFAULT_PAGE_INDEX) index: number = 0
   @StorageProp(StorageConstants.VALID_API_URL) @Watch('checkApi') validApiUrl: boolean = true
   @Provide('pageInfos') pageInfos: NavPathStack = new NavPathStack()
+
+  private paddingStart: LengthMetrics = LengthMetrics.vp(16);
+  private paddingEnd: LengthMetrics = LengthMetrics.vp(16);
 
   private getMenuItems(): NavigationMenuItem[] {
     let items: NavigationMenuItem[] = []
@@ -94,22 +101,25 @@ struct Index {
   async build() {
     Navigation(this.pageInfos) {
       Stack({ alignContent: Alignment.Bottom }) {
-        Tabs({ controller: this.tabController }) {
-          TabContent() { Explore() }
-          TabContent() { UserPlayLists() }
-          TabContent() { Me() }
+        Tabs({ index: this.index, controller: this.tabController }) {
+          TabContent() { Explore({ index: this.index, titleOpacity: this.titleOpacity }) }
+            .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
+          TabContent() { UserPlayLists({ index: this.index, titleOpacity: this.titleOpacity }) }
+            .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
+          TabContent() { Me({ index: this.index, titleOpacity: this.titleOpacity }) }
+            .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
         }
+        .scrollable(false)
+        .animationMode(AnimationMode.NO_ANIMATION)
+        .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
         .height('100%')
         .width('100%')
         .barHeight(0)
         .edgeEffect(EdgeEffect.None)
         .animationDuration(300)
-        .onAnimationStart((from, target) => {
-          this.index = target
-        })
 
         BottomBarComponent()
-          .padding({ left: Constants.PADDING_EDGE_DEFAULT, right: Constants.PADDING_EDGE_DEFAULT, bottom: px2vp(this.bottomRectHeight) + 35 })
+          .padding({ left: Constants.PADDING_EDGE_DEFAULT, right: Constants.PADDING_EDGE_DEFAULT })
           .backgroundColor(Color.Transparent)
       }
     }
@@ -119,12 +129,20 @@ struct Index {
     .navBarPosition(NavBarPosition.Start)
     .mode(NavigationMode.Auto)
     .titleMode(NavigationTitleMode.Mini)
-    .title(this.index == 0 ? '发现' : this.index == 1 ? '歌单' : '我的')
-    .menus(this.getMenuItems())
+    // .title(this.index == 0 ? '发现' : this.index == 1 ? '歌单' : '我的')
+    .title(myCustomTitle(this.pageInfos, this.titleOpacity, this.index), {
+      paddingStart: this.paddingStart,
+      paddingEnd: this.paddingEnd,
+      barStyle: BarStyle.STACK
+    })
+    // .menus(this.getMenuItems())
     .hideBackButton(true)
-    .backgroundColor($r('app.color.background'))
+    .hideTitleBar(this.titleOpacity[this.index] == 0 ? true : false)
+    // .backgroundColor($r('app.color.background'))
+    .backgroundColor('transparent')
     .navDestination(this.PageMap)
-    .toolbarConfiguration(this.ToolBar(), { backgroundBlurStyle: BlurStyle.Regular, barStyle: BarStyle.STACK, backgroundColor: Color.Transparent })
+    .hideToolBar(true)
+    // .toolbarConfiguration(this.ToolBar(), { backgroundBlurStyle: BlurStyle.Regular, barStyle: BarStyle.STACK, backgroundColor: Color.Transparent })
   }
 
   @Builder PageMap(name: string, param: Object) {

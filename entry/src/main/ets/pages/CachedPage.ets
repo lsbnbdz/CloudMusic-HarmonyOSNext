@@ -5,6 +5,8 @@ import Constants from '../common/constants/Constants';
 import { resourceManager } from '@kit.LocalizationKit';
 import { StorageConstants } from '../common/constants/StorageConstants';
 import { DialogUtil, LogUtil, PickerUtil, ToastUtil } from '@pura/harmony-utils';
+import { PlayListOverlayButton } from '../components/buttons/MultiFunctionalButton';
+import { ObservableScroller } from '../common/utils/ObservableScroller';
 
 /**
  * 缓存管理页
@@ -14,6 +16,8 @@ const TAG = '[CachedPage] '
 
 @Component
 export struct CachedPage {
+
+  @State observableScroller: ObservableScroller = new ObservableScroller()
   @StorageProp('bottomRectHeight') bottomRectHeight: number = 0
   @StorageProp('topRectHeight') topRectHeight: number = 0
   @StorageProp(StorageConstants.DEVICE_TYPE) deviceType: resourceManager.DeviceType = resourceManager.DeviceType.DEVICE_TYPE_PHONE
@@ -65,127 +69,133 @@ export struct CachedPage {
       Stack({ alignContent: Alignment.Bottom }) {
         Column() {
           Column() {
-            Grid() {
-              GridItem() {
-                Search({
-                  placeholder: '搜索文件',
-                  icon: '/resources/base/media/ic_public_search_filled.svg'
-                })
-                  .id('search')
-                  .height(Constants.HEIGHT_SELECT)
-                  .width('100%')
-                  .searchButton('搜索')
-                  .onChange((value) => {
-                    if(value == '') {
-                      this.filteredList = []
-                      this.searchKeyword = ''
-                    }
+            Scroll(this.observableScroller.getScroller()){
+              Grid() {
+                GridItem() {
+                  Search({
+                    placeholder: '搜索文件',
+                    icon: '/resources/base/media/ic_public_search_filled.svg'
                   })
-                  .onSubmit((value) => {
-                    this.searchKeyword = value
-                    this.handelSearch()
-                  })
-              }
-              GridItem() {
-                if (this.fileList.length > 0) {
-                  Row() {
-                    Text(this.isSelecting ? `已选 ${this.selectedFiles.length} 项` : `共 ${this.fileList.length} 首歌曲`)
-                      .fontSize(Constants.FONT_SIZE_COMMON)
-                    Row({ space: 20 }) {
-                      if(!this.isSelecting) {
-                        Image($r('app.media.ic_files_name_drive'))
+                    .id('search')
+                    .height(Constants.HEIGHT_SELECT)
+                    .width('100%')
+                    .searchButton('搜索')
+                    .onChange((value) => {
+                      if(value == '') {
+                        this.filteredList = []
+                        this.searchKeyword = ''
+                      }
+                    })
+                    .onSubmit((value) => {
+                      this.searchKeyword = value
+                      this.handelSearch()
+                    })
+                }
+                GridItem() {
+                  if (this.fileList.length > 0) {
+                    Row() {
+                      Text(this.isSelecting ? `已选 ${this.selectedFiles.length} 项` : `共 ${this.fileList.length} 首歌曲`)
+                        .fontSize(Constants.FONT_SIZE_COMMON)
+                      Row({ space: 20 }) {
+                        if(!this.isSelecting) {
+                          Image($r('app.media.ic_files_name_drive'))
+                            .width(Constants.SIZE_ICON_BUTTON_BAR)
+                            .aspectRatio(1)
+                            .fillColor(this.isSorted ? $r('app.color.blue') : Color.Gray)
+                            .onClick(() => {
+                              this.isSorted = !this.isSorted
+                              this.fileList = this.getSortedList(this.fileList)
+                              if (this.searchKeyword) {
+                                this.filteredList = this.getSortedList(this.filteredList)
+                              }
+                            })
+                        } else {
+                          if(this.selectedFiles.length > 0) {
+                            Image($r('app.media.ic_public_delete'))
+                              .width(Constants.SIZE_ICON_BUTTON_BAR)
+                              .aspectRatio(1)
+                              .fillColor(Color.Gray)
+                              .onClick(() => {
+                                this.handleDelete()
+                              })
+                            Image($r('app.media.ic_public_folder'))
+                              .width(Constants.SIZE_ICON_BUTTON_BAR)
+                              .aspectRatio(1)
+                              .fillColor(Color.Gray)
+                              .onClick(() => {
+                                FileUtils.saveFile(this.selectedFiles)
+                              })
+                          }
+                          CheckboxGroup({ group: 'fileCard' })
+                            .width(Constants.SIZE_ICON_BUTTON_BAR - 5)
+                            .height(Constants.SIZE_ICON_BUTTON_BAR - 5)
+                        }
+
+                        Image($r('app.media.ic_gallery_material_select_checkbox'))
                           .width(Constants.SIZE_ICON_BUTTON_BAR)
                           .aspectRatio(1)
-                          .fillColor(this.isSorted ? $r('app.color.blue') : Color.Gray)
+                          .fillColor(this.isSelecting ? $r('app.color.blue') : Color.Gray)
                           .onClick(() => {
-                            this.isSorted = !this.isSorted
-                            this.fileList = this.getSortedList(this.fileList)
-                            if (this.searchKeyword) {
-                              this.filteredList = this.getSortedList(this.filteredList)
-                            }
+                            animateTo({ duration: 100, curve: Curve.EaseInOut }, () => {
+                              this.isSelecting = !this.isSelecting
+                              this.selectedFiles = []
+                            })
                           })
-                      } else {
-                        if(this.selectedFiles.length > 0) {
-                          Image($r('app.media.ic_public_delete'))
-                            .width(Constants.SIZE_ICON_BUTTON_BAR)
-                            .aspectRatio(1)
-                            .fillColor(Color.Gray)
-                            .onClick(() => {
-                              this.handleDelete()
-                            })
-                          Image($r('app.media.ic_public_folder'))
-                            .width(Constants.SIZE_ICON_BUTTON_BAR)
-                            .aspectRatio(1)
-                            .fillColor(Color.Gray)
-                            .onClick(() => {
-                              FileUtils.saveFile(this.selectedFiles)
-                            })
-                        }
-                        CheckboxGroup({ group: 'fileCard' })
-                          .width(Constants.SIZE_ICON_BUTTON_BAR - 5)
-                          .height(Constants.SIZE_ICON_BUTTON_BAR - 5)
                       }
-
-                      Image($r('app.media.ic_gallery_material_select_checkbox'))
-                        .width(Constants.SIZE_ICON_BUTTON_BAR)
-                        .aspectRatio(1)
-                        .fillColor(this.isSelecting ? $r('app.color.blue') : Color.Gray)
-                        .onClick(() => {
-                          animateTo({ duration: 100, curve: Curve.EaseInOut }, () => {
-                            this.isSelecting = !this.isSelecting
-                            this.selectedFiles = []
-                          })
-                        })
+                      .height(30)
                     }
-                    .height(30)
+                    .justifyContent(FlexAlign.SpaceBetween)
+                    .width('100%')
                   }
-                  .justifyContent(FlexAlign.SpaceBetween)
-                  .width('100%')
+                  else {
+                    Text('文件沙箱目录为空').width('100%').textAlign(TextAlign.Center).padding({ left: 30, right: 30, top: 10 })
+                  }
                 }
-                else {
-                  Text('文件沙箱目录为空').width('100%').textAlign(TextAlign.Center).padding({ left: 30, right: 30, top: 10 })
-                }
-              }
 
-              GridItem() {
-                GridRow({ columns: { xs: 1, sm: 1, md: 1, lg: 2, xl: 2 } }) {
-                  ForEach(this.searchKeyword ?
-                  this.getSortedList(this.filteredList) :
-                  this.getSortedList(this.fileList),
-                    (item: string, index: number) => {
-                    GridCol() {
-                      Row({ space: 5 }) {
-                        FileCard({
-                          fileName: item,
-                          list: this.fileList
-                        })
-                          .layoutWeight(1)
-                        if(this.isSelecting) {
-                          this.CardCheckBox(item)
+                GridItem() {
+                  GridRow({ columns: { xs: 1, sm: 1, md: 1, lg: 2, xl: 2 } }) {
+                    ForEach(this.searchKeyword ?
+                    this.getSortedList(this.filteredList) :
+                    this.getSortedList(this.fileList),
+                      (item: string, index: number) => {
+                        GridCol() {
+                          Row({ space: 5 }) {
+                            FileCard({
+                              fileName: item,
+                              list: this.fileList
+                            })
+                              .layoutWeight(1)
+                            if(this.isSelecting) {
+                              this.CardCheckBox(item)
+                            }
+                          }
+                          .width('100%')
+                          .padding({ bottom: Constants.PADDING_EDGE_DEFAULT })
                         }
-                      }
-                      .width('100%')
-                      .padding({ bottom: Constants.PADDING_EDGE_DEFAULT })
-                    }
-                  })
+                      })
+                  }
                 }
-              }
-              .width('100%')
+                .width('100%')
 
-              GridItem()
-                .height(px2vp(this.bottomRectHeight) + 80)
+                GridItem()
+                  .height(px2vp(this.bottomRectHeight) + 80)
+              }
+              .edgeEffect(EdgeEffect.None)
+              .scrollBar(BarState.Off)
+              .rowsGap(10)
+              .columnsGap(10)
+              .columnsTemplate('1fr')
+              .layoutDirection(GridDirection.Column)
+              .backgroundColor($r('app.color.background'))
+              .height('auto')
+              .width('100%')
+              .padding({ left: 10, right: 10 })
+              .layoutWeight(1)
+              .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
             }
+            .layoutWeight(1)
             .edgeEffect(EdgeEffect.Spring)
             .scrollBar(BarState.Off)
-            .rowsGap(10)
-            .columnsGap(10)
-            .columnsTemplate('1fr')
-            .layoutDirection(GridDirection.Column)
-            .backgroundColor($r('app.color.background'))
-            .height('100%')
-            .width('100%')
-            .padding({ left: 10, right: 10 })
-            .layoutWeight(1)
             .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
           }
           .justifyContent(FlexAlign.Center)
@@ -197,12 +207,15 @@ export struct CachedPage {
 
         if(this.deviceType == resourceManager.DeviceType.DEVICE_TYPE_PHONE) {
           BottomBarComponent()
-            .padding(Constants.PADDING_EDGE_DEFAULT)
+            .padding({ left: Constants.PADDING_EDGE_DEFAULT, right: Constants.PADDING_EDGE_DEFAULT})
             .backgroundColor(Color.Transparent)
         }
+
+        PlayListOverlayButton({ observableScroller: this.observableScroller })
       }
       .backgroundColor($r('app.color.background'))
       .height('100%')
+
     }
     .title('缓存')
     .menus(this.menus)

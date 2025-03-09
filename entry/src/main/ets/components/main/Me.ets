@@ -4,9 +4,14 @@ import Constants from "../../common/constants/Constants"
 import { StorageConstants } from "../../common/constants/StorageConstants"
 import { User, UserClass } from "../../common/entities/User"
 import { CircleImageButton } from "../buttons/CircleButton"
+import { SlideButton } from "../buttons/MultiFunctionalButton"
 
 @Component
 export struct Me {
+
+  @Link titleOpacity: number[]
+  @Link index: number
+
   @StorageProp(StorageConstants.IS_LOGGED) isLogged: boolean = false
   @StorageProp(StorageConstants.USER) user: User = UserClass
   @StorageProp(StorageConstants.VALID_API_URL) isValidAPI: boolean = true
@@ -24,72 +29,79 @@ export struct Me {
   }
 
   build() {
-    Column({ space: 10 }) {
-      Column() {
-        if (this.isLogged && this.user) {
-          Row({ space: 20 }) {
-            CircleImageButton({ imgUrl: this.user.data.profile.avatarUrl + '?param=256y256', wid: 64 })
-            Text(this.user.data.profile.nickname).textStyle(Constants.FONT_SIZE_TITLE).fontWeight(FontWeight.Bold)
+    Stack({ alignContent: Alignment.Bottom }){
+      Column({ space: 10 }) {
+        Column(){}.height('7%').backgroundColor('transparent')
+        Column() {
+          if (this.isLogged && this.user) {
+            Row({ space: 20 }) {
+              CircleImageButton({ imgUrl: this.user.data.profile.avatarUrl + '?param=256y256', wid: 64 })
+              Text(this.user.data.profile.nickname).textStyle(Constants.FONT_SIZE_TITLE).fontWeight(FontWeight.Bold)
+            }
+            .justifyContent(FlexAlign.Center)
+            .width('100%')
+            .padding({ bottom: 10 })
+          } else if((!this.isValidAPI)) {
+            Text('服务不可用\n请检查API服务器设置').textStyle(Constants.FONT_SIZE_TITLE).fontWeight(FontWeight.Bold)
+          } else if(this.appLoading) {
+            LoadingProgress().width(40)
+          } else {
+            Row({ space: 20 }) {
+              CircleImageButton({ imgUrl: $r('app.media.ic_user_portrait'), wid: 64 })
+              Text('未登录').textStyle(Constants.FONT_SIZE_TITLE).fontWeight(FontWeight.Bold)
+            }
+            .justifyContent(FlexAlign.Center)
+            .width('100%')
+            .padding({ bottom: 10 })
           }
-          .justifyContent(FlexAlign.Center)
-          .width('100%')
-          .padding({ bottom: 10 })
-        } else if((!this.isValidAPI)) {
-          Text('服务不可用\n请检查API服务器设置').textStyle(Constants.FONT_SIZE_TITLE).fontWeight(FontWeight.Bold)
-        } else if(this.appLoading) {
-          LoadingProgress().width(40)
-        } else {
-          Row({ space: 20 }) {
-            CircleImageButton({ imgUrl: $r('app.media.ic_user_portrait'), wid: 64 })
-            Text('未登录').textStyle(Constants.FONT_SIZE_TITLE).fontWeight(FontWeight.Bold)
-          }
-          .justifyContent(FlexAlign.Center)
-          .width('100%')
-          .padding({ bottom: 10 })
         }
-      }
-      .height(80)
+        .height(80)
 
-      Column() {
-        this.ItemCard($r('app.media.ic_public_settings_filled'), '设置', () => {
-          if(this.pageInfos.size() == 0) {
-            this.pageInfos.pushPathByName('SettingsPage', null)
-          } else {
-            this.pageInfos.replacePathByName('SettingsPage', null)
-          }
-        })
-      }
-      .itemColumnStyle()
-
-      Column() {
-        this.ItemCard($r('app.media.ic_public_folder_filled'), '缓存', () => {
-          if(this.pageInfos.size() == 0) {
-            this.pageInfos.pushPathByName('DownloadPage', null)
-          } else {
-            this.pageInfos.replacePathByName('DownloadPage', null)
-          }
-        })
-      }
-      .itemColumnStyle()
-
-      Column().padding(30)
-
-      if(this.isValidAPI && !this.appLoading) {
-        if(this.isLogged) {
-          this.LoginButton($r('app.color.app_red'), '退出登录', () => {
-            this.LogOut()
-          })
-        } else {
-          this.LoginButton(Color.Blue, '登 录', () => {
-            this.pageInfos.pushPathByName('LoginPage', null, true)
+        Column() {
+          this.ItemCard($r('app.media.ic_public_settings_filled'), '设置', () => {
+            if(this.pageInfos.size() == 0) {
+              this.pageInfos.pushPathByName('SettingsPage', null)
+            } else {
+              this.pageInfos.replacePathByName('SettingsPage', null)
+            }
           })
         }
+        .itemColumnStyle()
+
+        Column() {
+          this.ItemCard($r('app.media.ic_public_folder_filled'), '缓存', () => {
+            if(this.pageInfos.size() == 0) {
+              this.pageInfos.pushPathByName('DownloadPage', null)
+            } else {
+              this.pageInfos.replacePathByName('DownloadPage', null)
+            }
+          })
+        }
+        .itemColumnStyle()
+
+        Column().padding(30)
+
+        if(this.isValidAPI && !this.appLoading) {
+          if(this.isLogged) {
+            this.LoginButton($r('app.color.app_red'), '退出登录', () => {
+              this.LogOut()
+            })
+          } else {
+            this.LoginButton(Color.Blue, '登 录', () => {
+              this.pageInfos.pushPathByName('LoginPage', null, true)
+            })
+          }
+        }
       }
+      .width('100%')
+      .height('100%')
+      // .backgroundColor($r('app.color.background'))
+      .padding({ left: 20, right: 20 })
+      .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
+
+      SlideButton({ index: this.index })
     }
-    .width('100%')
-    .height('100%')
-    .backgroundColor($r('app.color.background'))
-    .padding({ left: 20, right: 20 })
+
   }
 
   @Builder ItemCard(icon: ResourceStr | string, text: string, action: () => void) {

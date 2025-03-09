@@ -11,9 +11,16 @@ import { PlayList } from "../../common/entities/PlayList";
 import { getPersonalizedList, getPlayLists } from "../../api/playListApi";
 import { PersonalListItem } from "../../common/entities/Personalized";
 import { PersonalizedCard } from "../cards/PersonalizedCard";
+import { ObservableScroller } from "../../common/utils/ObservableScroller";
+import { MultiFunctionalButton } from "../buttons/MultiFunctionalButton";
 
 @Component
 export struct Explore {
+
+  @State observableScroller: ObservableScroller = new ObservableScroller()
+  @Link titleOpacity: number[]
+  @Link index: number
+
   @StorageProp(StorageConstants.IS_LOGGED) @Watch('getPlayLists') isLogged: boolean = false
   @StorageProp(StorageConstants.VALID_API_URL) validApiUrl: boolean = true
   @StorageProp(StorageConstants.USER) user: User = UserClass
@@ -97,139 +104,158 @@ export struct Explore {
   }
 
   build() {
-    Column() {
-      Refresh({ refreshing: this.isRefreshing}) {
-        Column({ space: 5 }) {
-          if (this.announcement.visible) {
-            this.Announcement()
-          }
-          Grid() {
-            GridItem() {
-              Search({
-                placeholder: '搜索内容',
-                icon: '/resources/base/media/ic_public_search_filled.svg',
-              })
-                .clickEffect({ level: ClickEffectLevel.LIGHT, scale: 0.9 })
-                .focusable(false)
-                .onClick(() => {
-                  this.pageInfos.clear()
-                  this.pageInfos.pushPathByName('SearchPage', null, true)
-                })
-                .layoutWeight(1)
+    Stack({ alignContent: Alignment.Bottom}){
+      Column() {
+        Refresh({ refreshing: this.isRefreshing}) {
+          Column({ space: 5 }) {
+            if (this.announcement.visible) {
+              this.Announcement()
             }
-            .padding({ left: 20, right: 20 })
-
-            GridItem() {
-              if (this.isLoading) {
-                RecommendCards_Skeleton()
-              } else {
-                RecommendCards({ isLogged: this.isLogged })
-              }
-            }
-
-            GridItem() {
-              Column({ space: 5 }) {
-                this.Intro('推荐歌单', () => {})
-                // 推荐歌单
-                if (this.isLoadingPersonalized) {
-                  GridItem() {
-                    this.Loading(300)
-                  }
-                } else {
-                  List() {
-                    ListItem().width(5)
-                    ListItem().width(5)
-                    ForEach(this.personalizedList, (item: PersonalListItem, index) => {
-                      ListItem() {
-                        PersonalizedCard({ item: item }).padding(5)
-                      }
+            Scroll(this.observableScroller.getScroller()){
+              Grid() {
+                GridItem().height('7%').backgroundColor('transparent')
+                GridItem() {
+                  Search({
+                    placeholder: '搜索内容',
+                    icon: '/resources/base/media/ic_public_search_filled.svg',
+                  })
+                    .clickEffect({ level: ClickEffectLevel.LIGHT, scale: 0.9 })
+                    .focusable(false)
+                    .onClick(() => {
+                      this.pageInfos.clear()
+                      this.pageInfos.pushPathByName('SearchPage', null, true)
                     })
-                    ListItem().width(5)
-                    ListItem().width(5)
-                  }
-                  .lanes(2)
-                  .listDirection(Axis.Horizontal)
-                  .scrollBar(BarState.Off)
-                  .width('100%')
+                    .layoutWeight(1)
                 }
-              }
-            }
-            .padding({ top: 20 })
+                .padding({ left: 20, right: 20 })
 
-            GridItem() {
-              Column({ space: 15 }) {
-                this.Intro('排行榜', () => {
-                  this.pageInfos.pushPathByName('TopListPage', null)
-                })
-                // 排行榜
-                if (this.isLoading) {
-                  GridItem() {
-                    this.Loading(300)
+                GridItem() {
+                  if (this.isLoading) {
+                    RecommendCards_Skeleton()
+                  } else {
+                    RecommendCards({ isLogged: this.isLogged })
                   }
-                } else {
-                  List() {
-                    ListItem().width(15)
-                    ForEach(this.topList.slice(0, 5), (item: TopListItem, index) => {
-                      ListItem() {
-                        TopListItemCard({ topListItem: item }).padding(5)
+                }
+
+                GridItem() {
+                  Column({ space: 5 }) {
+                    this.Intro('推荐歌单', () => {})
+                    // 推荐歌单
+                    if (this.isLoadingPersonalized) {
+                      GridItem() {
+                        this.Loading(300)
                       }
+                    } else {
+                      List() {
+                        ListItem().width(5)
+                        ListItem().width(5)
+                        ForEach(this.personalizedList, (item: PersonalListItem, index) => {
+                          ListItem() {
+                            PersonalizedCard({ item: item }).padding(5)
+                          }
+                        })
+                        ListItem().width(5)
+                        ListItem().width(5)
+                      }
+                      .lanes(2)
+                      .listDirection(Axis.Horizontal)
+                      .scrollBar(BarState.Off)
+                      .width('100%')
+                    }
+                  }
+                }
+                .padding({ top: 20 })
+
+                GridItem() {
+                  Column({ space: 15 }) {
+                    this.Intro('排行榜', () => {
+                      this.pageInfos.pushPathByName('TopListPage', null)
                     })
-                    ListItem() {
-                      Button() {
-                        Column({ space: 5 }) {
-                          Stack({ alignContent: Alignment.Center }) {
-                            Image($r('app.media.bg4'))
+                    // 排行榜
+                    if (this.isLoading) {
+                      GridItem() {
+                        this.Loading(300)
+                      }
+                    } else {
+                      List() {
+                        ListItem().width(15)
+                        ForEach(this.topList.slice(0, 5), (item: TopListItem, index) => {
+                          ListItem() {
+                            TopListItemCard({ topListItem: item }).padding(5)
+                          }
+                        })
+                        ListItem() {
+                          Button() {
+                            Column({ space: 5 }) {
+                              Stack({ alignContent: Alignment.Center }) {
+                                Image($r('app.media.bg4'))
+                                  .width(120)
+                                  .aspectRatio(1)
+                                  .borderRadius(Constants.RADIUS_CARD)
+                                  .draggable(false)
+                                Text('更多排行')
+                                  .fontSize(Constants.FONT_SIZE_COMMON + 3)
+                                  .fontWeight(FontWeight.Bold)
+                                  .fontColor(Color.White)
+                              }
                               .width(120)
                               .aspectRatio(1)
-                              .borderRadius(Constants.RADIUS_CARD)
-                              .draggable(false)
-                            Text('更多排行')
-                              .fontSize(Constants.FONT_SIZE_COMMON + 3)
-                              .fontWeight(FontWeight.Bold)
-                              .fontColor(Color.White)
+                              .backgroundColor(Color.Transparent)
+                            }
                           }
+                          .backgroundColor(Color.Transparent)
+                          .borderRadius(Constants.RADIUS_CARD)
+                          .type(ButtonType.Normal)
                           .width(120)
                           .aspectRatio(1)
-                          .backgroundColor(Color.Transparent)
-                        }
+                          .clickEffect({ level: ClickEffectLevel.LIGHT, scale: 0.9 })
+                          .onClick(() => { this.pageInfos.pushPathByName('TopListPage', null) })
+                        }.padding(5)
+                        ListItem().width(15)
                       }
-                      .backgroundColor(Color.Transparent)
-                      .borderRadius(Constants.RADIUS_CARD)
-                      .type(ButtonType.Normal)
-                      .width(120)
-                      .aspectRatio(1)
-                      .clickEffect({ level: ClickEffectLevel.LIGHT, scale: 0.9 })
-                      .onClick(() => { this.pageInfos.pushPathByName('TopListPage', null) })
-                    }.padding(5)
-                    ListItem().width(15)
+                      .listDirection(Axis.Horizontal)
+                      .scrollBar(BarState.Off)
+                      .width('100%')
+                    }
                   }
-                  .listDirection(Axis.Horizontal)
-                  .scrollBar(BarState.Off)
-                  .width('100%')
                 }
-              }
-            }
 
-            GridItem()
-              .height(px2vp(this.bottomRectHeight) + 115)
+                GridItem()
+                  .height(px2vp(this.bottomRectHeight) + 115)
+              }
+              .height('auto')
+              .width('100%')
+              .edgeEffect(EdgeEffect.None)
+              .scrollBar(BarState.Off)
+              .rowsGap(15)
+              .columnsTemplate(this.columnsTemplate)
+              .layoutDirection(GridDirection.Column)
+              .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
+            }
+            .height('100%')
+            .scrollBar(BarState.Off)
+            .edgeEffect(EdgeEffect.Spring)
+            .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
+            .onWillScroll(() => this.handleScroll())
+
           }
-          .height('100%')
-          .width('100%')
-          .edgeEffect(EdgeEffect.Spring)
-          .scrollBar(BarState.Off)
-          .rowsGap(15)
-          .columnsTemplate(this.columnsTemplate)
-          .layoutDirection(GridDirection.Column)
-          .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
         }
+        .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
+        .onRefreshing(async () => {
+          await this.refreshContent()
+        })
       }
-      .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
-      .onRefreshing(async () => {
-        await this.refreshContent()
-      })
+      .width('100%')
+      .height('100%')
+
+      MultiFunctionalButton({ index: this.index, observableScroller: this.observableScroller })
     }
-    .width('100%')
-    .height('100%')
+
+  }
+
+  handleScroll(): void {
+    const currentOffset: number = this.observableScroller.getScroller().currentOffset().yOffset
+    this.titleOpacity[0] = Math.max(0, Math.min(1, 1 - currentOffset / 100))
   }
 
   @Builder

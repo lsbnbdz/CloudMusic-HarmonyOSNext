@@ -32,15 +32,21 @@ export struct BottomBarComponent {
       else { Image(this.picUrl + '?param=512y512').songImg() }
 
       Column({ space: 5 }) {
-        Text(this.song.name).textStyle(18).textOverflow({ overflow: TextOverflow.MARQUEE }).fontWeight(FontWeight.Medium)
+        Text(this.song.name)
+          .textStyle(14)
+          .textOverflow({ overflow: TextOverflow.MARQUEE })
+          .fontWeight(FontWeight.Medium)
         if(!this.currentLyric || this.currentLyric === '暂无歌词') {
-          Text(this.artists).textStyle(14).textOverflow({ overflow: TextOverflow.MARQUEE }).layoutWeight(1)
+          Text(this.artists)
+            .textStyle(12)
+            .textOverflow({ overflow: TextOverflow.MARQUEE })
+            .layoutWeight(1)
         }
         else {
-          Text(this.currentLyric).textStyle(14).textOverflow({ overflow: TextOverflow.MARQUEE }).layoutWeight(1)
+          Text(this.currentLyric).textStyle(12).textOverflow({ overflow: TextOverflow.MARQUEE }).layoutWeight(1)
         }
       }
-      .padding({ top: 15, bottom: 15 })
+      .padding({ top: 10, bottom: 10 })
       .layoutWeight(1)
 
       ControlButtons({ isPaused: this.isPaused, isPlaying: this.isPlaying })
@@ -53,7 +59,7 @@ export struct BottomBarComponent {
     .borderRadius(20)
     .backgroundColor($r('app.color.main'))
     .opacity(this.isShow ? this.componentOpacity : this.componentOpacity)
-    .height(80)
+    .height(60)
     .clickEffect({ level: ClickEffectLevel.LIGHT, scale: 0.9 })
     .onClick(() => {
       if(this.isPlaying) {

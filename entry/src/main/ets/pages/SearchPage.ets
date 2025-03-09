@@ -56,7 +56,7 @@ export struct SearchPage {
 
         if(this.deviceType == resourceManager.DeviceType.DEVICE_TYPE_PHONE) {
           BottomBarComponent()
-            .padding(Constants.PADDING_EDGE_DEFAULT)
+            .padding({ left: Constants.PADDING_EDGE_DEFAULT, right: Constants.PADDING_EDGE_DEFAULT})
             .backgroundColor(Color.Transparent)
         }
       }

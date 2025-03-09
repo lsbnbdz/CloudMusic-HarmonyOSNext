@@ -27,6 +27,14 @@
     {
       "name": "app_red",
       "value": "#FFD25858"
+    },
+    {
+      "name": "title_background",
+      "value": "#4D000000"
+    },
+    {
+      "name": "btn_background",
+      "value": "#FFFFFFFF"
     }
   ]
 }

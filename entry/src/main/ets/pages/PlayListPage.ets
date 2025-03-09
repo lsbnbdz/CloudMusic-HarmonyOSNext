@@ -15,6 +15,8 @@ import { resourceManager } from '@kit.LocalizationKit'
 import { PlayListSongItem } from '../common/entities/PlayListSongs'
 import { User, UserClass } from '../common/entities/User'
 import { promptAction } from '@kit.ArkUI'
+import { ObservableScroller } from '../common/utils/ObservableScroller'
+import { MultiFunctionalButton, PlayListOverlayButton } from '../components/buttons/MultiFunctionalButton'
 
 /**
  * 歌单二级页面
@@ -29,6 +31,8 @@ export struct PlayListPage {
     isShowHeart: false,
     useTimestamp: true
   }
+  @State observableScroller: ObservableScroller = new ObservableScroller()
+  @State listScroller: ListScroller = new ListScroller()
   @StorageProp('bottomRectHeight') bottomRectHeight: number = 0
   @StorageProp('topRectHeight') topRectHeight: number = 0
   @StorageProp(StorageConstants.IS_PLAYER_LOADING) isPlayerLoading: boolean = false
@@ -100,9 +104,9 @@ export struct PlayListPage {
     NavDestination() {
       Stack({ alignContent: Alignment.Bottom }) {
         Stack({ alignContent: Alignment.Top }) {
-          List() {
+          List({ scroller: this.observableScroller.getScroller() }) {
             ListItem() {
-             this.PlayListInfo()
+              this.PlayListInfo()
             }
             .padding({ bottom: 15 })
             ListItem() {
@@ -208,20 +212,29 @@ export struct PlayListPage {
             ListItem().height(px2vp(this.bottomRectHeight) + 80)
           }
           .cachedCount(5)
-          .height('100%')
+          .height('auto')
           .layoutWeight(1)
           .width('100%')
           .scrollBar(BarState.Off)
           .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.BOTTOM])
           .sticky(StickyStyle.Header | StickyStyle.Footer)
+          // Scroll(this.observableScroller.getScroller()) {
+          //
+          // }
+          // .scrollBar(BarState.Off)
+          // .layoutWeight(1)
+          // .edgeEffect(EdgeEffect.Spring)
+          // .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.BOTTOM])
         }
         .height('100%')
 
         if(this.deviceType == resourceManager.DeviceType.DEVICE_TYPE_PHONE) {
           BottomBarComponent()
-            .padding(Constants.PADDING_EDGE_DEFAULT)
+            .padding({ left: Constants.PADDING_EDGE_DEFAULT, right: Constants.PADDING_EDGE_DEFAULT})
             .backgroundColor(Color.Transparent)
         }
+
+        PlayListOverlayButton({ observableScroller: this.observableScroller })
       }
       .opacity(this.pageOpacity)
       .width('100%')
@@ -388,11 +401,11 @@ export struct PlayListPage {
       }
       const keyword = this.searchKeyword.toLowerCase()
       this.filteredList = this.list.filter((item: PlayListSongItem) => {
-        const idMatch = item.id.toString().includes(keyword)
+        const nameMatch = item.name.toString().includes(keyword)
         const artistMatch = item.ar.some(artist =>
         artist.name.toLowerCase().includes(keyword)
         )
-        return idMatch || artistMatch
+        return nameMatch || artistMatch
       })
     } catch (e) {
       ToastUtil.showToast('搜索时出错: ' + (e as Error).message)

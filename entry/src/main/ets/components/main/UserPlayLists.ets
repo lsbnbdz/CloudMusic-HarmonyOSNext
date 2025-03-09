@@ -6,6 +6,8 @@ import { Announcement } from "../../common/entities/Announcement";
 import { User, UserClass } from "../../common/entities/User";
 import Constants from "../../common/constants/Constants";
 import { StorageConstants } from "../../common/constants/StorageConstants";
+import { ObservableScroller } from "../../common/utils/ObservableScroller";
+import { MultiFunctionalButton } from "../buttons/MultiFunctionalButton";
 
 /**
  * 用户歌单
@@ -13,6 +15,11 @@ import { StorageConstants } from "../../common/constants/StorageConstants";
 const TAG = '[UserPlayLists Component] '
 @Component
 export struct UserPlayLists {
+
+  @State observableScroller: ObservableScroller = new ObservableScroller()
+  @Link titleOpacity: number[]
+  @Link index: number
+
   @StorageProp('bottomRectHeight') bottomRectHeight: number = 0
   @StorageProp(StorageConstants.USER) user: User = UserClass
   @StorageProp(StorageConstants.IS_LOGGED) @Watch('getPlayLists') isLogged: boolean = false
@@ -53,48 +60,64 @@ export struct UserPlayLists {
   }
 
   build() {
-    Column() {
-      if(this.isLogged) {
-        Refresh({ refreshing: this.isRefreshing}) {
-          List({ space: 10 }) {
-            if(this.announcement.visible) {
-              ListItem() {
-                this.Announcement()
-              }
-            }
-
-            ListItem() {
-              Column({ space: 10 }) {
-                if(this.isLoading) {
-                  this.Loading()
-                } else {
-                  ForEach(this.playLists, (item: PlayList, index) => {
-                    ListItem() {
-                      PlayListCard({
-                        playList: item,
-                        isShowHeart: item.creator.userId == this.user.data.account.id ? false : true
+    Stack({ alignContent: Alignment.Bottom }) {
+      Column() {
+        if(this.isLogged) {
+          Refresh({ refreshing: this.isRefreshing}) {
+            Scroll(this.observableScroller.getScroller()){
+              List({ space: 10 }) {
+                if(this.announcement.visible) {
+                  ListItem() {
+                    this.Announcement()
+                  }
+                }
+                ListItem(){}.height('7%').backgroundColor('transparent')
+                ListItem() {
+                  Column({ space: 10 }) {
+                    if(this.isLoading) {
+                      this.Loading()
+                    } else {
+                      ForEach(this.playLists, (item: PlayList, index) => {
+                        ListItem() {
+                          PlayListCard({
+                            playList: item,
+                            isShowHeart: item.creator.userId == this.user.data.account.id ? false : true
+                          })
+                        }
                       })
                     }
-                  })
+                  }
+                  .width('100%')
                 }
+                ListItem().height( px2vp(this.bottomRectHeight) + 115 )
               }
+              .height('auto')
               .width('100%')
+              .scrollBar(BarState.Off)
+              .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
             }
-            ListItem().height( px2vp(this.bottomRectHeight) + 115 )
+            .height('100%')
+            .scrollBar(BarState.Off)
+            .edgeEffect(EdgeEffect.Spring)
+            .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
+            .onWillScroll(() => this.handleScroll())
           }
-          .height('100%')
-          .width('100%')
-          .scrollBar(BarState.Off)
           .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
+          .onRefreshing(async () => {
+            await this.refreshContent()
+          })
         }
-        .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
-        .onRefreshing(async () => {
-          await this.refreshContent()
-        })
       }
+      .width('100%')
+      .height('100%')
+
+      MultiFunctionalButton({ index: this.index, observableScroller: this.observableScroller })
     }
-    .width('100%')
-    .height('100%')
+  }
+
+  handleScroll(): void {
+    const currentOffset: number = this.observableScroller.getScroller().currentOffset().yOffset
+    this.titleOpacity[1] = Math.max(0, Math.min(1, 1 - currentOffset / 100))
   }
 
   @Builder

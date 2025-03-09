@@ -35,18 +35,20 @@ export async function searchSongs(searchKeyword:string, offset:number): Promise<
   const url:string = `${rootUrl}/search?keywords=${encodeURIComponent(searchKeyword)}&limit=30&offset=${offset}`
   const request = new HttpRequest(url)
   await request.Request().then((data) => {
-    const dataGot:SongsData = data.result as SongsData
+    const dataGot: SongsData = data.result as SongsData
     hasMore = dataGot.result.hasMore
     songCount = dataGot.result.songCount
-    for(let song of dataGot.result.songs) {
-      list.push({
-        id: song.id,
-        name: song.name,
-        artists: song.artists,
-        duration: song.duration,
-        alias: song.alias
-      })
-    }
+    list = dataGot.result.songs
+    // for(let song of dataGot.result.songs) {
+    //   list.push({
+    //     id: song.id,
+    //     name: song.name,
+    //     artists: song.artists,
+    //     duration: song.duration,
+    //     alias: song.alias,
+    //     fee: song.fee
+    //   })
+    // }
   })
   let searchReturn:SearchReturn = {
     list: list,
@@ -118,7 +120,8 @@ export async function getDailySongs(useCookie: boolean = true): Promise<Array<Da
             name: song.name,
             artists: song.ar,
             duration: song.dt,
-            alias: []
+            alias: [],
+            fee: song.fee
           },
           reason: song.reason,
           picUrl: song.al.picUrl
@@ -188,7 +191,8 @@ export async function setHeartMode(id: number, pid: number): Promise<void> {
       name: item.songInfo.name,
       artists: item.songInfo.ar,
       duration: item.songInfo.dt,
-      alias: []
+      alias: [],
+      fee: item.songInfo.fee
     }
     queue.push({
       playmode: 1,

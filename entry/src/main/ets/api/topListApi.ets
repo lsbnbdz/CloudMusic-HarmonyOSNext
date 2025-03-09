@@ -16,6 +16,7 @@ export async function getTopList(): Promise<TopListItem[]> {
     await request.RequestInStream(true).then((data) => {
       const dataGot: TopList = data.result as TopList
       list = dataGot.list
+      AppStorage.setOrCreate(StorageConstants.TOPLISTS, list)
       PreferencesUtils.putPreferenceValue(StorageConstants.USER_PREF, StorageConstants.TOPLISTS, list)
     })
   } catch (e) {

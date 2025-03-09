@@ -38,9 +38,11 @@ export struct Explore {
   async aboutToAppear(): Promise<void> {
     try {
       setTimeout(async () => {
-        await this.getTopLists()
-        await this.getPlayLists()
-        await this.getPersonalizedList()
+        await Promise.all([
+          this.getTopLists(),
+          this.getPlayLists(),
+          this.getPersonalizedList()
+        ])
       }, 500)
     } catch (e) {
       LogUtil.error('Error: ' + e.message)
@@ -50,8 +52,7 @@ export struct Explore {
   private async getTopLists() {
     if(this.topList.length == 0 && this.validApiUrl) {
       this.isLoading = true
-      const toplist = await getTopList()
-      this.topList = toplist
+      await getTopList()
       this.isLoading = false
     }
     else return
@@ -60,17 +61,16 @@ export struct Explore {
   async getPlayLists() {
     if(this.isLogged && this.playLists.length == 0 && this.validApiUrl) {
       this.isLoading = true
-      const playlist = await getPlayLists(0)
-      this.playLists = playlist.playlist
+      await getPlayLists(0)
       this.isLoading = false
     }
     else return
   }
 
   async getPersonalizedList() {
-    if(this.isLogged && this.personalizedList.length == 0) {
+    if(this.isLogged && this.personalizedList.length == 0 && this.validApiUrl) {
       this.isLoadingPersonalized = true
-      this.personalizedList = await getPersonalizedList()
+      await getPersonalizedList()
       this.isLoadingPersonalized = false
     }
     else return
@@ -83,10 +83,8 @@ export struct Explore {
       ToastUtil.showToast('操作过于频繁，请5秒后再试')
     } else {
       try {
-        const toplist = await getTopList()
-        this.topList = toplist
-        const personalizedlist = await getPersonalizedList()
-        this.personalizedList = personalizedlist
+        await getTopList()
+        await getPersonalizedList()
         this.lastRefreshTime = currentTime
         ToastUtil.showToast('刷新成功')
       } catch (e) {

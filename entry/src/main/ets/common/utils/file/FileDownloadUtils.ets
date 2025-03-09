@@ -42,11 +42,11 @@ class FileDownloadUtils {
           filePath: cachePath
         }).then(async (downloadTask: request.DownloadTask) => {
           downloadTask.on('progress', async (received, total) => {
-            NotificationUtils.publish(song.id, MsgConstants.DOWNLOADING, `${song.name}` + '\n' + `${changeb2Mb(received).toFixed(2)} / ${changeb2Mb(total).toFixed(2)} MB`)
+            NotificationUtils.download(song.id, MsgConstants.DOWNLOADING, `${song.name} - ${artists}`, changeb2Mb(received)/changeb2Mb(total)*100)
           })
           downloadTask.on('complete', () => {
             FileUtils.moveFile(cachePath, descPath).then(() => {
-              NotificationUtils.publish(song.id, MsgConstants.DOWNLOAD_COMPLETE, `${song.name}  - ${artists}`)
+              NotificationUtils.download(song.id, MsgConstants.DOWNLOAD_COMPLETE, `${song.name} - ${artists}`, 100)
               promptAction.showToast({ message: `缓存完成: ${song.name}` })
             })
           })
@@ -54,7 +54,7 @@ class FileDownloadUtils {
           ToastUtil.showToast('缓存时出错: ' + err.message)
           LogUtil.error(TAG + `缓存时出错: ${JSON.stringify(err)}`)
           FileUtils.deleteFile([`${artists} - ${song.name}.${songDownload.data[0].type}`])
-        });
+        })
       } catch (error) {
         let err: BusinessError = error as BusinessError
         NotificationUtils.cancel(song.id)

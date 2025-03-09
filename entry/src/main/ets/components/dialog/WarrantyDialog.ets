@@ -32,7 +32,7 @@ export struct WarrantyDialog {
 
   @Builder Content() {
     Column() {
-      Text('更新日期: 2025/3/5')
+      Text('更新日期: 2025/3/9')
         .padding({ bottom: 20 })
         .fontSize(Constants.FONT_SIZE_COMMON)
         .fontColor($r('app.color.reverse'))
@@ -43,9 +43,8 @@ export struct WarrantyDialog {
       Text(`【第三方服务声明】\n` +
         `本应用为开源项目，基于第三方API开发，仅提供前端界面。\n\n` +
         `【数据来源说明】\n` +
-        `所有音乐内容均通过用户自行配置的API地址获取，应用本身：\n` +
-        `     - 不提供任何音乐内容\n` +
-        `     - 不联网上传任何数据\n\n` +
+        `所有音乐内容均通过用户自行配置的API地址获取，应用本身不提供任何音乐内容。\n\n` +
+        `应用需要用户手动配置API服务器地址才可启用在线服务，应用提供的默认API地址仅为测试用例，仅供学习与测试使用，用户设置任意API均视为同意该条款，该应用造成的风险和责任由用户自行承担，本应用与开发者不承担任何责任。\n\n` +
         `【配置责任提醒】\n` +
         `您知晓并同意：\n` +
         `     - 确保配置的API来源合法合规\n` +

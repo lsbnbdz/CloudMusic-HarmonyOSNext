@@ -119,7 +119,9 @@ export struct SearchPage {
             ToastUtil.showToast('请输入搜索内容')
           } else {
             this.searchKeyword = value
+            this.searchHistory = this.searchHistory.filter((item) => item !== value)
             this.searchHistory.unshift(value)
+            this.tabPageIndex = 0
           }
         })
     }

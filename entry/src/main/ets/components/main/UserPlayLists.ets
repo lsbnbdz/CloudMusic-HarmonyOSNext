@@ -33,7 +33,7 @@ export struct UserPlayLists {
     try {
       setTimeout(async () => {
         await this.getPlayLists()
-      }, 500)
+      }, 100)
     } catch (e) {
       ToastUtil.showToast('获取歌单列表失败')
       LogUtil.error('Error fetching playlists: ', e.message)
@@ -133,8 +133,7 @@ export struct UserPlayLists {
         ToastUtil.showToast('操作过于频繁，请5秒后再试')
       } else {
         try {
-          const result = await getPlayLists(0)
-          this.playLists = result.playlist
+          await getPlayLists(0)
           this.lastRefreshTime = currentTime
           ToastUtil.showToast('刷新成功')
         } catch (e) {

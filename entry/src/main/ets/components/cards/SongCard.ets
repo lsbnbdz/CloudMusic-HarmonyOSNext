@@ -64,11 +64,6 @@ export struct SongCard {
           }
           Column({ space: 5 }) {
             Row({ space: 5 }) {
-              if(this.song.id == this.playSong.id) {
-                Image($r('app.media.songplaying'))
-                  .height(Constants.FONT_SIZE_COMMON)
-                  .width(30)
-              }
               Text(this.song.name)
                 .textStyle(16)
                 .fontColor(this.song.id == this.playSong.id ? $r('app.color.app_red') : $r('app.color.reverse'))
@@ -87,6 +82,10 @@ export struct SongCard {
             Row({ space: 5 }) {
               if(this.reason) {
                 Text(this.reason).reasonText()
+              }
+              if(this.song.fee != 8 && this.song.fee != 0) {
+                Text(this.song.fee == 1 ? ' VIP ' : '单曲付费')
+                  .reasonText()
               }
               Text(this.artists).textStyle(12).fontColor(Color.Gray).layoutWeight(1)
             }

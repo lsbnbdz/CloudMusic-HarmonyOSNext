@@ -49,6 +49,7 @@ struct Index {
   @StorageProp(StorageConstants.DEFAULT_PAGE_INDEX) index: number = 0
   @StorageProp(StorageConstants.VALID_API_URL) @Watch('checkApi') validApiUrl: boolean = true
   @Provide('pageInfos') pageInfos: NavPathStack = new NavPathStack()
+  @State tabCurrentIndex: number = 0
 
   private getMenuItems(): NavigationMenuItem[] {
     let items: NavigationMenuItem[] = []
@@ -81,6 +82,9 @@ struct Index {
   }
 
   async aboutToAppear(): Promise<void> {
+    setTimeout(() => {
+      this.tabCurrentIndex = this.index
+    }, 1)
     this.checkApi()
     const isFirstLaunch = await PreferencesUtils.getPreferenceValue<boolean>(StorageConstants.USER_PREF, 'isFirstLaunch', true)
     if(isFirstLaunch) {
@@ -94,7 +98,7 @@ struct Index {
   async build() {
     Navigation(this.pageInfos) {
       Stack({ alignContent: Alignment.Bottom }) {
-        Tabs({ controller: this.tabController }) {
+        Tabs({ controller: this.tabController, index: this.tabCurrentIndex }) {
           TabContent() { Explore() }
           TabContent() { UserPlayLists() }
           TabContent() { Me() }

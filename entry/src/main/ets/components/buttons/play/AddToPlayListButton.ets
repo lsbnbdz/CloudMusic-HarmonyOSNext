@@ -1,4 +1,5 @@
 import Constants from "../../../common/constants/Constants"
+import { StorageConstants } from "../../../common/constants/StorageConstants"
 import { Song, SongClass } from "../../../common/entities/SongsResult"
 import { PlayListAddSheet } from "../../sheets/PlayListAddSheet"
 
@@ -41,7 +42,7 @@ export struct AddToPlayListButton {
 @Component
 export struct AddToPlayListCircleButton {
   @Link isShowAddSheet: boolean
-  @State song: Song = SongClass
+  @Link song: Song
   @State imgColor: Color | ResourceStr = $r('app.color.reverse')
   @State imgWidth: number = Constants.SIZE_ICON_BUTTON_BAR
 

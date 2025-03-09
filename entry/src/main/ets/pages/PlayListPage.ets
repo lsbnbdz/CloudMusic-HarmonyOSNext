@@ -162,7 +162,8 @@ export struct PlayListPage {
                           artists: item.ar,
                           name: item.name,
                           duration: item.dt,
-                          alias: []
+                          alias: [],
+                          fee: item.fee
                         },
                         sid: this.list.indexOf(item),
                         isPlayList: true,

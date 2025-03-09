@@ -17,6 +17,7 @@ interface SongInfo {
   ar: Artist[]
   dt: number
   al: Album
+  fee: number
 }
 
 interface ResultData {

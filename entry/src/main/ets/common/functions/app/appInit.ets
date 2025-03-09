@@ -78,12 +78,13 @@ async function initPlayQueue() {
  */
 async function loadSavedSong() {
   let has = await PreferencesUtils.getPreferenceValue<boolean>('Play','hasCurrentSong', false)
-  let song:Song = {
+  let song: Song = {
     id: 0,
     name: "暂无播放",
     artists: [],
     duration: 0,
-    alias: []
+    alias: [],
+    fee: 0
   }
   let artists = '选择一首歌曲播放吧'
   let picUrl: string = ''

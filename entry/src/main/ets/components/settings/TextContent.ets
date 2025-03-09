@@ -1,4 +1,4 @@
-import { PasteboardUtil, ToastUtil } from "@pura/harmony-utils"
+import { AppUtil, PasteboardUtil, ToastUtil } from "@pura/harmony-utils"
 import { AppConstants } from "../../common/constants/AppConstants"
 import Constants from "../../common/constants/Constants"
 import { WebPageParam } from "../../common/entities/PageParams"
@@ -29,7 +29,7 @@ function TextContent(title: string, text: string, action?: () => void) {
 }
 
 @Component
-export struct OtherContents {
+export struct TextContents {
   warrantyDialogController: CustomDialogController = new CustomDialogController({
     builder: WarrantyDialog(),
     autoCancel: false
@@ -40,7 +40,7 @@ export struct OtherContents {
   build() {
     Column() {
       Column() {
-        TextContent('当前版本', AppConstants.VERSION + AppConstants.VER_DESC)
+        TextContent('应用版本', AppConstants.VERSION + AppConstants.VER_DESC)
       }
       .gesture(
         TapGesture({
@@ -49,31 +49,61 @@ export struct OtherContents {
           this.pageInfos.pushDestinationByName('DebugPage', null)
         })
       )
+      TextContent('使用文档', '', () => {
+        let param: WebPageParam = {
+          title: '使用文档', url: 'https://docs.chenlvin.cc/cloudmusic/#/help'
+        }
+        this.pushWebPage(param)
+      })
       TextContent('建议反馈', '', () => {
         let param: WebPageParam = {
           title: '建议反馈', url: 'https://www.wjx.cn/vm/PeLnYfc.aspx#'
         }
-        if(this.pageInfos.size() < 2) {
-          this.pageInfos.pushPathByName('WebPage', param)
-        } else {
-          this.pageInfos.replacePathByName('WebPage', param)
-        }
+        this.pushWebPage(param)
       })
+    }
+    .padding({ top: Constants.PADDING_EDGE_DEFAULT, bottom: Constants.PADDING_EDGE_DEFAULT })
+  }
+
+  private pushWebPage(param: WebPageParam) {
+    if(this.pageInfos.size() < 2) {
+      this.pageInfos.pushPathByName('WebPage', param)
+    } else {
+      this.pageInfos.replacePathByName('WebPage', param)
+    }
+  }
+}
+
+@Component
+export struct OtherContents {
+  warrantyDialogController: CustomDialogController = new CustomDialogController({
+    builder: WarrantyDialog(),
+    autoCancel: false
+  })
+
+  @Consume('pageInfos') pageInfos: NavPathStack
+
+  build() {
+    Column() {
       TextContent('隐私政策', '', () => {
         let param: WebPageParam = {
           title: '隐私政策', url: 'https://docs.chenlvin.cc/cloudmusic/#/privacy'
         }
-        if(this.pageInfos.size() < 2) {
-          this.pageInfos.pushPathByName('WebPage', param)
-        } else {
-          this.pageInfos.replacePathByName('WebPage', param)
-        }
+        this.pushWebPage(param)
       })
       TextContent('免责声明', '', () => {
         this.warrantyDialogController.open()
       })
     }
     .padding({ top: Constants.PADDING_EDGE_DEFAULT, bottom: Constants.PADDING_EDGE_DEFAULT })
+  }
+
+  private pushWebPage(param: WebPageParam) {
+    if(this.pageInfos.size() < 2) {
+      this.pageInfos.pushPathByName('WebPage', param)
+    } else {
+      this.pageInfos.replacePathByName('WebPage', param)
+    }
   }
 }
 

@@ -19,9 +19,9 @@
         "type": "HarmonyOS",
         "material": {
           "certpath": "C:\\Users\\lsbnbdz\\.ohos\\config\\cc_CloudMusic-HarmonyOSNext_ek8n4iMcip4Xmz0dcwccX5dzz1dG-Z0xmzFUnbXfiMA=.cer",
-          "storePassword": "0000001B13E6FC8E39031E0DCB7B20378675AFD38E7B564734EABD050229966D5D1E5BECB39F25A9844A8F",
+          "storePassword": "0000001B70482B3BF738B973AB5D2EB4ADFA7ACDD2AA0D11D3C237000FE258FE6C459371A75922CDADF766",
           "keyAlias": "debugKey",
-          "keyPassword": "0000001B61D1E656FF53E71080533D9F8F4F0C3004D10AF0B8064CF4998928777A2BD148DFBD58FAAFA91C",
+          "keyPassword": "0000001BDD47AA856E2AE955A8FA0C6D8598AC8BE252905D4244256BEF1F86C0422A803EBD5C60E6EC7E4B",
           "profile": "C:\\Users\\lsbnbdz\\.ohos\\config\\cc_CloudMusic-HarmonyOSNext_ek8n4iMcip4Xmz0dcwccX5dzz1dG-Z0xmzFUnbXfiMA=.p7b",
           "signAlg": "SHA256withECDSA",
           "storeFile": "C:\\Users\\lsbnbdz\\.ohos\\config\\cc_CloudMusic-HarmonyOSNext_ek8n4iMcip4Xmz0dcwccX5dzz1dG-Z0xmzFUnbXfiMA=.p12"

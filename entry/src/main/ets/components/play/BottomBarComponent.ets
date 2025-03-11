@@ -59,7 +59,10 @@ export struct BottomBarComponent {
     .width('100%')
     .borderRadius(Constants.RADIUS_CARD)
     .backgroundColor($r('app.color.main'))
-    // .opacity(this.isShow ? this.componentOpacity : this.componentOpacity)
+    // .opacity(0.90)
+    // .backdropBlur(BlurStyle.BACKGROUND_ULTRA_THICK)
+    .backgroundBlurStyle(BlurStyle.BACKGROUND_THICK)
+    .backgroundColor('transparent')
     .height(Constants.HEIGHT_MINI)
     .clickEffect({ level: ClickEffectLevel.LIGHT, scale: 0.9 })
     .onClick(async () => {

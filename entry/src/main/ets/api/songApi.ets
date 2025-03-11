@@ -39,16 +39,6 @@ export async function searchSongs(searchKeyword:string, offset:number): Promise<
     hasMore = dataGot.result.hasMore
     songCount = dataGot.result.songCount
     list = dataGot.result.songs
-    // for(let song of dataGot.result.songs) {
-    //   list.push({
-    //     id: song.id,
-    //     name: song.name,
-    //     artists: song.artists,
-    //     duration: song.duration,
-    //     alias: song.alias,
-    //     fee: song.fee
-    //   })
-    // }
   })
   let searchReturn:SearchReturn = {
     list: list,

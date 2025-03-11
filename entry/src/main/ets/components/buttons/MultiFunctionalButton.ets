@@ -28,6 +28,7 @@ export struct SlideButton {
           .width(35)
           .height(35)
           .opacity(0.8)
+          .fillColor($r('app.color.app_red'))
       }
       .justifyContent(FlexAlign.Center)
       .alignItems(HorizontalAlign.Center)
@@ -72,8 +73,7 @@ export struct SlideButton {
     .height(45)
     .margin({ bottom: 90, right: -250 })
     .backgroundBlurStyle(BlurStyle.BACKGROUND_THICK)
-    .opacity(0.8)
-    .backgroundColor($r('app.color.btn_background'))
+    .backgroundColor('transparent')
   }
 
   triggerVibration() {
@@ -210,6 +210,7 @@ export struct MultiFunctionalButton {
           .width(35)
           .height(35)
           .opacity(0.8)
+          .fillColor($r('app.color.app_red'))
       }
       .justifyContent(FlexAlign.Center)
       .alignItems(HorizontalAlign.Center)
@@ -257,8 +258,7 @@ export struct MultiFunctionalButton {
     .height(45)
     .margin({ bottom: 90, right: -250 })
     .backgroundBlurStyle(BlurStyle.BACKGROUND_THICK)
-    .opacity(0.8)
-    .backgroundColor($r('app.color.btn_background'))
+    .backgroundColor('transparent')
     // .onClick(() => this.observableScroller.scrollToTop())
 
   }
@@ -395,6 +395,7 @@ export struct PlayListOverlayButton {
           .width(35)
           .height(35)
           .opacity(0.8)
+          .fillColor($r('app.color.app_red'))
       }
       .justifyContent(FlexAlign.Center)
       .alignItems(HorizontalAlign.Center)
@@ -442,8 +443,7 @@ export struct PlayListOverlayButton {
     .height(45)
     .margin({ bottom: 90, right: -250 })
     .backgroundBlurStyle(BlurStyle.BACKGROUND_THICK)
-    .opacity(0.8)
-    .backgroundColor($r('app.color.btn_background'))
+    .backgroundColor('transparent')
     // .onClick(() => this.observableScroller.scrollToTop())
 
   }

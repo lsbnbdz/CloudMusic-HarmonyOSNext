@@ -151,7 +151,7 @@ export struct Explore {
                           ListItem() {
                             PersonalizedCard({ item: item }).padding(5)
                           }
-                        })
+                        }, (item: PersonalListItem) => item.id.toString())
                         ListItem().width(5)
                         ListItem().width(5)
                       }

@@ -2,7 +2,7 @@ import { Artist, Song } from "../../entities/SongsResult"
 import { util } from "@kit.ArkTS"
 import { media } from "@kit.MediaKit"
 import { fileIo } from "@kit.CoreFileKit"
-import { StorageConstants } from "../../constants/StorageConstants"
+
 /**
  * 获取metadata
  * @param fileUrl
@@ -18,6 +18,9 @@ export async function fetchMetadata(fileUrl: string) {
   } else {
     return undefined
   }
+}
+
+export async function setMetadata(fileUrl: string, title: string, artists: string) {
 }
 
 /**
@@ -75,12 +78,20 @@ export function changeDuration(dur: number): string {
 }
 
 /**
- * 使用正则表达式匹配并删除所有 HTTPOnly 标记
+ * 提取MUSIC_U信息
  * @param cookieString
- * @returns string - cookie
+ * @returns
  */
-export function removeHTTPOnly(cookieString: string): string {
-  return cookieString.replace(/HTTPOnly;/g, "")
+export function extractCookie(cookieString: string): string {
+  const parts: string[] = cookieString.split(';')
+  for (let part of parts) {
+    part = part.trim()
+    if (part.startsWith('MUSIC_U=')) {
+      const musicUPart: string = part.split(';')[0].trim()
+      return musicUPart
+    }
+  }
+  return ''
 }
 
 /**

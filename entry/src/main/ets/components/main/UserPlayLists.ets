@@ -81,7 +81,7 @@ export struct UserPlayLists {
                         ListItem() {
                           PlayListCard({
                             playList: item,
-                            isShowHeart: item.creator.userId == this.user.data.account.id ? false : true
+                            isShowHeart: item.creator?.userId == this.user.data?.account.id ? false : true
                           })
                         }
                       })

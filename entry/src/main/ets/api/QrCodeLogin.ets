@@ -1,6 +1,6 @@
 import { ToastUtil } from "@pura/harmony-utils"
 import { StorageConstants } from "../common/constants/StorageConstants"
-import { removeHTTPOnly } from "../common/functions/common/convert"
+import { extractCookie } from "../common/functions/common/convert"
 import { getApiUrl } from "../common/functions/common/get"
 import { HttpRequest } from "../common/utils/request/HttpRequestUtils"
 import { getLoginStatus } from "./loginApi"
@@ -28,12 +28,11 @@ export async function getQrCode(): Promise<string[]> {
 }
 
 export async function checkQrLogin(key: string): Promise<boolean> {
-  const timestamp = new Date().getTime()
   const rootUrl = await getApiUrl()
-  const url: string = `${rootUrl}/login/qr/check?key=${key}&timestamp=${timestamp}`
+  const url: string = `${rootUrl}/login/qr/check?timestamp=${new Date().getTime()}&key=${key}`
   const request = new HttpRequest(url)
   try {
-    const data = await request.Request()
+    const data = await request.Request(false)
     const code: number = data.result["code"]
     if (code == 800 || code == 801) {
       ToastUtil.showToast(data.result["message"])
@@ -41,7 +40,7 @@ export async function checkQrLogin(key: string): Promise<boolean> {
     } else if (code == 803) { // success
       let cookie: string = data.result["cookie"]
       if (cookie) {
-        cookie = removeHTTPOnly(cookie)
+        cookie = extractCookie(cookie)
         cookie = cookie + '; OS=pc'
         AppStorage.setOrCreate(StorageConstants.COOKIE, cookie)
         const result = await getLoginStatus(cookie)

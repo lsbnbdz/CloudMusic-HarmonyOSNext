@@ -56,7 +56,7 @@ export struct SongCard {
               .textAlign(TextAlign.JUSTIFY)
           }
           if(this.picUrl) {
-            Image(this.picUrl + '?param=100y100')
+            Image(typeof this.picUrl === 'string' ? this.picUrl + '?param=100y100' : this.picUrl)
               .width(50)
               .padding({ right: 10 })
               .borderRadius(5)

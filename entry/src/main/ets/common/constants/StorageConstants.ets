@@ -8,6 +8,11 @@ export class StorageConstants {
    */
   static readonly APP_LOADING: string = 'isAppLoading'
   /**
+   * Current Breakpoint
+   * @description AppStorage
+   */
+  static readonly BREAKPOINT: string = 'currentBreakpoint'
+  /**
    * API URL 是否有效
    * @description AppStorage
    */

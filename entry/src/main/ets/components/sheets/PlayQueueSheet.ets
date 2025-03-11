@@ -1,5 +1,4 @@
 import { DialogUtil, EmitterUtil, LogUtil, ToastUtil } from "@pura/harmony-utils"
-import { DialogAction } from "@pura/harmony-utils/src/main/ets/entity/constraint"
 import { PlayQueue } from "../../common/entities/PlayQueue"
 import { playQueue } from "../../common/functions/play/playControl"
 import PlayQueueUtils from "../../common/utils/play/PlayQueueUtils"
@@ -7,7 +6,7 @@ import { LoopModeButton } from "../buttons/play/LoopModeButton"
 import { LazyData } from '@pie/lazy-data';
 import { setHeartMode } from "../../api/songApi"
 import { StorageConstants } from "../../common/constants/StorageConstants"
-import { PlayList, playListClass } from "../../common/entities/PlayList"
+import { PlayList } from "../../common/entities/PlayList"
 import Constants from "../../common/constants/Constants"
 import { EmitterConstants } from "../../common/constants/EmitterConstants"
 
@@ -73,7 +72,7 @@ export struct PlayQueueSheet {
 
           Row({ space: 10 }) {
             Button({ type: ButtonType.Circle }) {
-              Image($r('app.media.ic_position')).width(Constants.SIZE_ICON_BUTTON_BAR).fillColor(Color.Gray)
+              Image($r('app.media.ic_position')).width(Constants.SIZE_ICON_BUTTON_BAR_SMALL).fillColor(Color.Gray)
             }
             .backgroundColor(Color.Transparent)
             .onClick(() => {
@@ -81,7 +80,7 @@ export struct PlayQueueSheet {
             })
 
             Button({ type: ButtonType.Circle }) {
-              Image($r('app.media.ic_public_delete_filled')).width(Constants.SIZE_ICON_BUTTON_BAR - 5).fillColor(Color.Gray)
+              Image($r('app.media.ic_public_delete_filled')).width(Constants.SIZE_ICON_BUTTON_BAR_SMALL).fillColor(Color.Gray)
             }
             .backgroundColor(Color.Transparent)
             .onClick(() => {
@@ -96,81 +95,14 @@ export struct PlayQueueSheet {
         List({ scroller: this.scroller, space: 20 }) {
           LazyForEach(this.dataSource, (item: PlayQueue, index) => {
             ListItem() {
-              Row({ space: 10 }) {
-                Text(`${index + 1}`)
-                  .fontSize(12)
-                  .fontColor(Color.Gray)
-                  .padding({ right: 10 })
-                  .fontWeight(FontWeight.Bold)
-                  .textAlign(TextAlign.End)
-                // 本地文件
-                if (item.playmode == 0) {
-                  Image($r('app.media.ic_public_todo')).width(20).fillColor(Color.Green)
-                  if (this.currentQueueIndex == index) {
-                    Text(`${item.song.name} - ${item.artists}`)
-                      .textStyle(16)
-                      .fontWeight(FontWeight.Bold)
-                      .fontColor($r('app.color.app_red'))
-                      .layoutWeight(1)
-                  } else {
-                    Text() {
-                      Span(`${item.song.name}`)
-                      Span(` - ${item.artists}`).fontColor(Color.Gray)
-                    }
-                    .layoutWeight(1)
-                    .textStyle(16)
-                    .onClick(async () => {
-                      this.isLoading = true
-                      await playQueue(index)
-                      this.isLoading = false
-                    })
-                  }
-                }
-
-                // 在线音乐
-                else {
-                  if (this.currentQueueIndex == index) {
-                    Text(`${item.song.name} - ${item.artists}`)
-                      .layoutWeight(1)
-                      .textStyle(16)
-                      .fontWeight(FontWeight.Bold)
-                      .fontColor($r('app.color.app_red'))
-                  } else {
-                    Text(``) {
-                      Span(`${item.song.name}`)
-                      Span(` - ${item.artists}`).fontColor(Color.Gray)
-                    }
-                    .layoutWeight(1)
-                    .textStyle(16)
-                    .onClick(async () => {
-                      this.isLoading = true
-                      await playQueue(index)
-                      setTimeout(() => {
-                        this.isLoading = false
-                      }, 500)
-                    })
-                  }
-                }
-
-                // 从播放列表中删除
-                Button({ type: ButtonType.Circle }) {
-                  Image($r('app.media.ic_public_cancel')).width(20).fillColor(Color.Gray)
-                }
-                .backgroundColor(Color.Transparent)
-                .onClick(() => {
-                  PlayQueueUtils.queueDelete(index)
-                  this.dataSource.deleteData(index)
-                  this.dataSource.notifyDataReload()
-                })
-              }
-              .width('100%')
-              .justifyContent(FlexAlign.SpaceAround)
+              this.ItemCard(item, index)
             }
             .clickEffect({ level: ClickEffectLevel.LIGHT, scale: 0.9 })
           }, (item: PlayQueue, index) => item.song.id.toString() + index)
 
           ListItem().height(px2vp(this.bottomRectHeight))
         }
+        .divider({ color: Color.Gray, strokeWidth: 0.1 })
         .width('100%')
         .height('100%')
         .layoutWeight(1)
@@ -190,9 +122,68 @@ export struct PlayQueueSheet {
     .width('100%')
   }
 
-  scrollToCurrent(animation: boolean = true) {
+  @Builder ItemCard(item: PlayQueue, index: number) {
+    Row({ space: 5 }) {
+      Column({ space: 5 }) {
+        Text(`${item.song.name}`)
+          .fontSize(16)
+          .fontWeight(FontWeight.Medium)
+          .fontColor(this.currentQueueIndex == index ? $r('app.color.app_red') : $r('app.color.reverse'))
+          .maxLines(1)
+          .textOverflow({ overflow: TextOverflow.Ellipsis })
+          .width('100%')
+          .textAlign(TextAlign.Start)
+        Row({ space: 5 }) {
+          if(item.playmode == 0) {
+            Image($r('app.media.ic_public_todo')).width(14).fillColor(Color.Green)
+          } else if(item.song.fee == 1) {
+            Text(' VIP ')
+              .fontColor('#ffff3232')
+              .fontSize(10)
+              .padding(2)
+              .backgroundColor('#ffffd2d2')
+              .borderRadius(5)
+          }
+          Text(`${item.artists}`)
+            .fontSize(12)
+            .fontColor(this.currentQueueIndex == index ? $r('app.color.app_red') : Color.Gray)
+            .maxLines(1)
+            .textOverflow({ overflow: TextOverflow.Ellipsis })
+            .width('100%')
+            .textAlign(TextAlign.Start)
+        }
+      }
+      .layoutWeight(1)
+      .onClick(async () => {
+        if(this.currentQueueIndex != index) {
+          this.isLoading = true
+          await playQueue(index)
+          this.isShow = false
+          this.isLoading = false
+        } else return
+      })
+
+      // 从播放列表中删除
+      if(this.currentQueueIndex != index) {
+        Button({ type: ButtonType.Circle }) {
+          Image($r('app.media.ic_public_cancel')).width(20).fillColor(Color.Gray)
+        }
+        .backgroundColor(Color.Transparent)
+        .onClick(() => {
+          PlayQueueUtils.queueDelete(index)
+          this.dataSource.deleteData(index)
+          this.dataSource.notifyDataReload()
+        })
+      }
+    }
+    .width('100%')
+    .justifyContent(FlexAlign.SpaceAround)
+    .padding({ top: 2, bottom: 2 })
+  }
+
+  private scrollToCurrent(animation: boolean = true) {
     if(this.currentQueueIndex <= 3) { this.scroller.scrollToIndex(this.currentQueueIndex, animation) }
-    else { this.scroller.scrollToIndex(this.currentQueueIndex, animation, ScrollAlign.CENTER) }
+    else { this.scroller.scrollToIndex(this.currentQueueIndex, animation, ScrollAlign.START) }
   }
 
   private cleanPlayQueue() {
@@ -242,12 +233,4 @@ export struct PlayQueueSheet {
       }
     })
   }
-}
-
-@Extend(Text) function textStyle(size:number) {
-  .width('100%')
-  .fontSize(size)
-  .maxLines(1)
-  .fontColor($r('app.color.reverse'))
-  .textOverflow({ overflow: TextOverflow.Ellipsis })
 }

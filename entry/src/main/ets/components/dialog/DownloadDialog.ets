@@ -70,24 +70,32 @@ export struct DownloadDialog {
           Column({ space: 10 }) {
             Stack() {
               LoadingProgress().width(40)
-              Image(this.picUrl)
+              Image(this.picUrl + '?param=100y100')
                 .width(128)
+                .borderRadius(Constants.RADIUS_IMG)
                 .aspectRatio(1)
             }
             .width(128)
             .aspectRatio(1)
 
-            Text(this.song.name).textStyle(20)
-            Text(this.artists).textStyle(14)
+            Text(this.song.name).textStyle(18).fontWeight(FontWeight.Medium)
+            Text(this.artists).textStyle(14).fontColor(Color.Gray)
             Divider()
-            Text(`时长 ${this.duration}`).textStyle(12)
+            if(this.song.fee == 1) {
+              Text(' VIP 歌曲 ')
+                .fontColor('#ffff3232')
+                .fontSize(10)
+                .padding(2)
+                .backgroundColor('#ffffd2d2')
+                .borderRadius(5)
+            }
             Text(`音质: ${this.songDownload.data[0].level}     格式: ${this.songDownload.data[0].type}     大小: ${this.fileSize}MB`)
               .textStyle(12)
             Button('获取文件地址').ButtonStyle()
               .onClick(() => {
                 copyDownloadUrl(this.songDownload.data[0].url)
               })
-            Button('缓存至应用沙箱').ButtonStyle()
+            Button('缓存至本地').ButtonStyle()
               .onClick(() => {
                 ToastUtil.showToast(`开始缓存：${this.song.name}.${this.songDownload.data[0].type}`)
                 this.controller.close()

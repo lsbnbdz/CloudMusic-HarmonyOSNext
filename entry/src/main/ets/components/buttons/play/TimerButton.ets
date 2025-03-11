@@ -28,6 +28,7 @@ export struct TimerButton {
           onDisappear: () => { this.isShow = false }
         })
     }
+    .justifyContent(FlexAlign.Center)
     .width(30)
     .height(30)
   }

@@ -22,18 +22,17 @@ export struct PlayingCover {
   @StorageProp(StorageConstants.PLAY_ARTISTS) artists: string = ''
   @StorageProp(StorageConstants.IS_PAUSED) isPaused: boolean = false
   @StorageProp(StorageConstants.PIC_URL) picUrl: string = ''
-  @StorageProp(StorageConstants.PLAY_TIME ) time: number = 0
+  @StorageProp(StorageConstants.PLAY_TIME) time: number = 0
   @StorageProp(StorageConstants.ISLIKED) isLiked: boolean = false
   @StorageProp(StorageConstants.PLAY_COUNTDOWN_WORKING) isTimerWorking: boolean = false
   @StorageProp(StorageConstants.PLAY_IS_LOCALFILE) isLocalFile: boolean = false
-  @StorageProp(StorageConstants.DEVICE_TYPE) deviceType: resourceManager.DeviceType = resourceManager.DeviceType.DEVICE_TYPE_PHONE
+  @StorageProp(StorageConstants.BREAKPOINT) breakpoint: string = 'md'
   @Link isShow: boolean
   @State hasLoaded: boolean = false
   @State sliderThickness: number = 10
   @State isMovingSlider: boolean = false
   @State sliderMovingTime: number = 0
   @State tabPageIndex: number = 0
-  @State totalOpacity: number = 0
   @State isShowMenu: boolean = false
   @State isShowTimer: boolean = false
   @State isShowAddSheet: boolean = false
@@ -46,17 +45,11 @@ export struct PlayingCover {
     }),
   })
 
-  aboutToAppear(): void {
-    setTimeout(() => {
-      this.totalOpacity = 1
-    }, 500)
-  }
-
   build() {
    Stack() {
      // Background
      Stack() {
-       Image(this.picUrl + '?param=512y512')
+       Image(this.playmode == 1 ? this.picUrl + '?param=512y512' : $r('app.media.bg_default'))
          .blur(100)
          .width('100%')
          .height('100%')
@@ -78,7 +71,7 @@ export struct PlayingCover {
      /**
       * 主内容
       */
-     if(this.deviceType == resourceManager.DeviceType.DEVICE_TYPE_TABLET) {
+     if(this.breakpoint == 'lg') {
        this.TabletUI()
      } else {
        this.PhoneUI()
@@ -99,59 +92,86 @@ export struct PlayingCover {
    */
   @Builder
   ToolBar() {
-    Column() {
-      Row() {
-        /**
-         * AVCastPicker
-         */
-        Column() {
-          AVCastPicker({ normalColor: Color.White, pickerStyle: AVCastPickerStyle.STYLE_MENU })
-            .width(25)
-            .height(25)
-            .backgroundColor(Color.Transparent)
-            .opacity(1)
-        }
-        .width(30)
-        .height(30)
+    if(this.tabPageIndex == 0) {
+      Column() {
+        Row() {
+          // /**
+          //  * AVCastPicker
+          //  */
+          // Column() {
+          //   AVCastPicker({ normalColor: Color.White, pickerStyle: AVCastPickerStyle.STYLE_MENU })
+          //     .width(25)
+          //     .height(25)
+          //     .backgroundColor(Color.Transparent)
+          //     .opacity(1)
+          // }
+          // .width(30)
+          // .height(30)
 
-        /**
-         * Clock-Timer
-         */
-        TimerButton({ isTimerWorking: this.isTimerWorking, isShow: this.isShowTimer })
-        if (this.playmode == 1) {
           /**
-           * Download
+           * Clock-Timer
            */
-          Column() {
-            Image($r('app.media.ic_public_folder'))
-              .fillColor(Color.White)
-              .width(25)
-              .draggable(false)
-              .backgroundColor(Color.Transparent)
-              .onClick(() => {
-                this.dialogController.open()
+          TimerButton({ isTimerWorking: this.isTimerWorking, isShow: this.isShowTimer })
+          if (this.playmode == 1) {
+            /**
+             * Download
+             */
+            Column() {
+              Image($r('app.media.ic_public_folder'))
+                .fillColor(Color.White)
+                .width(25)
+                .draggable(false)
+                .backgroundColor(Color.Transparent)
+                .onClick(() => {
+                  this.dialogController.open()
+                })
+            }
+            .justifyContent(FlexAlign.Center)
+            .width(30)
+            .height(30)
+
+            /**
+             * AddToPlayList
+             */
+            Column() {
+              AddToPlayListCircleButton({
+                song: this.song,
+                imgColor: Color.White,
+                imgWidth: 24,
+                isShowAddSheet: this.isShowAddSheet
               })
+            }
+            .justifyContent(FlexAlign.Center)
+            .width(30)
+            .height(30)
+
+            /**
+             * More
+             */
+            Column() {
+              Image($r('app.media.ic_public_more_list'))
+                .border({
+                  width: 2,
+                  color: Color.White,
+                  radius: 50
+                })
+                .fillColor(Color.White)
+                .width(22)
+                .draggable(false)
+                .backgroundColor(Color.Transparent)
+                .onClick(() => {
+                  this.isShowMenu = true
+                })
+            }
+            .justifyContent(FlexAlign.Center)
+            .width(30)
+            .height(30)
           }
-          .width(30)
-          .height(30)
-          /**
-           * AddToPlayList
-           */
-          Column() {
-            AddToPlayListCircleButton({ song: this.song, imgColor: Color.White, imgWidth: 24, isShowAddSheet: this.isShowAddSheet })
-          }
-          .width(30)
-          .height(30)
         }
+        .justifyContent(FlexAlign.SpaceEvenly)
+        .width('90%')
+        .height(30)
       }
-      .opacity(this.totalOpacity)
-      .animation({
-        duration: 200,
-        curve: Curve.Linear
-      })
-      .justifyContent(FlexAlign.SpaceEvenly)
-      .width('90%')
-      .height(30)
     }
   }
 
@@ -373,6 +393,11 @@ export struct PlayingCover {
       .clip(false)
       .loop(false)
       .layoutWeight(1)
+      .onChange((index) => {
+        animateTo({ duration: 300, curve: Curve.EaseInOut }, () => {
+          this.tabPageIndex = index
+        })
+      })
 
       Column({ space: 10 }) {
         this.SliderContent()
@@ -385,14 +410,17 @@ export struct PlayingCover {
         .padding({ top: 20, bottom: 15 })
         .justifyContent(FlexAlign.SpaceEvenly)
         .width('90%')
-        Row({ space: 15 }) {
-          if(this.isLocalFile) { Text('本地文件播放中').fontSize(10).fontColor(Color.Gray) }
-          if(this.isTimerWorking) { Text('已设置定时关闭').fontSize(10).fontColor(Color.Gray) }
+
+        if(this.tabPageIndex == 0) {
+          Row({ space: 15 }) {
+            if(this.isLocalFile) { Text('本地文件播放中').fontSize(10).fontColor(Color.Gray) }
+            if(this.isTimerWorking) { Text('已设置定时关闭').fontSize(10).fontColor(Color.Gray) }
+          }
+          .justifyContent(FlexAlign.Center)
+          .width('100%')
+          .height(30)
+          .backgroundColor(Color.Transparent)
         }
-        .justifyContent(FlexAlign.Center)
-        .width('100%')
-        .height(30)
-        .backgroundColor(Color.Transparent)
       }
       .constraintSize({
         minWidth: 200,
@@ -430,11 +458,11 @@ export struct PlayingCover {
         }
         .width('100%')
       }
-      .layoutWeight(1.5)
+      .layoutWeight(1)
 
       LyricComponent()
         .width('100%')
-        .layoutWeight(2)
+        .layoutWeight(1)
     }
     .width('100%')
     .height('100%')

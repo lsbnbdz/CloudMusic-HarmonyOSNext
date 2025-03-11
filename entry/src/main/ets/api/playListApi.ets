@@ -273,7 +273,7 @@ export async function subscribePlayList(id: number, mode: number): Promise<boole
 export async function getPersonalizedList(): Promise<Array<PersonalListItem>> {
   let list: Array<PersonalListItem> = []
   const rootUrl = await getApiUrl()
-  const url: string = `${rootUrl}/personalized?limit=10&timestamp=${new Date().getTime()}`
+  const url: string = `${rootUrl}/personalized?timestamp=${new Date().getTime()}`
   const request = new HttpRequest(url)
   await request.RequestInStream().then((data) => {
     const dataGot = data.result as Personalized

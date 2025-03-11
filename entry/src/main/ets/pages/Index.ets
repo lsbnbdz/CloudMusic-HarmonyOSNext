@@ -21,7 +21,7 @@ import { TopListPage } from './TopListPage';
 import { ApiDialog } from '../components/dialog/ApiDialog';
 import PreferencesUtils from '../common/utils/data/PreferencesUtils';
 import { DebugPage } from './DebugPage';
-import { AddPlayListDialog } from '../components/dialog/AddPlayListDialog';
+import BreakpointUtils from '../common/utils/system/BreakpointUtils';
 
 @Entry
 @Component
@@ -34,11 +34,6 @@ struct Index {
   apiDialogController: CustomDialogController = new CustomDialogController({
     builder: ApiDialog(),
     autoCancel: false
-  })
-
-  addPlayListController: CustomDialogController = new CustomDialogController({
-    builder: AddPlayListDialog(),
-    autoCancel: true
   })
 
   tabController: TabsController = new TabsController()
@@ -82,6 +77,7 @@ struct Index {
   }
 
   async aboutToAppear(): Promise<void> {
+    BreakpointUtils.register()
     setTimeout(() => {
       this.tabCurrentIndex = this.index
     }, 1)
@@ -92,7 +88,10 @@ struct Index {
       this.warrantyDialogController.open()
       PreferencesUtils.putPreferenceValue(StorageConstants.USER_PREF, 'isFirstLaunch', false)
     }
+  }
 
+  aboutToDisappear(): void {
+    BreakpointUtils.unregister()
   }
 
   async build() {
@@ -119,7 +118,7 @@ struct Index {
     }
     .height('100%')
     .width('100%')
-    .navBarWidthRange(['40%', '60%'])
+    .navBarWidth('50%')
     .navBarPosition(NavBarPosition.Start)
     .mode(NavigationMode.Auto)
     .titleMode(NavigationTitleMode.Mini)
@@ -185,10 +184,10 @@ struct Index {
     Column({ space: 3 }) {
       Image(this.index == index ? activeIcon : icon)
         .width(Constants.SIZE_ICON_BUTTON_BAR)
-        .fillColor(this.index == index ? $r('app.color.blue') : Color.Gray)
+        .fillColor(this.index == index ? $r('app.color.app_red') : Color.Gray)
       Text(text)
         .fontSize(Constants.FONT_SIZE_BAR)
-        .fontColor(this.index == index ? $r('app.color.blue') : Color.Gray)
+        .fontColor(this.index == index ? $r('app.color.app_red') : Color.Gray)
     }
     .layoutWeight(1)
     .onClick(() => {

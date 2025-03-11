@@ -16,7 +16,7 @@ const TAG = '[CachedPage] '
 export struct CachedPage {
   @StorageProp('bottomRectHeight') bottomRectHeight: number = 0
   @StorageProp('topRectHeight') topRectHeight: number = 0
-  @StorageProp(StorageConstants.DEVICE_TYPE) deviceType: resourceManager.DeviceType = resourceManager.DeviceType.DEVICE_TYPE_PHONE
+  @StorageProp(StorageConstants.BREAKPOINT) breakpoint: string = 'md'
   @State searchKeyword: string = ''
   @State fileList: string[] = []
   @State filteredList: Array<string> = new Array()
@@ -173,7 +173,7 @@ export struct CachedPage {
               .width('100%')
 
               GridItem()
-                .height(px2vp(this.bottomRectHeight) + 80)
+                .height(px2vp(this.bottomRectHeight) + Constants.HEIGHT_MINI)
             }
             .edgeEffect(EdgeEffect.Spring)
             .scrollBar(BarState.Off)
@@ -195,7 +195,7 @@ export struct CachedPage {
         .width('100%')
         .height('100%')
 
-        if(this.deviceType == resourceManager.DeviceType.DEVICE_TYPE_PHONE) {
+        if(this.breakpoint !== 'lg') {
           BottomBarComponent()
             .padding(Constants.PADDING_EDGE_DEFAULT)
             .backgroundColor(Color.Transparent)

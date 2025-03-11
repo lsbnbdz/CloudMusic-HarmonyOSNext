@@ -17,7 +17,7 @@ export struct PlayListCard {
           .borderRadius(15)
         Column({ space: 8 }) {
           Text(this.playList.name).textStyle(16).fontWeight(FontWeight.Medium)
-          Text(`歌单 · ${this.playList.trackCount} 首 · ${this.playList.creator.nickname}`).textStyle(12)
+          Text(`歌单 · ${this.playList.trackCount} 首 · ${this.playList?.creator.nickname}`).textStyle(12)
         }
         .layoutWeight(1)
       }

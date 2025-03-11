@@ -22,7 +22,7 @@ export struct PlayQueueButton {
     .onClick(() => { this.isShow = !this.isShow })
     .bindSheet(this.isShow, this.QueueComponent(), {
       preferType: SheetType.BOTTOM,
-      height: '60%',
+      detents: ['70%', '100%'],
       dragBar: false,
       showClose: false,
       backgroundColor: $r('app.color.background'),

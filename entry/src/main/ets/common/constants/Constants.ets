@@ -7,13 +7,9 @@ export default class Constants {
    */
   static readonly API_URL: string = 'https://api.chenlvin.cc'
   /**
-   * Cookie有效时间(Days)
+   * Mini播放器高度
    */
-  static readonly COOKIE_EXPIRY_DAYS: number = 21
-  /**
-   * 开关组件高度
-   */
-  static readonly HEIGHT_TOGGLE: number = 30
+  static readonly HEIGHT_MINI: number = 60
   /**
    * 选择框高度
    */
@@ -42,6 +38,10 @@ export default class Constants {
    * Bar Icon 按钮尺寸
    */
   static readonly SIZE_ICON_BUTTON_BAR: number = 25
+  /**
+   * Bar Small Icon
+   */
+  static readonly SIZE_ICON_BUTTON_BAR_SMALL: number = 22
   /**
    * 默认加载图标尺寸
    */

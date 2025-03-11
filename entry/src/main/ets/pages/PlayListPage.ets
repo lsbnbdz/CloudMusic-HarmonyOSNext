@@ -11,10 +11,10 @@ import { ClickToLoadButton, LoadingMoreButton, NoMoreButton } from '../component
 import { PlayListPageParam } from '../common/entities/PageParams'
 import { PlayListCard_Skeleton } from '../components/cards/PlayListCard'
 import { StorageConstants } from '../common/constants/StorageConstants'
-import { resourceManager } from '@kit.LocalizationKit'
 import { PlayListSongItem } from '../common/entities/PlayListSongs'
 import { User, UserClass } from '../common/entities/User'
 import { promptAction } from '@kit.ArkUI'
+import { LazyData } from '@pie/lazy-data'
 
 /**
  * 歌单二级页面
@@ -33,24 +33,36 @@ export struct PlayListPage {
   @StorageProp('topRectHeight') topRectHeight: number = 0
   @StorageProp(StorageConstants.IS_PLAYER_LOADING) isPlayerLoading: boolean = false
   @StorageProp(StorageConstants.USER) user: User = UserClass
-  @StorageProp(StorageConstants.DEVICE_TYPE) deviceType: resourceManager.DeviceType = resourceManager.DeviceType.DEVICE_TYPE_PHONE
+  @StorageProp(StorageConstants.BREAKPOINT) breakpoint: string = 'md'
   @StorageProp(StorageConstants.USER_PLAYLISTS) userPlayLists: PlayList[] = []
+  @StorageProp(StorageConstants.IS_LOGGED) isLogged: boolean = false
   @Consume('pageInfos') pageInfos: NavPathStack
   @State isSubscribed: boolean = false
   @State list: PlayListSongItem[] = new Array()
   @State filteredList: PlayListSongItem[] = new Array()
+  @State @Watch('refreshList') listDataSource: LazyData<PlayListSongItem> = new LazyData()
+  @State @Watch('refreshFiltered') filteredDataSource: LazyData<PlayListSongItem> = new LazyData()
   @State hasMore: boolean = true
   @State hasLoaded: boolean = false // 判定是否已加载 避免重复加载
   @State isLoading: boolean = true
   @State isLoadingMore: boolean = false
-  @State pageOpacity: number = 1
+  @State isSelecting: boolean = false
+  @State translateY: number = 40
+  @State selectedSongs: PlayListSongItem[] = []
   @State searchKeyword: string = ''
   @State menuItem: NavigationMenuItem[] = [
     {
       value: 'help',
       icon: $r('app.media.ic_public_help'),
       action: this.helpButtonAction
-    }
+    },
+    // {
+    //   value: 'select',
+    //   icon: $r('app.media.ic_public_select_all'),
+    //   action: () => {
+    //     this.selectButtonAction()
+    //   }
+    // }
   ]
   private currentOffset: number = 0 // 歌曲偏移量
   private useTimestamp: boolean = true
@@ -62,38 +74,12 @@ export struct PlayListPage {
     }
   }
 
-  private helpButtonAction() {
-    DialogUtil.showConfirmDialog({
-      title: '歌单操作',
-      message: '增删歌曲：左滑歌曲卡片\n\n' +
-        '收藏歌单：点击信息栏右边爱心图标\n\n' +
-        '歌单内搜索：本地搜索，仅支持搜索已加载的部分歌曲'
-    })
+  refreshFiltered() {
+    this.filteredDataSource.notifyDataReload()
   }
 
-  async loadSongs(limit: number, offset: number): Promise<void> {
-    if (!this.hasMore) return // 没有更多歌曲直接返回
-    if (offset == 0) {
-      this.isLoading = true // 初次加载
-    } else {
-      this.isLoadingMore = true // 加载更多
-    }
-
-    try {
-      const result = await getPlayListSongs(this.param.playList.id, this.param.playList.trackCount, offset, this.useTimestamp)
-      this.list = [...this.list, ...result] // 合并歌曲列表
-      this.currentOffset += limit
-
-      if (this.list.length >= this.param.playList.trackCount) {
-        this.hasMore = false
-      }
-    } catch (e) {
-      LogUtil.error(TAG + 'Error fetching songs: ', e)
-    } finally {
-      this.isLoading = false
-      this.isLoadingMore = false
-      this.hasLoaded = true
-    }
+  refreshList() {
+    this.listDataSource.notifyDataReload()
   }
 
   build() {
@@ -130,8 +116,8 @@ export struct PlayListPage {
                 })
 
                 // 删除歌单
-                if(this.user.data.account.id == this.param.playList.userId &&
-                  this.param.playList.id != this.userPlayLists[0].id) {
+                if(this.isLogged && this.user.data.account?.id == this.param.playList.userId &&
+                  this.param.playList.id != this.userPlayLists[0]?.id) {
                   Image($r('app.media.ic_public_delete'))
                     .width(20)
                     .clickEffect({ level: ClickEffectLevel.LIGHT, scale: 0.9 })
@@ -144,7 +130,7 @@ export struct PlayListPage {
               .justifyContent(FlexAlign.SpaceBetween)
               .width('100%')
             }
-            .padding({ left: 20, bottom: 10, right: 20 })
+            .padding({ left: 20, right: 20 })
             if (this.isLoading) {
               ForEach([1, 2, 3, 4, 5, 6, 7, 8, 9, 10], () => {
                 ListItem() {
@@ -152,37 +138,19 @@ export struct PlayListPage {
                 }
               })
             } else {
-              ListItemGroup({ header: this.SearchComponent() }) {
-                ForEach(this.searchKeyword ? this.filteredList : this.list,
-                  (item: PlayListSongItem, index) => {
-                    ListItem() {
-                      SongCard({
-                        song: {
-                          id: item.id,
-                          artists: item.ar,
-                          name: item.name,
-                          duration: item.dt,
-                          alias: [],
-                          fee: item.fee
-                        },
-                        sid: this.list.indexOf(item),
-                        isPlayList: true,
-                        playList: this.param.playList,
-                        picUrl: item.al?.picUrl ?? $r('app.media.ic_public_music'),
-                        index: this.list.indexOf(item)
-                      })
-                    }
-                    .key(item.id.toString())
-                    .swipeAction({ end: this.SwipeItem(item, this.list.indexOf(item)) })
-                    .translate({ y: -40 })
-                    .animation({
-                      duration: 600,
-                      curve: Curve.LinearOutSlowIn
-                    })
-                    .translate({ y: 0 })
-                  },(item: PlayListSongItem) => item.id.toString()
-                )
+              ListItemGroup({ header: this.ToolBar() }) {
+                if(this.searchKeyword) {
+                  this.ContentList(this.filteredDataSource)
+                } else {
+                  this.ContentList(this.listDataSource)
+                }
               }
+              .translate({ y: this.translateY })
+              .animation({
+                duration: 600,
+                curve: Curve.LinearOutSlowIn
+              })
+              .onAppear(() => { this.translateY = 0 })
 
               // 添加加载更多
               if (this.isLoadingMore) {
@@ -206,7 +174,7 @@ export struct PlayListPage {
               }
             }
 
-            ListItem().height(px2vp(this.bottomRectHeight) + 80)
+            ListItem().height(px2vp(this.bottomRectHeight) + Constants.HEIGHT_MINI)
           }
           .cachedCount(5)
           .height('100%')
@@ -218,13 +186,12 @@ export struct PlayListPage {
         }
         .height('100%')
 
-        if(this.deviceType == resourceManager.DeviceType.DEVICE_TYPE_PHONE) {
+        if(this.breakpoint !== 'lg') {
           BottomBarComponent()
             .padding(Constants.PADDING_EDGE_DEFAULT)
             .backgroundColor(Color.Transparent)
         }
       }
-      .opacity(this.pageOpacity)
       .width('100%')
       .height('100%')
       .backgroundColor($r('app.color.background'))
@@ -234,17 +201,47 @@ export struct PlayListPage {
     .backgroundColor($r('app.color.background'))
   }
 
-  @Builder SearchComponent() {
-    Column() {
+  @Builder ContentList(dataSource: LazyData<PlayListSongItem>) {
+    LazyForEach(dataSource, (item: PlayListSongItem, index) => {
+        ListItem() {
+          Row() {
+            SongCard({
+              song: {
+                id: item.id,
+                artists: item.ar,
+                name: item.name,
+                duration: item.dt,
+                alias: [],
+                fee: item.fee
+              },
+              sid: this.list.indexOf(item),
+              isPlayList: true,
+              playList: this.param.playList,
+              picUrl: item.al?.picUrl ?? $r('app.media.ic_public_music'),
+              index: this.list.indexOf(item)
+            })
+              .layoutWeight(1)
+            if(this.isSelecting) {
+              this.CardCheckBox(item)
+            }
+          }
+        }
+        .key(this.searchKeyword)
+        .swipeAction({ end: this.SwipeItem(item, this.list.indexOf(item)), edgeEffect: SwipeEdgeEffect.None })
+      }
+      ,(item: PlayListSongItem) => item.id.toString()
+    )
+  }
+  @Builder ToolBar() {
+    Row({ space: 5 }) {
       Search({
         placeholder: '搜索歌名或歌手',
         icon: '/resources/base/media/ic_public_search_filled.svg'
       })
         .backgroundBlurStyle(BlurStyle.Thin)
         .height(Constants.HEIGHT_SELECT)
-        .width('100%')
+        .layoutWeight(1)
         .searchButton('搜索')
-        .margin({ left: Constants.PADDING_EDGE_DEFAULT })
         .onChange((value) => {
           if(value == '') {
             this.filteredList = []
@@ -255,8 +252,27 @@ export struct PlayListPage {
           this.searchKeyword = value
           this.handelSearch()
         })
+
+      if(this.isSelecting) {
+        Row({ space: 5 }) {
+          Image($r('app.media.ic_public_folder'))
+            .width(Constants.SIZE_ICON_BUTTON_BAR)
+            .aspectRatio(1)
+            .fillColor(Color.Gray)
+            .clickEffect({ level: ClickEffectLevel.LIGHT, scale: 0.8 })
+
+          CheckboxGroup({ group: 'playListSongs' })
+            .width(Constants.SIZE_ICON_BUTTON_BAR_SMALL)
+            .aspectRatio(1)
+        }
+        .backgroundColor(Color.Transparent)
+        .backgroundBlurStyle(BlurStyle.Thin)
+        .height(Constants.HEIGHT_SELECT)
+        .borderRadius(Constants.RADIUS_CARD)
+        .padding(5)
+      }
     }
-    .padding({ left: 20, right: 20, top: 10, bottom: 10 })
+    .padding({ left: 20, right: 20 })
     .justifyContent(FlexAlign.Center)
   }
 
@@ -362,6 +378,63 @@ export struct PlayListPage {
     }
   }
 
+  @Builder CardCheckBox(item: PlayListSongItem) {
+    Checkbox({ group: 'playListSongs' })
+      .padding({ right: 5 })
+      .shape(CheckBoxShape.ROUNDED_SQUARE)
+      .width(Constants.SIZE_ICON_BUTTON_BAR)
+      .aspectRatio(1)
+      .onChange((value) => {
+        if(value) {
+          this.selectedSongs.push(item)
+        } else {
+          this.selectedSongs = this.selectedSongs.filter(item => item.id != item.id)
+        }
+      })
+  }
+
+  async loadSongs(limit: number, offset: number): Promise<void> {
+    if (!this.hasMore) return // 没有更多歌曲直接返回
+    if (offset == 0) {
+      this.isLoading = true // 初次加载
+    } else {
+      this.isLoadingMore = true // 加载更多
+    }
+    try {
+      const result = await getPlayListSongs(this.param.playList.id, this.param.playList.trackCount, offset, this.useTimestamp)
+      this.list = [...this.list, ...result] // 合并歌曲列表
+      //
+      this.listDataSource.setData(this.list)
+      this.listDataSource.notifyDataReload()
+      this.currentOffset += limit
+      if (this.list.length >= this.param.playList.trackCount) {
+        this.hasMore = false
+      }
+    } catch (e) {
+      LogUtil.error(TAG + 'Error fetching songs: ', e.message)
+    } finally {
+      this.isLoading = false
+      this.isLoadingMore = false
+      this.hasLoaded = true
+    }
+  }
+
+  private helpButtonAction() {
+    DialogUtil.showConfirmDialog({
+      title: '歌单操作',
+      message: '增删歌曲：左滑歌曲卡片\n\n' +
+        '收藏歌单：点击信息栏右边爱心图标\n\n' +
+        '歌单内搜索：本地搜索，仅支持搜索已加载的部分歌曲'
+    })
+  }
+
+  private selectButtonAction() {
+    animateTo({ duration: 200, curve: Curve.EaseInOut }, () => {
+      this.isSelecting = !this.isSelecting
+    })
+    this.selectedSongs = []
+  }
+
   private UnSubScribe() {
     DialogUtil.showPrimaryDialog({
       title: '取消收藏歌单',
@@ -385,16 +458,15 @@ export struct PlayListPage {
     try {
       if (!this.searchKeyword) {
         this.filteredList = []
-        return
+        this.filteredDataSource.setData([])
       }
       const keyword = this.searchKeyword.toLowerCase()
-      this.filteredList = this.list.filter((item: PlayListSongItem) => {
-        const idMatch = item.id.toString().includes(keyword)
+      this.filteredDataSource.setData(this.list.filter((item: PlayListSongItem) => {
+        const idMatch = item.name.toString().toLowerCase().includes(keyword)
         const artistMatch = item.ar.some(artist =>
-        artist.name.toLowerCase().includes(keyword)
-        )
+        artist.name.toLowerCase().includes(keyword))
         return idMatch || artistMatch
-      })
+      }))
     } catch (e) {
       ToastUtil.showToast('搜索时出错: ' + (e as Error).message)
       LogUtil.error(TAG + 'Error while handelSearch: ' + (e as Error).message)

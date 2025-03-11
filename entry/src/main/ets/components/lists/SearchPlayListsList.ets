@@ -73,7 +73,7 @@ export struct SearchPlayListsList {
             NoMoreButton()
           }
         }
-        ListItem().height(px2vp(this.bottomRectHeight) + 80)
+        ListItem().height(px2vp(this.bottomRectHeight) + Constants.HEIGHT_MINI)
       }
       .layoutWeight(1)
       .width('100%')

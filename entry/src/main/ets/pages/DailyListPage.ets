@@ -20,7 +20,7 @@ const TAG = '[DailyListPage] '
 export struct DailyListPage {
   @StorageProp('bottomRectHeight') bottomRectHeight: number = 0
   @StorageProp('topRectHeight') topRectHeight: number = 0
-  @StorageProp(StorageConstants.DEVICE_TYPE) deviceType: resourceManager.DeviceType = resourceManager.DeviceType.DEVICE_TYPE_PHONE
+  @StorageProp(StorageConstants.BREAKPOINT) breakpoint: string = 'md'
   @State list: Array<DailySongRes> = new Array()
   @State hasLoaded: boolean = false
   @State isLoading: boolean = true
@@ -112,7 +112,7 @@ export struct DailyListPage {
                   .translate({ y: 0 })
                 })
 
-                ListItem().height(px2vp(this.bottomRectHeight) + 80)
+                ListItem().height(px2vp(this.bottomRectHeight) + Constants.HEIGHT_MINI)
               }
               .height('100%')
               .layoutWeight(1)
@@ -127,7 +127,7 @@ export struct DailyListPage {
         }
         .height('100%')
 
-        if(this.deviceType == resourceManager.DeviceType.DEVICE_TYPE_PHONE) {
+        if(this.breakpoint !== 'lg') {
           BottomBarComponent()
             .padding(Constants.PADDING_EDGE_DEFAULT)
             .backgroundColor(Color.Transparent)

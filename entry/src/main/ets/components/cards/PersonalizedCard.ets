@@ -3,7 +3,6 @@ import { PlayListPageParam } from "../../common/entities/PageParams"
 import { PersonalListItem } from "../../common/entities/Personalized"
 
 @Component
-@Reusable
 export struct PersonalizedCard {
   @State item: PersonalListItem = {
     id: 0,
@@ -19,6 +18,7 @@ export struct PersonalizedCard {
   build() {
     Row({ space: 10 }) {
       Image(this.item.picUrl)
+        .aspectRatio(1)
         .height(80)
         .borderRadius(Constants.RADIUS_IMG)
 

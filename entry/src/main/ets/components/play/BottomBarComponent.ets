@@ -1,10 +1,10 @@
-import { ToastUtil } from "@pura/harmony-utils"
 import { Song, SongClass } from "../../common/entities/SongsResult"
-import { pauseMusic, playQueue, resumeMusic } from "../../common/functions/play/playControl"
+import { pauseMusic, playNext, playPre, playQueue, resumeMusic } from "../../common/functions/play/playControl"
 import playQueueUtils from "../../common/utils/play/PlayQueueUtils"
 import { PlayQueueButton } from "../buttons/play/PlayQueueButton"
 import { PlayingCover } from "../sheets/PlayingCover"
 import { StorageConstants } from "../../common/constants/StorageConstants"
+import Constants from "../../common/constants/Constants"
 
 /**
  * 底部播控组件
@@ -22,7 +22,6 @@ export struct BottomBarComponent {
   @StorageProp(StorageConstants.PIC_URL) picUrl: string = ''
   @StorageProp(StorageConstants.PLAY_TIME) time: number = 0
   @StorageProp('player-currentLyric') currentLyric: string = ''
-  @State componentOpacity: number = 0.8
   @State isShow: boolean = false
   @Consume('pageInfos') pageInfos: NavPathStack
 
@@ -32,34 +31,31 @@ export struct BottomBarComponent {
       else { Image(this.picUrl + '?param=512y512').songImg() }
 
       Column({ space: 5 }) {
-        Text(this.song.name).textStyle(18).textOverflow({ overflow: TextOverflow.MARQUEE }).fontWeight(FontWeight.Medium)
+        Text(this.song.name).textStyle(16).fontWeight(FontWeight.Medium)
         if(!this.currentLyric || this.currentLyric === '暂无歌词') {
-          Text(this.artists).textStyle(14).textOverflow({ overflow: TextOverflow.MARQUEE }).layoutWeight(1)
+          Text(this.artists).textStyle(12).textOverflow({ overflow: TextOverflow.MARQUEE }).layoutWeight(1).fontColor(Color.Gray)
         }
         else {
-          Text(this.currentLyric).textStyle(14).textOverflow({ overflow: TextOverflow.MARQUEE }).layoutWeight(1)
+          Text(this.currentLyric).textStyle(12).textOverflow({ overflow: TextOverflow.MARQUEE }).layoutWeight(1).fontColor(Color.Gray)
         }
       }
-      .padding({ top: 15, bottom: 15 })
+      .padding({ top: 10, bottom: 10 })
       .layoutWeight(1)
 
       ControlButtons({ isPaused: this.isPaused, isPlaying: this.isPlaying })
+        .padding({ right: 5 })
     }
     .justifyContent(FlexAlign.SpaceBetween)
-    .layoutWeight(1)
-    .backdropBlur(50)
-    .padding({ left:10, right:10 })
     .width('100%')
-    .borderRadius(20)
+    .borderRadius(Constants.RADIUS_CARD)
     .backgroundColor($r('app.color.main'))
-    .opacity(this.isShow ? this.componentOpacity : this.componentOpacity)
-    .height(80)
+    .height(Constants.HEIGHT_MINI)
     .clickEffect({ level: ClickEffectLevel.LIGHT, scale: 0.9 })
-    .onClick(() => {
-      if(this.isPlaying) {
-        this.isShow = true
+    .onClick(async () => {
+      if(!this.isPlaying) {
+        await playQueue(playQueueUtils.currentQueueIndex)
       }
-      else { ToastUtil.showToast('当前无正在播放歌曲') }
+      this.isShow = true
     })
     .bindContentCover(this.isShow, this.Cover(), {
       modalTransition: ModalTransition.DEFAULT,
@@ -83,45 +79,63 @@ struct ControlButtons {
   @Link isPlaying: boolean
   build() {
     Row({ space: 10 }) {
-      if (!this.isPaused) {
-        Button() {
-          Image($r('app.media.ic_public_pause')).fillColor(Color.Gray).buttonImgStyle()
-        }.onClick(() => {
-          pauseMusic()
-        }).backgroundColor(Color.Transparent)
-      } else {
-        Button() {
-          Image($r('app.media.ic_play_fill')).fillColor(Color.Gray).buttonImgStyle()
-        }
+      // Last
+      Image($r('app.media.ic_public_play_last')).buttonImgStyle()
+        .fillColor($r('app.color.app_red'))
         .onClick(() => {
+          playPre()
+        })
+
+      // Play & Pause
+      if (!this.isPaused) {
+        Image($r('app.media.ic_public_pause_norm')).buttonImgStyle()
+          .fillColor($r('app.color.app_red'))
+          .onClick(() => {
+            pauseMusic()
+          })
+      } else {
+        Image($r('app.media.ic_public_play_norm')).buttonImgStyle()
+          .fillColor($r('app.color.app_red'))
+          .onClick(() => {
           if(!this.isPlaying) playQueue(playQueueUtils.currentQueueIndex)
           else resumeMusic()
         })
-        .backgroundColor(Color.Transparent)
       }
-      PlayQueueButton()
+
+      // Next
+      Image($r('app.media.ic_public_play_next')).buttonImgStyle()
+        .fillColor($r('app.color.app_red'))
+        .onClick(() => {
+          playNext()
+        })
+
+      PlayQueueButton({ imgWidth: 25, imgColor: $r('app.color.app_red') })
     }
   }
 }
 
 @Extend(Image) function buttonImgStyle() {
+  .clickEffect({ level: ClickEffectLevel.LIGHT, scale: 0.6 })
   .aspectRatio(1)
   .width(30)
   .fillColor($r('app.color.reverse'))
+  .draggable(false)
 }
 
 @Extend(Text) function textStyle(size:number) {
   .fontSize(size)
   .fontColor($r('app.color.reverse'))
+  .textAlign(TextAlign.Start)
+  .layoutWeight(1)
+  .width('100%')
   .maxLines(1)
-  .padding({ left:10, right:10 })
-  .textOverflow({ overflow: TextOverflow.MARQUEE })
+  .padding({ left: 10, right: 10 })
+  .textOverflow({ overflow: TextOverflow.Ellipsis })
 }
 
 @Extend(Image) function songImg() {
-  .sharedTransition('PlayerPic', { duration: 500 })
-  .geometryTransition('PlayerPic')
-  .width(50)
-  .height(50)
+  .height(Constants.HEIGHT_MINI)
+  .aspectRatio(1)
   .borderRadius(10)
+  .padding(5)
 }

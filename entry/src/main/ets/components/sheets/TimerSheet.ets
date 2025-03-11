@@ -86,7 +86,7 @@ export struct TimerSheet {
           this.countdown = this.selectedTime
         })
     }
-    .padding({ bottom: px2vp(this.bottomRectHeight) + 80 })
+    .padding({ bottom: px2vp(this.bottomRectHeight) + Constants.HEIGHT_MINI })
     .height(240)
   }
 

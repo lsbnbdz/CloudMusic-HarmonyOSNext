@@ -14,7 +14,7 @@ const TAG = "[SearchPage] "
 
 @Component
 export struct SearchPage {
-  @StorageProp(StorageConstants.DEVICE_TYPE) deviceType: resourceManager.DeviceType = resourceManager.DeviceType.DEVICE_TYPE_PHONE
+  @StorageProp(StorageConstants.BREAKPOINT) breakpoint: string = 'md'
   @StorageLink(StorageConstants.SEARCH_HISTORY) searchHistory: string[] = []
   @State tabPageIndex: number = 0
   @State keyword: string = ''
@@ -54,7 +54,7 @@ export struct SearchPage {
         }
         .height('100%')
 
-        if(this.deviceType == resourceManager.DeviceType.DEVICE_TYPE_PHONE) {
+        if(this.breakpoint !== 'lg') {
           BottomBarComponent()
             .padding(Constants.PADDING_EDGE_DEFAULT)
             .backgroundColor(Color.Transparent)

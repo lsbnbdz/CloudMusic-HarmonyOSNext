@@ -5,6 +5,8 @@
 **应用市场审核不通过，请各位自行侧载安装**
 <img src="./images/img.png" width="100%" />
 
+**[在Release下载hap包](https://github.com/Chenlvin/CloudMusic-HarmonyOSNext/releases)**
+
 ### 技术特性
 - ArkTS 语言开发
 - 基于 OHOS API 14

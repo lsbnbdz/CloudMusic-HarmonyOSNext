@@ -3,7 +3,12 @@ export class ObservableScroller {
 
 
   scrollToTop() {
-    this.scroller.scrollEdge(Edge.Top);
+    // this.scroller.scrollEdge(Edge.Top);
+    this.scroller.scrollTo({
+      yOffset: 0,
+      xOffset: 0,
+      animation: true
+    })
   }
 
   scrollToBottom() {

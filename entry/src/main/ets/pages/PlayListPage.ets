@@ -181,7 +181,7 @@ export struct PlayListPage {
             ListItem().height(px2vp(this.bottomRectHeight) + Constants.HEIGHT_MINI)
           }
           .cachedCount(5)
-          .height('auto')
+          .height('100%')
           .layoutWeight(1)
           .width('100%')
           .scrollBar(BarState.Off)

@@ -16,6 +16,7 @@ export struct SetApiSheet {
   @StorageProp(StorageConstants.CUSTOM_COOKIE) customCookie: string = ''
   @StorageProp(StorageConstants.API_URL) customApiUrl: string = ''
   @StorageProp(StorageConstants.VALID_API_URL) validApiUrl: boolean = false
+  @StorageProp(StorageConstants.BREAKPOINT) breakpoint: string = 'sm'
   @StorageProp('bottomRectHeight') bottomRectHeight: number = 0
   @Link isShowSheet: boolean
 
@@ -25,7 +26,10 @@ export struct SetApiSheet {
         .width('100%')
         .fontSize(Constants.FONT_SIZE_TITLE)
         .fontWeight(FontWeight.Bold)
-        .padding({ top: Constants.PADDING_EDGE_TEXT, left: Constants.PADDING_EDGE_TEXT, right: Constants.PADDING_EDGE_TEXT })
+        .padding({ top: this.breakpoint === 'sm' ? Constants.PADDING_EDGE_DEFAULT : Constants.PADDING_EDGE_TEXT,
+          left: Constants.PADDING_EDGE_TEXT,
+          right: Constants.PADDING_EDGE_TEXT
+        })
 
       this.SetApiUrl()
       Text() {

@@ -20,7 +20,7 @@ const TAG = '[CloudPage] '
 export struct CloudPage {
   @StorageProp('bottomRectHeight') bottomRectHeight: number = 0
   @StorageProp('topRectHeight') topRectHeight: number = 0
-  @StorageProp(StorageConstants.BREAKPOINT) breakpoint: string = 'md'
+  @StorageProp(StorageConstants.BREAKPOINT) breakpoint: string = 'sm'
   private currentOffset: number = 0
   @State list: Array<PlayListSongItem> = new Array()
   @State pageOpacity: number = 1

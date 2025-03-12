@@ -2,10 +2,11 @@ import mediaQuery from '@ohos.mediaquery'
 import { StorageConstants } from '../../constants/StorageConstants'
 
 class BreakpointUtils {
-  private currentBreakpoint: string = 'md'
+  private currentBreakpoint: string = 'sm'
   private smListener?: mediaQuery.MediaQueryListener
   private mdListener?: mediaQuery.MediaQueryListener
   private lgListener?: mediaQuery.MediaQueryListener
+  private xlListener?: mediaQuery.MediaQueryListener
 
   private updateCurrent(breakpoint: string) {
     if (this.currentBreakpoint !== breakpoint) {

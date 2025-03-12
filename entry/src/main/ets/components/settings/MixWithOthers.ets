@@ -12,7 +12,7 @@ export struct MixWithOthers {
 
   build() {
     Row() {
-      Text('与其他应用同时播放')
+      Text('允许与其他应用同时播放')
         .fontSize(Constants.FONT_SIZE_COMMON)
         .fontWeight(FontWeight.Bold)
       Toggle({ type: ToggleType.Switch, isOn: this.isActived })

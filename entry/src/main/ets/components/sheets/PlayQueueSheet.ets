@@ -9,6 +9,7 @@ import { StorageConstants } from "../../common/constants/StorageConstants"
 import { PlayList } from "../../common/entities/PlayList"
 import Constants from "../../common/constants/Constants"
 import { EmitterConstants } from "../../common/constants/EmitterConstants"
+import { cleanLastPlayInfo } from "../../common/functions/play/playListOp"
 
 /**
  * 播放列表 Sheet
@@ -20,6 +21,7 @@ export struct PlayQueueSheet {
   @StorageProp('bottomRectHeight') bottomRectHeight: number = 0
   @StorageProp(StorageConstants.PLAY_MODE) playmode: number = 1
   @StorageProp(StorageConstants.USER_PLAYLISTS) playLists: Array<PlayList> = []
+  @StorageProp(StorageConstants.BREAKPOINT) breakpoint: string = 'sm'
   @State isLoading: boolean = false
   @Link isShow: boolean
   @State dataSource: LazyData<PlayQueue> = new LazyData()
@@ -97,11 +99,13 @@ export struct PlayQueueSheet {
             ListItem() {
               this.ItemCard(item, index)
             }
+            .padding({ left: 5, right: 5 })
             .clickEffect({ level: ClickEffectLevel.LIGHT, scale: 0.9 })
           }, (item: PlayQueue, index) => item.song.id.toString() + index)
 
           ListItem().height(px2vp(this.bottomRectHeight))
         }
+        .lanes(this.breakpoint == 'sm' ? 1 : 2)
         .divider({ color: Color.Gray, strokeWidth: 0.1 })
         .width('100%')
         .height('100%')
@@ -170,6 +174,7 @@ export struct PlayQueueSheet {
         }
         .backgroundColor(Color.Transparent)
         .onClick(() => {
+          cleanLastPlayInfo()
           PlayQueueUtils.queueDelete(index)
           this.dataSource.deleteData(index)
           this.dataSource.notifyDataReload()
@@ -182,8 +187,7 @@ export struct PlayQueueSheet {
   }
 
   private scrollToCurrent(animation: boolean = true) {
-    if(this.currentQueueIndex <= 3) { this.scroller.scrollToIndex(this.currentQueueIndex, animation) }
-    else { this.scroller.scrollToIndex(this.currentQueueIndex, animation, ScrollAlign.START) }
+    this.scroller.scrollToIndex(this.currentQueueIndex, animation, ScrollAlign.START)
   }
 
   private cleanPlayQueue() {
@@ -196,6 +200,7 @@ export struct PlayQueueSheet {
         fontColor: Color.Red,
         action: async () => {
           try {
+            cleanLastPlayInfo()
             PlayQueueUtils.cleanQueue()
             this.dataSource.setData([])
             this.dataSource.notifyDataReload()

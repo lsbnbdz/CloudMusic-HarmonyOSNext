@@ -11,6 +11,7 @@ import { ExplainButton } from "../buttons/ExplainButton"
 @Component
 export struct SongClickActionSheet {
   @StorageLink(StorageConstants.SONG_CLICK_ACTION) @Watch('changeActionType') songClickAction: number = 0
+  @StorageProp(StorageConstants.BREAKPOINT) breakpoint: string = 'sm'
   @StorageProp('bottomRectHeight') bottomRectHeight: number = 0
   @Link isShowSheet: boolean
 
@@ -19,12 +20,15 @@ export struct SongClickActionSheet {
   }
 
   build() {
-    Column({ space: 20 }) {
+    Column({ space: 30 }) {
       Text('歌曲卡片点击模式')
         .width('100%')
         .fontSize(Constants.FONT_SIZE_TITLE)
         .fontWeight(FontWeight.Bold)
-        .padding({ top: Constants.PADDING_EDGE_TEXT, left: Constants.PADDING_EDGE_TEXT, right: Constants.PADDING_EDGE_TEXT })
+        .padding({ top: this.breakpoint === 'sm' ? Constants.PADDING_EDGE_DEFAULT : Constants.PADDING_EDGE_TEXT,
+          left: Constants.PADDING_EDGE_TEXT,
+          right: Constants.PADDING_EDGE_TEXT
+        })
 
       this.SettingItem(0, '点击或长按弹出歌曲信息菜单')
       this.SettingItem(1, '点击直接播放当前歌曲（单首播放）\n长按弹出歌曲信息菜单')

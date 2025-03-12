@@ -97,7 +97,7 @@ export struct FileCard {
   }
 
   @Builder
-  MenuItem(image: ResourceStr, title: string, contentColor: string | Color | ResourceStr = $r('app.color.reverse'), isBold: boolean = false) {
+  MenuItem(image: ResourceStr, title: string, contentColor: string | Color | ResourceStr = $r('app.color.reverse')) {
     Row({ space: 10 }) {
       Column() {
         Image(image)
@@ -108,7 +108,7 @@ export struct FileCard {
       Text(title)
         .fontColor(contentColor)
         .fontSize(Constants.FONT_SIZE_COMMON)
-        .fontWeight(isBold ? FontWeight.Bold : FontWeight.Normal)
+        .fontWeight(FontWeight.Medium)
     }
     .padding({ left: 15, right: 15, top: 5, bottom: 5 })
     .height(40)

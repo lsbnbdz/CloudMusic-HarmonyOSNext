@@ -20,8 +20,8 @@ export struct SongClickAction {
       .justifyContent(FlexAlign.SpaceBetween)
       .bindSheet(this.isShowSheet, this.Sheet(), {
         backgroundColor: $r('app.color.background'),
-        preferType: SheetType.BOTTOM,
-        detents: [SheetSize.FIT_CONTENT, SheetSize.MEDIUM, SheetSize.LARGE],
+        preferType: SheetType.CENTER,
+        detents: [SheetSize.MEDIUM, SheetSize.LARGE],
         dragBar: true,
         onDisappear: () => {
           this.isShowSheet = false

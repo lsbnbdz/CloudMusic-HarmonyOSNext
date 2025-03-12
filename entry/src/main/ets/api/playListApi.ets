@@ -98,7 +98,7 @@ export async function putPlayListInQueue(listId: number, trackCount: number, lim
   const rootUrl = await getApiUrl()
   let tempQueue:Array<PlayQueue> = []
   while(offset < trackCount) {
-    const url: string = `${rootUrl}/playlist/track/all?id=${listId}&limit=${limit}&offset=${offset}`
+    const url: string = `${rootUrl}/playlist/track/all?id=${listId}&limit=${limit}&offset=${offset}&timestamp=${new Date().getTime()}`
     const request = new HttpRequest(url)
     let data = await request.RequestInStream()
     let dataResult: PlayListSongs = data.result as PlayListSongs

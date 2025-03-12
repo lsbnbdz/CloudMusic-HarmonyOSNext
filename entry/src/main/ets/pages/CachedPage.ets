@@ -16,7 +16,7 @@ const TAG = '[CachedPage] '
 export struct CachedPage {
   @StorageProp('bottomRectHeight') bottomRectHeight: number = 0
   @StorageProp('topRectHeight') topRectHeight: number = 0
-  @StorageProp(StorageConstants.BREAKPOINT) breakpoint: string = 'md'
+  @StorageProp(StorageConstants.BREAKPOINT) breakpoint: string = 'sm'
   @State searchKeyword: string = ''
   @State fileList: string[] = []
   @State filteredList: Array<string> = new Array()

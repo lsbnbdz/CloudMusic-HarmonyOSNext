@@ -6,20 +6,16 @@ import { TopListItemCard } from "../components/cards/TopListItemCard"
 @Component
 export struct TopListPage {
   @StorageLink(StorageConstants.TOPLISTS) topList: Array<TopListItem> = []
-
+  @StorageProp(StorageConstants.BREAKPOINT) breakpoint: string = 'sm'
   build() {
     NavDestination() {
       Grid() {
         GridItem() {
-          GridRow({
-            columns: {
-              xs: 2,
-              sm: 3,
-              md: 2,
-              lg: 3,
-              xl: 3
-            }
-          }) {
+          GridRow({ columns: {
+            sm: 3,
+            md: 5,
+            lg: 3
+          } }) {
             ForEach(this.topList, (item: TopListItem) => {
               GridCol() {
                 TopListItemCard({ topListItem: item }).padding(Constants.PADDING_EDGE_DEFAULT)

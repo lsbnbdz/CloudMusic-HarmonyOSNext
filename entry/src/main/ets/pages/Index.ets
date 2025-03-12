@@ -40,7 +40,7 @@ struct Index {
 
   @StorageProp('topRectHeight') topRectHeight: number = 0
   @StorageProp('bottomRectHeight') bottomRectHeight: number = 0
-  @StorageProp(StorageConstants.DEVICE_TYPE) deviceType: resourceManager.DeviceType = resourceManager.DeviceType.DEVICE_TYPE_PHONE
+  @StorageProp(StorageConstants.BREAKPOINT) breakpoint: string = 'sm'
   @StorageProp(StorageConstants.DEFAULT_PAGE_INDEX) index: number = 0
   @StorageProp(StorageConstants.VALID_API_URL) @Watch('checkApi') validApiUrl: boolean = true
   @Provide('pageInfos') pageInfos: NavPathStack = new NavPathStack()
@@ -120,7 +120,7 @@ struct Index {
     .width('100%')
     .navBarWidth('50%')
     .navBarPosition(NavBarPosition.Start)
-    .mode(NavigationMode.Auto)
+    .mode(this.breakpoint == 'lg' ? NavigationMode.Split : NavigationMode.Stack)
     .titleMode(NavigationTitleMode.Mini)
     .title(this.index == 0 ? '发现' : this.index == 1 ? '歌单' : '我的')
     .menus(this.getMenuItems())

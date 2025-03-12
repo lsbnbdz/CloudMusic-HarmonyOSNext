@@ -4,7 +4,7 @@ import PlayQueueUtils from "../../common/utils/play/PlayQueueUtils"
 import { promptAction } from "@kit.ArkUI"
 import { PlayList, playListClass } from "../../common/entities/PlayList"
 import Constants from "../../common/constants/Constants"
-import { playListToQueue } from "../../common/functions/play/playListOp"
+import { cleanLastPlayInfo, playListToQueue } from "../../common/functions/play/playListOp"
 import { playQueue } from "../../common/functions/play/playControl"
 import { PasteboardUtil } from "@pura/harmony-utils"
 import { DownloadDialog } from "../dialog/DownloadDialog"
@@ -24,7 +24,7 @@ export struct SongCard {
   @State reason: string = ''
   @State isShowMenu: boolean = false
   song: Song = SongClass
-  sid: number = -1
+  @State sid: number = -1
   artists: string = ''
 
   downloadDialogController: CustomDialogController = new CustomDialogController({
@@ -245,12 +245,14 @@ export struct SongCard {
   }
 
   private addToQueue() {
+    cleanLastPlayInfo()
     PlayQueueUtils.queueAdd(1, this.song, this.artists, '', this.picUrl ?? $r('app.media.ic_public_music'))
     promptAction.showToast({ message: '成功添加到下一首播放', duration: 3000 })
   }
 
   private playSingleSong() {
     if(!this.isPlayerLoading) {
+      cleanLastPlayInfo()
       AppStorage.setOrCreate('isPlayerLoading', true)
       PlayQueueUtils.queueAdd(1, this.song, this.artists, '')
       PlayQueueUtils.setIndex(PlayQueueUtils.currentQueueIndex + 1)

@@ -14,7 +14,7 @@ const TAG = "[SearchPage] "
 
 @Component
 export struct SearchPage {
-  @StorageProp(StorageConstants.BREAKPOINT) breakpoint: string = 'md'
+  @StorageProp(StorageConstants.BREAKPOINT) breakpoint: string = 'sm'
   @StorageLink(StorageConstants.SEARCH_HISTORY) searchHistory: string[] = []
   @State tabPageIndex: number = 0
   @State keyword: string = ''

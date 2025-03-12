@@ -20,7 +20,7 @@ const TAG = '[DailyListPage] '
 export struct DailyListPage {
   @StorageProp('bottomRectHeight') bottomRectHeight: number = 0
   @StorageProp('topRectHeight') topRectHeight: number = 0
-  @StorageProp(StorageConstants.BREAKPOINT) breakpoint: string = 'md'
+  @StorageProp(StorageConstants.BREAKPOINT) breakpoint: string = 'sm'
   @State list: Array<DailySongRes> = new Array()
   @State hasLoaded: boolean = false
   @State isLoading: boolean = true

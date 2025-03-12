@@ -116,8 +116,8 @@ export struct Settings_Bottom {
 
   build() {
     Column() {
-      Text('云音汇 - HMOS\n' +
-        'GitHub: CloudMusic-HarmonyOSNext').BottomText()
+      Text('云音汇 CloudMusic\n' +
+        'For HarmonyOS NEXT').BottomText()
     }
     .width('100%')
   }
@@ -133,6 +133,7 @@ export struct Settings_Bottom {
 }
 
 @Extend(Text) function BottomText() {
+  .lineHeight(20)
   .fontSize(12)
   .textAlign(TextAlign.Center)
   .onClick(() => {

@@ -2,9 +2,8 @@
 
 🎵 云音汇 | ✨ 鸿蒙原生应用 🎼 第三方云音乐客户端 
 
-AppGallery邀请尝鲜：https://docs.chenlvin.cc/cloudmusic/#/
-
-**[!] 由于AppGallery的复审机制可能会导致尝鲜应用下架，建议自行编译或使用hap安装。**
+**应用市场审核不通过，请各位自行侧载安装**
+<img src="./images/img.png" width="100%" />
 
 ### 技术特性
 - ArkTS 语言开发
@@ -13,7 +12,6 @@ AppGallery邀请尝鲜：https://docs.chenlvin.cc/cloudmusic/#/
 
 ### 安装方式
 
-- AppGallery 邀请测试
 - 自行编译安装
 - 侧载 Release 中的 hap 包
 

@@ -234,7 +234,7 @@ export struct Explore {
             .scrollBar(BarState.Off)
             .edgeEffect(EdgeEffect.Spring)
             .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
-            .onWillScroll(() => this.handleScroll())
+            // .onWillScroll(() => this.handleScroll())
 
           }
         }

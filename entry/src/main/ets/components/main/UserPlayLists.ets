@@ -88,7 +88,7 @@ export struct UserPlayLists {
                     ListItem().height(px2vp(this.bottomRectHeight) + 160)
                   }
                   .height('100%')
-                  .onWillScroll(() => this.handleScroll())
+                  // .onWillScroll(() => this.handleScroll())
                   .edgeEffect(EdgeEffect.Spring)
                   .scrollBar(BarState.Off)
                   .contentListStyle(this.breakpoint)
@@ -110,7 +110,7 @@ export struct UserPlayLists {
                     ListItem().height(px2vp(this.bottomRectHeight) + 160)
                   }
                   .height('100%')
-                  .onWillScroll(() => this.handleScroll())
+                  // .onWillScroll(() => this.handleScroll())
                   .edgeEffect(EdgeEffect.Spring)
                   .scrollBar(BarState.Off)
                   .contentListStyle(this.breakpoint)
@@ -132,7 +132,7 @@ export struct UserPlayLists {
                     ListItem().height(px2vp(this.bottomRectHeight) + 160)
                   }
                   .height('100%')
-                  .onWillScroll(() => this.handleScroll())
+                  // .onWillScroll(() => this.handleScroll())
                   .edgeEffect(EdgeEffect.Spring)
                   .scrollBar(BarState.Off)
                   .contentListStyle(this.breakpoint)

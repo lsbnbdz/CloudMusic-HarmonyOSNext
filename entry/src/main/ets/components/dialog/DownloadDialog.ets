@@ -70,7 +70,7 @@ export struct DownloadDialog {
           Column({ space: 10 }) {
             Stack() {
               LoadingProgress().width(40)
-              Image(this.picUrl + '?param=100y100')
+              Image(this.picUrl + '?param=512y512')
                 .width(128)
                 .borderRadius(Constants.RADIUS_IMG)
                 .aspectRatio(1)

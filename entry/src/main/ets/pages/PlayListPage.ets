@@ -4,7 +4,7 @@ import { DialogUtil, LogUtil, ToastUtil } from '@pura/harmony-utils'
 import { deletePlayList, getPlayListSongs, PlayListOperation, subscribePlayList } from '../api/playListApi'
 import { BottomBarComponent } from '../components/play/BottomBarComponent'
 import { formatNumber } from '../common/functions/common/convert'
-import { playListToQueue } from '../common/functions/play/playListOp'
+import { cleanLastPlayInfo, playListToQueue } from '../common/functions/play/playListOp'
 import { AddToPlayListButton } from '../components/buttons/play/AddToPlayListButton'
 import Constants from '../common/constants/Constants'
 import { ClickToLoadButton, LoadingMoreButton, NoMoreButton } from '../components/buttons/LoadMoreButtons'
@@ -37,15 +37,15 @@ export struct PlayListPage {
   @StorageProp('topRectHeight') topRectHeight: number = 0
   @StorageProp(StorageConstants.IS_PLAYER_LOADING) isPlayerLoading: boolean = false
   @StorageProp(StorageConstants.USER) user: User = UserClass
-  @StorageProp(StorageConstants.BREAKPOINT) breakpoint: string = 'md'
+  @StorageProp(StorageConstants.BREAKPOINT) breakpoint: string = 'sm'
   @StorageProp(StorageConstants.USER_PLAYLISTS) userPlayLists: PlayList[] = []
   @StorageProp(StorageConstants.IS_LOGGED) isLogged: boolean = false
   @Consume('pageInfos') pageInfos: NavPathStack
   @State isSubscribed: boolean = false
   @State list: PlayListSongItem[] = new Array()
   @State filteredList: PlayListSongItem[] = new Array()
-  @State @Watch('refreshList') listDataSource: LazyData<PlayListSongItem> = new LazyData()
-  @State @Watch('refreshFiltered') filteredDataSource: LazyData<PlayListSongItem> = new LazyData()
+  @State listDataSource: LazyData<PlayListSongItem> = new LazyData()
+  @State filteredDataSource: LazyData<PlayListSongItem> = new LazyData()
   @State hasMore: boolean = true
   @State hasLoaded: boolean = false // 判定是否已加载 避免重复加载
   @State isLoading: boolean = true
@@ -54,6 +54,7 @@ export struct PlayListPage {
   @State translateY: number = 40
   @State selectedSongs: PlayListSongItem[] = []
   @State searchKeyword: string = ''
+  @State trackCount: number = -1
   @State menuItem: NavigationMenuItem[] = [
     {
       value: 'help',
@@ -73,17 +74,10 @@ export struct PlayListPage {
 
   async aboutToAppear(): Promise<void> {
     this.isSubscribed = this.param.playList.subscribed
+    this.trackCount = this.param.playList.trackCount
     if (!this.hasLoaded) {
       await this.loadSongs(100, 0)
     }
-  }
-
-  refreshFiltered() {
-    this.filteredDataSource.notifyDataReload()
-  }
-
-  refreshList() {
-    this.listDataSource.notifyDataReload()
   }
 
   build() {
@@ -103,7 +97,7 @@ export struct PlayListPage {
                       LoadingProgress().height(35).padding({ left: 30 })
                     } else {
                       Image($r('app.media.ic_play_fill')).width(Constants.FONT_SIZE_COMMON).fillColor(Color.Gray)
-                      Text(`播放全部 (${this.param.playList.trackCount})`).fontSize(Constants.FONT_SIZE_COMMON)
+                      Text(`播放全部 (${this.trackCount})`).fontSize(Constants.FONT_SIZE_COMMON)
                     }
                   }
                   .height(Constants.HEIGHT_TEXT_BUTTON)
@@ -241,9 +235,9 @@ export struct PlayListPage {
           }
         }
         .key(this.searchKeyword)
-        .swipeAction({ end: this.SwipeItem(item, this.list.indexOf(item)), edgeEffect: SwipeEdgeEffect.None })
+        .swipeAction({ end: this.SwipeItem(item, index), edgeEffect: SwipeEdgeEffect.None })
       }
-      ,(item: PlayListSongItem) => item.id.toString()
+      ,(item: PlayListSongItem, index) => item.name + index
     )
   }
   @Builder ToolBar() {
@@ -379,8 +373,11 @@ export struct PlayListPage {
               action: async () => {
                 try {
                   await PlayListOperation('del', this.param.playList.id, listSong.id)
-                  ToastUtil.showToast('删除成功')
                   this.list.splice(index, 1)
+                  this.trackCount -= 1
+                  this.listDataSource.notifyDataReload()
+                  cleanLastPlayInfo()
+                  ToastUtil.showToast('删除成功')
                 } catch (e) {
                   ToastUtil.showToast('删除失败: ' + e)
                 }
@@ -417,7 +414,6 @@ export struct PlayListPage {
     try {
       const result = await getPlayListSongs(this.param.playList.id, this.param.playList.trackCount, offset, this.useTimestamp)
       this.list = [...this.list, ...result] // 合并歌曲列表
-      //
       this.listDataSource.setData(this.list)
       this.listDataSource.notifyDataReload()
       this.currentOffset += limit

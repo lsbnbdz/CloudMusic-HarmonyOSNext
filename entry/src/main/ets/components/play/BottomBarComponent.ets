@@ -71,12 +71,9 @@ export struct BottomBarComponent {
       }
       this.isShow = true
     })
-    .bindContentCover(this.isShow, this.Cover(), {
+    .bindContentCover($$this.isShow, this.Cover(), {
       modalTransition: ModalTransition.DEFAULT,
-      backgroundColor: $r('app.color.background'),
-      onDisappear: () => {
-        this.isShow = false
-      }
+      backgroundColor: $r('app.color.background')
     })
   }
 

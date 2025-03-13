@@ -13,7 +13,7 @@ export struct DebugPage {
   @StorageProp(StorageConstants.COOKIE) cookie: string = ''
   @StorageProp(StorageConstants.USER) user: User = UserClass
   @StorageProp(StorageConstants.DEVICE_TYPE) deviceType: resourceManager.DeviceType = resourceManager.DeviceType.DEVICE_TYPE_PHONE
-
+  @StorageProp(StorageConstants.BREAKPOINT) breakpoint: string = 'sm'
   @State apiUrl: string = ''
   @State result: string = ''
 
@@ -26,6 +26,8 @@ export struct DebugPage {
           Text(`deviceType: ${this.deviceType == resourceManager.DeviceType.DEVICE_TYPE_PHONE ? 'Phone' :
               this.deviceType == resourceManager.DeviceType.DEVICE_TYPE_TABLET ? 'Tablet' :
               this.deviceType == resourceManager.DeviceType.DEVICE_TYPE_2IN1 ? '2in1' : 'Unknown'} `)
+            .textStyle()
+          Text(`Breakpoint: ${this.breakpoint}`)
             .textStyle()
           Row({ space: 10 }) {
             TextInput()

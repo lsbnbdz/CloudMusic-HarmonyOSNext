@@ -22,15 +22,21 @@ import { ApiDialog } from '../components/dialog/ApiDialog';
 import PreferencesUtils from '../common/utils/data/PreferencesUtils';
 import { DebugPage } from './DebugPage';
 import { AddPlayListDialog } from '../components/dialog/AddPlayListDialog';
-import { LengthMetrics } from '@kit.ArkUI';
+import { LengthMetrics, promptAction } from '@kit.ArkUI';
 import { myCustomTitle } from '../components/custom/CustomTitle';
 import BreakpointUtils from '../common/utils/system/BreakpointUtils';
+import { ObservableScroller } from '../common/utils/ObservableScroller';
+import { ObservableTabsController } from '../common/utils/ObservableTabsController';
+
+const _arrStr: string[] = ['发现', '歌单', '我的'];
+const _subArrStr: string[] = ['所有', '自建', '收藏'];
 
 @Entry
 @Component
 struct Index {
 
   @State titleOpacity: number[] = [1, 1, 1]
+  @State subTitleOpacity: number[] = [1, 1, 1]
   warrantyDialogController: CustomDialogController = new CustomDialogController({
     builder: WarrantyDialog(),
     autoCancel: false
@@ -45,11 +51,13 @@ struct Index {
 
   @StorageProp('topRectHeight') topRectHeight: number = 0
   @StorageProp('bottomRectHeight') bottomRectHeight: number = 0
-  @StorageProp(StorageConstants.DEVICE_TYPE) deviceType: resourceManager.DeviceType = resourceManager.DeviceType.DEVICE_TYPE_PHONE
+  @StorageProp(StorageConstants.BREAKPOINT) breakpoint: string = 'sm'
   @StorageProp(StorageConstants.DEFAULT_PAGE_INDEX) index: number = 0
   @StorageProp(StorageConstants.VALID_API_URL) @Watch('checkApi') validApiUrl: boolean = true
   @Provide('pageInfos') pageInfos: NavPathStack = new NavPathStack()
   @State tabCurrentIndex: number = 0
+  @State subIndex: number = 0
+  @State observableTabsController: ObservableTabsController = new ObservableTabsController()
 
   private paddingStart: LengthMetrics = LengthMetrics.vp(16);
   private paddingEnd: LengthMetrics = LengthMetrics.vp(16);
@@ -108,7 +116,7 @@ struct Index {
         Tabs({ index: this.index, controller: this.tabController }) {
           TabContent() { Explore({ index: this.index, titleOpacity: this.titleOpacity }) }
             .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
-          TabContent() { UserPlayLists({ index: this.index, titleOpacity: this.titleOpacity }) }
+          TabContent() { UserPlayLists({ index: this.index, subTitleOpacity: this.subTitleOpacity, subIndex: this.subIndex, observableTabsController: this.observableTabsController }) }
             .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
           TabContent() { Me({ index: this.index, titleOpacity: this.titleOpacity }) }
             .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
@@ -131,10 +139,10 @@ struct Index {
     .width('100%')
     .navBarWidth('50%')
     .navBarPosition(NavBarPosition.Start)
-    .mode(NavigationMode.Auto)
+    .mode(this.breakpoint == 'lg' ? NavigationMode.Split : NavigationMode.Stack)
     .titleMode(NavigationTitleMode.Mini)
     // .title(this.index == 0 ? '发现' : this.index == 1 ? '歌单' : '我的')
-    .title(myCustomTitle(this.pageInfos, this.titleOpacity, this.index), {
+    .title(this.myCustomTitle(this.index), {
       paddingStart: this.paddingStart,
       paddingEnd: this.paddingEnd,
       barStyle: BarStyle.STACK
@@ -213,4 +221,121 @@ struct Index {
       this.tabController.changeIndex(index)
     })
   }
+
+  @Builder
+  myCustomTitle(index: number){
+    Stack({ alignContent: Alignment.Bottom }){
+
+      Row(){}
+      .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP ,SafeAreaEdge.BOTTOM])
+      .height('100%')
+      .width('100%')
+      // .backgroundBlurStyle(BlurStyle.BACKGROUND_THICK)
+      .backgroundColor('transparent')
+      .linearGradient({
+        colors: [
+          ['transparent', 0.00],
+          [$r('app.color.title_background'), 1.00]
+        ],
+        angle: 0
+      })
+      .linearGradientBlur(5, {
+        fractionStops: [
+          [0.00, 0.00],
+          [1.00, 1.00]
+        ],
+        direction: GradientDirection.Top
+      })
+      .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP ,SafeAreaEdge.BOTTOM])
+
+      Row(){
+        Text(_arrStr[index])
+          .textShadow({
+            radius: 2,
+            color: $r('app.color.main'),
+            offsetX: 0,
+            offsetY: 0
+          })
+          .fontColor($r('app.color.reverse'))
+          .fontWeight(FontWeight.Bold)
+          .fontSize(30)
+          .backgroundColor('transparent')
+        if(index === 1){
+          Row({ space: 10 }){
+            Text(_subArrStr[0])
+              .fontColor(this.subIndex == 0 ? $r('app.color.app_red') : $r('app.color.reverse_thin'))
+              .fontWeight(FontWeight.Bold)
+              .fontSize(this.subIndex == 0 ? 23 : 20)
+              .backgroundColor('transparent')
+              .onClick(() => {
+                this.observableTabsController.changeIndex(0)
+                this.showToast('歌单-所有')
+              })
+
+            Text(_subArrStr[1])
+              .fontColor(this.subIndex == 1 ? $r('app.color.app_red') : $r('app.color.reverse_thin'))
+              .fontWeight(FontWeight.Bold)
+              .fontSize(this.subIndex == 1 ? 23 : 20)
+              .backgroundColor('transparent')
+              .onClick(() => {
+                this.observableTabsController.changeIndex(1)
+                this.showToast('歌单-自建')
+              })
+
+            Text(_subArrStr[2])
+              .fontColor(this.subIndex == 2 ? $r('app.color.app_red') : $r('app.color.reverse_thin'))
+              .fontWeight(FontWeight.Bold)
+              .fontSize(this.subIndex == 2 ? 23 : 20)
+              .backgroundColor('transparent')
+              .onClick(() => {
+                this.observableTabsController.changeIndex(2)
+                this.showToast('歌单-收藏')
+              })
+          }
+          .align(Alignment.BottomStart)
+          .margin({ left: 20, bottom: -5 })
+          .layoutWeight(1)
+        }
+        Button({ type: ButtonType.Circle, stateEffect: true }){
+          Image($r('app.media.ic_public_search_filled'))
+            .width(25)
+            .onClick(() => {
+              this.pageInfos.clear()
+              this.pageInfos.pushPathByName('SearchPage', null, true)
+            })
+            .fillColor($r('app.color.reverse'))
+            .backgroundColor('transparent')
+        }
+        .backgroundBlurStyle(5)
+        .backgroundColor($r('app.color.btn_background'))
+        .width(40)
+        .height(40)
+      }
+      .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP ,SafeAreaEdge.BOTTOM])
+      .height('100%')
+      .width('100%')
+      .justifyContent(FlexAlign.SpaceBetween)
+      .padding({
+        left: '50px',
+        right: '50px',
+      })
+
+    }
+    .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP ,SafeAreaEdge.BOTTOM])
+    // .backgroundBlurStyle(BlurStyle.Thin)
+    .backgroundColor('transparent')
+    .opacity(this.getOpacity(index))
+  }
+
+  getOpacity(index: number): number{
+    if(index != 1){
+      return this.titleOpacity[index]
+    }
+    return this.subTitleOpacity[this.subIndex]
+  }
+
+  showToast(msg: string) {
+    promptAction.showToast({ message: msg, backgroundColor: Color.Transparent, backgroundBlurStyle: BlurStyle.BACKGROUND_THIN })
+  }
 }
+

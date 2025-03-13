@@ -3,6 +3,7 @@ import { getLoginStatus, logOut } from "../../api/loginApi"
 import Constants from "../../common/constants/Constants"
 import { StorageConstants } from "../../common/constants/StorageConstants"
 import { User, UserClass } from "../../common/entities/User"
+import { initUserInfo } from "../../common/functions/app/appInit"
 import { CircleImageButton } from "../buttons/CircleButton"
 import { SlideButton } from "../buttons/MultiFunctionalButton"
 
@@ -18,6 +19,7 @@ export struct Me {
   @StorageProp(StorageConstants.VALID_COOKIE) isValidCookie: boolean = true
   @StorageProp(StorageConstants.COOKIE) cookie: string = ''
   @StorageProp(StorageConstants.APP_LOADING) appLoading: boolean = true
+  @State isRefreshing: boolean = false
   @Consume('pageInfos') pageInfos: NavPathStack
 
   async aboutToAppear(): Promise<void> {
@@ -25,6 +27,16 @@ export struct Me {
       this.appLoading = true
       await getLoginStatus(this.cookie)
       this.appLoading = false
+    }
+  }
+
+  private async handleRefresh() {
+    this.isRefreshing = true
+    ToastUtil.showToast('正在刷新登录状态')
+    try {
+      await initUserInfo()
+    } finally {
+      this.isRefreshing = false
     }
   }
 
@@ -49,6 +61,7 @@ export struct Me {
             Row({ space: 20 }) {
               CircleImageButton({ imgUrl: $r('app.media.ic_user_portrait'), wid: 64 })
               Text('未登录').textStyle(Constants.FONT_SIZE_TITLE).fontWeight(FontWeight.Bold)
+              this.RefreshButton()
             }
             .justifyContent(FlexAlign.Center)
             .width('100%')
@@ -101,7 +114,14 @@ export struct Me {
 
       SlideButton({ index: this.index })
     }
-
+    .width('100%')
+    .height('100%')
+    .constraintSize({
+      minWidth: 200,
+      maxWidth: 500
+    })
+    .backgroundColor($r('app.color.background'))
+    .padding({ left: 20, right: 20 })
   }
 
   @Builder ItemCard(icon: ResourceStr | string, text: string, action: () => void) {
@@ -131,6 +151,21 @@ export struct Me {
     .width('100%')
     .padding(Constants.PADDING_EDGE_DEFAULT)
     .onClick(action)
+  }
+
+  @Builder RefreshButton() {
+    if(this.isRefreshing) {
+      LoadingProgress().width(Constants.FONT_SIZE_COMMON).aspectRatio(1)
+    } else {
+      Image($r('app.media.ic_public_refresh'))
+        .width(Constants.FONT_SIZE_COMMON)
+        .aspectRatio(1)
+        .fillColor($r('app.color.reverse'))
+        .clickEffect({ level: ClickEffectLevel.LIGHT, scale: 0.7 })
+        .onClick(() => {
+          this.handleRefresh()
+        })
+    }
   }
 
   private LogOut() {

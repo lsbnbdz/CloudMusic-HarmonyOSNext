@@ -13,6 +13,10 @@
       "value": "#121212"
     },
     {
+      "name": "reverse_thin",
+      "value": "#FF535353"
+    },
+    {
       "name": "background",
       "value": "#FFEAEAEA"
     },

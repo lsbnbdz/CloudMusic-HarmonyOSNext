@@ -44,11 +44,12 @@ export struct AddToPlayListCircleButton {
   @Link isShowAddSheet: boolean
   @Link song: Song
   @State imgColor: Color | ResourceStr = $r('app.color.reverse')
-  @State imgWidth: number = Constants.SIZE_ICON_BUTTON_BAR
+  @State imgHeight: number | string = Constants.SIZE_ICON_BUTTON_BAR
 
   build() {
-    Image($r('app.media.ic_public_add_norm'))
-      .width(this.imgWidth)
+    Image($r('app.media.ic_playlist_add_icon'))
+      .height(this.imgHeight)
+      .aspectRatio(1)
       .fillColor(this.imgColor)
       .draggable(false)
       .backgroundColor(Color.Transparent)

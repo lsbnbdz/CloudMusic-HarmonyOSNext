@@ -118,6 +118,11 @@ export class StorageConstants {
    * @description AppStorage
    */
   static readonly IS_PLAYER_LOADING: string = 'isPlayerLoading'
+  /**
+   * 上一次播放的歌单数据
+   * @description AppStorage
+   */
+  static readonly LAST_PLAYED_LIST: string = 'lastPlayedList'
 
 
 

@@ -11,26 +11,22 @@ export struct TimerButton {
   @Link isShow: boolean
 
   build() {
-    Column() {
-      Image($r('app.media.ic_clock'))
-        .fillColor(Color.White)
-        .width(20)
-        .draggable(false)
-        .backgroundColor(Color.Transparent)
-        .onClick(() => { this.isShow = !this.isShow })
-        .bindSheet(this.isShow, Timer(), {
-          preferType: SheetType.CENTER,
-          height: SheetSize.FIT_CONTENT,
-          dragBar: false,
-          showClose: true,
-          backgroundColor: Color.Transparent,
-          blurStyle: BlurStyle.Regular,
-          onDisappear: () => { this.isShow = false }
-        })
-    }
-    .justifyContent(FlexAlign.Center)
-    .width(30)
-    .height(30)
+    Image($r('app.media.ic_timer_icon'))
+      .fillColor(Color.White)
+      .height(30)
+      .aspectRatio(1)
+      .draggable(false)
+      .backgroundColor(Color.Transparent)
+      .onClick(() => { this.isShow = !this.isShow })
+      .bindSheet(this.isShow, Timer(), {
+        preferType: SheetType.CENTER,
+        height: SheetSize.FIT_CONTENT,
+        dragBar: false,
+        showClose: true,
+        backgroundColor: Color.Transparent,
+        blurStyle: BlurStyle.Regular,
+        onDisappear: () => { this.isShow = false }
+      })
   }
 }
 

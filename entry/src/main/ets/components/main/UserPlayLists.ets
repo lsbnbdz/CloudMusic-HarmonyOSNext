@@ -7,34 +7,39 @@ import { User, UserClass } from "../../common/entities/User";
 import Constants from "../../common/constants/Constants";
 import { StorageConstants } from "../../common/constants/StorageConstants";
 import { ObservableScroller } from "../../common/utils/ObservableScroller";
-import { MultiFunctionalButton } from "../buttons/MultiFunctionalButton";
+import { MultiFunctionalButton, MultiFunctionalButton2 } from "../buttons/MultiFunctionalButton";
+import { ObservableTabsController } from "../../common/utils/ObservableTabsController";
+import { promptAction } from "@kit.ArkUI";
 
 /**
  * 用户歌单
  */
-const TAG = '[UserPlayLists Component] '
 @Component
 export struct UserPlayLists {
 
-  @State observableScroller: ObservableScroller = new ObservableScroller()
-  @Link titleOpacity: number[]
+  @State observableScrollers: ObservableScroller[] = [new ObservableScroller(), new ObservableScroller(), new ObservableScroller()]
+  @Link subTitleOpacity: number[]
   @Link index: number
+  @Link subIndex: number
+
+  @Link observableTabsController: ObservableTabsController
+  private _subArrStr: string[] = ['所有', '自建', '收藏'];
 
   @StorageProp('bottomRectHeight') bottomRectHeight: number = 0
   @StorageProp(StorageConstants.USER) user: User = UserClass
+  @StorageProp(StorageConstants.BREAKPOINT) breakpoint: string = 'sm'
   @StorageProp(StorageConstants.IS_LOGGED) @Watch('getPlayLists') isLogged: boolean = false
   @StorageProp('Announcement') announcement: Announcement = {
     code: -1,
     data: { title:'', content: '' },
     visible: false
   }
-  @StorageLink(StorageConstants.USER_PLAYLISTS) playLists: Array<PlayList> = []
+  @StorageProp(StorageConstants.USER_PLAYLISTS) playLists: Array<PlayList> = []
   @State isLoading: boolean = false
-  @State isLoadingMore: boolean = false
   @State isRefreshing: boolean = false
   @State lastRefreshTime: number = 0
-  private refreshCooldown: number = 5000
-  @Consume('pageInfos') pageInfos: NavPathStack
+  private refreshCooldown: number = 5000.
+  private tabItems: string[] = ['所有', '创建', '收藏']
 
   async aboutToAppear(): Promise<void> {
     try {
@@ -60,64 +65,227 @@ export struct UserPlayLists {
   }
 
   build() {
+
     Stack({ alignContent: Alignment.Bottom }) {
       Column() {
-        if(this.isLogged) {
-          Refresh({ refreshing: this.isRefreshing}) {
-            Scroll(this.observableScroller.getScroller()){
-              List({ space: 10 }) {
-                if(this.announcement.visible) {
-                  ListItem() {
-                    this.Announcement()
+        if (this.isLogged) {
+          Stack({ alignContent: Alignment.Bottom }){
+            Refresh({ refreshing: this.isRefreshing}) {
+              Tabs({ controller: this.observableTabsController.getTabsController() }) {
+                TabContent() {
+                  List({ scroller: this.observableScrollers[0].getScroller() }) {
+                    ListItem(){}.height('7%').backgroundColor('transparent')
+                    .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
+                    ForEach(this.playLists, (item: PlayList, index) => {
+                      ListItem() {
+                        PlayListCard({
+                          playList: item,
+                          isShowHeart: item.creator?.userId == this.user.data?.account.id ? false : true
+                        })
+                          .padding( this.breakpoint == 'md' ? 5 : { bottom: 10 } )
+                      }
+                    })
+                    ListItem().height(px2vp(this.bottomRectHeight) + 160)
                   }
+                  .height('100%')
+                  .onWillScroll(() => this.handleScroll())
+                  .edgeEffect(EdgeEffect.Spring)
+                  .scrollBar(BarState.Off)
+                  .contentListStyle(this.breakpoint)
                 }
-                ListItem(){}.height('7%').backgroundColor('transparent')
-                ListItem() {
-                  Column({ space: 10 }) {
-                    if(this.isLoading) {
-                      this.Loading()
-                    } else {
-                      ForEach(this.playLists, (item: PlayList, index) => {
+                .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
+                TabContent() {
+                  List({ scroller: this.observableScrollers[1].getScroller() }) {
+                    ListItem(){}.height('7%').backgroundColor('transparent')
+                    ForEach(this.playLists.filter((item) => item.userId === this.user.data.account.id),
+                      (item: PlayList, index) => {
                         ListItem() {
                           PlayListCard({
                             playList: item,
                             isShowHeart: item.creator?.userId == this.user.data?.account.id ? false : true
                           })
+                            .padding( this.breakpoint == 'md' ? 5 : { bottom: 10 } )
                         }
                       })
-                    }
+                    ListItem().height(px2vp(this.bottomRectHeight) + 160)
                   }
-                  .width('100%')
+                  .height('100%')
+                  .onWillScroll(() => this.handleScroll())
+                  .edgeEffect(EdgeEffect.Spring)
+                  .scrollBar(BarState.Off)
+                  .contentListStyle(this.breakpoint)
                 }
-                ListItem().height( px2vp(this.bottomRectHeight) + 115 )
+                .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
+                TabContent() {
+                  List({ scroller: this.observableScrollers[2].getScroller() }) {
+                    ListItem(){}.height('7%').backgroundColor('transparent')
+                    ForEach(this.playLists.filter((item) => item.userId !== this.user.data.account.id),
+                      (item: PlayList, index) => {
+                        ListItem() {
+                          PlayListCard({
+                            playList: item,
+                            isShowHeart: item.creator?.userId == this.user.data?.account.id ? false : true
+                          })
+                            .padding( this.breakpoint == 'md' ? 5 : { bottom: 10 } )
+                        }
+                      })
+                    ListItem().height(px2vp(this.bottomRectHeight) + 160)
+                  }
+                  .height('100%')
+                  .onWillScroll(() => this.handleScroll())
+                  .edgeEffect(EdgeEffect.Spring)
+                  .scrollBar(BarState.Off)
+                  .contentListStyle(this.breakpoint)
+                }
+                .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
               }
-              .height('auto')
-              .width('100%')
-              .scrollBar(BarState.Off)
+              .height('100%')
+              .barHeight(0)
               .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
+              .onAnimationStart((from, target) => {
+                this.subIndex = target
+                this.showToast(`歌单-${this._subArrStr[this.subIndex]}`)
+              })
             }
             .height('100%')
-            .scrollBar(BarState.Off)
-            .edgeEffect(EdgeEffect.Spring)
             .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
-            .onWillScroll(() => this.handleScroll())
+            .onRefreshing(async () => {
+              await this.refreshContent()
+            })
+            // Column() {
+            //   // 阴影指示器（动态跟随选中项）
+            //   Stack({ alignContent: Alignment.Center }) {
+            //
+            //     // TabBar主体
+            //     Row() {}
+            //     .width('100%')
+            //     .height(20)
+            //     .padding(12)
+            //     .backgroundBlurStyle(BlurStyle.BACKGROUND_REGULAR)
+            //     .borderRadius(20) // 胶囊圆角
+            //
+            //     Column()
+            //       .width('30%')
+            //       .height(19) // 略小于Bar高度
+            //       .backgroundColor('#FFF')
+            //       .borderRadius(9.5)
+            //       .shadow({
+            //         radius: 8,
+            //         color: '#40565656',
+            //         offsetX: 0,
+            //         offsetY: 2
+            //       })
+            //       .margin({ left: this.getLeftMargin()})
+            //       .animation({
+            //         duration: 300,
+            //         curve: Curve.EaseOut
+            //       })
+            //
+            //     Row() {
+            //       ForEach(this.tabItems, (item: string, index) => {
+            //         Button() {
+            //           Text(item)
+            //             .fontSize(14)
+            //             .fontColor(this.subIndex === index ? '#ffd72626' : '#ff211f1f')
+            //         }
+            //         .width('33.33%')
+            //         .height(20)
+            //         .backgroundColor(Color.Transparent)
+            //         .onClick(() => {
+            //           this.subIndex = index
+            //           this.observableTabsController.changeIndex(index)
+            //         })
+            //       })
+            //     }
+            //     .justifyContent(FlexAlign.SpaceAround)
+            //     .width('100%')
+            //     .backgroundColor(Color.Transparent)
+            //     .borderRadius(10) // 胶囊圆角
+            //
+            //   }
+            //   .width('100%')
+            //   .height(20)
+            //
+            // }
+            // .width('30%')
+            // .margin({ bottom: 80 })
+            // .zIndex(999)
           }
-          .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
-          .onRefreshing(async () => {
-            await this.refreshContent()
-          })
         }
       }
-      .width('100%')
-      .height('100%')
 
-      MultiFunctionalButton({ index: this.index, observableScroller: this.observableScroller })
+      MultiFunctionalButton2({ index: this.index, observableScrollers: this.observableScrollers, subIndex: this.subIndex })
     }
   }
 
+  getLeftMargin(): Length | undefined {
+    let result: number = 0
+    const percent: number = 100/3
+    if(this.subIndex == 1){
+      result = 0
+    }
+    if(this.subIndex == 0){
+      result = -percent * 2.34
+    }
+    if(this.subIndex == 2){
+      result = percent * 2.34
+    }
+    return result
+  }
+
   handleScroll(): void {
-    const currentOffset: number = this.observableScroller.getScroller().currentOffset().yOffset
-    this.titleOpacity[1] = Math.max(0, Math.min(1, 1 - currentOffset / 100))
+    const currentOffset: number = this.observableScrollers[this.subIndex].getScroller().currentOffset().yOffset
+    this.subTitleOpacity[this.subIndex] = Math.max(0, Math.min(1, 1 - currentOffset / 100))
+  }
+
+  @Builder TabBar() {
+    Row() {
+      this.TabBarButtonItem('所有歌单', 0)
+      this.TabBarButtonItem('我创建的', 1)
+      this.TabBarButtonItem('我收藏的', 2)
+    }
+    .justifyContent(FlexAlign.SpaceEvenly)
+    .width('100%')
+    .padding({ bottom: 5 })
+  }
+
+  @Builder TabBarButtonItem(title: string, index: number) {
+    Button() {
+      Text(title)
+        .fontColor(this.subIndex === index ? $r('app.color.app_red') : Color.Gray)
+        .fontWeight(FontWeight.Medium)
+    }
+    .layoutWeight(1)
+    .backgroundColor(Color.Transparent)
+    .padding(Constants.PADDING_EDGE_DEFAULT)
+    .clickEffect({ level: ClickEffectLevel.LIGHT, scale: 0.7 })
+    .onClick(() => {
+      this.observableTabsController.changeIndex(index)
+    })
+  }
+
+  showToast(msg: string) {
+    promptAction.showToast({ message: msg, backgroundColor: Color.Transparent, backgroundBlurStyle: BlurStyle.BACKGROUND_THIN })
+  }
+
+  @Builder PlayListsContent(list: PlayList[]) {
+    List() {
+      ForEach(list, (item: PlayList, index) => {
+        ListItem() {
+          PlayListCard({
+            playList: item,
+            isShowHeart: item.creator?.userId == this.user.data?.account.id ? false : true
+          })
+            .padding( this.breakpoint == 'md' ? 5 : { bottom: 10 } )
+        }
+      })
+      ListItem().height(px2vp(this.bottomRectHeight) + 160)
+    }
+    .height('100%')
+    .width('100%')
+    .scrollBar(BarState.Off)
+    .lanes(this.breakpoint == 'md' ? 2 : 1)
+    .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
   }
 
   @Builder
@@ -125,27 +293,6 @@ export struct UserPlayLists {
     ForEach([1, 2, 3, 4, 5, 6, 7, 8, 9, 10], () => {
       PlayListCard_Skeleton()
     })
-  }
-
-  @Builder
-  Announcement() {
-    Row() {
-      Text(this.announcement.data.content)
-        .width('100%')
-        .textAlign(TextAlign.Center)
-        .fontColor($r('app.color.main'))
-        .fontSize(Constants.FONT_SIZE_COMMON)
-        .padding({ top: 5, bottom: 5 })
-        .layoutWeight(1)
-        .textOverflow({ overflow: TextOverflow.MARQUEE })
-        .onClick(() => {
-          DialogUtil.showConfirmDialog({
-            title: this.announcement.data.title,
-            message: this.announcement.data.content
-          })
-        })
-    }
-    .backgroundColor('#fff8b8b8')
   }
 
   private async refreshContent() {
@@ -156,7 +303,8 @@ export struct UserPlayLists {
         ToastUtil.showToast('操作过于频繁，请5秒后再试')
       } else {
         try {
-          await getPlayLists(0)
+          const result = await getPlayLists(0)
+          this.playLists = result.playlist
           this.lastRefreshTime = currentTime
           ToastUtil.showToast('刷新成功')
         } catch (e) {
@@ -166,4 +314,12 @@ export struct UserPlayLists {
     }
     else return
   }
+}
+
+@Extend(List) function contentListStyle(breakpoint: string) {
+    .height('100%')
+    .width('100%')
+    .scrollBar(BarState.Off)
+    .lanes(breakpoint == 'md' ? 2 : 1)
+    .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
 }

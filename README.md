@@ -8,6 +8,10 @@
 - `单击`悬浮按钮：返回置顶
 - `双击`悬浮按钮：播放/暂停
 
+**应用市场审核不通过，请各位自行侧载安装**
+<img src="./images/img.png" width="100%" />
+
+**[在Release下载hap包](https://github.com/Chenlvin/CloudMusic-HarmonyOSNext/releases)**
 
 ### 技术特性
 - ArkTS 语言开发
@@ -16,7 +20,6 @@
 
 ### 安装方式
 
-- AppGallery 邀请测试
 - 自行编译安装
 - 侧载 Release 中的 hap 包
 

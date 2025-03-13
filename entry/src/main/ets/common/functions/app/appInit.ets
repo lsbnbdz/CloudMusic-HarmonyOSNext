@@ -8,7 +8,7 @@ import { notificationManager } from "@kit.NotificationKit"
 import { resourceManager } from "@kit.LocalizationKit"
 import { initSettings } from "./settings"
 import { getLoginStatus } from "../../../api/loginApi"
-import { PlayList } from "../../entities/PlayList"
+import { PlayingPlayList, PlayList } from "../../entities/PlayList"
 import { TopListItem } from "../../entities/TopList"
 import { getLikeList } from "../../../api/songApi"
 import { PersonalListItem } from "../../entities/Personalized"
@@ -36,7 +36,7 @@ async function initPermission() {
   })
 }
 
-async function initUserInfo() {
+export async function initUserInfo() {
   const cookie = await PreferencesUtils.getPreferenceValue<string>(StorageConstants.USER_PREF, StorageConstants.COOKIE, '')
   AppStorage.setOrCreate(StorageConstants.COOKIE, cookie)
   let isLogged = await getLoginStatus(cookie)
@@ -50,6 +50,11 @@ async function initUserInfo() {
 async function initLocalData() {
   let userLikeList: string[] = []
   AppStorage.setOrCreate(StorageConstants.USER_LIKELIST, userLikeList)
+  const playInfo: PlayingPlayList = {
+    id: -1,
+    count: -1
+  }
+  AppStorage.setOrCreate(StorageConstants.LAST_PLAYED_LIST, playInfo)
 
   const results = await Promise.all([
     getDeviceTypeInfo(),

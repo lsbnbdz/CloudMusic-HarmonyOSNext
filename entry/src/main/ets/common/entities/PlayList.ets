@@ -101,3 +101,10 @@ export interface PlayListSearchResult {
   result: SearchBody
 }
 
+/**
+ * 正在播放的歌单信息
+ */
+export interface PlayingPlayList {
+  id: number,
+  count: number
+}

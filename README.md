@@ -33,7 +33,7 @@
 - 【缓存】缓存歌曲至应用沙箱、导入导出沙箱文件
 - 【播放】播放在线歌曲和本地文件、歌词显示、定时关闭、播放列表
 - 【设置】自定义API服务器、手动设置Cookie
-- 【系统】全局适配Pad端UI、接入系统播控中心、全局适配深色模式
+- 【系统】全局适配折叠屏与Pad、接入系统播控中心、全局适配深色模式
 
 
 
@@ -60,16 +60,18 @@
 
 ### 界面预览：
 
+<img src="./images/01.jpg" width="20%" />
+<img src="./images/02.jpg" width="20%" />
 <img src="./images/03.jpg" width="20%" />
 <img src="./images/04.jpg" width="20%" />
 <img src="./images/05.jpg" width="20%" />
 <img src="./images/06.jpg" width="20%" />
-<img src="./images/07.jpg" width="20%" />
-<img src="./images/08.jpg" width="20%" />
-<img src="./images/09.jpg" width="20%" />
 <br>
-<img src="./images/01.jpg" width="60%" />
-<img src="./images/02.jpg" width="60%" />
+<img src="./images/07.jpg" width="60%" />
+<img src="./images/08.jpg" width="60%" />
+<img src="./images/09.jpg" width="60%" />
+<img src="./images/10.jpg" width="60%" />
+
 
 
 ### 开源许可：

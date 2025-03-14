@@ -14,7 +14,6 @@ import { WebLogin } from './login/WebLogin';
 import { WebPage } from './WebPage';
 import { UserPlayLists } from '../components/main/UserPlayLists';
 import { Me } from '../components/main/Me';
-import { resourceManager } from '@kit.LocalizationKit';
 import { StorageConstants } from '../common/constants/StorageConstants';
 import { WarrantyDialog } from '../components/dialog/WarrantyDialog';
 import { TopListPage } from './TopListPage';
@@ -26,6 +25,8 @@ import BreakpointUtils from '../common/utils/system/BreakpointUtils';
 @Entry
 @Component
 struct Index {
+  @Provide('pageInfos') pageInfos: NavPathStack = new NavPathStack()
+
   warrantyDialogController: CustomDialogController = new CustomDialogController({
     builder: WarrantyDialog(),
     autoCancel: false
@@ -43,7 +44,6 @@ struct Index {
   @StorageProp(StorageConstants.BREAKPOINT) breakpoint: string = 'sm'
   @StorageProp(StorageConstants.DEFAULT_PAGE_INDEX) index: number = 0
   @StorageProp(StorageConstants.VALID_API_URL) @Watch('checkApi') validApiUrl: boolean = true
-  @Provide('pageInfos') pageInfos: NavPathStack = new NavPathStack()
   @State tabCurrentIndex: number = 0
 
   private getMenuItems(): NavigationMenuItem[] {

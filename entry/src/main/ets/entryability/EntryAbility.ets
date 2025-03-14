@@ -2,7 +2,7 @@ import { AbilityConstant, UIAbility, Want } from '@kit.AbilityKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { window } from '@kit.ArkUI';
 import PreferencesUtils from '../common/utils/data/PreferencesUtils';
-import { LogUtil } from '@pura/harmony-utils';
+import { AppUtil, LogUtil } from '@pura/harmony-utils';
 import { appInit } from '../common/functions/app/appInit';
 import { StorageConstants } from '../common/constants/StorageConstants';
 
@@ -28,6 +28,7 @@ export default class EntryAbility extends UIAbility {
   }
 
   onWindowStageCreate(windowStage: window.WindowStage): void {
+    AppUtil.init(this.context)
     windowStage.loadContent('pages/Index', async (err, data) => {
       if (err.code) {
         return

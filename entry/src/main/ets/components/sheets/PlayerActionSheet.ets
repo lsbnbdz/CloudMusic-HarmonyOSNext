@@ -88,6 +88,8 @@ export struct PlayerActionSheet {
           })
           Column().height(px2vp(this.bottomRectHeight))
         }
+        .height('100%')
+        .justifyContent(FlexAlign.Start)
       }
       .padding({ top: 10 })
       .scrollBar(BarState.Off)

@@ -1,5 +1,5 @@
 import { AppUtil, LogUtil, ToastUtil } from "@pura/harmony-utils"
-import { getAnnouncement } from "../../../api/chenlvinApi"
+import { getAppInfo } from "../../../api/chenlvinApi"
 import { Song, SongClass } from "../../entities/SongsResult"
 import PlayQueueUtils from "../../utils/play/PlayQueueUtils"
 import PreferencesUtils from "../../utils/data/PreferencesUtils"
@@ -13,6 +13,7 @@ import { TopListItem } from "../../entities/TopList"
 import { getLikeList } from "../../../api/songApi"
 import { PersonalListItem } from "../../entities/Personalized"
 import { pauseMusic, playQueue } from "../play/playControl"
+import RelationalStoreUtils from "../../utils/data/RelationalStoreUtils"
 
 /**
  * App初始化
@@ -26,7 +27,7 @@ export async function appInit() {
   loadSavedSong()
   initPermission()
   initLocalData()
-  getAnnouncement()
+  getAppInfo()
   await initUserInfo()
   AppStorage.setOrCreate(StorageConstants.APP_LOADING, false)
 }
@@ -48,6 +49,8 @@ export async function initUserInfo() {
 }
 
 async function initLocalData() {
+  RelationalStoreUtils.init()
+
   let userLikeList: string[] = []
   AppStorage.setOrCreate(StorageConstants.USER_LIKELIST, userLikeList)
   const playInfo: PlayingPlayList = {

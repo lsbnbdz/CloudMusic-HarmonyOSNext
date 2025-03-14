@@ -3,6 +3,11 @@
  */
 export class StorageConstants {
   /**
+   * App 信息
+   * @description AppStorage
+   */
+  static readonly APP_INFO: string = 'AppInfo'
+  /**
    * 初始化应用
    * @description AppStorage
    */

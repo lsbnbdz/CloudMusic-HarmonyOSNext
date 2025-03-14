@@ -1,6 +1,5 @@
 import { DialogUtil, LogUtil, ToastUtil} from "@pura/harmony-utils";
 import { RecommendCards, RecommendCards_Skeleton } from "../cards/RecommendCards";
-import { Announcement } from "../../common/entities/Announcement";
 import { User, UserClass } from "../../common/entities/User";
 import Constants from "../../common/constants/Constants";
 import { TopListItem } from "../../common/entities/TopList";
@@ -13,6 +12,7 @@ import { PersonalListItem } from "../../common/entities/Personalized";
 import { PersonalizedCard } from "../cards/PersonalizedCard";
 import { ObservableScroller } from "../../common/utils/ObservableScroller";
 import { MultiFunctionalButton } from "../buttons/MultiFunctionalButton";
+import { AppInfo, AppInfoClass } from "../../common/entities/AppInfo";
 
 @Component
 export struct Explore {
@@ -26,11 +26,7 @@ export struct Explore {
   @StorageProp(StorageConstants.USER) user: User = UserClass
   @StorageProp('bottomRectHeight') bottomRectHeight: number = 0
   @StorageProp('topRectHeight') topRectHeight: number = 0
-  @StorageProp('Announcement') announcement: Announcement = {
-    code: -1,
-    data: { title:'', content: '' },
-    visible: false
-  }
+  @StorageProp(StorageConstants.APP_INFO) appInfo: AppInfo = AppInfoClass
   @StorageLink(StorageConstants.USER_PLAYLISTS) playLists: Array<PlayList> = []
   @StorageLink(StorageConstants.TOPLISTS) topList: Array<TopListItem> = []
   @StorageLink(StorageConstants.PERSONALIZED_LIST) personalizedList: Array<PersonalListItem> = []
@@ -106,7 +102,7 @@ export struct Explore {
       Column() {
         Refresh({ refreshing: this.isRefreshing}) {
           Column({ space: 5 }) {
-            if (this.announcement.visible) {
+            if (this.appInfo.data.Announcement.isShow) {
               this.Announcement()
             }
             Scroll(this.observableScroller.getScroller()){
@@ -270,7 +266,7 @@ export struct Explore {
   @Builder
   Announcement() {
     Row() {
-      Text(this.announcement.data.content)
+      Text(this.appInfo.data.Announcement.message)
         .width('100%')
         .textAlign(TextAlign.Center)
         .fontColor($r('app.color.main'))
@@ -280,8 +276,8 @@ export struct Explore {
         .textOverflow({ overflow: TextOverflow.MARQUEE })
         .onClick(() => {
           DialogUtil.showConfirmDialog({
-            title: this.announcement.data.title,
-            message: this.announcement.data.content
+            title: this.appInfo.data.Announcement.title,
+            message: this.appInfo.data.Announcement.message
           })
         })
     }

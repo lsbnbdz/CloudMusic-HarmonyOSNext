@@ -1,8 +1,12 @@
-import { AppUtil, PasteboardUtil, ToastUtil } from "@pura/harmony-utils"
+import { AppUtil, DialogUtil, PasteboardUtil, ToastUtil } from "@pura/harmony-utils"
 import { AppConstants } from "../../common/constants/AppConstants"
 import Constants from "../../common/constants/Constants"
+import { StorageConstants } from "../../common/constants/StorageConstants"
+import { AppInfo, AppInfoClass } from "../../common/entities/AppInfo"
 import { WebPageParam } from "../../common/entities/PageParams"
 import { WarrantyDialog } from "../dialog/WarrantyDialog"
+import SystemApp from "@system.app"
+import SystemAppUtils from "../../common/utils/system/SystemAppUtils"
 
 @Builder
 function TextContent(title: string, text: string, action?: () => void) {
@@ -35,12 +39,38 @@ export struct TextContents {
     autoCancel: false
   })
 
+  @StorageProp(StorageConstants.APP_INFO) appInfo: AppInfo = AppInfoClass
   @Consume('pageInfos') pageInfos: NavPathStack
 
   build() {
     Column() {
       Column() {
-        TextContent('应用版本', AppConstants.VERSION + AppConstants.VER_DESC)
+        Button() {
+          Row() {
+            Row({ space: 10 }) {
+              Text('应用版本')
+                .LeftText()
+              if(this.appInfo.data.Version.currentVersionCode > AppConstants.VERSIONCODE) {
+                Text('发现新版本')
+                  .fontWeight(FontWeight.Medium)
+                  .fontSize(12)
+                  .fontColor($r('app.color.app_red'))
+              }
+            }
+            Text(AppConstants.VERSION + AppConstants.VER_DESC)
+              .RightText()
+              .fontWeight(FontWeight.Bold)
+          }
+          .width('100%')
+          .justifyContent(FlexAlign.SpaceBetween)
+        }
+        .backgroundColor(Color.Transparent)
+        .padding(Constants.PADDING_EDGE_DEFAULT)
+        .onClick(() => {
+          if(this.appInfo.data.Version.currentVersionCode > AppConstants.VERSIONCODE) {
+            this.handleUpdate()
+          }
+        })
       }
       .gesture(
         TapGesture({
@@ -71,6 +101,20 @@ export struct TextContents {
     } else {
       this.pageInfos.replacePathByName('WebPage', param)
     }
+  }
+
+  private handleUpdate() {
+    DialogUtil.showPrimaryDialog({
+      title: '发现新版本',
+      message: `Version ${AppConstants.VERSION} → ${this.appInfo.data.Version.currentVersion}`,
+      primaryButton: "关闭",
+      secondaryButton: {
+        value: '前往下载',
+        action: async () => {
+          SystemAppUtils.openInBrowser(this.appInfo.data.Version.downloadUrl)
+        }
+      }
+    })
   }
 }
 

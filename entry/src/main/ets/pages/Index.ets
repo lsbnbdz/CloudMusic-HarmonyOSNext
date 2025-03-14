@@ -14,7 +14,6 @@ import { WebLogin } from './login/WebLogin';
 import { WebPage } from './WebPage';
 import { UserPlayLists } from '../components/main/UserPlayLists';
 import { Me } from '../components/main/Me';
-import { resourceManager } from '@kit.LocalizationKit';
 import { StorageConstants } from '../common/constants/StorageConstants';
 import { WarrantyDialog } from '../components/dialog/WarrantyDialog';
 import { TopListPage } from './TopListPage';
@@ -37,6 +36,9 @@ struct Index {
 
   @State titleOpacity: number[] = [1, 1, 1]
   @State subTitleOpacity: number[] = [1, 1, 1]
+
+  @Provide('pageInfos') pageInfos: NavPathStack = new NavPathStack()
+
   warrantyDialogController: CustomDialogController = new CustomDialogController({
     builder: WarrantyDialog(),
     autoCancel: false
@@ -54,7 +56,6 @@ struct Index {
   @StorageProp(StorageConstants.BREAKPOINT) breakpoint: string = 'sm'
   @StorageProp(StorageConstants.DEFAULT_PAGE_INDEX) index: number = 0
   @StorageProp(StorageConstants.VALID_API_URL) @Watch('checkApi') validApiUrl: boolean = true
-  @Provide('pageInfos') pageInfos: NavPathStack = new NavPathStack()
   @State tabCurrentIndex: number = 0
   @State subIndex: number = 0
   @State observableTabsController: ObservableTabsController = new ObservableTabsController()

@@ -1,8 +1,7 @@
 import { getPlayLists } from "../../api/playListApi"
 import { PlayList } from "../../common/entities/PlayList"
 import { PlayListCard, PlayListCard_Skeleton } from "../cards/PlayListCard"
-import { DialogUtil, LogUtil, ToastUtil } from "@pura/harmony-utils";
-import { Announcement } from "../../common/entities/Announcement";
+import { LogUtil, ToastUtil } from "@pura/harmony-utils";
 import { User, UserClass } from "../../common/entities/User";
 import Constants from "../../common/constants/Constants";
 import { StorageConstants } from "../../common/constants/StorageConstants";
@@ -29,11 +28,6 @@ export struct UserPlayLists {
   @StorageProp(StorageConstants.USER) user: User = UserClass
   @StorageProp(StorageConstants.BREAKPOINT) breakpoint: string = 'sm'
   @StorageProp(StorageConstants.IS_LOGGED) @Watch('getPlayLists') isLogged: boolean = false
-  @StorageProp('Announcement') announcement: Announcement = {
-    code: -1,
-    data: { title:'', content: '' },
-    visible: false
-  }
   @StorageProp(StorageConstants.USER_PLAYLISTS) playLists: Array<PlayList> = []
   @State isLoading: boolean = false
   @State isRefreshing: boolean = false

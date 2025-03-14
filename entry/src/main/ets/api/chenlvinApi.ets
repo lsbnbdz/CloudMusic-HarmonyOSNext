@@ -1,6 +1,8 @@
 import { LogUtil, ToastUtil } from "@pura/harmony-utils";
+import { AppConstants } from "../common/constants/AppConstants";
 import Constants from "../common/constants/Constants";
-import { Announcement } from "../common/entities/Announcement";
+import { StorageConstants } from "../common/constants/StorageConstants";
+import { AppInfo, AppInfoClass } from "../common/entities/AppInfo";
 import { HttpRequest } from "../common/utils/request/HttpRequestUtils";
 
 /**
@@ -26,26 +28,19 @@ export async function getPubCookie() {
 }
 
 /**
- * 获取公告
+ * 获取App信息
  */
-export async function getAnnouncement() {
-  const url = `${Constants.API_URL}/api/cloudmusic/announcement`
+export async function getAppInfo() {
+  const url = `${Constants.API_URL}/api/cloudmusic/app`
   const request = new HttpRequest(url)
   try {
     await request.Request().then((data) => {
-      let dataGot: Announcement = data.result as Announcement
-      AppStorage.setOrCreate('Announcement', dataGot)
+      const dataGot: AppInfo = data.result as AppInfo
+      AppStorage.setOrCreate(StorageConstants.APP_INFO, dataGot)
     })
   } catch (e) {
-    const announcement: Announcement = {
-      code: 0,
-      data: {
-        title: '',
-        content: 'null'
-      },
-      visible: false
-    }
-    AppStorage.setOrCreate('Announcement', announcement)
+    const appInfo: AppInfo = AppInfoClass
+    AppStorage.setOrCreate(StorageConstants.APP_INFO, appInfo)
     LogUtil.error('获取公告内容 get Announcement Error: ' + e.message())
     ToastUtil.showToast(TAG + '获取公告内容出错')
   }

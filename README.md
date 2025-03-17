@@ -2,7 +2,7 @@
 
 🎵 云音汇 | ✨ 鸿蒙原生应用 🎼 第三方云音乐客户端 
 
-本分支根据**[CloudMusic-HarmonyOSNext](https://github.com/Chenlvin/CloudMusic-HarmonyOSNext)**进行改版（原版适合平板和手机，但本版本只适合手机使用），在界面上与原版的主要差别是去除tabs切换组件，并增加悬浮按钮，切换tab的操作依靠悬浮按钮手势操作：
+本分支根据[**`CloudMusic-HarmonyOSNext`**](https://github.com/Chenlvin/CloudMusic-HarmonyOSNext)进行改版（原版适合平板和手机，但本版本只适合手机使用），在界面上与原版的主要差别是去除tabs切换组件，并增加悬浮按钮，切换tab的操作依靠悬浮按钮手势操作：
 - 按住悬浮按钮`左滑/右滑`：左/右切换tab
 - 按住悬浮按钮`上滑/下滑`：切换上一首/下一首
 - `单击`悬浮按钮：返回置顶
@@ -11,7 +11,7 @@
 **应用市场审核不通过，请各位自行侧载安装**
 <img src="./images/img.png" width="100%" />
 
-**[在Release下载hap包](https://github.com/Chenlvin/CloudMusic-HarmonyOSNext/releases)**
+**[在Release下载hap包](https://github.com/lsbnbdz/CloudMusic-HarmonyOSNext/releases)**
 
 ### 技术特性
 - ArkTS 语言开发
@@ -73,23 +73,17 @@
 <img src="./images/05.jpg" width="20%" />
 <img src="./images/06.jpg" width="20%" />
 <br>
+<img src="./images/001.jpg" width="20%" />
+<img src="./images/002.jpg" width="20%" />
+<img src="./images/003.jpg" width="20%" />
+<img src="./images/004.jpg" width="20%" />
+<img src="./images/005.jpg" width="20%" />
+<video src="./images/006.mp4" width='20%'></video>
+<br>
 <img src="./images/07.jpg" width="60%" />
 <img src="./images/08.jpg" width="60%" />
 <img src="./images/09.jpg" width="60%" />
 <img src="./images/10.jpg" width="60%" />
-
-
-<img src="./images/001.jpg" width="20%" />
-
-<img src="./images/002.jpg" width="20%" />
-
-<img src="./images/003.jpg" width="20%" />
-
-<img src="./images/004.jpg" width="20%" />
-
-<img src="./images/005.jpg" width="20%" />
-
-<video src="./images/006.mp4" width='20%'></video>
 
 ### 开源许可：
 

@@ -1,7 +1,7 @@
 import { Explore } from '../components/main/Explore'
 import { BottomBarComponent } from '../components/play/BottomBarComponent';
 import Constants from '../common/constants/Constants';
-import { SettingsPage } from './SettingsPage';
+import { SettingsPage } from './settings/SettingsPage';
 import { CachedPage } from './CachedPage';
 import { CloudPage } from './CloudPage';
 import { DailyListPage } from './DailyListPage';

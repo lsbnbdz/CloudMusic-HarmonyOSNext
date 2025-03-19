@@ -1,9 +1,14 @@
-import { EmitterUtil } from "@pura/harmony-utils"
+import { EmitterUtil, FileUtil, LogUtil } from "@pura/harmony-utils"
 import { getLyric } from "../../../api/LyricApi"
 import { EmitterConstants } from "../../constants/EmitterConstants"
 import { StorageConstants } from "../../constants/StorageConstants"
 import { Lyric } from "../../entities/Lyric"
 import { Song } from "../../entities/SongsResult"
+import FileUtils from "../file/FileUtils"
+import { fileIo, ReadOptions } from "@kit.CoreFileKit"
+import { buffer } from "@kit.ArkTS"
+
+const TAG = '[LyricUtils] '
 
 class LyricUtils {
   lyricString: string = ''
@@ -25,6 +30,12 @@ class LyricUtils {
     }
     await this.setLyricArr(lyricArr)
     EmitterUtil.post(EmitterConstants.EMITTER_LYRIC_UPDATE,'Lyric Updated')
+  }
+
+  async setLyricString(lyric: string) {
+    this.lyricString = lyric
+    let tempArr = lyric.split('\n')
+    this.setLyricArr(tempArr)
   }
 
   async setLyricArr(arr: Array<string>) {
@@ -100,6 +111,59 @@ class LyricUtils {
       }
     }
     return 0
+  }
+
+  /**
+   * 保存Lyric String至文件
+   * @param lyric
+   */
+  async saveLyricToFile(lyric: string, fileName: string) {
+    const filesDir = FileUtils.getFilesDir()
+    const cacheDir = FileUtils.getCacheDir()
+    // 创建缓存并写入歌词内容
+    const cachePath = cacheDir + `/${fileName}`
+    try {
+      let file = fileIo.openSync(cachePath, fileIo.OpenMode.READ_WRITE | fileIo.OpenMode.CREATE)
+      await fileIo.write(file.fd, lyric)
+      fileIo.closeSync(file)
+      // 目标路径
+      const targetDir = filesDir + '/lyric'
+      const descPath = targetDir + `/${fileName}`
+      LogUtil.info(TAG + 'hasDirPath: ' + targetDir)
+      if(!fileIo.accessSync(targetDir)) {
+        fileIo.mkdirSync(targetDir)
+      }
+      await FileUtils.moveFile(cachePath, descPath)
+    } catch (e) {
+      LogUtil.error(TAG + 'Save lyric to file error: ' + e.message + '\n' + e.stack)
+    }
+  }
+
+  /**
+   * 读取本地歌词
+   * @param fileName
+   * @returns
+   */
+  async readLyric(fileName: string) {
+    let lyric: string = '[00:00:00] 本地文件'
+    const filesDir = FileUtils.getFilesDir()
+    const lyricDir = filesDir + `/lyric/${fileName}.lrc`
+    try {
+      let file = fileIo.openSync(lyricDir, fileIo.OpenMode.READ_ONLY | fileIo.OpenMode.CREATE)
+      let arrayBuffer = new ArrayBuffer(4096)
+      let readOptions: ReadOptions = {
+        offset: 0,
+        length: arrayBuffer.byteLength
+      }
+      let readLen = fileIo.readSync(file.fd, arrayBuffer, readOptions)
+      let buf = buffer.from(arrayBuffer, 0, readLen)
+      lyric = buf.toString()
+      fileIo.closeSync(file)
+    }
+    catch (e) {
+      LogUtil.error(TAG + 'Read Lyric Error: ' + e.message + '\n' + e.stack)
+    }
+    return lyric
   }
 }
 

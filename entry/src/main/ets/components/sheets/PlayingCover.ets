@@ -13,6 +13,7 @@ import Constants from "../../common/constants/Constants"
 import { PasteboardUtil, ToastUtil } from "@pura/harmony-utils"
 import { PlayerActionSheet } from "./PlayerActionSheet"
 import { likeThisSong } from "../../common/functions/play/songLike"
+import { resourceManager } from "@kit.LocalizationKit"
 
 @Component
 export struct PlayingCover {
@@ -28,6 +29,7 @@ export struct PlayingCover {
   @StorageProp(StorageConstants.PLAY_COUNTDOWN_WORKING) isTimerWorking: boolean = false
   @StorageProp(StorageConstants.PLAY_IS_LOCALFILE) isLocalFile: boolean = false
   @StorageProp(StorageConstants.BREAKPOINT) breakpoint: string = 'sm'
+  @StorageProp(StorageConstants.DEVICE_TYPE) deviceType: resourceManager.DeviceType = resourceManager.DeviceType.DEVICE_TYPE_PHONE
   @Link isShow: boolean
   @State sliderThickness: number = 10
   @State isMovingSlider: boolean = false
@@ -81,7 +83,8 @@ export struct PlayingCover {
      /**
       * 主内容
       */
-     if(this.breakpoint == 'sm') {
+     if(this.breakpoint == 'sm' ||
+       (this.breakpoint == 'md' && this.deviceType == resourceManager.DeviceType.DEVICE_TYPE_TABLET)) {
        this.PhoneUI()
      } else {
        this.LargeUI()
@@ -109,7 +112,7 @@ export struct PlayingCover {
          */
         TimerButton({ isTimerWorking: this.isTimerWorking, isShow: this.isShowTimer })
           .clickEffect({ level: ClickEffectLevel.LIGHT, scale: 0.7 })
-        if (this.playmode == 1) {
+        if (this.song.id != 0) {
           /**
            * Download
            */
@@ -335,8 +338,8 @@ export struct PlayingCover {
           .height('60%')
           .borderRadius(5)
           .aspectRatio(1)
-          Image($r('app.media.ic_public_music'))
-            .height('30%').fillColor(Color.Gray)
+          Image(this.picUrl)
+            .height(this.song.id == 0 ? '30%' : '60%')
             .borderRadius(5)
             .aspectRatio(1)
         }
@@ -427,7 +430,7 @@ export struct PlayingCover {
 
         if(this.tabPageIndex == 0) {
           Row({ space: 15 }) {
-            if(this.isLocalFile) { Text('本地文件播放中').fontSize(10).fontColor(Color.Gray) }
+            if(this.isLocalFile || this.playmode == 0) { Text('本地文件播放中').fontSize(10).fontColor(Color.Gray) }
             if(this.isTimerWorking) { Text('已设置定时关闭').fontSize(10).fontColor(Color.Gray) }
           }
           .justifyContent(FlexAlign.Center)
@@ -463,7 +466,7 @@ export struct PlayingCover {
           .justifyContent(FlexAlign.SpaceEvenly)
           .width('90%')
           Row({ space: 15 }) {
-            if(this.isLocalFile) { Text('本地文件播放中').fontSize(10).fontColor(Color.Gray) }
+            if(this.isLocalFile || this.playmode == 0) { Text('本地文件播放中').fontSize(10).fontColor(Color.Gray) }
             if(this.isTimerWorking) { Text('已设置定时关闭').fontSize(10).fontColor(Color.Gray) }
           }
           .justifyContent(FlexAlign.Center)

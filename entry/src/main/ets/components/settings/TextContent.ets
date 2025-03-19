@@ -5,7 +5,6 @@ import { StorageConstants } from "../../common/constants/StorageConstants"
 import { AppInfo, AppInfoClass } from "../../common/entities/AppInfo"
 import { WebPageParam } from "../../common/entities/PageParams"
 import { WarrantyDialog } from "../dialog/WarrantyDialog"
-import SystemApp from "@system.app"
 import SystemAppUtils from "../../common/utils/system/SystemAppUtils"
 
 @Builder
@@ -16,7 +15,7 @@ function TextContent(title: string, text: string, action?: () => void) {
         .LeftText()
       if (!text) {
         Image($r('app.media.ic_public_arrow_right'))
-          .width(Constants.FONT_SIZE_COMMON)
+          .width(Constants.FONT_SIZE_TITLE)
           .fillColor($r('app.color.reverse'))
       } else {
         Text(text)
@@ -40,7 +39,7 @@ export struct TextContents {
   })
 
   @StorageProp(StorageConstants.APP_INFO) appInfo: AppInfo = AppInfoClass
-  @Consume('pageInfos') pageInfos: NavPathStack
+  @Consume('settingsPageInfos') settingsPageInfos: NavPathStack
 
   build() {
     Column() {
@@ -66,19 +65,18 @@ export struct TextContents {
         }
         .backgroundColor(Color.Transparent)
         .padding(Constants.PADDING_EDGE_DEFAULT)
+        .gesture(
+          LongPressGesture({
+          }).onAction(() => {
+            this.settingsPageInfos.pushDestinationByName('DebugPage', null)
+          })
+        )
         .onClick(() => {
           if(this.appInfo.data.Version.currentVersionCode > AppConstants.VERSIONCODE) {
             this.handleUpdate()
           }
         })
       }
-      .gesture(
-        TapGesture({
-          count: 5
-        }).onAction(() => {
-          this.pageInfos.pushDestinationByName('DebugPage', null)
-        })
-      )
       TextContent('使用文档', '', () => {
         let param: WebPageParam = {
           title: '使用文档', url: 'https://docs.chenlvin.cc/cloudmusic/#/help'
@@ -96,10 +94,10 @@ export struct TextContents {
   }
 
   private pushWebPage(param: WebPageParam) {
-    if(this.pageInfos.size() < 2) {
-      this.pageInfos.pushPathByName('WebPage', param)
+    if(this.settingsPageInfos.size() < 2) {
+      this.settingsPageInfos.pushPathByName('WebPage', param)
     } else {
-      this.pageInfos.replacePathByName('WebPage', param)
+      this.settingsPageInfos.replacePathByName('WebPage', param)
     }
   }
 
@@ -125,7 +123,7 @@ export struct OtherContents {
     autoCancel: false
   })
 
-  @Consume('pageInfos') pageInfos: NavPathStack
+  @Consume('settingsPageInfos') settingsPageInfos: NavPathStack
 
   build() {
     Column() {
@@ -143,10 +141,10 @@ export struct OtherContents {
   }
 
   private pushWebPage(param: WebPageParam) {
-    if(this.pageInfos.size() < 2) {
-      this.pageInfos.pushPathByName('WebPage', param)
+    if(this.settingsPageInfos.size() < 2) {
+      this.settingsPageInfos.pushPathByName('WebPage', param)
     } else {
-      this.pageInfos.replacePathByName('WebPage', param)
+      this.settingsPageInfos.replacePathByName('WebPage', param)
     }
   }
 }

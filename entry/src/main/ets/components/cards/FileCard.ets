@@ -1,34 +1,44 @@
-import { DialogUtil, PasteboardUtil, ToastUtil } from "@pura/harmony-utils"
-import { DialogAction } from "@pura/harmony-utils/src/main/ets/entity/constraint"
+import { DialogUtil, EmitterUtil, LogUtil, PasteboardUtil, ToastUtil } from "@pura/harmony-utils"
 import Constants from "../../common/constants/Constants"
-import { Song, SongClass } from "../../common/entities/SongsResult"
-import { fetchMetadata, fetchSongInfo } from "../../common/functions/common/convert"
-import { playMusicWithFile } from "../../common/functions/play/playControl"
+import { LocalSong, LocalSongClass } from "../../common/entities/LocalData"
+import { Song } from "../../common/entities/SongsResult"
+import { fetchMetadata } from "../../common/functions/common/convert"
+import { playQueue } from "../../common/functions/play/playControl"
 import FileUtils from "../../common/utils/file/FileUtils"
 import PlayQueueUtils from "../../common/utils/play/PlayQueueUtils"
+import { promptAction } from "@kit.ArkUI"
+import RelationalStoreUtils from "../../common/utils/data/RelationalStoreUtils"
+import { MatchSongSheet } from "../sheets/MatchSongSheet"
 
 /**
  * 文件卡片组件
  */
 @Component
 export struct FileCard {
-  @State fileName: string = ''
-  @State song: Song = SongClass
-  @Link list: string[]
+  @State localSong: LocalSong = LocalSongClass
+  @State showMatchSheet: boolean = false
+  @State filesDir: string = ''
 
-  async aboutToAppear(): Promise<void> {
-    this.song = await fetchSongInfo(this.fileName)
+  async aboutToAppear() {
+    this.filesDir = FileUtils.getFilesDir()
   }
 
   build() {
     Button() {
-      Column({ space: 5 }) {
-        Text() {
-          Span(this.song.artists[0].name).fontColor(Color.Gray)
-          Span(' - ')
-          Span(this.song.name)
+      Row({ space: 5 }) {
+        Image(this.localSong.songId == 0 ? $r('app.media.ic_files_audio') : `file://${this.filesDir}/pic/${this.localSong.songId}.jpg`)
+          .width(Constants.SIZE_IMG_CARD)
+          .borderRadius(Constants.RADIUS_IMG)
+          .padding({ left: Constants.PADDING_EDGE_DEFAULT })
+        Column({ space: 5 }) {
+          Text(this.localSong.name)
+            .textStyle(16)
+            .fontWeight(FontWeight.Medium)
+          Text(this.localSong.artists)
+            .textStyle(12)
+            .fontColor(Color.Gray)
         }
-        .textStyle(16)
+        .layoutWeight(1)
       }
     }
     .type(ButtonType.Normal)
@@ -37,63 +47,92 @@ export struct FileCard {
     .width('100%')
     .height(60)
     .bindMenu(this.ClickMenu())
+    .bindSheet(this.showMatchSheet, this.MatchSheet, {
+      preferType: SheetType.CENTER,
+      height: '70%',
+      dragBar: false,
+      showClose: true,
+      backgroundColor: $r('app.color.background'),
+      onDisappear: () => { this.showMatchSheet = false }
+    })
   }
 
   @Builder
   ClickMenu() {
     Menu() {
-      MenuItem({ content: this.fileName }).width('80%')
+      MenuItem({ content: this.localSong.songFile }).width('80%')
         .onClick(() => {
-          PasteboardUtil.setDataText(`${this.song.name}`)
+          PasteboardUtil.setDataText(`${this.localSong.name}`)
           ToastUtil.showToast('已复制歌名至剪切板')
         })
       MenuItem(this.MenuItem($r('app.media.ic_play_fill'), '播放', $r('app.color.reverse')))
         .onClick(async () => {
-          const rootUrl = await FileUtils.getFilesDir()
-          const fileUrl = rootUrl + `/${this.fileName}`
-          const metadata = await fetchMetadata(fileUrl)
-          let song = await fetchSongInfo(this.fileName)
-          if(metadata) {
-            song.duration = (metadata.duration) ? parseInt(metadata.duration) : 0
+          try {
+            const rootUrl = FileUtils.getFilesDir()
+            const fileUrl = rootUrl + `/${this.localSong.songFile}`
+            const metadata = await fetchMetadata(fileUrl)
+            let song: Song = {
+              id: this.localSong.songId,
+              name: this.localSong.name,
+              artists: [
+                {
+                  id: 0,
+                  name: this.localSong.artists
+                }
+              ],
+              duration: metadata ? ((metadata.duration) ? parseInt(metadata.duration) : 0) : 0,
+              alias: [],
+              fee: 0
+            }
+            PlayQueueUtils.queueAdd(0, song, this.localSong.artists, this.localSong.songFile)
+            playQueue(PlayQueueUtils.currentQueueIndex + 1)
+          } catch (e) {
+            LogUtil.error('Play local song error: ' + e.message)
+            promptAction.showToast({ message: '播放失败' })
           }
-          playMusicWithFile(this.fileName).then(() => {
-            PlayQueueUtils.queueAdd(0, song, song.artists[0].name, this.fileName)
-            PlayQueueUtils.setIndex(PlayQueueUtils.currentQueueIndex + 1)
-          })
         })
 
-      MenuItem(this.MenuItem($r('app.media.ic_public_folder_filled'), '保存至本地'))
+      MenuItem(this.MenuItem($r('app.media.ic_public_search_filled'), '匹配歌曲'))
         .onClick(() => {
-          FileUtils.saveFile([this.fileName])
+          this.showMatchSheet = true
+        })
+
+      MenuItem(this.MenuItem($r('app.media.ic_public_folder_filled'), '保存歌曲至本地'))
+        .onClick(() => {
+          FileUtils.saveFile([this.localSong])
         })
 
       MenuItem(this.MenuItem($r('app.media.ic_public_app_filled'), '文件预览'))
         .onClick(() => {
-          FileUtils.previewFile(this.fileName)
+          FileUtils.previewFile(this.localSong.songFile)
         })
 
       MenuItem(this.MenuItem($r('app.media.ic_public_delete_filled'), '删除歌曲', $r('app.color.app_red')))
         .onClick(async () => {
           DialogUtil.showPrimaryDialog({
             title: '删除文件',
-            message: `确定删除 "${this.fileName}" ?`,
+            message: `确定删除 "${this.localSong.songFile}" ?`,
             primaryButton: "取消",
             secondaryButton: {
               value: '删除',
               fontColor: Color.Red,
               action: async () => {
                 try {
-                  await FileUtils.deleteFile([this.fileName]).then(async () => {
-                    this.list = await FileUtils.getFileName()
-                  })
+                  await FileUtils.deleteFile([this.localSong])
+                  EmitterUtil.post('refreshLocalSongs',() => {})
                 } catch (e) {
                   ToastUtil.showToast('删除时出错')
+                  LogUtil.error('Delete local song error: ' + e.message)
                 }
               }
             }
           })
         })
     }
+    .constraintSize({
+      minWidth: 100,
+      maxWidth: 500
+    })
   }
 
   @Builder
@@ -114,6 +153,10 @@ export struct FileCard {
     .height(40)
   }
 
+  @Builder
+  MatchSheet() {
+    MatchSongSheet({ showMatchSheet: this.showMatchSheet, localSong: this.localSong })
+  }
 }
 
 @Extend(Text) function textStyle(size: number) {

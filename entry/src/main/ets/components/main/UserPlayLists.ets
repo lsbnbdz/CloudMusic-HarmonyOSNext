@@ -146,70 +146,13 @@ export struct UserPlayLists {
             .onRefreshing(async () => {
               await this.refreshContent()
             })
-            // Column() {
-            //   // 阴影指示器（动态跟随选中项）
-            //   Stack({ alignContent: Alignment.Center }) {
-            //
-            //     // TabBar主体
-            //     Row() {}
-            //     .width('100%')
-            //     .height(20)
-            //     .padding(12)
-            //     .backgroundBlurStyle(BlurStyle.BACKGROUND_REGULAR)
-            //     .borderRadius(20) // 胶囊圆角
-            //
-            //     Column()
-            //       .width('30%')
-            //       .height(19) // 略小于Bar高度
-            //       .backgroundColor('#FFF')
-            //       .borderRadius(9.5)
-            //       .shadow({
-            //         radius: 8,
-            //         color: '#40565656',
-            //         offsetX: 0,
-            //         offsetY: 2
-            //       })
-            //       .margin({ left: this.getLeftMargin()})
-            //       .animation({
-            //         duration: 300,
-            //         curve: Curve.EaseOut
-            //       })
-            //
-            //     Row() {
-            //       ForEach(this.tabItems, (item: string, index) => {
-            //         Button() {
-            //           Text(item)
-            //             .fontSize(14)
-            //             .fontColor(this.subIndex === index ? '#ffd72626' : '#ff211f1f')
-            //         }
-            //         .width('33.33%')
-            //         .height(20)
-            //         .backgroundColor(Color.Transparent)
-            //         .onClick(() => {
-            //           this.subIndex = index
-            //           this.observableTabsController.changeIndex(index)
-            //         })
-            //       })
-            //     }
-            //     .justifyContent(FlexAlign.SpaceAround)
-            //     .width('100%')
-            //     .backgroundColor(Color.Transparent)
-            //     .borderRadius(10) // 胶囊圆角
-            //
-            //   }
-            //   .width('100%')
-            //   .height(20)
-            //
-            // }
-            // .width('30%')
-            // .margin({ bottom: 80 })
-            // .zIndex(999)
           }
         }
       }
 
       MultiFunctionalButton2({ index: this.index, observableScrollers: this.observableScrollers, subIndex: this.subIndex })
     }
+    .height('100%')
   }
 
   getLeftMargin(): Length | undefined {

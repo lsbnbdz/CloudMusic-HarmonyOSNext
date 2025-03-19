@@ -43,7 +43,7 @@ export struct PlayerActionSheet {
       Divider()
       Scroll() {
         Column({ space: 10 }) {
-          if (this.playmode == 1) {
+          if (this.song.id != 0) {
             this.Item(this.isLiked ? $r('app.media.ic_public_favor') : $r('app.media.ic_public_favor_filled'),
               this.isLiked ? '取消喜欢该歌曲' : '喜欢该歌曲', () => {
                 this.isShow = false
@@ -86,19 +86,21 @@ export struct PlayerActionSheet {
               ToastUtil.showToast(MsgConstants.DEVELOPING)
             }, 300)
           })
-          Column().height(px2vp(this.bottomRectHeight))
+          Column().height(px2vp(this.bottomRectHeight)).width('100%')
         }
-        .height('100%')
-        .justifyContent(FlexAlign.Start)
+        .height('auto')
       }
+      .scrollable(ScrollDirection.Vertical)
       .padding({ top: 10 })
       .scrollBar(BarState.Off)
       .edgeEffect(EdgeEffect.Spring)
       .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.BOTTOM])
-      .layoutWeight(1)
       .height('100%')
       .width('100%')
+      .layoutWeight(1)
+      .align(Alignment.Top)
     }
+    .height('100%')
     .padding({
       left:  Constants.PADDING_EDGE_TEXT,
       right: Constants.PADDING_EDGE_TEXT,

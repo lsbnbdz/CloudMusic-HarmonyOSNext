@@ -64,28 +64,34 @@ export async function playMusicByUrl(song: Song, artists: string, isLogged: bool
   }
 }
 
-export async function playMusicWithFile(fileName:string) {
+export async function playMusicWithFile(song: Song, fileName: string) {
   try {
     AppStorage.setOrCreate(StorageConstants.ISLIKED, true)
-    const rootUrl = await FileUtils.getFilesDir()
-    const fileUrl = rootUrl + `/${fileName}`
+    const filesDir = FileUtils.getFilesDir()
+    const fileUrl = filesDir + `/${fileName}`
     let file = await fileIo.open(fileUrl)
     let fdPath = 'fd://' + file.fd
     const metadata = await fetchMetadata(fileUrl)
-    let song = await fetchSongInfo(fileName)
     if(metadata) {
       song.duration = (metadata.duration) ? parseInt(metadata.duration) : 0
     }
     if(FileUtil.accessSync(fileUrl)) {
       setPlayData(0, song, song.artists[0].name, fileName)
-      setPicUrl($r('app.media.ic_public_music'))
+      let picUrl = song.id == 0 ? $r('app.media.ic_files_audio') : `file://${filesDir}/pic/${song.id}.jpg`
+      setPicUrl(picUrl)
       await AVPlayerUtils.setUrl(fdPath)
-      LyricUtils.setLyricArr([])
-      LyricUtils.lyricString = ''
-      AVSessionUtils.setMetadata(song,song.artists[0].name,`$r('app.media.ic_public_music.svg')`)
+      // Lyric
+      if(song.id != 0) {
+        let lyricString = await LyricUtils.readLyric(song.id.toString())
+        LyricUtils.setLyricString(lyricString)
+      } else {
+        LyricUtils.setLyricString('')
+      }
+      // AVSession
+      AVSessionUtils.setMetadata(song,song.artists[0].name, picUrl)
       AVSessionUtils.activate()
-      saveCurrentSongInfo(0, song, song.artists[0].name, $r('app.media.ic_public_music'))
-      EmitterUtil.post(EmitterConstants.EMITTER_LYRIC_UPDATE,'Lyric Updated')
+      saveCurrentSongInfo(0, song, song.artists[0].name, picUrl)
+      EmitterUtil.post(EmitterConstants.EMITTER_LYRIC_UPDATE, 'Lyric Updated')
     } else {
       ToastUtil.showToast('未找到文件')
       playNext()
@@ -123,7 +129,7 @@ export async function playQueue(index: number) {
   const playqueue = queue[index]
   PlayQueueUtils.setIndex(index)
   if(playqueue.playmode == 0) { // Play with file
-    playMusicWithFile(playqueue.fileName)
+    playMusicWithFile(playqueue.song, playqueue.fileName)
   } else { // Play with url
     const isLogged: boolean | undefined = AppStorage.get(StorageConstants.IS_LOGGED)
     playMusicByUrl(playqueue.song, playqueue.artists, isLogged ? true : false, playqueue.picUrl)
@@ -136,7 +142,7 @@ export async function playPre() {
   if(PlayQueueUtils.pre()) {
     const res = PlayQueueUtils.getQueueElement(PlayQueueUtils.currentQueueIndex)
     if(res.playmode == 0) {
-      playMusicWithFile(res.fileName)
+      playMusicWithFile(res.song, res.fileName)
     } else {
       playMusicByUrl(res.song, res.artists, isLogged ? isLogged : false, res.picUrl)
     }
@@ -161,7 +167,7 @@ export async function playNext() {
   else if(PlayQueueUtils.next()) {
     const res = PlayQueueUtils.getQueueElement(PlayQueueUtils.currentQueueIndex)
     if(res.playmode == 0) {
-      playMusicWithFile(res.fileName)
+      playMusicWithFile(res.song, res.fileName)
     } else {
       playMusicByUrl(res.song, res.artists, isLogged ? isLogged:false, res.picUrl)
     }
@@ -250,7 +256,7 @@ async function setPlayData(mode: number, song:Song, artists: string, fileName: s
  * @param picUrl
  */
 async function setPicUrl(picUrl: string | ResourceStr) {
-  AppStorage.setOrCreate('player-picurl', picUrl)
+  AppStorage.setOrCreate(StorageConstants.PIC_URL, picUrl)
 }
 
 /**

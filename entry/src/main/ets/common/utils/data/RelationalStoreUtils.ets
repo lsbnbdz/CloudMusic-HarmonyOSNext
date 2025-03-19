@@ -64,7 +64,7 @@ class RelationalStoreUtils {
    * @returns LocalSong[]
    */
   async getAllSongs(): Promise<LocalSong[]> {
-    const columns = ['id', 'name', 'artists', 'picFile', 'songFile', 'lyricFile']
+    const columns = ['id', 'songId', 'name', 'artists', 'picFile', 'songFile', 'lyricFile']
     const predicates = new relationalStore.RdbPredicates(TABLE_SONGS)
 
     try {
@@ -98,6 +98,31 @@ class RelationalStoreUtils {
   }
 
   /**
+   * 更新歌曲信息
+   * @param id 要修改的记录ID
+   * @param newData 新歌曲数据
+   * @returns 受影响的行数
+   */
+  async updateSong(id: number, newData: LocalSong): Promise<number> {
+    const valueBucket: relationalStore.ValuesBucket = {
+      'songId': newData.songId,
+      'name': newData.name,
+      'artists': newData.artists,
+      'songFile': newData.songFile,
+      'picFile': newData.picFile,
+      'lyricFile': newData.lyricFile
+    }
+    const predicates = new relationalStore.RdbPredicates(TABLE_SONGS)
+      .equalTo('id', id)
+    try {
+      return await this.store.update(valueBucket, predicates)
+    } catch (e) {
+      LogUtil.error(TAG + 'Update Error: ' + e.message)
+      return 0
+    }
+  }
+
+  /**
    * 删除
    * @param id
    * @returns
@@ -112,6 +137,21 @@ class RelationalStoreUtils {
       return 0
     }
   }
+
+  /**
+   * 清除所有数据
+   * @returns
+   */
+  async clearAllData(): Promise<boolean> {
+    try {
+      await this.store.executeSql(`DELETE FROM ${TABLE_SONGS}`)
+      return true
+    } catch (e) {
+      LogUtil.error(TAG + 'Clear data failed: ' + e.message)
+      return false
+    }
+  }
+
 }
 
 const relationalStoreUtils = new RelationalStoreUtils()

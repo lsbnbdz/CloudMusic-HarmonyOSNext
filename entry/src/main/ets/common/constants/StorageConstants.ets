@@ -124,6 +124,11 @@ export class StorageConstants {
    */
   static readonly IS_PLAYER_LOADING: string = 'isPlayerLoading'
   /**
+   * 是否正在迁移数据
+   * @description AppStorage
+   */
+  static readonly IS_MIGRATING_LOCALFILES: string = 'isMigratingLocalFiles'
+  /**
    * 上一次播放的歌单数据
    * @description AppStorage
    */

@@ -26,13 +26,13 @@ export interface SearchReturn {
  * @param searchKeyword 搜索词
  * @returns SearchReturn
  */
-export async function searchSongs(searchKeyword:string, offset:number): Promise<SearchReturn> {
+export async function searchSongs(searchKeyword: string, offset: number, limit: number = 30): Promise<SearchReturn> {
   let list:Array<Song> = new Array()
   let hasMore:boolean = false
   let songCount:number = 0
 
   const rootUrl = await getApiUrl()
-  const url:string = `${rootUrl}/search?keywords=${encodeURIComponent(searchKeyword)}&limit=30&offset=${offset}`
+  const url:string = `${rootUrl}/search?keywords=${encodeURIComponent(searchKeyword)}&limit=${limit}&offset=${offset}`
   const request = new HttpRequest(url)
   await request.Request().then((data) => {
     const dataGot: SongsData = data.result as SongsData

@@ -190,6 +190,7 @@ export struct SongCard {
       Column({ space: 5 }) {
         Row({ space: 5 }) {
           Text(this.song.name)
+            .fontWeight(FontWeight.Bold)
             .fontSize(Constants.FONT_SIZE_COMMON)
             .alignSelf(ItemAlign.Start)
             .fontColor($r('app.color.reverse'))
@@ -203,7 +204,10 @@ export struct SongCard {
         .width('100%')
 
         Row({ space: 5 }) {
-          Text(this.artists).textStyle(12).fontColor(Color.Gray)
+          Text(this.artists)
+            .textStyle(12)
+            .fontColor(Color.Gray)
+            .fontWeight(FontWeight.Medium)
         }
         .width('100%')
       }

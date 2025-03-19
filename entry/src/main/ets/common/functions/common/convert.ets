@@ -2,6 +2,7 @@ import { Artist, Song } from "../../entities/SongsResult"
 import { util } from "@kit.ArkTS"
 import { media } from "@kit.MediaKit"
 import { fileIo } from "@kit.CoreFileKit"
+import { LogUtil } from "@pura/harmony-utils"
 
 /**
  * 获取metadata
@@ -31,18 +32,28 @@ export async function setMetadata(fileUrl: string, title: string, artists: strin
 export async function fetchSongInfo(fileName: string): Promise<Song> {
   const regex = /^(.+?) - (.+)\.\w+$/
   const match = fileName.match(regex)
-  if (!match) { throw new Error('文件名格式错误') }
+  if (!match) {
+    LogUtil.error('文件名格式错误: ' + fileName)
+    return {
+      id: -1,
+      name: '[错误] ' + fileName,
+      artists: [],
+      duration: -1,
+      alias: [],
+      fee: 0
+    }
+  }
   const artistName = match[1].trim()
   const songName = match[2].trim()
   const artists: Artist[] = [
     {
-      id: -1,
+      id: 0,
       name: artistName
     }
   ]
 
   let song: Song = {
-    id: -1,
+    id: 0,
     name: songName,
     artists: artists,
     duration: -1,

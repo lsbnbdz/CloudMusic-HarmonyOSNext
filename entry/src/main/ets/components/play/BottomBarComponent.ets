@@ -27,7 +27,7 @@ export struct BottomBarComponent {
 
   build() {
     Row() {
-      if(this.playmode == 0) { Image($r('app.media.ic_public_music')).fillColor($r('app.color.reverse')).songImg() }
+      if(this.playmode == 0) { Image(this.picUrl).songImg() }
       else { Image(this.picUrl + '?param=512y512').songImg() }
 
       Column({ space: 5 }) {

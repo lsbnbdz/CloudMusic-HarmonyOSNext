@@ -9,6 +9,8 @@ import { PlayConstants } from "../../common/constants/PlayConstants"
 import Constants from "../../common/constants/Constants"
 import { StorageConstants } from "../../common/constants/StorageConstants"
 import { getSongPicUrl } from "../../api/songApi"
+import LyricUtils from "../../common/utils/play/LyricUtils"
+import { getLyricString } from "../../api/LyricApi"
 
 @CustomDialog
 export struct DownloadDialog {
@@ -96,10 +98,12 @@ export struct DownloadDialog {
                 copyDownloadUrl(this.songDownload.data[0].url)
               })
             Button('缓存至本地').ButtonStyle()
-              .onClick(() => {
-                ToastUtil.showToast(`开始缓存：${this.song.name}.${this.songDownload.data[0].type}`)
+              .onClick(async () => {
                 this.controller.close()
-                FileDownloadUtils.download(this.songDownload,this.song,this.artists)
+                FileDownloadUtils.download(this.picUrl.toString(), `${this.song.id}.jpg`, 'pic')
+                let lyricString = await getLyricString(this.song.id)
+                LyricUtils.saveLyricToFile(lyricString, `${this.song.id}.lrc`)
+                FileDownloadUtils.downloadSong(this.songDownload, this.song, this.artists)
               })
             if (!this.isLogged) {
               Text('你尚未登录，将无法完整获取部分会员歌曲')

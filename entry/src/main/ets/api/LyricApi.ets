@@ -33,3 +33,23 @@ export async function getLyric(songId: number): Promise<string[]> {
   lyricArr = lyric.split('\n')
   return lyricArr
 }
+
+/**
+ * 获取歌词完整string
+ * @param songId
+ * @return
+ */
+export async function getLyricString(songId: number): Promise<string> {
+  let lyric: string = ''
+  const rootUrl = await getApiUrl()
+  const url = `${rootUrl}/lyric?id=${songId}`
+  const request = new HttpRequest(url)
+  const data = await request.Request(false)
+  const dataGot = data.result as LyricResult
+  if(dataGot.code == 200) {
+    lyric = dataGot.lrc.lyric
+  } else {
+    lyric = '[00:00:00] 暂无歌词'
+  }
+  return lyric
+}

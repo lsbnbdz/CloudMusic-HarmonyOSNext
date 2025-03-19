@@ -7,6 +7,7 @@ import { AppConstants } from "../common/constants/AppConstants";
 import { promptAction } from "@kit.ArkUI";
 import { HttpRequest } from "../common/utils/request/HttpRequestUtils";
 import { getApiUrl } from "../common/functions/common/get";
+import RelationalStoreUtils from "../common/utils/data/RelationalStoreUtils";
 
 @Component
 export struct DebugPage {
@@ -21,6 +22,9 @@ export struct DebugPage {
     NavDestination() {
       Scroll() {
         Column({ space: 20 }) {
+          Button('Clean RelationalStore').onClick(() => {
+            RelationalStoreUtils.clearAllData()
+          })
           Text(`APP Version: ${AppConstants.VERSION} ${AppConstants.VER_DESC}`)
             .textStyle()
           Text(`deviceType: ${this.deviceType == resourceManager.DeviceType.DEVICE_TYPE_PHONE ? 'Phone' :

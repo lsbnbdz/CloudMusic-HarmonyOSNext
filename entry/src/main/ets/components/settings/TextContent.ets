@@ -66,19 +66,20 @@ export struct TextContents {
         }
         .backgroundColor(Color.Transparent)
         .padding(Constants.PADDING_EDGE_DEFAULT)
+        .gesture(
+          TapGesture({
+            count: 5
+          }).onAction(() => {
+            this.pageInfos.pushDestinationByName('DebugPage', null)
+          })
+        )
         .onClick(() => {
           if(this.appInfo.data.Version.currentVersionCode > AppConstants.VERSIONCODE) {
             this.handleUpdate()
           }
-        })
-      }
-      .gesture(
-        TapGesture({
-          count: 5
-        }).onAction(() => {
           this.pageInfos.pushDestinationByName('DebugPage', null)
         })
-      )
+      }
       TextContent('使用文档', '', () => {
         let param: WebPageParam = {
           title: '使用文档', url: 'https://docs.chenlvin.cc/cloudmusic/#/help'

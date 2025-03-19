@@ -5,6 +5,10 @@ import fs from '@ohos.file.fs'
 import { Environment, fileUri } from '@kit.CoreFileKit'
 import { picker } from '@kit.CoreFileKit'
 import { BusinessError } from '@kit.BasicServicesKit'
+import { LocalSong } from '../../entities/LocalData'
+import RelationalStoreUtils from '../data/RelationalStoreUtils'
+import { JSON } from '@kit.ArkTS'
+import { fetchSongInfo, getArtists } from '../../functions/common/convert'
 
 /**
  * 文件管理
@@ -16,12 +20,20 @@ class FileUtils {
   filesDir = this.context.filesDir
   cacheDir = this.context.cacheDir
 
-  async getFilesDir() {
+  getFilesDir() {
     return this.filesDir
   }
 
+  getCacheDir() {
+    return this.cacheDir
+  }
+
   async getFileName(): Promise<Array<string>> {
-    let list = await fileIo.listFile(this.filesDir)
+    let list = await fileIo.listFile(this.filesDir, {
+      filter: {
+        suffix: ['.mp3', '.MP3', '.flac', '.FLAC'],
+      }
+    })
     return list
   }
 
@@ -43,22 +55,29 @@ class FileUtils {
     return ''
   }
 
-  async deleteFile(fileNames: string[]) {
+  async deleteFile(localSongs: LocalSong[]) {
     try {
       let successCount = 0
-      for (const fileName of fileNames) {
+      for (const localSong of localSongs) {
+        LogUtil.info(TAG + 'delete count + 1')
         try {
-          await FileUtil.unlink(this.filesDir + `/${fileName}`)
+          await FileUtil.unlink(this.filesDir + `/${localSong.songFile}`)
+          if(localSong.songId != 0) {
+            await FileUtil.unlink(this.filesDir + `/pic/${localSong.songId}.jpg`)
+            await FileUtil.unlink(this.filesDir + `/lyric/${localSong.songId}.lrc`)
+          }
+          RelationalStoreUtils.deleteSong(localSong.id)
           successCount++
         } catch (e) {
-          LogUtil.error(TAG + `删除文件 ${fileName} 失败: ${JSON.stringify(e)}`)
+          LogUtil.error(TAG + `删除文件 ${localSong.songFile} 失败: ${e.stack}`)
         }
       }
-      ToastUtil.showToast(`成功删除 ${successCount}/${fileNames.length} 个文件`)
+      ToastUtil.showToast(`删除了 ${successCount}/${localSongs.length} 个文件`)
     } catch (e) {
       LogUtil.error(TAG + `Delete files error: ${JSON.stringify(e)}`)
     }
   }
+
 
   async getFileUri(fileName:string): Promise<fileUri.FileUri | null> {
     try {
@@ -72,27 +91,27 @@ class FileUtils {
 
   async moveFile(from:string, to:string) {
     try {
-      FileUtil.moveFile(from, to)
+      FileUtil.moveFile(from, to, 0)
     } catch (e) {
       LogUtil.error(TAG + '移动文件时出错 move file error: ' + e.message())
     }
   }
 
-  async saveFile(fileNames: string[]) {
+  async saveFile(localSongs: LocalSong[]) {
     try {
       let filePicker = new picker.DocumentViewPicker()
       let saveOption = new picker.DocumentSaveOptions()
-      saveOption.newFileNames = fileNames
+      saveOption.newFileNames = localSongs.map(song => song.songFile)
 
       filePicker.save(saveOption).then((uris) => {
         uris.forEach(async (uri, index) => {
           try {
-            let srcPath = this.filesDir + `/${fileNames[index]}`
+            let srcPath = this.filesDir + `/${localSongs[index].songFile}`
             let descFile = fs.openSync(uri, fs.OpenMode.READ_WRITE | fs.OpenMode.CREATE)
             await fs.copyFile(srcPath, descFile.fd)
             fs.closeSync(descFile.fd)
           } catch (err) {
-            LogUtil.error(TAG + `文件 ${fileNames[index]} 保存失败: ${err.message}`)
+            LogUtil.error(TAG + `文件 ${localSongs[index].songFile} 保存失败: ${err.message}`)
           }
         })
         ToastUtil.showToast(`成功保存 ${uris.length} 个文件`)
@@ -103,6 +122,7 @@ class FileUtils {
       LogUtil.error(TAG + '保存文件出错: ' + e.message())
     }
   }
+
 
   async previewFile(fileName: string) {
     let uri = FileUtil.getUriFromPath(this.filesDir + `/${fileName}`)
@@ -134,7 +154,7 @@ class FileUtils {
   }
 
   async saveFilesToDirectory(uris: string[]) {
-    let result: boolean = false
+    let result: number = 0
     try {
       for (const uri of uris) {
         let fileUriObject = new fileUri.FileUri(uri)
@@ -143,7 +163,20 @@ class FileUtils {
         fs.copyFileSync(file.fd, file2.fd)
         fs.closeSync(file)
         fs.closeSync(file2)
-        result = true
+        let song = await fetchSongInfo(fileUriObject.name)
+        if(song.id != -1) {
+          let localSong: LocalSong = {
+            id: 0,
+            songId: 0,
+            name: song.name,
+            artists: await getArtists(song.artists),
+            picFile: "",
+            songFile: fileUriObject.name,
+            lyricFile: ""
+          }
+          await RelationalStoreUtils.addSong(localSong)
+        }
+        result ++
       }
     } catch (e) {
       ToastUtil.showToast('上传失败')

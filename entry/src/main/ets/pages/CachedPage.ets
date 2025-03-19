@@ -2,9 +2,12 @@ import FileUtils from '../common/utils/file/FileUtils';
 import { FileCard } from '../components/cards/FileCard';
 import { BottomBarComponent } from '../components/play/BottomBarComponent';
 import Constants from '../common/constants/Constants';
-import { resourceManager } from '@kit.LocalizationKit';
 import { StorageConstants } from '../common/constants/StorageConstants';
 import { DialogUtil, LogUtil, PickerUtil, ToastUtil } from '@pura/harmony-utils';
+import { LocalSong } from '../common/entities/LocalData';
+import RelationalStoreUtils from '../common/utils/data/RelationalStoreUtils';
+import { LocalMigrationSheet } from '../components/sheets/LocalMigrationSheet';
+import { LazyData } from '@pie/lazy-data';
 
 /**
  * 缓存管理页
@@ -18,12 +21,15 @@ export struct CachedPage {
   @StorageProp('topRectHeight') topRectHeight: number = 0
   @StorageProp(StorageConstants.BREAKPOINT) breakpoint: string = 'sm'
   @State searchKeyword: string = ''
-  @State fileList: string[] = []
-  @State filteredList: Array<string> = new Array()
+  @State filteredSongs: LocalSong[] = new Array()
   @State isSorted: boolean = false
   @State isSelecting: boolean = false
-  @State selectedFiles: string[] = []
-  private originalOrderList: string[] = []
+  @State selectedSongs: LocalSong[] = []
+  @State localSongs: LocalSong[] = []
+  @State isShowMigration: boolean = false
+  @State dataSource: LazyData<LocalSong> = new LazyData()
+  @State dataSourceFiltered: LazyData<LocalSong> = new LazyData()
+  private originalOrderList: LocalSong[] = []
 
   menus: NavigationMenuItem[] = [
     {
@@ -57,7 +63,7 @@ export struct CachedPage {
   ]
 
   async aboutToAppear(): Promise<void> {
-    this.refreshFileList()
+    this.refreshList()
   }
 
   build() {
@@ -77,7 +83,7 @@ export struct CachedPage {
                   .searchButton('搜索')
                   .onChange((value) => {
                     if(value == '') {
-                      this.filteredList = []
+                      this.filteredSongs = []
                       this.searchKeyword = ''
                     }
                   })
@@ -87,9 +93,9 @@ export struct CachedPage {
                   })
               }
               GridItem() {
-                if (this.fileList.length > 0) {
+                if (this.localSongs.length > 0) {
                   Row() {
-                    Text(this.isSelecting ? `已选 ${this.selectedFiles.length} 项` : `共 ${this.fileList.length} 首歌曲`)
+                    Text(this.isSelecting ? `已选 ${this.selectedSongs.length} 项` : `共 ${this.localSongs.length} 首歌曲`)
                       .fontSize(Constants.FONT_SIZE_COMMON)
                     Row({ space: 20 }) {
                       if(!this.isSelecting) {
@@ -99,13 +105,12 @@ export struct CachedPage {
                           .fillColor(this.isSorted ? $r('app.color.blue') : Color.Gray)
                           .onClick(() => {
                             this.isSorted = !this.isSorted
-                            this.fileList = this.getSortedList(this.fileList)
                             if (this.searchKeyword) {
-                              this.filteredList = this.getSortedList(this.filteredList)
+                              this.filteredSongs = this.getSortedList(this.filteredSongs)
                             }
                           })
                       } else {
-                        if(this.selectedFiles.length > 0) {
+                        if(this.selectedSongs.length > 0) {
                           Image($r('app.media.ic_public_delete'))
                             .width(Constants.SIZE_ICON_BUTTON_BAR)
                             .aspectRatio(1)
@@ -118,7 +123,7 @@ export struct CachedPage {
                             .aspectRatio(1)
                             .fillColor(Color.Gray)
                             .onClick(() => {
-                              FileUtils.saveFile(this.selectedFiles)
+                              FileUtils.saveFile(this.selectedSongs)
                             })
                         }
                         CheckboxGroup({ group: 'fileCard' })
@@ -133,7 +138,7 @@ export struct CachedPage {
                         .onClick(() => {
                           animateTo({ duration: 100, curve: Curve.EaseInOut }, () => {
                             this.isSelecting = !this.isSelecting
-                            this.selectedFiles = []
+                            this.selectedSongs = []
                           })
                         })
                     }
@@ -143,31 +148,30 @@ export struct CachedPage {
                   .width('100%')
                 }
                 else {
-                  Text('文件沙箱目录为空').width('100%').textAlign(TextAlign.Center).padding({ left: 30, right: 30, top: 10 })
+                  Column({ space: 20 }) {
+                    Text('本地文件列表为空').width('100%').textAlign(TextAlign.Center).padding({ left: 30, right: 30, top: 10 })
+                    Button('迁移旧版本数据').padding({ left: 10, right: 10, top: 5, bottom: 5 })
+                      .onClick(() => { this.isShowMigration = true })
+                      .bindSheet(this.isShowMigration, this.Migration(), {
+                        preferType: SheetType.CENTER,
+                        height: SheetSize.MEDIUM,
+                        dragBar: false,
+                        showClose: false,
+                        backgroundColor: Color.Transparent,
+                        blurStyle: BlurStyle.Regular,
+                        onDisappear: () => { this.isShowMigration = false }
+                      })
+                  }
                 }
               }
 
               GridItem() {
                 GridRow({ columns: { xs: 1, sm: 1, md: 1, lg: 2, xl: 2 } }) {
-                  ForEach(this.searchKeyword ?
-                  this.getSortedList(this.filteredList) :
-                  this.getSortedList(this.fileList),
-                    (item: string, index: number) => {
-                    GridCol() {
-                      Row({ space: 5 }) {
-                        FileCard({
-                          fileName: item,
-                          list: this.fileList
-                        })
-                          .layoutWeight(1)
-                        if(this.isSelecting) {
-                          this.CardCheckBox(item)
-                        }
-                      }
-                      .width('100%')
-                      .padding({ bottom: Constants.PADDING_EDGE_DEFAULT })
-                    }
-                  })
+                  if(!this.searchKeyword) {
+                    this.ListContent(this.dataSource)
+                  } else {
+                    this.ListContent(this.dataSourceFiltered)
+                  }
                 }
               }
               .width('100%')
@@ -211,26 +215,27 @@ export struct CachedPage {
 
   private handelSearch() {
     try {
-      if (this.searchKeyword.trim() === '') {
-        this.filteredList = [...this.fileList]
-        return
+      if (!this.searchKeyword) {
+        this.dataSourceFiltered.setData([])
       }
       const keyword = this.searchKeyword.trim().toLowerCase()
-      this.filteredList = this.getSortedList( // 保持当前排序状态
-        this.fileList.filter(string =>
-        string.toLowerCase().includes(keyword))
-      )
+      this.dataSourceFiltered.setData(this.localSongs.filter((item: LocalSong) => {
+        return item.songFile.toString().toLowerCase().includes(keyword)
+      }))
     } catch (e) {
       ToastUtil.showToast('搜索时出错')
       LogUtil.error(TAG + 'Error while handelSearch: ' + e.message)
     }
   }
 
-  private async refreshFileList() {
-    this.fileList = await FileUtils.getFileName()
-    this.originalOrderList = [...this.fileList]
+  private async refreshList() {
+    this.localSongs = []
+    this.localSongs = await RelationalStoreUtils.getAllSongs()
+    this.originalOrderList = [...this.localSongs]
     this.isSelecting = false
-    this.selectedFiles = []
+    this.selectedSongs = []
+    this.dataSource.setData(this.getSortedList(this.localSongs))
+    this.dataSource.notifyDataReload()
   }
 
   private async handleUpload() {
@@ -240,37 +245,59 @@ export struct CachedPage {
     }).then((uris) => {
       FileUtils.saveFilesToDirectory(uris).then(async (result) => {
         if(result) {
-          ToastUtil.showToast('上传成功')
-          await this.refreshFileList()
+          ToastUtil.showToast(`成功上传 ${result} 个文件`)
+          await this.refreshList()
         }
       })
     })
   }
 
-  private getSortedList(list: string[]): string[] {
+  private getSortedList(list: LocalSong[]): LocalSong[] {
     return this.isSorted ?
-    [...list].sort((a, b) => a.localeCompare(b)) :
-    this.originalOrderList.filter(f => list.includes(f))
+    [...list].sort((a, b) => a.songFile.localeCompare(b.songFile)) :
+    this.originalOrderList.filter(f => list.some(l => l.songFile === f.songFile))
   }
 
   private handleDelete() {
     DialogUtil.showPrimaryDialog({
       title: '确认',
-      message: `是否删除选中的 ${this.selectedFiles.length} 个文件?`,
+      message: `是否删除选中的 ${this.selectedSongs.length} 个文件?`,
       primaryButton: "取消",
       secondaryButton: {
         value: '删除',
         fontColor: Color.Red,
         action: async () => {
-          FileUtils.deleteFile(this.selectedFiles).then(async () => {
-            await this.refreshFileList()
-          })
+          await FileUtils.deleteFile(this.selectedSongs)
+          await this.refreshList()
         }
       }
     })
   }
 
-  @Builder CardCheckBox(name: string) {
+  @Builder ListContent(dataSource: LazyData<LocalSong>) {
+    LazyForEach(dataSource,
+      (item: LocalSong, index: number) => {
+        GridCol() {
+          Row({ space: 5 }) {
+            FileCard({
+              localSong: item
+            })
+              .layoutWeight(1)
+            if(this.isSelecting) {
+              this.CardCheckBox(item)
+            }
+          }
+          .width('100%')
+          .padding({ bottom: Constants.PADDING_EDGE_DEFAULT })
+        }
+        .key(this.searchKeyword)
+      },(item: LocalSong, index) => item.id.toString())
+  }
+  @Builder Migration() {
+    LocalMigrationSheet({ isShowMigration: this.isShowMigration })
+  }
+
+  @Builder CardCheckBox(localSong: LocalSong) {
     Checkbox({ group: 'fileCard' })
       .shape(CheckBoxShape.ROUNDED_SQUARE)
       .width(Constants.SIZE_ICON_BUTTON_BAR)
@@ -278,11 +305,11 @@ export struct CachedPage {
       .onChange((value) => {
         if(value) {
           animateTo({ duration: 100, curve: Curve.Ease }, () => {
-            this.selectedFiles.push(name)
+            this.selectedSongs.push(localSong)
           })
         } else {
           animateTo({ duration: 100, curve: Curve.Ease }, () => {
-            this.selectedFiles = this.selectedFiles.filter(item => item !== name)
+            this.selectedSongs = this.selectedSongs.filter(item => item.name !== localSong.name)
           })
         }
       })

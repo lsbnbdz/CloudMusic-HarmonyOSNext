@@ -3,7 +3,7 @@ import { FileCard } from '../components/cards/FileCard';
 import { BottomBarComponent } from '../components/play/BottomBarComponent';
 import Constants from '../common/constants/Constants';
 import { StorageConstants } from '../common/constants/StorageConstants';
-import { DialogUtil, LogUtil, PickerUtil, ToastUtil } from '@pura/harmony-utils';
+import { DialogUtil, EmitterUtil, LogUtil, PickerUtil, ToastUtil } from '@pura/harmony-utils';
 import { LocalSong } from '../common/entities/LocalData';
 import RelationalStoreUtils from '../common/utils/data/RelationalStoreUtils';
 import { LocalMigrationSheet } from '../components/sheets/LocalMigrationSheet';
@@ -30,6 +30,7 @@ export struct CachedPage {
   @State dataSource: LazyData<LocalSong> = new LazyData()
   @State dataSourceFiltered: LazyData<LocalSong> = new LazyData()
   private originalOrderList: LocalSong[] = []
+  @Consume('pageInfos') pageInfos: NavPathStack
 
   menus: NavigationMenuItem[] = [
     {
@@ -63,6 +64,9 @@ export struct CachedPage {
   ]
 
   async aboutToAppear(): Promise<void> {
+    EmitterUtil.onSubscribe('refreshLocalSongs', async () => {
+      await this.refreshList()
+    })
     this.refreshList()
   }
 
@@ -99,16 +103,16 @@ export struct CachedPage {
                       .fontSize(Constants.FONT_SIZE_COMMON)
                     Row({ space: 20 }) {
                       if(!this.isSelecting) {
-                        Image($r('app.media.ic_files_name_drive'))
-                          .width(Constants.SIZE_ICON_BUTTON_BAR)
-                          .aspectRatio(1)
-                          .fillColor(this.isSorted ? $r('app.color.blue') : Color.Gray)
-                          .onClick(() => {
-                            this.isSorted = !this.isSorted
-                            if (this.searchKeyword) {
-                              this.filteredSongs = this.getSortedList(this.filteredSongs)
-                            }
-                          })
+                        // Image($r('app.media.ic_files_name_drive'))
+                        //   .width(Constants.SIZE_ICON_BUTTON_BAR)
+                        //   .aspectRatio(1)
+                        //   .fillColor(this.isSorted ? $r('app.color.blue') : Color.Gray)
+                        //   .onClick(() => {
+                        //     this.isSorted = !this.isSorted
+                        //     if (this.searchKeyword) {
+                        //       this.filteredSongs = this.getSortedList(this.filteredSongs)
+                        //     }
+                        //   })
                       } else {
                         if(this.selectedSongs.length > 0) {
                           Image($r('app.media.ic_public_delete'))
@@ -229,12 +233,11 @@ export struct CachedPage {
   }
 
   private async refreshList() {
-    this.localSongs = []
     this.localSongs = await RelationalStoreUtils.getAllSongs()
     this.originalOrderList = [...this.localSongs]
     this.isSelecting = false
     this.selectedSongs = []
-    this.dataSource.setData(this.getSortedList(this.localSongs))
+    this.dataSource.setData(this.localSongs)
     this.dataSource.notifyDataReload()
   }
 
@@ -268,7 +271,9 @@ export struct CachedPage {
         fontColor: Color.Red,
         action: async () => {
           await FileUtils.deleteFile(this.selectedSongs)
-          await this.refreshList()
+          setTimeout(async () => {
+            await this.refreshList()
+          }, 100)
         }
       }
     })
@@ -282,6 +287,7 @@ export struct CachedPage {
             FileCard({
               localSong: item
             })
+              .padding({ left: 5, right: 5 })
               .layoutWeight(1)
             if(this.isSelecting) {
               this.CardCheckBox(item)
@@ -290,8 +296,8 @@ export struct CachedPage {
           .width('100%')
           .padding({ bottom: Constants.PADDING_EDGE_DEFAULT })
         }
-        .key(this.searchKeyword)
-      },(item: LocalSong, index) => item.id.toString())
+        .key(item.id + this.searchKeyword)
+      },(item: LocalSong) => item.songFile.toString() + this.searchKeyword)
   }
   @Builder Migration() {
     LocalMigrationSheet({ isShowMigration: this.isShowMigration })

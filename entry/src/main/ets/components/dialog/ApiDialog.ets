@@ -14,7 +14,7 @@ export struct ApiDialog {
   build() {
     Column({ space: 20 }) {
       Row({ space: 10 }) {
-        Text('API服务器状态\n需要设置API服务器以使用本应用')
+        Text('启用在线服务')
           .fontWeight(FontWeight.Bold)
           .fontColor($r('app.color.reverse'))
           .textAlign(TextAlign.Center)
@@ -26,7 +26,7 @@ export struct ApiDialog {
       this.SetApiUrl()
 
       Text() {
-        Span(`当前API服务器状态: `)
+        Span(`当前服务器状态: `)
         Span(`${this.validApiUrl ? '可用' : '不可用'}`)
           .fontWeight(FontWeight.Bold)
       }
@@ -89,12 +89,10 @@ export struct ApiDialog {
     .backgroundColor(Color.Transparent)
     .onClick(() => {
       DialogUtil.showPrimaryDialog({
-        title: 'API服务器地址',
-        message: '你需要填入API服务器地址才可以正常使用本应用\n' +
-          '需要自行搭建NeteaseCloudMusicApi服务\n\n' +
+        title: 'API服务器',
+        message: '填入API服务器地址以启用在线服务\n' +
           '地址格式: http://example.com:3000\n' +
-          '(注意末尾不带\"/\")\n\n' +
-          '填入后重启应用生效',
+          '(注意末尾不带\"/\")',
         primaryButton: {
           value: '使用文档',
           action: () => { openInWeb('https://docs.chenlvin.cc/cloudmusic/#/help?timestamp=' + new Date().getTime()) }

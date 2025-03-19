@@ -24,6 +24,7 @@ export struct DebugPage {
         Column({ space: 20 }) {
           Button('Clean RelationalStore').onClick(() => {
             RelationalStoreUtils.clearAllData()
+            promptAction.showToast({ message: 'RelationalStore Cleaned' })
           })
           Text(`APP Version: ${AppConstants.VERSION} ${AppConstants.VER_DESC}`)
             .textStyle()

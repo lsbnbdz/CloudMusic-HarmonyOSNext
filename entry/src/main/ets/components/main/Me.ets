@@ -4,6 +4,7 @@ import Constants from "../../common/constants/Constants"
 import { StorageConstants } from "../../common/constants/StorageConstants"
 import { User, UserClass } from "../../common/entities/User"
 import { initUserInfo } from "../../common/functions/app/appInit"
+import { SettingsPage } from "../../pages/settings/SettingsPage"
 import { CircleImageButton } from "../buttons/CircleButton"
 
 @Component
@@ -15,6 +16,7 @@ export struct Me {
   @StorageProp(StorageConstants.COOKIE) cookie: string = ''
   @StorageProp(StorageConstants.APP_LOADING) appLoading: boolean = true
   @State isRefreshing: boolean = false
+  @State isShowSettings: boolean = false
   @Consume('pageInfos') pageInfos: NavPathStack
 
   async aboutToAppear(): Promise<void> {
@@ -65,11 +67,7 @@ export struct Me {
 
       Column() {
         this.ItemCard($r('app.media.ic_public_settings_filled'), '设置', () => {
-          if(this.pageInfos.size() == 0) {
-            this.pageInfos.pushPathByName('SettingsPage', null)
-          } else {
-            this.pageInfos.replacePathByName('SettingsPage', null)
-          }
+          this.isShowSettings = true
         })
       }
       .itemColumnStyle()
@@ -107,6 +105,15 @@ export struct Me {
     })
     .backgroundColor($r('app.color.background'))
     .padding({ left: 20, right: 20 })
+    .bindSheet(this.isShowSettings, this.Settings(), {
+      preferType: SheetType.CENTER,
+      height: SheetSize.LARGE,
+      dragBar: false,
+      showClose: false,
+      scrollSizeMode: ScrollSizeMode.FOLLOW_DETENT,
+      backgroundColor: $r('app.color.background'),
+      onDisappear: () => { this.isShowSettings = false }
+    })
   }
 
   @Builder ItemCard(icon: ResourceStr | string, text: string, action: () => void) {
@@ -151,6 +158,10 @@ export struct Me {
           this.handleRefresh()
         })
     }
+  }
+
+  @Builder Settings() {
+    SettingsPage()
   }
 
   private LogOut() {

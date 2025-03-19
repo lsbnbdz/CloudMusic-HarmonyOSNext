@@ -1,4 +1,4 @@
-import { DialogUtil, LogUtil, PasteboardUtil, ToastUtil } from "@pura/harmony-utils"
+import { DialogUtil, EmitterUtil, LogUtil, PasteboardUtil, ToastUtil } from "@pura/harmony-utils"
 import Constants from "../../common/constants/Constants"
 import { LocalSong, LocalSongClass } from "../../common/entities/LocalData"
 import { Song } from "../../common/entities/SongsResult"
@@ -119,7 +119,7 @@ export struct FileCard {
               action: async () => {
                 try {
                   await FileUtils.deleteFile([this.localSong])
-                  RelationalStoreUtils.deleteSong(this.localSong.id)
+                  EmitterUtil.post('refreshLocalSongs',() => {})
                 } catch (e) {
                   ToastUtil.showToast('删除时出错')
                   LogUtil.error('Delete local song error: ' + e.message)
@@ -129,6 +129,10 @@ export struct FileCard {
           })
         })
     }
+    .constraintSize({
+      minWidth: 100,
+      maxWidth: 500
+    })
   }
 
   @Builder

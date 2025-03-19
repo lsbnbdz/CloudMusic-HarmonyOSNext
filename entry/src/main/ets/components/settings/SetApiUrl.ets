@@ -1,5 +1,4 @@
 import { CircleImageButton } from '../buttons/CircleButton'
-import { SetApiSheet } from '../sheets/CustomApiUrlSheet'
 import Constants from '../../common/constants/Constants'
 
 /**
@@ -12,31 +11,17 @@ export struct SetApiUrl {
     Column({ space: 5 }) {
       Row() {
         Row({ space: 5 }) {
-          Text('API服务器与Cookie设置').LeftText()
+          Text('API与Cookie设置').LeftText()
         }
-        CircleImageButton({ imgUrl: $r('app.media.ic_public_arrow_right'), })
+        Image($r('app.media.ic_public_arrow_right'))
+          .width(Constants.FONT_SIZE_TITLE)
+          .fillColor($r('app.color.reverse'))
       }
       .width('100%')
       .justifyContent(FlexAlign.SpaceBetween)
-      .bindSheet(this.isShowSheet, this.Sheet(), {
-        backgroundColor: $r('app.color.background'),
-        preferType: SheetType.CENTER,
-        detents: [SheetSize.MEDIUM, SheetSize.LARGE],
-        dragBar: true,
-        onDisappear: () => {
-          this.isShowSheet = false
-        }
-      })
-      .onClick(() => {
-        this.isShowSheet = !this.isShowSheet
-      })
+      .height(35)
     }
     .width('100%')
-  }
-
-  @Builder
-  Sheet() {
-    SetApiSheet({ isShowSheet: this.isShowSheet })
   }
 }
 

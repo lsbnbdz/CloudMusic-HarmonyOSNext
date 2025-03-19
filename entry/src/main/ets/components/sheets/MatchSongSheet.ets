@@ -1,5 +1,5 @@
 import { LogUtil, ToastUtil } from "@pura/harmony-utils"
-import { getLyric, getLyricString } from "../../api/LyricApi"
+import { getLyricString } from "../../api/LyricApi"
 import { getSongPicUrl, searchSongs } from "../../api/songApi"
 import Constants from "../../common/constants/Constants"
 import { LocalSong } from "../../common/entities/LocalData"
@@ -29,12 +29,10 @@ export struct MatchSongSheet {
           .fontWeight(FontWeight.Bold)
           .fontColor($r('app.color.reverse'))
           .width('100%')
-        Text(`${this.localSong.artists}`)
-          .fontSize(Constants.FONT_SIZE_COMMON)
-          .fontColor(Color.Gray)
-          .width('100%')
+          .maxLines(1)
+          .textOverflow({ overflow: TextOverflow.Ellipsis })
       }
-      .padding({ top: Constants.PADDING_EDGE_TEXT, left: Constants.PADDING_EDGE_TEXT, right: Constants.PADDING_EDGE_TEXT})
+      .padding({ top: 20, left: Constants.PADDING_EDGE_TEXT, right: Constants.PADDING_EDGE_TEXT})
       .width('100%')
 
       List() {

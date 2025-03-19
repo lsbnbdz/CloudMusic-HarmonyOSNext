@@ -4,53 +4,47 @@ import { StorageConstants } from "../../common/constants/StorageConstants"
 import { checkValidUrl } from "../../common/functions/common/get"
 import { openInWeb } from "../../common/functions/common/open"
 import PreferencesUtils from "../../common/utils/data/PreferencesUtils"
-import { ExplainButton } from "../buttons/ExplainButton"
+import { ExplainButton } from "../../components/buttons/ExplainButton"
 
 /**
  * 自定义API服务器地址
  * Sheet
  */
 @Component
-export struct SetApiSheet {
+export struct ApiSetPage {
   @StorageLink(StorageConstants.IS_CUSTOM_COOKIE) isCustomCookie: boolean = false
   @StorageProp(StorageConstants.CUSTOM_COOKIE) customCookie: string = ''
   @StorageProp(StorageConstants.API_URL) customApiUrl: string = ''
   @StorageProp(StorageConstants.VALID_API_URL) validApiUrl: boolean = false
   @StorageProp(StorageConstants.BREAKPOINT) breakpoint: string = 'sm'
   @StorageProp('bottomRectHeight') bottomRectHeight: number = 0
-  @Link isShowSheet: boolean
 
   build() {
-    Column({ space: 20 }) {
-      Text('设置')
+    NavDestination() {
+      Column({ space: 20 }) {
+        this.SetApiUrl()
+        Text() {
+          Span(`当前服务器状态: `)
+          Span(`${this.validApiUrl ? '可用' : '不可用'}`)
+            .fontWeight(FontWeight.Bold)
+        }
         .width('100%')
-        .fontSize(Constants.FONT_SIZE_TITLE)
-        .fontWeight(FontWeight.Bold)
-        .padding({ top: this.breakpoint === 'sm' ? Constants.PADDING_EDGE_DEFAULT : Constants.PADDING_EDGE_TEXT,
-          left: Constants.PADDING_EDGE_TEXT,
-          right: Constants.PADDING_EDGE_TEXT
-        })
+        .textAlign(TextAlign.Center)
+        .fontColor($r('app.color.reverse'))
+        .fontSize(Constants.FONT_SIZE_COMMON)
+        .padding({ bottom: 30 })
 
-      this.SetApiUrl()
-      Text() {
-        Span(`当前API服务器状态: `)
-        Span(`${this.validApiUrl ? '可用' : '不可用'}`)
-          .fontWeight(FontWeight.Bold)
+        this.SetCookie()
       }
+      .padding({ top: Constants.PADDING_EDGE_TEXT, left: Constants.PADDING_EDGE_DEFAULT, right: Constants.PADDING_EDGE_DEFAULT, bottom: px2vp(this.bottomRectHeight) + Constants.PADDING_EDGE_TEXT })
       .width('100%')
-      .textAlign(TextAlign.Center)
-      .fontColor($r('app.color.reverse'))
-      .fontSize(Constants.FONT_SIZE_COMMON)
-      .padding({ bottom: 30 })
-
-      this.SetCookie()
+      .constraintSize({
+        minWidth: 200,
+        maxWidth: 600
+      })
     }
-    .padding({ left: Constants.PADDING_EDGE_DEFAULT, right: Constants.PADDING_EDGE_DEFAULT, bottom: px2vp(this.bottomRectHeight) + Constants.PADDING_EDGE_TEXT })
-    .width('100%')
-    .constraintSize({
-      minWidth: 200,
-      maxWidth: 600
-    })
+    .backgroundColor($r('app.color.background'))
+    .title('API与Cookie设置')
   }
 
   @Builder SetApiUrl() {
@@ -72,8 +66,7 @@ export struct SetApiSheet {
               message: '你需要填入API服务器地址才可以正常使用本软件\n' +
                 '需要自行搭建NeteaseCloudMusicApi服务\n\n' +
                 '地址格式: http://example.com:3000\n' +
-                '(注意末尾不带\"/\")\n\n' +
-                '填入后重启应用生效',
+                '(注意末尾不带\"/\")',
               primaryButton: {
                 value: '使用文档',
                 action: () => { openInWeb('https://docs.chenlvin.cc/cloudmusic/#/help?timestamp=' + new Date().getTime()) }

@@ -24,6 +24,7 @@ export struct CachedPage {
   @StorageProp('bottomRectHeight') bottomRectHeight: number = 0
   @StorageProp('topRectHeight') topRectHeight: number = 0
   @StorageProp(StorageConstants.BREAKPOINT) breakpoint: string = 'sm'
+  @State filesList: string[] = []
   @State searchKeyword: string = ''
   @State filteredSongs: LocalSong[] = new Array()
   @State isSorted: boolean = false
@@ -33,6 +34,7 @@ export struct CachedPage {
   @State isShowMigration: boolean = false
   @State dataSource: LazyData<LocalSong> = new LazyData()
   @State dataSourceFiltered: LazyData<LocalSong> = new LazyData()
+  @State loadStatus: boolean = false
   private originalOrderList: LocalSong[] = []
   @Consume('pageInfos') pageInfos: NavPathStack
 
@@ -68,98 +70,102 @@ export struct CachedPage {
   ]
 
   async aboutToAppear(): Promise<void> {
+    this.filesList = await FileUtils.getFileName()
     EmitterUtil.onSubscribe('refreshLocalSongs', async () => {
       await this.refreshList()
     })
     this.refreshList()
   }
 
+  aboutToDisappear(): void {
+
+  }
+
   build() {
     NavDestination() {
       Stack({ alignContent: Alignment.Bottom }) {
         Column() {
-          Column() {
-            Scroll(this.observableScroller.getScroller()){
-              Grid() {
-                GridItem().height('7%').backgroundColor('transparent')
-                GridItem() {
-                  Search({
-                    placeholder: '搜索文件',
-                    icon: '/resources/base/media/ic_public_search_filled.svg'
-                  })
-                    .id('search')
-                    .height(Constants.HEIGHT_SELECT)
-                    .width('100%')
-                    .searchButton('搜索')
-                    .onChange((value) => {
-                      if(value == '') {
-                        this.filteredSongs = []
-                        this.searchKeyword = ''
-                      }
-                    })
-                    .onSubmit((value) => {
-                      this.searchKeyword = value
-                      this.handelSearch()
-                    })
-                }
-                GridItem() {
-                  if (this.localSongs.length > 0) {
-                    Row() {
-                      Text(this.isSelecting ? `已选 ${this.selectedSongs.length} 项` : `共 ${this.localSongs.length} 首歌曲`)
-                        .fontSize(Constants.FONT_SIZE_COMMON)
-                      Row({ space: 20 }) {
-                        if(!this.isSelecting) {
-                          // Image($r('app.media.ic_files_name_drive'))
-                          //   .width(Constants.SIZE_ICON_BUTTON_BAR)
-                          //   .aspectRatio(1)
-                          //   .fillColor(this.isSorted ? $r('app.color.blue') : Color.Gray)
-                          //   .onClick(() => {
-                          //     this.isSorted = !this.isSorted
-                          //     if (this.searchKeyword) {
-                          //       this.filteredSongs = this.getSortedList(this.filteredSongs)
-                          //     }
-                          //   })
-                        } else {
-                          if(this.selectedSongs.length > 0) {
-                            Image($r('app.media.ic_public_delete'))
-                              .width(Constants.SIZE_ICON_BUTTON_BAR)
-                              .aspectRatio(1)
-                              .fillColor(Color.Gray)
-                              .onClick(() => {
-                                this.handleDelete()
-                              })
-                            Image($r('app.media.ic_public_folder'))
-                              .width(Constants.SIZE_ICON_BUTTON_BAR)
-                              .aspectRatio(1)
-                              .fillColor(Color.Gray)
-                              .onClick(() => {
-                                FileUtils.saveFile(this.selectedSongs)
-                              })
-                          }
-                          CheckboxGroup({ group: 'fileCard' })
-                            .width(Constants.SIZE_ICON_BUTTON_BAR - 5)
-                            .height(Constants.SIZE_ICON_BUTTON_BAR - 5)
-                        }
-
-                        Image($r('app.media.ic_gallery_material_select_checkbox'))
+          Grid(this.observableScroller.getScroller()) {
+            GridItem() {
+              Search({
+                placeholder: '搜索文件',
+                icon: '/resources/base/media/ic_public_search_filled.svg'
+              })
+                .id('search')
+                .height(Constants.HEIGHT_SELECT)
+                .width('100%')
+                .searchButton('搜索')
+                .onChange((value) => {
+                  if(value == '') {
+                    this.filteredSongs = []
+                    this.searchKeyword = ''
+                  }
+                })
+                .onSubmit((value) => {
+                  this.searchKeyword = value
+                  this.handelSearch()
+                })
+            }
+            GridItem() {
+              if (this.localSongs.length > 0) {
+                Row() {
+                  Text(this.isSelecting ? `已选 ${this.selectedSongs.length} 项` : `共 ${this.localSongs.length} 首歌曲`)
+                    .fontSize(Constants.FONT_SIZE_COMMON)
+                  Row({ space: 20 }) {
+                    if(!this.isSelecting) {
+                      // Image($r('app.media.ic_files_name_drive'))
+                      //   .width(Constants.SIZE_ICON_BUTTON_BAR)
+                      //   .aspectRatio(1)
+                      //   .fillColor(this.isSorted ? $r('app.color.blue') : Color.Gray)
+                      //   .onClick(() => {
+                      //     this.isSorted = !this.isSorted
+                      //     if (this.searchKeyword) {
+                      //       this.filteredSongs = this.getSortedList(this.filteredSongs)
+                      //     }
+                      //   })
+                    } else {
+                      if(this.selectedSongs.length > 0) {
+                        Image($r('app.media.ic_public_delete'))
                           .width(Constants.SIZE_ICON_BUTTON_BAR)
                           .aspectRatio(1)
-                          .fillColor(this.isSelecting ? $r('app.color.blue') : Color.Gray)
+                          .fillColor(Color.Gray)
                           .onClick(() => {
-                            animateTo({ duration: 100, curve: Curve.EaseInOut }, () => {
-                              this.isSelecting = !this.isSelecting
-                              this.selectedSongs = []
-                            })
+                            this.handleDelete()
+                          })
+                        Image($r('app.media.ic_public_folder'))
+                          .width(Constants.SIZE_ICON_BUTTON_BAR)
+                          .aspectRatio(1)
+                          .fillColor(Color.Gray)
+                          .onClick(() => {
+                            FileUtils.saveFile(this.selectedSongs)
                           })
                       }
-                      .height(30)
+                      CheckboxGroup({ group: 'fileCard' })
+                        .width(Constants.SIZE_ICON_BUTTON_BAR - 5)
+                        .height(Constants.SIZE_ICON_BUTTON_BAR - 5)
                     }
-                    .justifyContent(FlexAlign.SpaceBetween)
-                    .width('100%')
+
+                    Image($r('app.media.ic_gallery_material_select_checkbox'))
+                      .width(Constants.SIZE_ICON_BUTTON_BAR)
+                      .aspectRatio(1)
+                      .fillColor(this.isSelecting ? $r('app.color.blue') : Color.Gray)
+                      .onClick(() => {
+                        animateTo({ duration: 100, curve: Curve.EaseInOut }, () => {
+                          this.isSelecting = !this.isSelecting
+                          this.selectedSongs = []
+                        })
+                      })
                   }
-                  else {
-                    Column({ space: 20 }) {
-                      Text('本地文件列表为空').width('100%').textAlign(TextAlign.Center).padding({ left: 30, right: 30, top: 10 })
+                  .height(30)
+                }
+                .justifyContent(FlexAlign.SpaceBetween)
+                .width('100%')
+              }
+              else {
+                if(this.loadStatus && this.localSongs.length == 0){
+                  Column({ space: 20 }) {
+                    Text('本地文件列表为空\n\n点击菜单栏按钮可将\n本机文件上传至本地曲库').width('100%').textAlign(TextAlign.Center).padding({ left: 30, right: 30, top: 10 })
+                    if(this.filesList.length > 1) {
                       Button('迁移旧版本数据').padding({ left: 10, right: 10, top: 5, bottom: 5 })
                         .onClick(() => { this.isShowMigration = true })
                         .bindSheet(this.isShowMigration, this.Migration(), {
@@ -173,45 +179,41 @@ export struct CachedPage {
                         })
                     }
                   }
+                  .height('100%')
                 }
-                GridItem() {
-                  GridRow({ columns: { xs: 1, sm: 1, md: 1, lg: 2, xl: 2 } }) {
-                    if(!this.searchKeyword) {
-                      this.ListContent(this.dataSource)
-                    } else {
-                      this.ListContent(this.dataSourceFiltered)
-                    }
-                  }
-                }
-                .width('100%')
-
-                GridItem()
-                  .height(px2vp(this.bottomRectHeight) + Constants.HEIGHT_MINI)
               }
-              .edgeEffect(EdgeEffect.None)
-              .scrollBar(BarState.Off)
-              .rowsGap(10)
-              .columnsGap(10)
-              .columnsTemplate('1fr')
-              .layoutDirection(GridDirection.Column)
-              .backgroundColor($r('app.color.background'))
-              .height('auto')
-              .width('100%')
-              .padding({ left: 10, right: 10 })
-              .layoutWeight(1)
-              .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
             }
-            .height('100%')
-            .edgeEffect(EdgeEffect.Spring)
-            .scrollBar(BarState.Off)
-            .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
+            GridItem() {
+              GridRow({ columns: { xs: 1, sm: 1, md: 1, lg: 2, xl: 2 } }) {
+                if(!this.searchKeyword) {
+                  this.ListContent(this.dataSource)
+                } else {
+                  this.ListContent(this.dataSourceFiltered)
+                }
+              }
+            }
+            .width('100%')
+
+            GridItem()
+              .height(px2vp(this.bottomRectHeight) + Constants.HEIGHT_MINI)
           }
-          .justifyContent(FlexAlign.Center)
-          .layoutWeight(1)
+          .edgeEffect(EdgeEffect.Spring)
+          .scrollBar(BarState.Off)
+          .rowsGap(10)
+          .columnsGap(10)
+          .columnsTemplate('1fr')
+          .layoutDirection(GridDirection.Column)
+          .backgroundColor($r('app.color.background'))
+          .height('100%')
           .width('100%')
+          .layoutWeight(1)
+          .padding({ left: 10, right: 10 })
+          .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
         }
-        .width('100%')
+        .alignItems(HorizontalAlign.Start)
+        .justifyContent(FlexAlign.Center)
         .height('100%')
+        .width('100%')
 
         if(this.breakpoint !== 'lg') {
           BottomBarComponent()
@@ -225,7 +227,7 @@ export struct CachedPage {
       .height('100%')
 
     }
-    .title('缓存')
+    .title('本地曲库')
     .menus(this.menus)
     .backgroundColor($r('app.color.background'))
   }
@@ -252,6 +254,7 @@ export struct CachedPage {
     this.selectedSongs = []
     this.dataSource.setData(this.localSongs)
     this.dataSource.notifyDataReload()
+    this.loadStatus = true
   }
 
   private async handleUpload() {

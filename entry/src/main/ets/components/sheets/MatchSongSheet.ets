@@ -77,7 +77,7 @@ export struct MatchSongSheet {
       this.showMatchSheet = false
       const picUrl = await getSongPicUrl(song.id)
       const lyricString = await getLyricString(song.id)
-      await FileDownloadUtils.download(picUrl, `${song.id}.jpg`, 'pic')
+      await FileDownloadUtils.download(picUrl + '?param=512y512', `${song.id}.jpg`, 'pic')
       await LyricUtils.saveLyricToFile(lyricString, `${song.id}.lrc`)
       this.localSong.songId = song.id
       RelationalStoreUtils.updateSong(this.localSong.id, this.localSong)

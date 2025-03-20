@@ -43,6 +43,7 @@ export struct Me {
   }
 
   build() {
+
     Stack({ alignContent: Alignment.Bottom }){
       Column({ space: 10 }) {
         Column(){}.height('7%').backgroundColor('transparent')
@@ -55,11 +56,9 @@ export struct Me {
             .justifyContent(FlexAlign.Center)
             .width('100%')
             .padding({ bottom: 10 })
-          } else if((!this.isValidAPI)) {
-            Text('服务不可用\n请检查API服务器设置').textStyle(Constants.FONT_SIZE_TITLE).fontWeight(FontWeight.Bold)
           } else if(this.appLoading) {
             LoadingProgress().width(40)
-          } else {
+          } else if(this.isValidAPI) {
             Row({ space: 20 }) {
               CircleImageButton({ imgUrl: $r('app.media.ic_user_portrait'), wid: 64 })
               Text('未登录').textStyle(Constants.FONT_SIZE_TITLE).fontWeight(FontWeight.Bold)
@@ -73,18 +72,18 @@ export struct Me {
         .height(80)
 
         Column() {
-          this.ItemCard($r('app.media.ic_public_settings_filled'), '设置', () => {
+          this.ItemCard($r('app.media.ic_public_settings_filled'), '应用设置', () => {
             this.isShowSettings = true
           })
         }
         .itemColumnStyle()
 
         Column() {
-          this.ItemCard($r('app.media.ic_public_folder_filled'), '缓存', () => {
+          this.ItemCard($r('app.media.ic_public_folder_filled'), '本地曲库', () => {
             if(this.pageInfos.size() == 0) {
-              this.pageInfos.pushPathByName('DownloadPage', null)
+              this.pageInfos.pushPathByName('CachedPage', null)
             } else {
-              this.pageInfos.replacePathByName('DownloadPage', null)
+              this.pageInfos.replacePathByName('CachedPage', null)
             }
           })
         }
@@ -106,29 +105,26 @@ export struct Me {
       }
       .width('100%')
       .height('100%')
-      // .backgroundColor($r('app.color.background'))
+      .constraintSize({
+        minWidth: 200,
+        maxWidth: 500
+      })
+      .backgroundColor($r('app.color.background'))
       .padding({ left: 20, right: 20 })
+      .bindSheet(this.isShowSettings, this.Settings(), {
+        preferType: SheetType.CENTER,
+        height: SheetSize.LARGE,
+        dragBar: false,
+        showClose: false,
+        scrollSizeMode: ScrollSizeMode.FOLLOW_DETENT,
+        backgroundColor: $r('app.color.background'),
+        onDisappear: () => { this.isShowSettings = false }
+      })
       .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
 
       SlideButton({ index: this.index })
     }
-    .width('100%')
-    .height('100%')
-    .constraintSize({
-      minWidth: 200,
-      maxWidth: 500
-    })
-    .backgroundColor($r('app.color.background'))
-    .padding({ left: 20, right: 20 })
-    .bindSheet(this.isShowSettings, this.Settings(), {
-      preferType: SheetType.CENTER,
-      height: SheetSize.LARGE,
-      dragBar: false,
-      showClose: false,
-      scrollSizeMode: ScrollSizeMode.FOLLOW_DETENT,
-      backgroundColor: $r('app.color.background'),
-      onDisappear: () => { this.isShowSettings = false }
-    })
+
   }
 
   @Builder ItemCard(icon: ResourceStr | string, text: string, action: () => void) {

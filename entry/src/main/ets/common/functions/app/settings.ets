@@ -18,8 +18,8 @@ export async function initSettings() {
     (async () => {
       const exists = await PreferencesUtils.hasPreferenceValue(SetPerf, StorageConstants.API_URL)
       const value = exists
-        ? await PreferencesUtils.getPreferenceValue(SetPerf, StorageConstants.API_URL, 'https://api-ncm.chenlvin.cc')
-        : 'https://api-ncm.chenlvin.cc'
+        ? await PreferencesUtils.getPreferenceValue(SetPerf, StorageConstants.API_URL, '')
+        : ''
       if (!exists) await PreferencesUtils.putPreferenceValue(SetPerf, StorageConstants.API_URL, '')
       AppStorage.setOrCreate(StorageConstants.API_URL, value)
     })(),

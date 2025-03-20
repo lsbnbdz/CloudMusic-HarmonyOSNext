@@ -248,7 +248,7 @@ export struct CachedPage {
   private async handleUpload() {
     PickerUtil.selectDocument({
       maxSelectNumber: 99,
-      fileSuffixFilters: ['音频 | .mp3,.flac']
+      fileSuffixFilters: ['音频 | .mp3,.flac,.MP3,.FLAC']
     }).then((uris) => {
       FileUtils.saveFilesToDirectory(uris).then(async (result) => {
         if(result) {

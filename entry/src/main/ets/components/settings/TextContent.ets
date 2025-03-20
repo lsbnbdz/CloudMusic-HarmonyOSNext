@@ -158,8 +158,8 @@ export struct Settings_Bottom {
 
   build() {
     Column() {
-      Text('云音汇 CloudMusic\n' +
-        'For HarmonyOS NEXT').BottomText()
+      Text('云音汇 For HarmonyOS NEXT\n' +
+        'Chenlvin/CloudMusic-HarmonyOSNext').BottomText()
     }
     .width('100%')
   }

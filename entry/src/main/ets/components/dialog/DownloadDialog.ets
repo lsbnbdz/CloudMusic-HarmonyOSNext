@@ -97,10 +97,10 @@ export struct DownloadDialog {
               .onClick(() => {
                 copyDownloadUrl(this.songDownload.data[0].url)
               })
-            Button('缓存至本地').ButtonStyle()
+            Button('缓存至本地曲库').ButtonStyle()
               .onClick(async () => {
                 this.controller.close()
-                FileDownloadUtils.download(this.picUrl.toString(), `${this.song.id}.jpg`, 'pic')
+                FileDownloadUtils.download(this.picUrl + '?param=512y512', `${this.song.id}.jpg`, 'pic')
                 let lyricString = await getLyricString(this.song.id)
                 LyricUtils.saveLyricToFile(lyricString, `${this.song.id}.lrc`)
                 FileDownloadUtils.downloadSong(this.songDownload, this.song, this.artists)

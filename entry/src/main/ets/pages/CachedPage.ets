@@ -20,6 +20,7 @@ export struct CachedPage {
   @StorageProp('bottomRectHeight') bottomRectHeight: number = 0
   @StorageProp('topRectHeight') topRectHeight: number = 0
   @StorageProp(StorageConstants.BREAKPOINT) breakpoint: string = 'sm'
+  @State filesList: string[] = []
   @State searchKeyword: string = ''
   @State filteredSongs: LocalSong[] = new Array()
   @State isSorted: boolean = false
@@ -64,6 +65,7 @@ export struct CachedPage {
   ]
 
   async aboutToAppear(): Promise<void> {
+    this.filesList = await FileUtils.getFileName()
     EmitterUtil.onSubscribe('refreshLocalSongs', async () => {
       await this.refreshList()
     })
@@ -153,18 +155,20 @@ export struct CachedPage {
                 }
                 else {
                   Column({ space: 20 }) {
-                    Text('本地文件列表为空').width('100%').textAlign(TextAlign.Center).padding({ left: 30, right: 30, top: 10 })
-                    Button('迁移旧版本数据').padding({ left: 10, right: 10, top: 5, bottom: 5 })
-                      .onClick(() => { this.isShowMigration = true })
-                      .bindSheet(this.isShowMigration, this.Migration(), {
-                        preferType: SheetType.CENTER,
-                        height: SheetSize.MEDIUM,
-                        dragBar: false,
-                        showClose: false,
-                        backgroundColor: Color.Transparent,
-                        blurStyle: BlurStyle.Regular,
-                        onDisappear: () => { this.isShowMigration = false }
-                      })
+                    Text('本地文件列表为空\n\n点击菜单栏按钮可将\n本机文件上传至本地曲库').width('100%').textAlign(TextAlign.Center).padding({ left: 30, right: 30, top: 10 })
+                    if(this.filesList.length > 1) {
+                      Button('迁移旧版本数据').padding({ left: 10, right: 10, top: 5, bottom: 5 })
+                        .onClick(() => { this.isShowMigration = true })
+                        .bindSheet(this.isShowMigration, this.Migration(), {
+                          preferType: SheetType.CENTER,
+                          height: SheetSize.MEDIUM,
+                          dragBar: false,
+                          showClose: false,
+                          backgroundColor: Color.Transparent,
+                          blurStyle: BlurStyle.Regular,
+                          onDisappear: () => { this.isShowMigration = false }
+                        })
+                    }
                   }
                 }
               }
@@ -212,7 +216,7 @@ export struct CachedPage {
       .backgroundColor($r('app.color.background'))
       .height('100%')
     }
-    .title('缓存')
+    .title('本地曲库')
     .menus(this.menus)
     .backgroundColor($r('app.color.background'))
   }

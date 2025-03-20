@@ -62,62 +62,78 @@ export struct RecommendCards {
   @StorageProp(StorageConstants.USER_PLAYLISTS) playLists: Array<PlayList> = []
   @Prop isLogged: boolean
   @State isLoadingHeart: boolean = false
+  @StorageProp(StorageConstants.VALID_API_URL) validApiUrl: boolean = true
 
   build() {
     List() {
       ListItem().width(10)
-      /**
-       * 每日推荐卡片
-       */
-      ListItem() {
-        ContentButton(`每日推荐`,'符合你口味的新鲜好歌',$r('app.media.bg_daily'),() => {
-          if(this.pageInfos.size() == 0) {
-            this.pageInfos.pushPathByName('DailyListPage', null)
-          } else {
-            this.pageInfos.replacePathByName('DailyListPage', null)
-          }
-        }, true)
-      }
-
-      /**
-       * 音乐云盘卡片
-       */
-      ListItem() {
-        ContentButton(`音乐云盘`,`随时随地畅听`,$r('app.media.bg_cloud'),() => {
-          if(this.isLogged) {
+      if(this.validApiUrl) {
+        /**
+         * 每日推荐卡片
+         */
+        ListItem() {
+          ContentButton(`每日推荐`,'符合你口味的新鲜好歌',$r('app.media.bg_daily'),() => {
             if(this.pageInfos.size() == 0) {
-              this.pageInfos.pushPathByName('CloudPage', null)
+              this.pageInfos.pushPathByName('DailyListPage', null)
             } else {
-              this.pageInfos.replacePathByName('CloudPage', null)
+              this.pageInfos.replacePathByName('DailyListPage', null)
             }
-          } else {
-            promptAction.showToast({ message: '请登录后再试' })
-          }
-        })
-      }
+          }, true)
+        }
 
-      /**
-       * 心动歌单卡片
-       */
-      ListItem() {
-        ContentButton(`心动歌单`,`智能播放`,$r('app.media.bg_heart'), async () => {
-          if(this.isLogged) {
-            if(!this.isLoadingHeart) {
-              try {
-                this.isLoadingHeart = true
-                promptAction.showToast({ message: '开始播放心动歌单' })
-                await setHeartMode(PlayQueueUtils.getCurrentSong().id, this.playLists[0].id)
-                playQueue(0)
-              } catch (e) {
-                promptAction.showToast({ message: '获取心动歌单失败: ' + e.message })
-              } finally {
-                this.isLoadingHeart = false
+        /**
+         * 音乐云盘卡片
+         */
+        ListItem() {
+          ContentButton(`音乐云盘`,`享受云端曲目`,$r('app.media.bg_cloud'),() => {
+            if(this.isLogged) {
+              if(this.pageInfos.size() == 0) {
+                this.pageInfos.pushPathByName('CloudPage', null)
+              } else {
+                this.pageInfos.replacePathByName('CloudPage', null)
               }
             } else {
-              promptAction.showToast({ message: '正在加载, 请稍后' })
+              promptAction.showToast({ message: '请登录后再试' })
             }
+          })
+        }
+
+        /**
+         * 心动歌单卡片
+         */
+        ListItem() {
+          ContentButton(`心动歌单`,`智能播放`,$r('app.media.bg_heart'), async () => {
+            if(this.isLogged) {
+              if(!this.isLoadingHeart) {
+                try {
+                  this.isLoadingHeart = true
+                  promptAction.showToast({ message: '开始播放心动歌单' })
+                  await setHeartMode(PlayQueueUtils.getCurrentSong().id, this.playLists[0].id)
+                  playQueue(0)
+                } catch (e) {
+                  promptAction.showToast({ message: '获取心动歌单失败: ' + e.message })
+                } finally {
+                  this.isLoadingHeart = false
+                }
+              } else {
+                promptAction.showToast({ message: '正在加载, 请稍后' })
+              }
+            } else {
+              promptAction.showToast({ message: '请登录后再试' })
+            }
+          })
+        }
+      }
+
+      /**
+       * 本地缓存
+       */
+      ListItem() {
+        ContentButton(`本地曲库`,`随时随地畅听`,$r('app.media.bg_local'),() => {
+          if(this.pageInfos.size() == 0) {
+            this.pageInfos.pushPathByName('CachedPage', null)
           } else {
-            promptAction.showToast({ message: '请登录后再试' })
+            this.pageInfos.replacePathByName('CachedPage', null)
           }
         })
       }

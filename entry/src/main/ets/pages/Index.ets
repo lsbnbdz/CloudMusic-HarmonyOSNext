@@ -17,7 +17,6 @@ import { Me } from '../components/main/Me';
 import { StorageConstants } from '../common/constants/StorageConstants';
 import { WarrantyDialog } from '../components/dialog/WarrantyDialog';
 import { TopListPage } from './TopListPage';
-import { ApiDialog } from '../components/dialog/ApiDialog';
 import PreferencesUtils from '../common/utils/data/PreferencesUtils';
 import { DebugPage } from './DebugPage';
 import BreakpointUtils from '../common/utils/system/BreakpointUtils';
@@ -27,23 +26,12 @@ import BreakpointUtils from '../common/utils/system/BreakpointUtils';
 struct Index {
   @Provide('pageInfos') pageInfos: NavPathStack = new NavPathStack()
 
-  warrantyDialogController: CustomDialogController = new CustomDialogController({
-    builder: WarrantyDialog(),
-    autoCancel: false
-  })
-
-  apiDialogController: CustomDialogController = new CustomDialogController({
-    builder: ApiDialog(),
-    autoCancel: false
-  })
-
   tabController: TabsController = new TabsController()
 
   @StorageProp('topRectHeight') topRectHeight: number = 0
   @StorageProp('bottomRectHeight') bottomRectHeight: number = 0
   @StorageProp(StorageConstants.BREAKPOINT) breakpoint: string = 'sm'
   @StorageProp(StorageConstants.DEFAULT_PAGE_INDEX) index: number = 0
-  @StorageProp(StorageConstants.VALID_API_URL) @Watch('checkApi') validApiUrl: boolean = true
   @State tabCurrentIndex: number = 0
 
   private getMenuItems(): NavigationMenuItem[] {
@@ -70,22 +58,13 @@ struct Index {
     return items
   }
 
-  checkApi() {
-    if(!this.validApiUrl) {
-      this.apiDialogController.open()
-    }
-  }
-
   async aboutToAppear(): Promise<void> {
     BreakpointUtils.register()
     setTimeout(() => {
       this.tabCurrentIndex = this.index
     }, 1)
-    this.checkApi()
     const isFirstLaunch = await PreferencesUtils.getPreferenceValue<boolean>(StorageConstants.USER_PREF, 'isFirstLaunch', true)
     if(isFirstLaunch) {
-      this.apiDialogController.open()
-      this.warrantyDialogController.open()
       PreferencesUtils.putPreferenceValue(StorageConstants.USER_PREF, 'isFirstLaunch', false)
     }
   }
@@ -134,7 +113,7 @@ struct Index {
     if(name === 'SettingsPage') {
       SettingsPage()
     }
-    else if(name === 'DownloadPage') {
+    else if(name === 'CachedPage') {
       CachedPage()
     }
     else if(name === 'CloudPage') {

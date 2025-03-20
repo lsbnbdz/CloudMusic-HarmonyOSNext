@@ -166,7 +166,7 @@ export struct SongCard {
           .onClick(() => {
             this.addToQueue()
           })
-        MenuItem(this.MenuContent($r('app.media.ic_public_cloud_download'), '缓存至本地'))
+        MenuItem(this.MenuContent($r('app.media.ic_public_cloud_download'), '缓存至本地曲库'))
           .onClick(() => {
             this.downloadDialogController.open()
           })
@@ -194,11 +194,15 @@ export struct SongCard {
             .fontSize(Constants.FONT_SIZE_COMMON)
             .alignSelf(ItemAlign.Start)
             .fontColor($r('app.color.reverse'))
+            .maxLines(2)
+            .textOverflow({ overflow: TextOverflow.Ellipsis })
           if(this.song.alias.length > 0) {
             Text(`(${this.song.alias[0]})`)
               .layoutWeight(1)
               .fontSize(Constants.FONT_SIZE_COMMON)
               .fontColor(Color.Gray)
+              .maxLines(1)
+              .textOverflow({ overflow: TextOverflow.MARQUEE })
           }
         }
         .width('100%')

@@ -51,10 +51,6 @@ export class HttpRequest {
           httpRequest.off('headersReceive')
           httpRequest.destroy()
           reject(err)  // 出现错误时reject
-          promptAction.showToast({
-            message: `${MsgConstants.HTTP_ERROR}:\n\n${this.url}`,
-            duration: 5000
-          })
         }
       })
     })
@@ -109,10 +105,6 @@ export class HttpRequest {
         } catch (err) {
           LogUtil.error(TAG + 'Error: ' + this.url + '\nerr: ' + err)
           reject(err)
-          promptAction.showToast({
-            message: `${MsgConstants.HTTP_ERROR}:\n\n${this.url}`,
-            duration: 5000
-          })
         }
       })
 

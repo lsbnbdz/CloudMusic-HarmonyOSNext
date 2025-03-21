@@ -12,7 +12,6 @@ import { PlayingPlayList, PlayList } from "../../entities/PlayList"
 import { TopListItem } from "../../entities/TopList"
 import { getLikeList } from "../../../api/songApi"
 import { PersonalListItem } from "../../entities/Personalized"
-import { pauseMusic, playQueue } from "../play/playControl"
 import RelationalStoreUtils from "../../utils/data/RelationalStoreUtils"
 
 /**

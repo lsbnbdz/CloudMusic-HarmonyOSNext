@@ -1,4 +1,5 @@
 import { LogUtil } from "@pura/harmony-utils"
+import { PlayConstants } from "../common/constants/PlayConstants"
 import { StorageConstants } from "../common/constants/StorageConstants"
 import { HeartMode } from "../common/entities/HeartMode"
 import { DailyListSongs } from "../common/entities/PlayListSongs"
@@ -6,7 +7,7 @@ import { PlayQueue } from "../common/entities/PlayQueue"
 import { SongDetail } from "../common/entities/SongDetail"
 import { QualityType } from "../common/entities/SongDownload"
 import { SongPlay } from "../common/entities/SongPlay"
-import { Song, SongsData } from "../common/entities/SongsResult"
+import { Song, SongClass, SongsData } from "../common/entities/SongsResult"
 import { User } from "../common/entities/User"
 import { getArtists } from "../common/functions/common/convert"
 import { getApiUrl } from "../common/functions/common/get"
@@ -194,4 +195,17 @@ export async function setHeartMode(id: number, pid: number): Promise<void> {
   }
   await PlayQueueUtils.cleanQueue()
   await PlayQueueUtils.queueAdd_array(queue)
+}
+
+export async function getPersonalFmSong(mode: number): Promise<Song> {
+  const rootUrl = await getApiUrl()
+  const url: string = `${rootUrl}/personal/fm/mode?=${PlayConstants.PERSONAL_FM_MODE[mode]}&timestamps=${new Date().getTime()}`
+  const request = new HttpRequest(url)
+  let data = await request.RequestInStream()
+  if(data.result["code"] == 200) {
+    LogUtil.info(TAG + 'FM result: ' + JSON.stringify(data.result))
+    let dataGot = data.result["data"][0] as Song
+    LogUtil.info(TAG + JSON.stringify(dataGot))
+    return dataGot
+  } else return SongClass
 }

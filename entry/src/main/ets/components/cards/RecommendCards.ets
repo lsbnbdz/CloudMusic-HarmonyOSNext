@@ -2,10 +2,10 @@ import { setHeartMode } from "../../api/songApi"
 import Constants from "../../common/constants/Constants"
 import { StorageConstants } from "../../common/constants/StorageConstants"
 import { PlayList } from "../../common/entities/PlayList"
-import { playQueue } from "../../common/functions/play/playControl"
+import { playNext, playQueue } from "../../common/functions/play/playControl"
 import PlayQueueUtils from "../../common/utils/play/PlayQueueUtils"
 import { promptAction } from "@kit.ArkUI"
-import { DateUtil } from "@pura/harmony-utils"
+import { DateUtil, ToastUtil } from "@pura/harmony-utils"
 
 
 const cardRadius: number = 5
@@ -61,7 +61,7 @@ export struct RecommendCards {
   @Consume('pageInfos') pageInfos: NavPathStack
   @StorageProp(StorageConstants.USER_PLAYLISTS) playLists: Array<PlayList> = []
   @Prop isLogged: boolean
-  @State isLoadingHeart: boolean = false
+  @State isLoadingSongs: boolean = false
   @StorageProp(StorageConstants.VALID_API_URL) validApiUrl: boolean = true
 
   build() {
@@ -79,6 +79,30 @@ export struct RecommendCards {
               this.pageInfos.replacePathByName('DailyListPage', null)
             }
           }, true)
+        }
+
+        /**
+         * 私人FM
+         */
+        ListItem() {
+          ContentButton(`私人FM`,`多种模式随心播放`,$r('app.media.bg_fm'), async () => {
+            if(!this.isLoadingSongs) {
+              this.isLoadingSongs = true
+              try {
+                AppStorage.setOrCreate(StorageConstants.IS_PERSONAL_FM, true)
+                await PlayQueueUtils.cleanQueue()
+                playNext()
+              } catch (e) {
+                ToastUtil.showToast('获取私人FM曲目失败')
+              } finally {
+                setTimeout(() => {
+                  this.isLoadingSongs = false
+                }, 1000)
+              }
+            } else {
+              ToastUtil.showToast('正在加载, 请稍后')
+            }
+          })
         }
 
         /**
@@ -104,16 +128,18 @@ export struct RecommendCards {
         ListItem() {
           ContentButton(`心动歌单`,`智能播放`,$r('app.media.bg_heart'), async () => {
             if(this.isLogged) {
-              if(!this.isLoadingHeart) {
+              if(!this.isLoadingSongs) {
                 try {
-                  this.isLoadingHeart = true
+                  this.isLoadingSongs = true
                   promptAction.showToast({ message: '开始播放心动歌单' })
                   await setHeartMode(PlayQueueUtils.getCurrentSong().id, this.playLists[0].id)
                   playQueue(0)
                 } catch (e) {
                   promptAction.showToast({ message: '获取心动歌单失败: ' + e.message })
                 } finally {
-                  this.isLoadingHeart = false
+                  setTimeout(() => {
+                    this.isLoadingSongs = false
+                  }, 1000)
                 }
               } else {
                 promptAction.showToast({ message: '正在加载, 请稍后' })
@@ -126,7 +152,7 @@ export struct RecommendCards {
       }
 
       /**
-       * 本地缓存
+       * 本地曲库
        */
       ListItem() {
         ContentButton(`本地曲库`,`随时随地畅听`,$r('app.media.bg_local'),() => {

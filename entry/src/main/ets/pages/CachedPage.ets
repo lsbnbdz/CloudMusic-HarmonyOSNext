@@ -65,11 +65,11 @@ export struct CachedPage {
   ]
 
   async aboutToAppear(): Promise<void> {
+    this.refreshList()
     this.filesList = await FileUtils.getFileName()
     EmitterUtil.onSubscribe('refreshLocalSongs', async () => {
       await this.refreshList()
     })
-    this.refreshList()
   }
 
   build() {

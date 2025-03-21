@@ -21,6 +21,7 @@ export struct PlayQueueSheet {
   @StorageProp('bottomRectHeight') bottomRectHeight: number = 0
   @StorageProp(StorageConstants.PLAY_MODE) playmode: number = 1
   @StorageProp(StorageConstants.USER_PLAYLISTS) playLists: Array<PlayList> = []
+  @StorageProp(StorageConstants.IS_PERSONAL_FM) isPersonalFm: boolean = false
   @StorageProp(StorageConstants.BREAKPOINT) breakpoint: string = 'sm'
   @State isLoading: boolean = false
   @Link isShow: boolean
@@ -56,15 +57,16 @@ export struct PlayQueueSheet {
 
             LoopModeButton({ imgWidth: Constants.SIZE_ICON_BUTTON_BAR, btnWidth: Constants.SIZE_ICON_BUTTON_BAR })
 
-            // HeartMode Button
-            if(this.queue.length > 0 && this.playmode == 1) {
-              Button() {
-                Image($r('app.media.ic_heart_filled')).width(Constants.SIZE_ICON_BUTTON_BAR - 5).fillColor($r('app.color.reverse'))
-              }
-              .backgroundColor(Color.Transparent)
-              .onClick(async () => {
-                await this.startHeartMode()
-              })
+            if(this.isPersonalFm) {
+              Button('私人FM')
+                .type(ButtonType.Normal)
+                .fontSize(Constants.FONT_SIZE_COMMON)
+                .fontColor(Color.White)
+                .backgroundColor($r('app.color.app_red'))
+                .padding({ left: 10, right: 10 })
+                .onClick(this.closePersonalFm)
+                .height(Constants.FONT_SIZE_TITLE)
+                .borderRadius(10)
             }
 
             if(this.isLoading) {
@@ -212,28 +214,16 @@ export struct PlayQueueSheet {
     })
   }
 
-  private async startHeartMode() {
+  private closePersonalFm() {
     DialogUtil.showPrimaryDialog({
-      title: '心动歌单',
-      message: '是否将播放列表替换为【心动歌单】?\n\n开启心动歌单后，\n将会替换当前播放列表并开始新的播放',
+      title: '私人FM',
+      message: `关闭私人FM模式`,
       primaryButton: "取消",
       secondaryButton: {
-        value: '确认',
+        value: '关闭',
         fontColor: Color.Red,
         action: async () => {
-          this.isLoading = true
-          try {
-            await setHeartMode(this.queue[this.currentQueueIndex].song.id, this.playLists[0].id)
-            playQueue(0)
-            this.scroller.scrollToIndex(0)
-          } catch (e) {
-            ToastUtil.showToast('获取心动歌单失败')
-            LogUtil.error('获取心动歌单失败: ' + e.message)
-          } finally {
-            this.dataSource.setData(this.queue)
-            this.dataSource.notifyDataReload()
-            this.isLoading = false
-          }
+          AppStorage.setOrCreate(StorageConstants.IS_PERSONAL_FM, false)
         }
       }
     })

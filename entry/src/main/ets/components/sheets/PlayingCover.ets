@@ -14,6 +14,7 @@ import { PasteboardUtil, ToastUtil } from "@pura/harmony-utils"
 import { PlayerActionSheet } from "./PlayerActionSheet"
 import { likeThisSong } from "../../common/functions/play/songLike"
 import { resourceManager } from "@kit.LocalizationKit"
+import { PlayConstants } from "../../common/constants/PlayConstants"
 
 @Component
 export struct PlayingCover {
@@ -28,6 +29,8 @@ export struct PlayingCover {
   @StorageProp(StorageConstants.ISLIKED) isLiked: boolean = false
   @StorageProp(StorageConstants.PLAY_COUNTDOWN_WORKING) isTimerWorking: boolean = false
   @StorageProp(StorageConstants.PLAY_IS_LOCALFILE) isLocalFile: boolean = false
+  @StorageProp(StorageConstants.IS_PERSONAL_FM) isPersonalFm: boolean = false
+  @StorageProp(StorageConstants.PERSONAL_FM_MODE) personalFmMode: number = 0
   @StorageProp(StorageConstants.BREAKPOINT) breakpoint: string = 'sm'
   @StorageProp(StorageConstants.DEVICE_TYPE) deviceType: resourceManager.DeviceType = resourceManager.DeviceType.DEVICE_TYPE_PHONE
   @Link isShow: boolean
@@ -345,23 +348,37 @@ export struct PlayingCover {
         }
         .padding({ bottom: 30 })
       } else {
-        Stack() {
-          LoadingProgress().width(60)
-          if(this.picUrl != '') {
-            Image(this.picUrl + '?param=512y512')
-              .height('60%')
-              .borderRadius(5)
-              .aspectRatio(1)
-              .shadow({ radius: 30, type: ShadowType.BLUR, offsetX: 20, offsetY: 20 })
+        Column({ space: 10 }) {
+          if(this.isPersonalFm) {
+            Button(`私人FM - ${PlayConstants.PERSONAL_FM_MODE_NAME[this.personalFmMode]}`)
+              .fontColor(Color.White)
+              .fontSize(Constants.FONT_SIZE_COMMON)
+              .backgroundColor(Color.Transparent)
+              .backdropBlur(50)
+              .clickEffect({ level: ClickEffectLevel.LIGHT, scale: 0.8 })
+              .borderRadius(1)
+              .padding({ left: 10, right: 10 })
+              .shadow({ radius: 10 })
+              .bindMenu(this.PersonalFmMenu())
           }
-          else {
-            Column()
-            .height('60%')
-            .borderRadius(5)
-            .aspectRatio(1)
+          Stack() {
+            LoadingProgress().width(60)
+            if(this.picUrl != '') {
+              Image(this.picUrl + '?param=512y512')
+                .height('60%')
+                .borderRadius(5)
+                .aspectRatio(1)
+                .shadow({ radius: 30, type: ShadowType.BLUR, offsetX: 20, offsetY: 20 })
+            } else {
+              Column()
+                .height('60%')
+                .borderRadius(5)
+                .aspectRatio(1)
+            }
           }
+          .padding({ bottom: 30 })
         }
-        .padding({ bottom: 30 })
+        .width('100%')
       }
 
       // 歌曲名称&艺术家
@@ -489,6 +506,25 @@ export struct PlayingCover {
 
   @Builder MenuSheet() {
     PlayerActionSheet({ isShow: this.isShowMenu, isShowTimer: this.isShowTimer, isShowAddSheet: this.isShowAddSheet })
+  }
+
+  @Builder PersonalFmMenu() {
+    Menu() {
+      if(this.personalFmMode !== 0) {
+        MenuItem({ content: `- ${PlayConstants.PERSONAL_FM_MODE_NAME[0]} -` })
+          .onClick(() => { AppStorage.setOrCreate(StorageConstants.PERSONAL_FM_MODE, 0 )})
+      }
+      if(this.personalFmMode !== 1) {
+        MenuItem({ content: `- ${PlayConstants.PERSONAL_FM_MODE_NAME[1]} -` })
+          .onClick(() => { AppStorage.setOrCreate(StorageConstants.PERSONAL_FM_MODE, 1 )})
+      }
+      if(this.personalFmMode !== 2) {
+        MenuItem({ content: `- ${PlayConstants.PERSONAL_FM_MODE_NAME[2]} -` })
+          .onClick(() => { AppStorage.setOrCreate(StorageConstants.PERSONAL_FM_MODE, 2 )})
+      }
+      MenuItem({ content: '关闭私人FM' })
+        .onClick(() => { AppStorage.setOrCreate(StorageConstants.IS_PERSONAL_FM, false) })
+    }
   }
 }
 

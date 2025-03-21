@@ -118,7 +118,7 @@ export struct Me {
     Button() {
       Row({ space: 10 }) {
         Image(icon).iconStyle()
-        Text(text).textStyle(Constants.FONT_SIZE_COMMON + 2).textAlign(TextAlign.Start).layoutWeight(1)
+        Text(text).textStyle(16).fontWeight(FontWeight.Medium).textAlign(TextAlign.Start).layoutWeight(1)
         Image($r('app.media.ic_public_arrow_right')).iconStyle()
       }
     }

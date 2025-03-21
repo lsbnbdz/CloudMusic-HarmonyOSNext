@@ -91,6 +91,10 @@ export async function initSettings() {
     const mixValue = await PreferencesUtils.getPreferenceValue(SetPerf, StorageConstants.MIX_WITH_OTHERS, false)
     AppStorage.setOrCreate(StorageConstants.MIX_WITH_OTHERS, mixValue)
   }
+
+  // 私人FM
+  AppStorage.setOrCreate(StorageConstants.IS_PERSONAL_FM, false)
+  AppStorage.setOrCreate(StorageConstants.PERSONAL_FM_MODE, 0)
 }
 
 export async function changeSettings(name: string, value: number | boolean) {

@@ -1,8 +1,8 @@
 import { EmitterUtil, FileUtil, LogUtil, RandomUtil, ToastUtil } from "@pura/harmony-utils";
 import { Song } from "../../entities/SongsResult";
 import FileUtils from "../../utils/file/FileUtils";
-import {getSongPicUrl, getSongUrl } from "../../../api/songApi";
-import { fetchMetadata, fetchSongInfo, sanitizeFileName } from "../common/convert";
+import { getPersonalFmSong, getSongPicUrl, getSongUrl } from "../../../api/songApi";
+import { fetchMetadata, fetchSongInfo, getArtists, sanitizeFileName } from "../common/convert";
 import PlayQueueUtils from "../../utils/play/PlayQueueUtils";
 import AVSessionUtils from "../../utils/play/AVSessionUtils";
 import PreferencesUtils from "../../utils/data/PreferencesUtils";
@@ -156,6 +156,15 @@ export async function playPre() {
  * 播放下一首
  */
 export async function playNext() {
+  const isPersonalFm = await AppStorage.get(StorageConstants.IS_PERSONAL_FM) as boolean
+  if(isPersonalFm && !(PlayQueueUtils.currentQueueIndex < PlayQueueUtils.queue.length - 1)) {
+    const personalFmMode = AppStorage.get(StorageConstants.PERSONAL_FM_MODE) as number
+    let nextSong = await getPersonalFmSong(personalFmMode)
+    let artists = await getArtists(nextSong.artists)
+    PlayQueueUtils.queueAdd(1, nextSong, artists, '')
+    playQueue(PlayQueueUtils.currentQueueIndex + 1)
+    return
+  }
   let isLogged:boolean | undefined = await AppStorage.get(StorageConstants.IS_LOGGED)
   let cycleMode = await getCycleMode()
   if(cycleMode == 3) {
@@ -169,7 +178,7 @@ export async function playNext() {
     if(res.playmode == 0) {
       playMusicWithFile(res.song, res.fileName)
     } else {
-      playMusicByUrl(res.song, res.artists, isLogged ? isLogged:false, res.picUrl)
+      playMusicByUrl(res.song, res.artists, isLogged ?? false, res.picUrl)
     }
   } else {
     if(cycleMode == 2) { playQueue(0) }
@@ -181,6 +190,16 @@ export async function playNext() {
  * 本首歌曲播放完成后的操作
  */
 export async function completeDo() {
+  const isPersonalFm = await AppStorage.get(StorageConstants.IS_PERSONAL_FM) as boolean
+  if(isPersonalFm && !(PlayQueueUtils.currentQueueIndex < PlayQueueUtils.queue.length - 1)) {
+    const personalFmMode = AppStorage.get(StorageConstants.PERSONAL_FM_MODE) as number
+    let nextSong = await getPersonalFmSong(personalFmMode)
+    let artists = await getArtists(nextSong.artists)
+    PlayQueueUtils.queueAdd(1, nextSong, artists, '')
+    playQueue(PlayQueueUtils.currentQueueIndex + 1)
+    return
+  }
+
   let cycleMode = await getCycleMode()
   // 顺序播放 & 顺序循环
   if(cycleMode == 0 || cycleMode == 2) {

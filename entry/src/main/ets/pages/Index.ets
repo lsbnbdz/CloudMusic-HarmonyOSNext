@@ -212,16 +212,17 @@ struct Index {
       .width('100%')
       // .backgroundBlurStyle(BlurStyle.BACKGROUND_THICK)
       .backgroundColor('transparent')
-      .linearGradient({
-        colors: [
-          ['transparent', 0.00],
-          [$r('app.color.title_background'), 1.00]
-        ],
-        angle: 0
-      })
-      .linearGradientBlur(5, {
+      // .linearGradient({
+      //   colors: [
+      //     ['transparent', 0.00],
+      //     [$r('app.color.title_background'), 1.00]
+      //   ],
+      //   angle: 0
+      // })
+      .linearGradientBlur(10, {
         fractionStops: [
           [0.00, 0.00],
+          [0.40, 0.10],
           [1.00, 1.00]
         ],
         direction: GradientDirection.Top
@@ -231,15 +232,17 @@ struct Index {
       Row(){
         Text(_arrStr[index])
           .textShadow({
-            radius: 2,
+            radius: 1,
+            type: ShadowType.COLOR,
             color: $r('app.color.main'),
-            offsetX: 0,
-            offsetY: 0
+            offsetX: 1,
+            offsetY: 1
           })
           .fontColor($r('app.color.reverse'))
           .fontWeight(FontWeight.Bold)
           .fontSize(30)
           .backgroundColor('transparent')
+
         if(index === 1){
           Row({ space: 10 }){
             Text(_subArrStr[0])
@@ -286,8 +289,8 @@ struct Index {
             .fillColor($r('app.color.reverse'))
             .backgroundColor('transparent')
         }
-        .backgroundBlurStyle(5)
-        .backgroundColor($r('app.color.btn_background'))
+        .backgroundBlurStyle(BlurStyle.BACKGROUND_THIN)
+        .backgroundColor('transparent')
         .width(40)
         .height(40)
       }

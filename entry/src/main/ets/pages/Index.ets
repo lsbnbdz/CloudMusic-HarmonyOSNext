@@ -111,7 +111,7 @@ struct Index {
         .animationDuration(300)
 
         BottomBarComponent()
-          .padding({ left: Constants.PADDING_EDGE_DEFAULT, right: Constants.PADDING_EDGE_DEFAULT })
+          .padding(Constants.PADDING_EDGE_DEFAULT)
           .backgroundColor(Color.Transparent)
       }
     }

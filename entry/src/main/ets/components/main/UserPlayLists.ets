@@ -32,7 +32,7 @@ export struct UserPlayLists {
   @State isLoading: boolean = false
   @State isRefreshing: boolean = false
   @State lastRefreshTime: number = 0
-  private refreshCooldown: number = 5000.
+  private refreshCooldown: number = 5000
   private tabItems: string[] = ['所有', '创建', '收藏']
 
   async aboutToAppear(): Promise<void> {

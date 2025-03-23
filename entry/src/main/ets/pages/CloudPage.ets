@@ -9,6 +9,8 @@ import { ClickToLoadButton, LoadingMoreButton, NoMoreButton } from '../component
 import { resourceManager } from '@kit.LocalizationKit'
 import { StorageConstants } from '../common/constants/StorageConstants'
 import { PlayListSongItem } from '../common/entities/PlayListSongs'
+import { PlayListOverlayButton } from '../components/buttons/MultiFunctionalButton'
+import { ObservableScroller } from '../common/utils/ObservableScroller'
 
 /**
  * 云盘
@@ -18,6 +20,8 @@ const TAG = '[CloudPage] '
 
 @Component
 export struct CloudPage {
+
+  @State observableScroller: ObservableScroller = new ObservableScroller()
   @StorageProp('bottomRectHeight') bottomRectHeight: number = 0
   @StorageProp('topRectHeight') topRectHeight: number = 0
   @StorageProp(StorageConstants.BREAKPOINT) breakpoint: string = 'sm'
@@ -77,7 +81,7 @@ export struct CloudPage {
               LoadingProgress().width(Constants.SIZE_LOADING_PROGRESS_DEFAULT)
             }.height('100%').width('100%').justifyContent(FlexAlign.Center)
           } else {
-            List() {
+            List({ scroller: this.observableScroller.getScroller()}) {
               ForEach(this.list, (item: PlayListSongItem, index) => {
                 ListItem() {
                   SongCard({
@@ -132,9 +136,11 @@ export struct CloudPage {
 
         if(this.breakpoint !== 'lg') {
           BottomBarComponent()
-            .padding({ left: Constants.PADDING_EDGE_DEFAULT, right: Constants.PADDING_EDGE_DEFAULT})
+            .padding(Constants.PADDING_EDGE_DEFAULT)
             .backgroundColor(Color.Transparent)
         }
+
+        PlayListOverlayButton({ observableScroller: this.observableScroller })
       }
       .opacity(this.pageOpacity)
       .width('100%')

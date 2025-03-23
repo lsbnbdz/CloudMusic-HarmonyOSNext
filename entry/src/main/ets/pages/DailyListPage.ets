@@ -9,6 +9,8 @@ import { getDailySongs } from '../api/songApi'
 import Constants from '../common/constants/Constants'
 import { resourceManager } from '@kit.LocalizationKit'
 import { StorageConstants } from '../common/constants/StorageConstants'
+import { PlayListOverlayButton } from '../components/buttons/MultiFunctionalButton'
+import { ObservableScroller } from '../common/utils/ObservableScroller'
 
 /**
  * 每日推荐歌单页面
@@ -18,6 +20,8 @@ const TAG = '[DailyListPage] '
 
 @Component
 export struct DailyListPage {
+
+  @State observableScroller: ObservableScroller = new ObservableScroller()
   @StorageProp('bottomRectHeight') bottomRectHeight: number = 0
   @StorageProp('topRectHeight') topRectHeight: number = 0
   @StorageProp(StorageConstants.BREAKPOINT) breakpoint: string = 'sm'
@@ -68,7 +72,7 @@ export struct DailyListPage {
               }
               .padding({ top: px2vp(this.topRectHeight) + 150, left: 20, right: 20 })
 
-              List() {
+              List({ scroller: this.observableScroller.getScroller()}) {
                 ListItem() {
                   this.Info()
                 }
@@ -129,7 +133,7 @@ export struct DailyListPage {
 
         if(this.breakpoint !== 'lg') {
           BottomBarComponent()
-            .padding({ left: Constants.PADDING_EDGE_DEFAULT, right: Constants.PADDING_EDGE_DEFAULT})
+            .padding(Constants.PADDING_EDGE_DEFAULT)
             .backgroundColor(Color.Transparent)
         }
 
@@ -148,6 +152,8 @@ export struct DailyListPage {
           .justifyContent(FlexAlign.Center)
           .padding({ bottom: px2vp(this.topRectHeight) })
         }
+
+        PlayListOverlayButton({ observableScroller: this.observableScroller })
       }
       .opacity(this.pageOpacity)
       .width('100%')

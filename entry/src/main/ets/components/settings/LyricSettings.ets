@@ -99,7 +99,7 @@ export struct SetLyricSize {
   .width('100%')
   .textAlign(TextAlign.Center)
   .fontSize(size)
-  .fontColor(Color.White)
+  .fontColor($r('app.color.reverse'))
   .opacity(0.35)
   .fontWeight(FontWeight.Bold)
   .textAlign(TextAlign.Center)

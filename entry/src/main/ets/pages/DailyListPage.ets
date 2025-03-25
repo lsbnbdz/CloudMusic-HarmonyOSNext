@@ -119,6 +119,7 @@ export struct DailyListPage {
               .width('100%')
               .scrollBar(BarState.Auto)
               .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.BOTTOM])
+              .backToTop(true)
             }
             .height('100%')
             .layoutWeight(1)

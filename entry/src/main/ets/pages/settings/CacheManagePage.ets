@@ -3,29 +3,44 @@ import Constants from "../../common/constants/Constants"
 import FileUtils from "../../common/utils/file/FileUtils"
 
 /**
- * 清理缓存
+ * 应用缓存
  */
 @Component
-export struct RemoveCache {
+export struct CacheManagePage {
   @State cacheSize: number = -1
   aboutToAppear(): void {
     this.cacheSize = FileUtils.getCacheSize()
   }
   build() {
-    Row() {
-      Text('清除缓存目录').LeftText()
-      Button(`${(this.cacheSize / (1024 * 1024)).toFixed(2)} MB`)
-        .height(Constants.HEIGHT_TEXT_BUTTON)
-        .backgroundColor(Color.Transparent)
-        .borderWidth(2)
-        .borderColor(Color.Gray)
-        .fontColor($r('app.color.reverse'))
-        .onClick(() => {
-          this.showDialog()
-        })
+    NavDestination() {
+      Column({ space: 10 }) {
+        Column({ space: 10 }) {
+          Text('缓存目录占用')
+            .fontSize(Constants.FONT_SIZE_TITLE)
+            .fontWeight(FontWeight.Medium)
+          Text(`${(this.cacheSize / (1024 * 1024)).toFixed(2)} MB`)
+            .fontSize(Constants.FONT_SIZE_TITLE)
+            .fontWeight(FontWeight.Bold)
+        }
+        .width('100%')
+        .borderRadius(Constants.RADIUS_CARD)
+        .backgroundColor($r('app.color.main'))
+        .padding(Constants.PADDING_EDGE_DEFAULT)
+        Button('清理缓存')
+          .fontSize(Constants.FONT_SIZE_COMMON)
+          .backgroundColor($r('app.color.app_red'))
+          .fontColor(Color.White)
+          .type(ButtonType.Normal)
+          .borderRadius(Constants.RADIUS_CARD)
+          .padding({ left: 10, right: 10 })
+          .onClick(() => {
+            this.showDialog()
+          })
+      }
+      .padding({ left: Constants.PADDING_EDGE_TEXT, right: Constants.PADDING_EDGE_TEXT })
     }
-    .width('100%')
-    .justifyContent(FlexAlign.SpaceBetween)
+    .title('应用缓存')
+    .backgroundColor($r('app.color.background'))
   }
 
   private showDialog() {

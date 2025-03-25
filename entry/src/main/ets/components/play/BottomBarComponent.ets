@@ -21,7 +21,7 @@ export struct BottomBarComponent {
   @StorageProp(StorageConstants.IS_PAUSED) isPaused: boolean = true
   @StorageProp(StorageConstants.PIC_URL) picUrl: string = ''
   @StorageProp(StorageConstants.PLAY_TIME) time: number = 0
-  @StorageProp('player-currentLyric') currentLyric: string = ''
+  @StorageProp(StorageConstants.CURRENT_LYRIC) currentLyric: string = ''
   @State isShow: boolean = false
   @Consume('pageInfos') pageInfos: NavPathStack
 

@@ -1,31 +1,34 @@
 import { EmitterUtil } from "@pura/harmony-utils"
 import { Lyric } from "../../common/entities/Lyric"
-import { getLyricObjects } from "../../common/functions/play/lyric"
 import { seekMusic } from "../../common/functions/play/playControl"
 import { LengthUnit } from "@kit.ArkUI"
 import { EmitterConstants } from "../../common/constants/EmitterConstants"
+import { StorageConstants } from "../../common/constants/StorageConstants"
+import { LyricStyle, LyricStyleItem } from "../../common/entities/Settings"
+import LyricUtils from "../../common/utils/play/LyricUtils"
 
 @Component
 export struct LyricComponent {
   @StorageProp('topRectHeight') topRectHeight: number = 0
-  @StorageProp('player-currentLyricIndex') @Watch('ToCurrentLyric') currentLyricIndex: number = 0
+  @StorageProp(StorageConstants.CURRENT_LYRIC_INDEX) @Watch('ToCurrentLyric') currentLyricIndex: number = 0
   @State firstLoad: boolean = true
   @State userScrolling: number = 0
   @State userScrollingInterval: number = 0
-  @State lyricObjects: Lyric[] = []
+  @State lyric: Lyric[] = []
+  @StorageProp(StorageConstants.LYRIC_STYLE) lyricStyle: LyricStyle = LyricStyleItem
 
   private scroller: Scroller = new Scroller()
 
   async aboutToAppear(): Promise<void> {
-    this.lyricObjects = getLyricObjects()
+    this.lyric = await LyricUtils.getLyricObjects()
     setTimeout(() => {
       this.scroller.scrollToIndex(this.currentLyricIndex, false, ScrollAlign.CENTER)
     }, 10)
     this.userScrollingInterval = setInterval(() => {
       if(this.userScrolling > 0) this.userScrolling -= 1
     }, 1000)
-    EmitterUtil.onSubscribe(EmitterConstants.EMITTER_LYRIC_UPDATE, () => {
-      this.lyricObjects = getLyricObjects()
+    EmitterUtil.onSubscribe(EmitterConstants.EMITTER_LYRIC_UPDATE, async () => {
+      this.lyric = await LyricUtils.getLyricObjects()
       this.currentLyricIndex = 0
     })
   }
@@ -42,17 +45,18 @@ export struct LyricComponent {
 
   build() {
     Stack() {
-      List({ scroller: this.scroller, space: 30 }) {
-        ForEach(this.lyricObjects, (item: Lyric, index) => {
+      List({ scroller: this.scroller, space: this.lyricStyle.size * 1.5 }) {
+        ForEach(this.lyric, (item: Lyric, index) => {
           ListItem() {
             Text(item.content)
               .width('100%')
               .textAlign(TextAlign.Center)
-              .fontSize(20)
+              .fontSize(this.lyricStyle.size)
               .fontColor(Color.White)
               .opacity(index == this.currentLyricIndex ? 1 : 0.35)
               .fontWeight(FontWeight.Bold)
               .textAlign(TextAlign.Center)
+              .lineHeight(this.lyricStyle.size + 15)
               .onClick(() => {
                 this.userScrolling = 0
                 seekMusic(item.time)

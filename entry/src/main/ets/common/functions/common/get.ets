@@ -33,10 +33,10 @@ export async function getCookie(): Promise<string> {
 export async function checkValidUrl(): Promise<boolean> {
   try {
     const rootUrl = await getApiUrl()
-    const url: string = `${rootUrl}`
+    const url: string = `${rootUrl}/inner/version`
     const request = new HttpRequest(url)
     const data = await request.Request()
-    if (data.responseCode == 200) {
+    if (data.responseCode === 200 && data.result["code"] === 200) {
       AppStorage.setOrCreate(StorageConstants.VALID_API_URL, true)
       return true
     } else {

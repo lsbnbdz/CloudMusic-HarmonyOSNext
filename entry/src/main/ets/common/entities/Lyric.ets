@@ -18,13 +18,25 @@ interface Lrc {
 }
 
 export interface LyricResult {
-  lrc: Lrc
   code: number
+  lrc: Lrc
+  tlyric: Lrc // 译
+  klyric: Lrc
+  romalrc: Lrc // 音
 }
 
 export const LyricResultClass: LyricResult = {
+  code: 200,
   lrc: {
     lyric: ''
   },
-  code: 0
+  tlyric: {
+    lyric: ''
+  },
+  klyric: {
+    lyric: ''
+  },
+  romalrc: {
+    lyric: ''
+  },
 }

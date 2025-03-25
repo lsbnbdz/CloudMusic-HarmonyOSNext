@@ -20,6 +20,7 @@ import { TopListPage } from './TopListPage';
 import PreferencesUtils from '../common/utils/data/PreferencesUtils';
 import { DebugPage } from './DebugPage';
 import BreakpointUtils from '../common/utils/system/BreakpointUtils';
+import { ApiDialog } from '../components/dialog/ApiDialog';
 
 @Entry
 @Component
@@ -33,6 +34,16 @@ struct Index {
   @StorageProp(StorageConstants.BREAKPOINT) breakpoint: string = 'sm'
   @StorageProp(StorageConstants.DEFAULT_PAGE_INDEX) index: number = 0
   @State tabCurrentIndex: number = 0
+
+  warrantyDialogController: CustomDialogController = new CustomDialogController({
+    builder: WarrantyDialog(),
+    autoCancel: false
+  })
+
+  apiDialogController: CustomDialogController = new CustomDialogController({
+    builder: ApiDialog(),
+    autoCancel: false
+  })
 
   private getMenuItems(): NavigationMenuItem[] {
     let items: NavigationMenuItem[] = []
@@ -65,6 +76,8 @@ struct Index {
     }, 1)
     const isFirstLaunch = await PreferencesUtils.getPreferenceValue<boolean>(StorageConstants.USER_PREF, 'isFirstLaunch', true)
     if(isFirstLaunch) {
+      this.apiDialogController.open()
+      this.warrantyDialogController.open()
       PreferencesUtils.putPreferenceValue(StorageConstants.USER_PREF, 'isFirstLaunch', false)
     }
   }

@@ -13,7 +13,11 @@ export default class Constants {
   /**
    * 选择框高度
    */
-  static readonly HEIGHT_SELECT: number = 40
+  static readonly HEIGHT_SELECT: number = 35
+  /**
+   * 搜索框高度
+   */
+  static readonly HEIGHT_SEARCH: number = 40
   /**
    * 文字按钮高度
    */
@@ -79,6 +83,10 @@ export default class Constants {
    */
   static readonly FONT_SIZE_BAR: number = 10
   /**
+   * Font Weight Settins
+   */
+  static readonly FONT_WEIGHT_SETTINGS: number = 800
+  /**
    * 默认边缘避让尺寸
    */
   static readonly PADDING_EDGE_DEFAULT: number = 10
@@ -90,4 +98,8 @@ export default class Constants {
    * Sheet 顶部默认避让尺寸
    */
   static readonly PADDING_SHEET_TOP_DEFAULT: number = 60
+  /**
+   * 组件内边缘避让
+   */
+  static readonly PADDING_INNER_DEFAULT: number = 5
 }

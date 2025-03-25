@@ -42,10 +42,13 @@ export struct WebPage {
           .darkMode(WebDarkMode.Auto)
           .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
       }
+      .layoutWeight(1)
       .height('100%')
       .width('100%')
     }
+    .height('100%')
     .title(this.param.title)
     .menus(this.menus)
+    .backgroundColor($r('app.color.background'))
   }
 }

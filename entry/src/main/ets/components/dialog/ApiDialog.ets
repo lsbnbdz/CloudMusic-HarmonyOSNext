@@ -27,8 +27,9 @@ export struct ApiDialog {
 
       Text() {
         Span(`当前服务器状态: `)
-        Span(`${this.validApiUrl ? '可用' : '不可用'}`)
+        Span(`${this.validApiUrl ? '正常' : '不可用'}`)
           .fontWeight(FontWeight.Bold)
+          .fontColor(this.validApiUrl ? Color.Green : $r('app.color.app_red'))
       }
       .width('100%')
       .textAlign(TextAlign.Center)

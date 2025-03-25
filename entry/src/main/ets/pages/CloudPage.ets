@@ -6,9 +6,9 @@ import { BottomBarComponent } from '../components/play/BottomBarComponent'
 import { AddToPlayListButton } from '../components/buttons/play/AddToPlayListButton'
 import Constants from '../common/constants/Constants'
 import { ClickToLoadButton, LoadingMoreButton, NoMoreButton } from '../components/buttons/LoadMoreButtons'
-import { resourceManager } from '@kit.LocalizationKit'
 import { StorageConstants } from '../common/constants/StorageConstants'
 import { PlayListSongItem } from '../common/entities/PlayListSongs'
+import { LazyData } from '@pie/lazy-data'
 
 /**
  * 云盘
@@ -23,7 +23,7 @@ export struct CloudPage {
   @StorageProp(StorageConstants.BREAKPOINT) breakpoint: string = 'sm'
   private currentOffset: number = 0
   @State list: Array<PlayListSongItem> = new Array()
-  @State pageOpacity: number = 1
+  @State dataSource: LazyData<PlayListSongItem> = new LazyData()
   @State hasMore: boolean = true
   @State hasLoaded: boolean = false
   @State isLoading: boolean = true
@@ -58,6 +58,8 @@ export struct CloudPage {
     try {
       const result = await getCloudList(offset)
       this.list = [...this.list, ...result]
+      this.dataSource.setData(this.list)
+      this.dataSource.notifyDataReload()
       this.currentOffset += limit
     } catch (e) {
       LogUtil.error(TAG + 'Error fetching songs: ', e)
@@ -78,7 +80,7 @@ export struct CloudPage {
             }.height('100%').width('100%').justifyContent(FlexAlign.Center)
           } else {
             List() {
-              ForEach(this.list, (item: PlayListSongItem, index) => {
+              LazyForEach(this.dataSource, (item: PlayListSongItem, index) => {
                 ListItem() {
                   SongCard({
                     song: {
@@ -95,12 +97,6 @@ export struct CloudPage {
                   })
                 }
                 .swipeAction({ end: this.SwipeItem(item) })
-                .translate({ y: -40 })
-                .animation({
-                  duration: 600,
-                  curve: Curve.LinearOutSlowIn
-                })
-                .translate({ y: 0 })
 
               })
               if (this.isLoadingMore) {
@@ -126,6 +122,7 @@ export struct CloudPage {
             .width('100%')
             .scrollBar(BarState.Auto)
             .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.BOTTOM])
+            .backToTop(true)
           }
         }
         .height('100%')
@@ -136,7 +133,12 @@ export struct CloudPage {
             .backgroundColor(Color.Transparent)
         }
       }
-      .opacity(this.pageOpacity)
+      .translate({ y: -40 })
+      .animation({
+        duration: 600,
+        curve: Curve.LinearOutSlowIn
+      })
+      .translate({ y: 0 })
       .width('100%')
       .height('100%')
       .backgroundColor($r('app.color.background'))

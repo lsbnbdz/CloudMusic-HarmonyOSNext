@@ -2,45 +2,63 @@ import { EmitterUtil, FileUtil, LogUtil } from "@pura/harmony-utils"
 import { getLyric } from "../../../api/LyricApi"
 import { EmitterConstants } from "../../constants/EmitterConstants"
 import { StorageConstants } from "../../constants/StorageConstants"
-import { Lyric } from "../../entities/Lyric"
+import { Lyric, LyricResult, LyricResultClass } from "../../entities/Lyric"
 import { Song } from "../../entities/SongsResult"
 import FileUtils from "../file/FileUtils"
 import { fileIo, ReadOptions } from "@kit.CoreFileKit"
 import { buffer } from "@kit.ArkTS"
+import { LyricStyle } from "../../entities/Settings"
 
 const TAG = '[LyricUtils] '
 
 class LyricUtils {
-  lyricString: string = ''
-  lyricArr: Array<string> = []
+  // Lyric Entity
+  lyric: LyricResult = LyricResultClass
   lyricObjects: Array<Lyric> = []
+  tLyricObjects: Array<Lyric> = []
   currentLyricIndex: number = 0
   updateLyricInterval: number = 0
   isUpdating: boolean = false
 
+  private resetLyric() {
+    this.lyric = LyricResultClass
+    this.lyricObjects = []
+    this.tLyricObjects = []
+  }
+
   async setLyric(song: Song) {
-    AppStorage.setOrCreate('player-currentLyric', '')
+    this.resetLyric()
+    AppStorage.setOrCreate(StorageConstants.CURRENT_LYRIC, '')
     this.currentLyricIndex = 0
     let lyricArr: string[] = []
     if(song.artists[0].id == 0) {
-      this.lyricString = '[00:00:00] 暂无歌词'
+      this.lyric.lrc.lyric = '[00:00:00] 暂无歌词'
       lyricArr = ['[00:00:00] 暂无歌词']
     } else {
-      lyricArr = await getLyric(song.id)
+      this.lyric = await getLyric(song.id)
+      lyricArr = this.lyric.lrc.lyric.split('\n')
     }
-    await this.setLyricArr(lyricArr)
+    this.lyricObjects = await this.parseLyricArray(lyricArr)
+    if(this.lyric.tlyric.lyric) { // 翻译
+      this.tLyricObjects = await this.parseLyricArray(this.lyric.tlyric.lyric.split('\n'))
+    }
     EmitterUtil.post(EmitterConstants.EMITTER_LYRIC_UPDATE,'Lyric Updated')
   }
 
-  async setLyricString(lyric: string) {
-    this.lyricString = lyric
-    let tempArr = lyric.split('\n')
-    this.setLyricArr(tempArr)
+  async getLyricObjects(): Promise<Lyric[]> {
+    const lyricStyle: LyricStyle = await AppStorage.get(StorageConstants.LYRIC_STYLE) as LyricStyle
+    if(lyricStyle.mode == 1 && this.lyric.tlyric.lyric) {
+      return this.mergeLyrics(this.lyricObjects, this.tLyricObjects)
+    }
+    else {
+      return this.lyricObjects
+    }
   }
 
-  async setLyricArr(arr: Array<string>) {
-    this.lyricArr = arr
-    this.lyricObjects = await this.parseLyricArray(this.lyricArr)
+  async setLyricString(lyric: string) {
+    this.lyric.lrc.lyric = lyric
+    let tempArr = lyric.split('\n')
+    this.lyricObjects = await this.parseLyricArray(tempArr)
   }
 
   getCurrentLyric(): string {
@@ -57,8 +75,8 @@ class LyricUtils {
          let newIndex = this.updateCurrentLyricIndex(time, this.lyricObjects)
           if(newIndex != this.currentLyricIndex) {
             this.currentLyricIndex = newIndex
-            AppStorage.setOrCreate('player-currentLyricIndex', this.currentLyricIndex)
-            AppStorage.setOrCreate('player-currentLyric', this.lyricObjects[newIndex].content)
+            AppStorage.setOrCreate(StorageConstants.CURRENT_LYRIC_INDEX, this.currentLyricIndex)
+            AppStorage.setOrCreate(StorageConstants.CURRENT_LYRIC, this.lyricObjects[newIndex].content)
           }
         }
       }, 100)
@@ -73,6 +91,28 @@ class LyricUtils {
 
     }
   }
+
+  /**
+   * 合并歌词
+   * @param baseLyrics
+   * @param targetLyrics
+   * @returns
+   */
+  private mergeLyrics(baseLyrics: Lyric[], targetLyrics: Lyric[]): Lyric[] {
+    const merged: Lyric[] = []
+    const targetMap = new Map<number, string>()
+    targetLyrics.forEach(t => targetMap.set(t.time, t.content))
+    baseLyrics.forEach(base => {
+      merged.push({
+        time: base.time,
+        content: targetMap.has(base.time)
+          ? `${base.content}\n${targetMap.get(base.time)}`
+          : base.content
+      })
+    })
+    return merged
+  }
+
 
   /**
    * 解析歌词字符串数组

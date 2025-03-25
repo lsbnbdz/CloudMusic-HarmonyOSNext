@@ -14,6 +14,7 @@ export struct SetDefaultHomePage {
       Text('默认首页')
         .fontSize(Constants.FONT_SIZE_COMMON)
         .fontWeight(FontWeight.Bold)
+        .fontColor($r('app.color.reverse'))
       Row() {
         Radio({ value: '发现', group: 'Radio' })
           .checked(this.selected == 0)
@@ -22,6 +23,7 @@ export struct SetDefaultHomePage {
             changeSettings(StorageConstants.DEFAULT_PAGE_INDEX, 0)
           })
         Text('发现')
+          .fontColor($r('app.color.reverse'))
           .fontSize(Constants.FONT_SIZE_COMMON)
           .padding({ right: 10 })
         Radio({ value: '歌单', group: 'Radio' })
@@ -31,10 +33,13 @@ export struct SetDefaultHomePage {
             changeSettings(StorageConstants.DEFAULT_PAGE_INDEX, 1)
           })
         Text('歌单')
+          .fontColor($r('app.color.reverse'))
           .fontSize(Constants.FONT_SIZE_COMMON)
       }
     }
     .width('100%')
     .justifyContent(FlexAlign.SpaceBetween)
+    .height(Constants.HEIGHT_SETTINGS_ITEM)
+    .padding({ left: Constants.PADDING_EDGE_DEFAULT, right: Constants.PADDING_EDGE_DEFAULT })
   }
 }

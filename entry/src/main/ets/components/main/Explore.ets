@@ -217,6 +217,7 @@ export struct Explore {
           .columnsTemplate(this.columnsTemplate)
           .layoutDirection(GridDirection.Column)
           .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
+          .backToTop(true)
         }
       }
       .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])

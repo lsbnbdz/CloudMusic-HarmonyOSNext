@@ -17,24 +17,25 @@ export struct SetPlayQuality {
   }
   build() {
     Row() {
-      Text('在线播放音质').LeftText()
+      Text('在线播放音质')
+        .fontSize(Constants.FONT_SIZE_COMMON)
+        .fontWeight(FontWeight.Bold)
       Select([{ value: '标准' }, { value: '高' }, { value: '极高' }, { value: '无损' }])
         .selectedOptionFontColor($r('app.color.app_red'))
         .selected(this.selected)
         .value(this.selected ? PlayConstants.QUALITY_NAME[this.selected] : '标准')
-        .width(100)
+        .constraintSize({
+          minHeight: 0,
+          maxHeight: '100%'
+        })
         .height(Constants.HEIGHT_SELECT)
         .onSelect((index: number) => {
           AppStorage.setOrCreate(StorageConstants.PLAY_QUALITY,index)
           PreferencesUtils.putPreferenceValue('Settings', StorageConstants.PLAY_QUALITY, index)
         })
     }
+    .height(Constants.HEIGHT_SETTINGS_ITEM)
     .width('100%')
     .justifyContent(FlexAlign.SpaceBetween)
   }
-}
-
-@Extend(Text) function LeftText() {
-  .fontSize(Constants.FONT_SIZE_COMMON)
-  .fontWeight(FontWeight.Bold)
 }

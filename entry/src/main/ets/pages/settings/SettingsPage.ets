@@ -1,18 +1,16 @@
-import { SetPlayQuality } from '../../components/settings/SetPlayQuality'
-import { SetApiUrl } from '../../components/settings/SetApiUrl'
-import { RemoveCache } from '../../components/settings/RemoveCache'
-import {
-  OtherContents,
-  Settings_Bottom, TextContents} from '../../components/settings/TextContent'
+import { CacheManagePage} from './CacheManagePage'
+import { VersionCard } from '../../components/settings/TextContent'
 import Constants from '../../common/constants/Constants'
 import { SetDefaultHomePage } from '../../components/settings/SetDefaultHomePage'
-import { MixWithOthers } from '../../components/settings/MixWithOthers'
-import { SongClickAction } from '../../components/settings/SongClickAction'
 import { SongClickActionPage } from './SongClickActionPage'
 import { ApiSetPage } from './ApiSetPage'
 import { WebPage } from '../WebPage'
 import { WebPageParam } from '../../common/entities/PageParams'
 import { DebugPage } from '../DebugPage'
+import { CommonSettingsCard } from '../../components/cards/SettingsCard'
+import { PlaySettingsPage } from './PlaySettingsPage'
+import { AboutPage } from './AboutPage'
+import { DonatePage } from './DonatePage'
 
 /**
  * 设置页面
@@ -29,51 +27,35 @@ export struct SettingsPage {
         Scroll() {
           Column({ space: 10 }) {
             List({ space: 10 }) {
-              ListItem() {
-                SetDefaultHomePage().padding({ left: 10, right: 10 })
-              }.listItemStyle()
-
-              ListItem() {
-                Column({ space: 20 }) {
-                  SetPlayQuality()
-                  MixWithOthers()
-                }
-                .padding(10)
-              }.listItemStyle()
-
-              ListItem() {
-                Column({ space: 20 }) {
-                  SongClickAction()
-                    .onClick(() => {
-                      this.settingsPageInfos.pushPathByName('SongClickActionPage', null)
-                    })
-                  SetApiUrl()
-                    .onClick(() => {
-                      this.settingsPageInfos.pushPathByName('ApiSetPage', null)
-                    })
-                }
-                .padding(10)
-              }.listItemStyle()
-
-              ListItem() {
-                RemoveCache().padding({ left: 10, right: 10 })
-              }.listItemStyle()
-
-              ListItem() {
-                Divider().padding({ left: 20, right: 20 })
+              ListItemGroup() {
+                SetDefaultHomePage()
               }
+              .listItemGroupStyle()
 
-              ListItem() {
-                TextContents()
-              }.listItemStyle()
-
-              ListItem() {
-                OtherContents()
-              }.listItemStyle()
-
-              ListItem() {
-                Settings_Bottom()
+              ListItemGroup() {
+                this.PlaySettings()
               }
+              .listItemGroupStyle()
+
+              ListItemGroup() {
+                this.MainSettings()
+              }
+              .listItemGroupStyle()
+
+              ListItemGroup() {
+                VersionCard()
+
+                CommonSettingsCard({
+                  title: '使用文档',
+                  action: () => {
+                    let param: WebPageParam = {
+                      title: '使用文档', url: 'https://docs.chenlvin.cc/cloudmusic/#/help'
+                    }
+                    this.settingsPageInfos.pushPathByName('WebPage', param)
+                  }
+                })
+              }
+              .listItemGroupStyle()
 
               ListItem().height(px2vp(this.bottomRectHeight))
             }
@@ -96,32 +78,89 @@ export struct SettingsPage {
     .mode(NavigationMode.Stack)
     .titleMode(NavigationTitleMode.Mini)
     .navDestination(this.PageMap)
+    .padding({ top: Constants.PADDING_EDGE_DEFAULT })
   }
 
   @Builder PageMap(name: string, param: Object) {
     if(name === 'SongClickActionPage') {
       SongClickActionPage()
     }
-    else if(name == 'ApiSetPage') {
+    else if(name === 'PlaySettingsPage') {
+      PlaySettingsPage()
+    }
+    else if(name === 'ApiSetPage') {
       ApiSetPage()
+    }
+    else if(name === 'CacheManagePage') {
+      CacheManagePage()
     }
     else if(name === 'WebPage') {
       WebPage({ param: param as WebPageParam })
     }
-    else if(name == 'DebugPage') {
+    else if(name === 'AboutPage') {
+      AboutPage()
+    }
+    else if(name === 'DonatePage') {
+      DonatePage()
+    }
+    else if(name === 'DebugPage') {
       DebugPage()
     }
   }
 
-  @Styles listItemStyle() {
-    .backgroundColor($r('app.color.main'))
-    .borderRadius(Constants.RADIUS_CARD)
-    .margin({ left: 20, right: 20 })
-    .padding({ left: Constants.PADDING_EDGE_DEFAULT, right: Constants.PADDING_EDGE_DEFAULT })
-    .constraintSize({
-      minHeight: 60,
-      maxHeight: '100%'
-    })
+  @Builder PlaySettings() {
+    ListItem() {
+      CommonSettingsCard({
+        title: '播放设置',
+        action: () => {
+          this.settingsPageInfos.pushPathByName('PlaySettingsPage', null)
+        }
+      })
+    }
+    ListItem() {
+      CommonSettingsCard({
+        title: '歌曲卡片设置',
+        action: () => {
+          this.settingsPageInfos.pushPathByName('SongClickActionPage', null)
+        }
+      })
+    }
   }
+
+  @Builder MainSettings() {
+    ListItem() {
+      CommonSettingsCard({
+        title: '在线服务设置',
+        action: () => {
+          this.settingsPageInfos.pushPathByName('ApiSetPage', null)
+        }
+      })
+    }
+    ListItem() {
+      CommonSettingsCard({
+        title: '应用缓存',
+        action: () => {
+          this.settingsPageInfos.pushPathByName('CacheManagePage', null)
+        }
+      })
+    }
+  }
+}
+
+@Extend(ListItemGroup) function listItemGroupStyle() {
+  .divider({ strokeWidth: 0.1, startMargin: 10, endMargin: 10, color: Color.Gray })
+  .backgroundColor($r('app.color.main'))
+  .borderRadius(Constants.RADIUS_CARD)
+  .margin({ left: 20, right: 20 })
+  .padding({
+    left: Constants.PADDING_EDGE_DEFAULT,
+    right: Constants.PADDING_EDGE_DEFAULT,
+    top: Constants.PADDING_INNER_DEFAULT,
+    bottom: Constants.PADDING_INNER_DEFAULT
+  })
+  .constraintSize({
+    minHeight: 60,
+    maxHeight: '100%'
+  })
 }
 

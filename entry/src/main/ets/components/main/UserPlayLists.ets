@@ -66,6 +66,7 @@ export struct UserPlayLists {
                 ListItem().height(px2vp(this.bottomRectHeight) + 160)
               }
               .contentListStyle(this.breakpoint)
+              .backToTop(true)
             }
             TabContent() {
               List() {
@@ -81,6 +82,7 @@ export struct UserPlayLists {
                   })
                 ListItem().height(px2vp(this.bottomRectHeight) + 160)
               }
+              .backToTop(true)
               .contentListStyle(this.breakpoint)
             }
             TabContent() {
@@ -97,6 +99,7 @@ export struct UserPlayLists {
                 })
                 ListItem().height(px2vp(this.bottomRectHeight) + 160)
               }
+              .backToTop(true)
               .contentListStyle(this.breakpoint)
             }
           }

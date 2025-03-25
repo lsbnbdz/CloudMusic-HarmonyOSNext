@@ -84,7 +84,7 @@ export struct CachedPage {
                   icon: '/resources/base/media/ic_public_search_filled.svg'
                 })
                   .id('search')
-                  .height(Constants.HEIGHT_SELECT)
+                  .height(Constants.HEIGHT_SEARCH)
                   .width('100%')
                   .searchButton('搜索')
                   .onChange((value) => {
@@ -155,7 +155,7 @@ export struct CachedPage {
                 }
                 else {
                   Column({ space: 20 }) {
-                    Text('本地文件列表为空\n\n点击菜单栏按钮可将\n本机文件上传至本地曲库').width('100%').textAlign(TextAlign.Center).padding({ left: 30, right: 30, top: 10 })
+                    Text('本地文件列表为空').width('100%').textAlign(TextAlign.Center).padding({ left: 30, right: 30, top: 10 })
                     if(this.filesList.length > 1) {
                       Button('迁移旧版本数据').padding({ left: 10, right: 10, top: 5, bottom: 5 })
                         .onClick(() => { this.isShowMigration = true })
@@ -199,6 +199,7 @@ export struct CachedPage {
             .padding({ left: 10, right: 10 })
             .layoutWeight(1)
             .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
+            .backToTop(true)
           }
           .justifyContent(FlexAlign.Center)
           .layoutWeight(1)

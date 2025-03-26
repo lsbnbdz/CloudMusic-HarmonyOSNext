@@ -44,16 +44,7 @@ export struct SettingsPage {
 
               ListItemGroup() {
                 VersionCard()
-
-                CommonSettingsCard({
-                  title: '使用文档',
-                  action: () => {
-                    let param: WebPageParam = {
-                      title: '使用文档', url: 'https://docs.chenlvin.cc/cloudmusic/#/help'
-                    }
-                    this.settingsPageInfos.pushPathByName('WebPage', param)
-                  }
-                })
+                this.OtherItems()
               }
               .listItemGroupStyle()
 
@@ -144,6 +135,28 @@ export struct SettingsPage {
         }
       })
     }
+  }
+
+  @Builder OtherItems() {
+    CommonSettingsCard({
+      title: '使用文档',
+      action: () => {
+        let param: WebPageParam = {
+          title: '使用文档', url: 'https://docs.chenlvin.cc/cloudmusic/#/help'
+        }
+        this.settingsPageInfos.pushPathByName('WebPage', param)
+      }
+    })
+
+    CommonSettingsCard({
+      title: '建议反馈',
+      action: () => {
+        let param: WebPageParam = {
+          title: '建议反馈', url: 'https://www.wjx.cn/vm/PeLnYfc.aspx# '
+        }
+        this.settingsPageInfos.pushPathByName('WebPage', param)
+      }
+    })
   }
 }
 

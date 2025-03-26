@@ -59,7 +59,7 @@ class FileDownloadUtils {
                 artists: artists,
                 picFile: "",
                 songFile: fileName,
-                lyricFile: "",
+                lyricFile: ""
               })
             })
           })

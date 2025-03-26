@@ -15,5 +15,5 @@ export const LocalSongClass: LocalSong = {
   artists: "",
   picFile: "",
   songFile: "",
-  lyricFile: ""
+  lyricFile: "",
 }

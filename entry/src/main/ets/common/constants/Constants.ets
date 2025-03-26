@@ -75,6 +75,10 @@ export default class Constants {
    */
   static readonly FONT_SIZE_TITLE: number = 20
   /**
+   * 大封面字体尺寸
+   */
+  static readonly FONT_SIZE_COVER: number = 30
+  /**
    * 普通字体尺寸
    */
   static readonly FONT_SIZE_COMMON: number = 15

@@ -63,7 +63,9 @@ export struct SetLyricSize {
         .width('100%')
         .onChange((value, mode) => {
           if(mode == SliderChangeMode.Moving) {
-            this.style.size = value
+            animateTo({ duration: 100, curve: Curve.Linear}, () => {
+              this.style.size = value
+            })
           }
           this.lyricStyle.size = value
           this.updateLyricStyle()

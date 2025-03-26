@@ -175,7 +175,7 @@ class FileUtils {
             artists: await getArtists(song.artists),
             picFile: "",
             songFile: fileUriObject.name,
-            lyricFile: ""
+            lyricFile: "",
           }
           await RelationalStoreUtils.addSong(localSong)
         }

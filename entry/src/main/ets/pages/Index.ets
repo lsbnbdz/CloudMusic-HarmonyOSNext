@@ -7,7 +7,7 @@ import { CloudPage } from './CloudPage';
 import { DailyListPage } from './DailyListPage';
 import { SearchPage } from './SearchPage';
 import { PlayListPage } from './PlayListPage';
-import { PlayListPageParam, WebPageParam } from '../common/entities/PageParams';
+import { ArtistParam, PlayListPageParam, WebPageParam } from '../common/entities/PageParams';
 import { LoginPage } from './login/LoginPage';
 import { QrCodeLogin } from './login/QrCodeLogin';
 import { WebLogin } from './login/WebLogin';
@@ -21,6 +21,7 @@ import PreferencesUtils from '../common/utils/data/PreferencesUtils';
 import { DebugPage } from './DebugPage';
 import BreakpointUtils from '../common/utils/system/BreakpointUtils';
 import { ApiDialog } from '../components/dialog/ApiDialog';
+import { ArtistPage } from './ArtistPage';
 
 @Entry
 @Component
@@ -140,6 +141,9 @@ struct Index {
     }
     else if(name === 'PLayListPage') {
       PlayListPage({ param: param as PlayListPageParam })
+    }
+    else if(name === 'ArtistPage') {
+      ArtistPage({ param: param as ArtistParam })
     }
     else if(name === 'LoginPage') {
       LoginPage()

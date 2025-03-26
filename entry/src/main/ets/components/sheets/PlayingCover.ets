@@ -15,6 +15,7 @@ import { PlayerActionSheet } from "./PlayerActionSheet"
 import { likeThisSong } from "../../common/functions/play/songLike"
 import { resourceManager } from "@kit.LocalizationKit"
 import { PlayConstants } from "../../common/constants/PlayConstants"
+import { ArtistsSheet } from "./ArtistsSheet"
 
 @Component
 export struct PlayingCover {
@@ -41,6 +42,7 @@ export struct PlayingCover {
   @State isShowMenu: boolean = false
   @State isShowTimer: boolean = false
   @State isShowAddSheet: boolean = false
+  @State isShowArtists: boolean = false
   @State isLikeProcessing: boolean = false
   @State totalOpacity: number = 0
   private dialogController: CustomDialogController = new CustomDialogController({
@@ -392,8 +394,18 @@ export struct PlayingCover {
       Text(this.artists)
         .textStyle(16)
         .onClick(() => {
-          PasteboardUtil.setDataText(this.artists)
-          ToastUtil.showToast('已复制歌手名到剪贴板', { duration: 3000 })
+          if(this.song.id !== 0) {
+            this.isShowArtists = true
+          }
+        })
+        .bindSheet(this.isShowArtists, this.ArtistsSheet(), {
+          preferType: SheetType.CENTER,
+          height: SheetSize.FIT_CONTENT,
+          dragBar: false,
+          showClose: false,
+          backgroundColor: Color.Transparent,
+          blurStyle: BlurStyle.Regular,
+          onDisappear: () => { this.isShowArtists = false }
         })
     }
     .layoutWeight(1)
@@ -505,7 +517,16 @@ export struct PlayingCover {
   }
 
   @Builder MenuSheet() {
-    PlayerActionSheet({ isShow: this.isShowMenu, isShowTimer: this.isShowTimer, isShowAddSheet: this.isShowAddSheet })
+    PlayerActionSheet({
+      isShow: this.isShowMenu,
+      isShowTimer: this.isShowTimer,
+      isShowAddSheet: this.isShowAddSheet,
+      isShowArtists: this.isShowArtists
+    })
+  }
+
+  @Builder ArtistsSheet() {
+    ArtistsSheet({ artists: this.song.artists, isShow: this.isShowArtists, isShowCover: this.isShow })
   }
 
   @Builder PersonalFmMenu() {

@@ -1,7 +1,11 @@
 import Constants from "../../common/constants/Constants"
+import { StorageConstants } from "../../common/constants/StorageConstants"
+import { AppInfo, AppInfoClass } from "../../common/entities/AppInfo"
 
 @Component
 export struct DonatePage {
+  @StorageProp(StorageConstants.APP_INFO) appInfo: AppInfo = AppInfoClass
+  @StorageProp('bottomRectHeight') bottomRectHeight: number = 0
   build() {
     NavDestination() {
       Scroll() {
@@ -15,20 +19,49 @@ export struct DonatePage {
             })
 
           Column({ space: 20 }) {
-            Text('特别鸣谢')
-              .fontSize(Constants.FONT_SIZE_TITLE)
-              .fontWeight(Constants.FONT_WEIGHT_SETTINGS)
-              .fontColor($r('app.color.reverse'))
+            if(this.appInfo.data?.Sponser.length > 0) {
+              Text('特别鸣谢')
+                .fontSize(Constants.FONT_SIZE_TITLE)
+                .fontWeight(Constants.FONT_WEIGHT_SETTINGS)
+                .fontColor($r('app.color.reverse'))
+              Flex({
+                wrap: FlexWrap.Wrap,
+                justifyContent: FlexAlign.Center
+              }) {
+                ForEach(this.appInfo.data.Sponser, (item: string) => {
+                  Column() {
+                    Text(item)
+                      .fontWeight(FontWeight.Medium)
+                      .fontColor($r('app.color.reverse'))
+                      .padding(Constants.PADDING_EDGE_DEFAULT)
+                      .backgroundColor($r('app.color.main'))
+                      .borderRadius(Constants.RADIUS_CARD)
+                  }
+                  .padding({
+                    left: Constants.PADDING_EDGE_DEFAULT,
+                    right: Constants.PADDING_EDGE_DEFAULT,
+                    top: 5,
+                    bottom: 5
+                  })
+                })
+              }
+              .padding({ left: Constants.PADDING_EDGE_DEFAULT, right: Constants.PADDING_EDGE_DEFAULT})
+            }
 
-            Text('随应用版本更新~')
-              .fontSize(Constants.FONT_SIZE_COMMON)
-              .fontColor($r('app.color.reverse'))
+            Blank().height(px2vp(this.bottomRectHeight))
           }
         }
-        .height('100%')
-        .width('100%')
         .padding({ top: Constants.PADDING_EDGE_TEXT })
+        .width('100%')
+        .height('auto')
       }
+      .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.BOTTOM])
+      .height('100%')
+      .width('100%')
+      .layoutWeight(1)
+      .align(Alignment.Top)
+      .scrollBar(BarState.On)
+      .scrollable(ScrollDirection.Vertical)
     }
     .title('捐赠')
     .backgroundColor($r('app.color.background'))

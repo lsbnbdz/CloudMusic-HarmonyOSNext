@@ -6,7 +6,7 @@ import { PlayList, playListClass } from "../../common/entities/PlayList"
 import Constants from "../../common/constants/Constants"
 import { cleanLastPlayInfo, playListToQueue } from "../../common/functions/play/playListOp"
 import { playQueue } from "../../common/functions/play/playControl"
-import { PasteboardUtil } from "@pura/harmony-utils"
+import { LogUtil, PasteboardUtil } from "@pura/harmony-utils"
 import { DownloadDialog } from "../dialog/DownloadDialog"
 import { StorageConstants } from "../../common/constants/StorageConstants"
 import VibratorUtils from "../../common/utils/system/VibratorUtils"
@@ -37,6 +37,7 @@ export struct SongCard {
   })
 
   async aboutToAppear(): Promise<void> {
+    LogUtil.info('SongItem: ' + JSON.stringify(this.song))
     if(this.song.artists[0].id == 0) {
      this.artists = '未知'
       this.song.artists[0] = {"id": 0, "name": '未知'}
@@ -68,7 +69,7 @@ export struct SongCard {
                 .textStyle(16)
                 .fontColor(this.song.id == this.playSong.id ? $r('app.color.app_red') : $r('app.color.reverse'))
                 .fontWeight(this.song.id == this.playSong.id ? FontWeight.Bold : FontWeight.Medium)
-              if(this.song.alias.length > 0) {
+              if(this.song.alias?.length > 0) {
                 Text(`(${this.song.alias[0]})`)
                   .layoutWeight(1)
                   .fontSize(Constants.FONT_SIZE_COMMON)
@@ -196,7 +197,7 @@ export struct SongCard {
             .fontColor($r('app.color.reverse'))
             .maxLines(2)
             .textOverflow({ overflow: TextOverflow.Ellipsis })
-          if(this.song.alias.length > 0) {
+          if(this.song.alias?.length > 0) {
             Text(`(${this.song.alias[0]})`)
               .layoutWeight(1)
               .fontSize(Constants.FONT_SIZE_COMMON)

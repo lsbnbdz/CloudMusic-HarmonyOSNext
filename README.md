@@ -2,8 +2,7 @@
 
 🎵 云音汇 | ✨ 鸿蒙原生应用 🎼 第三方云音乐客户端 
 
-**应用市场审核不通过，请各位自行侧载安装**
-<img src="./images/img.png" width="100%" />
+**本项目为第三方应用，需要侧载安装**
 
 **[在Release下载hap包](https://github.com/Chenlvin/CloudMusic-HarmonyOSNext/releases)**
 

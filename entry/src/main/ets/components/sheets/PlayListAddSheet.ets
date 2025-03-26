@@ -23,6 +23,7 @@ export struct PlayListAddSheet {
   @State isRefreshing: boolean = false
   @State lastRefreshTime: number = 0
   @State songId: number = -1
+  @State showLikeList: boolean = true
   @Link isShow: boolean
   private refreshCooldown: number = 5000
 
@@ -54,7 +55,7 @@ export struct PlayListAddSheet {
       else {
         Refresh({ refreshing: this.isRefreshing }) {
           List() {
-            ForEach(this.playLists, (item: PlayList, index) => {
+            ForEach(this.showLikeList ? this.playLists : this.playLists.slice(1), (item: PlayList, index) => {
               if (item.userId == this.user.data.profile.userId) {
                 ListItem() {
                   Button() {
@@ -94,9 +95,9 @@ export struct PlayListAddSheet {
                 .padding({ left: 15, right: 15 })
               }
             })
-            ListItem().height(px2vp(this.bottomRectHeight))
+            ListItem().height(px2vp(this.bottomRectHeight) * 2)
           }
-          .layoutWeight(1)
+          .height('100%')
           .width('100%')
         }
         .height('100%')

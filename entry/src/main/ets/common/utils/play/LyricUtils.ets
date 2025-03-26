@@ -35,14 +35,18 @@ class LyricUtils {
       this.lyric.lrc.lyric = '[00:00:00] 暂无歌词'
       lyricArr = ['[00:00:00] 暂无歌词']
     } else {
-      this.lyric = await getLyric(song.id)
+      try {
+        this.lyric = await getLyric(song.id)
+      } catch (e) {
+        LogUtil.error(TAG + 'Get Lyric Error: ' + e.message)
+      }
       lyricArr = this.lyric.lrc.lyric.split('\n')
     }
     this.lyricObjects = await this.parseLyricArray(lyricArr)
     if(this.lyric.tlyric.lyric) { // 翻译
       this.tLyricObjects = await this.parseLyricArray(this.lyric.tlyric.lyric.split('\n'))
     }
-    EmitterUtil.post(EmitterConstants.EMITTER_LYRIC_UPDATE,'Lyric Updated')
+    EmitterUtil.post(EmitterConstants.EMITTER_LYRIC_UPDATE, 'Lyric Updated')
   }
 
   async getLyricObjects(): Promise<Lyric[]> {

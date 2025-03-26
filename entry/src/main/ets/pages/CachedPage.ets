@@ -90,6 +90,7 @@ export struct CachedPage {
                   .onChange((value) => {
                     if(value == '') {
                       this.filteredSongs = []
+                      this.selectedSongs = []
                       this.searchKeyword = ''
                     }
                   })
@@ -224,11 +225,12 @@ export struct CachedPage {
 
   private handelSearch() {
     try {
+      this.selectedSongs = []
       if (!this.searchKeyword) {
         this.dataSourceFiltered.setData([])
       }
       const keyword = this.searchKeyword.trim().toLowerCase()
-      this.dataSourceFiltered.setData(this.localSongs.filter((item: LocalSong) => {
+      this.dataSourceFiltered.setData(this.localSongs.reverse().filter((item: LocalSong) => {
         return item.songFile.toString().toLowerCase().includes(keyword)
       }))
     } catch (e) {
@@ -242,7 +244,7 @@ export struct CachedPage {
     this.originalOrderList = [...this.localSongs]
     this.isSelecting = false
     this.selectedSongs = []
-    this.dataSource.setData(this.localSongs)
+    this.dataSource.setData(this.localSongs.reverse())
     this.dataSource.notifyDataReload()
   }
 

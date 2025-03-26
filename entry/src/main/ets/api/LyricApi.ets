@@ -2,6 +2,7 @@ import { LyricResult, LyricResultClass } from "../common/entities/Lyric";
 import { HttpRequest } from "../common/utils/request/HttpRequestUtils";
 import LyricUtils from "../common/utils/play/LyricUtils";
 import { getApiUrl } from "../common/functions/common/get";
+import { LogUtil } from "@pura/harmony-utils";
 
 /**
  * 歌词类API
@@ -21,7 +22,10 @@ export async function getLyric(songId: number): Promise<LyricResult> {
   await request.Request(false).then((data) => { // 不需要传入 cookie
     const dataGot: LyricResult = data.result as LyricResult
     if(dataGot.code == 200) {
-      result = dataGot
+      result.lrc = dataGot.lrc
+      if(dataGot.tlyric) result.tlyric = dataGot.tlyric
+      if(dataGot.romalrc) result.romalrc = dataGot.romalrc
+      if(dataGot.klyric) result.klyric = dataGot.klyric
     }
   })
   return result

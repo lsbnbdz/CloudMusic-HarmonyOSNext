@@ -59,20 +59,22 @@
 
 
 ### 界面预览：
+#### 手机
+|**发现页**|**云盘界面**|**播控界面**|
+|:----------:|:----------:|:----------:|
+|<img src="./images/01.jpg"/>|<img src="./images/02.jpg" />|<img src="./images/03.jpg" />|
+|**播放页功能**|**歌词界面**|**播放列表**|
+|<img src="./images/04.jpg"/>|<img src="./images/05.jpg"/>|<img src="./images/06.jpg"/>|
 
-<img src="./images/01.jpg" width="20%" />
-<img src="./images/02.jpg" width="20%" />
-<img src="./images/03.jpg" width="20%" />
-<img src="./images/04.jpg" width="20%" />
-<img src="./images/05.jpg" width="20%" />
-<img src="./images/06.jpg" width="20%" />
-<br>
-<img src="./images/07.jpg" width="60%" />
-<img src="./images/08.jpg" width="60%" />
-<img src="./images/09.jpg" width="60%" />
-<img src="./images/10.jpg" width="60%" />
+#### 平板
+|**播控/歌词界面**|**平行界面**|
+|:----------:|:----------:|
+|<img src="./images/07.jpg"/>|<img src="./images/08.jpg"/>|
 
-
+#### 折叠屏
+|**歌单页**|**播控/歌词界面**|
+|:----------:|:----------:|
+|<img src="./images/09.jpg"/>|<img src="./images/10.jpg"/>|
 
 ### 开源许可：
 Copyright (c) 2024-present Chenlvin

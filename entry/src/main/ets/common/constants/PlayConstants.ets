@@ -11,8 +11,18 @@ export class PlayConstants {
    */
   static readonly QUALITY_NAME: string[] = ['标准', '高', '极高', '无损']
   /**
-   * 循环模式
+   * 循环模式名称
    * 0-顺序播放, 1-单曲循环, 2-顺序循环, 3-随机播放
    */
   static readonly CYCLE_MODE: string[] = ['顺序播放', '单曲循环', '顺序循环', '随机播放']
+  /**
+   * 私人FM模式
+   * 0-默认模式, 1-熟悉模式, 2-探索模式
+   */
+  static readonly PERSONAL_FM_MODE: string[] = ['DEFAULT', 'FAMILIAR', 'EXPLORE']
+  /**
+   * 私人FM模式名称
+   * 0-默认模式, 1-熟悉模式, 2-探索模式
+   */
+  static readonly PERSONAL_FM_MODE_NAME: string[] = ['默认模式', '熟悉模式', '探索模式']
 }

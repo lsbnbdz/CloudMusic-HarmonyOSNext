@@ -1,0 +1,35 @@
+import Constants from "../../common/constants/Constants"
+
+@Component
+export struct CommonSettingsCard {
+  @State title: string = ''
+  @State text: string = ''
+  action: () => void = () => {}
+
+  build() {
+    Button() {
+      Row() {
+        Text(this.title)
+          .fontColor($r('app.color.reverse'))
+          .fontSize(Constants.FONT_SIZE_COMMON)
+          .fontWeight(Constants.FONT_WEIGHT_SETTINGS)
+        if (!this.text) {
+          Image($r('app.media.ic_public_arrow_right'))
+            .width(Constants.FONT_SIZE_TITLE)
+            .fillColor($r('app.color.reverse'))
+        } else {
+          Text(this.text)
+            .fontColor($r('app.color.reverse'))
+            .fontSize(Constants.FONT_SIZE_COMMON)
+            .fontWeight(FontWeight.Bold)
+        }
+      }
+      .width('100%')
+      .justifyContent(FlexAlign.SpaceBetween)
+    }
+    .padding({ left: Constants.PADDING_EDGE_DEFAULT, right: Constants.PADDING_EDGE_DEFAULT })
+    .backgroundColor(Color.Transparent)
+    .onClick(this.action)
+    .height(Constants.HEIGHT_SETTINGS_ITEM)
+  }
+}

@@ -70,11 +70,11 @@ export struct CachedPage {
   ]
 
   async aboutToAppear(): Promise<void> {
+    this.refreshList()
     this.filesList = await FileUtils.getFileName()
     EmitterUtil.onSubscribe('refreshLocalSongs', async () => {
       await this.refreshList()
     })
-    this.refreshList()
   }
 
   aboutToDisappear(): void {
@@ -92,12 +92,14 @@ export struct CachedPage {
                 icon: '/resources/base/media/ic_public_search_filled.svg'
               })
                 .id('search')
+                .height(Constants.HEIGHT_SEARCH)
                 .height(Constants.HEIGHT_SELECT)
                 .width('100%')
                 .searchButton('搜索')
                 .onChange((value) => {
                   if(value == '') {
                     this.filteredSongs = []
+                    this.selectedSongs = []
                     this.searchKeyword = ''
                   }
                 })
@@ -164,7 +166,7 @@ export struct CachedPage {
               else {
                 if(this.loadStatus && this.localSongs.length == 0){
                   Column({ space: 20 }) {
-                    Text('本地文件列表为空\n\n点击菜单栏按钮可将\n本机文件上传至本地曲库').width('100%').textAlign(TextAlign.Center).padding({ left: 30, right: 30, top: 10 })
+                    Text('本地文件列表为空').width('100%').textAlign(TextAlign.Center).padding({ left: 30, right: 30, top: 10 })
                     if(this.filesList.length > 1) {
                       Button('迁移旧版本数据').padding({ left: 10, right: 10, top: 5, bottom: 5 })
                         .onClick(() => { this.isShowMigration = true })
@@ -209,6 +211,7 @@ export struct CachedPage {
           .layoutWeight(1)
           .padding({ left: 10, right: 10 })
           .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
+          .backToTop(true)
         }
         .alignItems(HorizontalAlign.Start)
         .justifyContent(FlexAlign.Center)
@@ -234,11 +237,12 @@ export struct CachedPage {
 
   private handelSearch() {
     try {
+      this.selectedSongs = []
       if (!this.searchKeyword) {
         this.dataSourceFiltered.setData([])
       }
       const keyword = this.searchKeyword.trim().toLowerCase()
-      this.dataSourceFiltered.setData(this.localSongs.filter((item: LocalSong) => {
+      this.dataSourceFiltered.setData(this.localSongs.reverse().filter((item: LocalSong) => {
         return item.songFile.toString().toLowerCase().includes(keyword)
       }))
     } catch (e) {
@@ -252,7 +256,7 @@ export struct CachedPage {
     this.originalOrderList = [...this.localSongs]
     this.isSelecting = false
     this.selectedSongs = []
-    this.dataSource.setData(this.localSongs)
+    this.dataSource.setData(this.localSongs.reverse())
     this.dataSource.notifyDataReload()
     this.loadStatus = true
   }
@@ -260,7 +264,7 @@ export struct CachedPage {
   private async handleUpload() {
     PickerUtil.selectDocument({
       maxSelectNumber: 99,
-      fileSuffixFilters: ['音频 | .mp3,.flac']
+      fileSuffixFilters: ['音频 | .mp3,.flac,.MP3,.FLAC']
     }).then((uris) => {
       FileUtils.saveFilesToDirectory(uris).then(async (result) => {
         if(result) {

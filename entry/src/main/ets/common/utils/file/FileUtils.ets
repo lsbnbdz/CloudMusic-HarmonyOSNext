@@ -61,12 +61,12 @@ class FileUtils {
       for (const localSong of localSongs) {
         LogUtil.info(TAG + 'delete count + 1')
         try {
+          RelationalStoreUtils.deleteSong(localSong.id)
           await FileUtil.unlink(this.filesDir + `/${localSong.songFile}`)
           if(localSong.songId != 0) {
             await FileUtil.unlink(this.filesDir + `/pic/${localSong.songId}.jpg`)
             await FileUtil.unlink(this.filesDir + `/lyric/${localSong.songId}.lrc`)
           }
-          RelationalStoreUtils.deleteSong(localSong.id)
           successCount++
         } catch (e) {
           LogUtil.error(TAG + `删除文件 ${localSong.songFile} 失败: ${e.stack}`)
@@ -158,6 +158,9 @@ class FileUtils {
     try {
       for (const uri of uris) {
         let fileUriObject = new fileUri.FileUri(uri)
+        if(await FileUtil.access(this.filesDir + `/${fileUriObject.name}`)) {
+          continue
+        }
         let file = fs.openSync(uri, fs.OpenMode.READ_WRITE | fs.OpenMode.CREATE)
         let file2 = fs.openSync(this.filesDir + `/${fileUriObject.name}`, fs.OpenMode.READ_WRITE | fs.OpenMode.CREATE)
         fs.copyFileSync(file.fd, file2.fd)

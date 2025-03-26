@@ -103,6 +103,16 @@ export class StorageConstants {
    */
   static readonly PLAY_TIME: string = 'player-time'
   /**
+   * 当前歌词
+   * @default AppStorage
+   */
+  static readonly CURRENT_LYRIC: string = 'player-currentLyric'
+  /**
+   * 当前歌词序号
+   * @default AppStorage
+   */
+  static readonly CURRENT_LYRIC_INDEX: string = 'player-currentLyricIndex'
+  /**
    * 歌曲封面Url
    * @description AppStorage
    */
@@ -133,6 +143,16 @@ export class StorageConstants {
    * @description AppStorage
    */
   static readonly LAST_PLAYED_LIST: string = 'lastPlayedList'
+  /**
+   * 是否开启私人FM模式
+   * @description AppStorage
+   */
+  static readonly IS_PERSONAL_FM: string = 'isPersonalFm'
+  /**
+   * 私人FM模式number
+   * @description AppStorage
+   */
+  static readonly PERSONAL_FM_MODE: string = 'personalFmMode'
 
 
 
@@ -222,4 +242,9 @@ export class StorageConstants {
    * @description AppStorage & Preference
    */
   static readonly PERSONALIZED_LIST: string = 'personalizedList'
+  /**
+   * 歌词样式
+   * @description AppStorage & Preference
+   */
+  static readonly LYRIC_STYLE: string = 'lyricStyle'
 }

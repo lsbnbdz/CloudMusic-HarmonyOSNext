@@ -85,6 +85,7 @@ export struct UserPlayLists {
                   // .onWillScroll(() => this.handleScroll())
                   .edgeEffect(EdgeEffect.Spring)
                   .scrollBar(BarState.Off)
+                  .backToTop(true)
                   .contentListStyle(this.breakpoint)
                 }
                 .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
@@ -107,6 +108,7 @@ export struct UserPlayLists {
                   // .onWillScroll(() => this.handleScroll())
                   .edgeEffect(EdgeEffect.Spring)
                   .scrollBar(BarState.Off)
+                  .backToTop(true)
                   .contentListStyle(this.breakpoint)
                 }
                 .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
@@ -129,6 +131,7 @@ export struct UserPlayLists {
                   // .onWillScroll(() => this.handleScroll())
                   .edgeEffect(EdgeEffect.Spring)
                   .scrollBar(BarState.Off)
+                  .backToTop(true)
                   .contentListStyle(this.breakpoint)
                 }
                 .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])

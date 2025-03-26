@@ -25,9 +25,12 @@ import { myCustomTitle } from '../components/custom/CustomTitle';
 import BreakpointUtils from '../common/utils/system/BreakpointUtils';
 import { ObservableScroller } from '../common/utils/ObservableScroller';
 import { ObservableTabsController } from '../common/utils/ObservableTabsController';
+import { ApiDialog } from '../components/dialog/ApiDialog';
 
 const _arrStr: string[] = ['发现', '歌单', '我的'];
 const _subArrStr: string[] = ['所有', '自建', '收藏'];
+
+
 
 @Entry
 @Component
@@ -50,6 +53,16 @@ struct Index {
 
   private paddingStart: LengthMetrics = LengthMetrics.vp(16);
   private paddingEnd: LengthMetrics = LengthMetrics.vp(16);
+
+  warrantyDialogController: CustomDialogController = new CustomDialogController({
+    builder: WarrantyDialog(),
+    autoCancel: false
+  })
+
+  apiDialogController: CustomDialogController = new CustomDialogController({
+    builder: ApiDialog(),
+    autoCancel: false
+  })
 
   private getMenuItems(): NavigationMenuItem[] {
     let items: NavigationMenuItem[] = []
@@ -82,6 +95,8 @@ struct Index {
     }, 1)
     const isFirstLaunch = await PreferencesUtils.getPreferenceValue<boolean>(StorageConstants.USER_PREF, 'isFirstLaunch', true)
     if(isFirstLaunch) {
+      this.apiDialogController.open()
+      this.warrantyDialogController.open()
       PreferencesUtils.putPreferenceValue(StorageConstants.USER_PREF, 'isFirstLaunch', false)
     }
   }

@@ -174,7 +174,7 @@ export struct PlayListPage {
 
             ListItem().height(px2vp(this.bottomRectHeight) + Constants.HEIGHT_MINI)
           }
-          .cachedCount(5)
+          .cachedCount(3)
           .height('100%')
           .layoutWeight(1)
           .width('100%')
@@ -182,6 +182,7 @@ export struct PlayListPage {
           .edgeEffect(EdgeEffect.Spring)
           .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.BOTTOM])
           .sticky(StickyStyle.Header | StickyStyle.Footer)
+          .backToTop(true)
           // Scroll(this.observableScroller.getScroller()) {
           //
           // }
@@ -189,6 +190,7 @@ export struct PlayListPage {
           // .layoutWeight(1)
           // .edgeEffect(EdgeEffect.Spring)
           // .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.BOTTOM])
+
         }
         .height('100%')
 
@@ -237,9 +239,9 @@ export struct PlayListPage {
         .key(this.searchKeyword)
         .swipeAction({ end: this.SwipeItem(item, index), edgeEffect: SwipeEdgeEffect.None })
       }
-      ,(item: PlayListSongItem, index) => item.name + index
-    )
+      ,(item: PlayListSongItem, index) => item.name + index)
   }
+
   @Builder ToolBar() {
     Row({ space: 5 }) {
       Search({
@@ -247,7 +249,7 @@ export struct PlayListPage {
         icon: '/resources/base/media/ic_public_search_filled.svg'
       })
         .backgroundBlurStyle(BlurStyle.Thin)
-        .height(Constants.HEIGHT_SELECT)
+        .height(Constants.HEIGHT_SEARCH)
         .layoutWeight(1)
         .searchButton('搜索')
         .onChange((value) => {
@@ -275,7 +277,7 @@ export struct PlayListPage {
         }
         .backgroundColor(Color.Transparent)
         .backgroundBlurStyle(BlurStyle.Thin)
-        .height(Constants.HEIGHT_SELECT)
+        .height(Constants.HEIGHT_SEARCH)
         .borderRadius(Constants.RADIUS_CARD)
         .padding(5)
       }

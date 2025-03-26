@@ -33,6 +33,7 @@ export struct TopListPage {
       .columnsTemplate('1fr')
       .layoutDirection(GridDirection.Column)
       .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
+      .backToTop(true)
     }
     .title('排行榜')
     .backgroundColor($r('app.color.background'))

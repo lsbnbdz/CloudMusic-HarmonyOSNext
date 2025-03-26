@@ -35,6 +35,8 @@ class PreferencesUtils {
     }
   }
 
+
+
   // 读取数据
   async getPreferenceValue<T extends preferences.ValueType>(name: string, key: string, defaultValue: T): Promise<T> {
     if (!this.preferencesMap.has(name)) {

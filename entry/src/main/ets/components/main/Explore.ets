@@ -105,6 +105,7 @@ export struct Explore {
             if (this.appInfo.data.Announcement.isShow) {
               this.Announcement()
             }
+// <<<<<<< HEAD
             Scroll(this.observableScroller.getScroller()){
               Grid() {
                 GridItem().height('7%').backgroundColor('transparent')
@@ -131,100 +132,106 @@ export struct Explore {
                   }
                 }
 
-                GridItem() {
-                  Column({ space: 5 }) {
-                    this.Intro('推荐歌单', () => {})
-                    // 推荐歌单
-                    if (this.isLoadingPersonalized) {
-                      GridItem() {
-                        this.Loading(300)
-                      }
-                    } else {
-                      List() {
-                        ListItem().width(5)
-                        ListItem().width(5)
-                        ForEach(this.personalizedList, (item: PersonalListItem, index) => {
-                          ListItem() {
-                            PersonalizedCard({ item: item }).padding(5)
-                          }
-                        }, (item: PersonalListItem) => item.id.toString())
-                        ListItem().width(5)
-                        ListItem().width(5)
-                      }
-                      .lanes(2)
-                      .listDirection(Axis.Horizontal)
-                      .scrollBar(BarState.Off)
-                      .width('100%')
-                    }
-                  }
-                }
-                .padding({ top: 20 })
-
-                GridItem() {
-                  Column({ space: 15 }) {
-                    this.Intro('排行榜', () => {
-                      this.pageInfos.pushPathByName('TopListPage', null)
-                    })
-                    // 排行榜
-                    if (this.isLoading) {
-                      GridItem() {
-                        this.Loading(300)
-                      }
-                    } else {
-                      List() {
-                        ListItem().width(15)
-                        ForEach(this.topList.slice(0, 5), (item: TopListItem, index) => {
-                          ListItem() {
-                            TopListItemCard({ topListItem: item }).padding(5)
-                          }
-                        })
-                        ListItem() {
-                          Button() {
-                            Column({ space: 5 }) {
-                              Stack({ alignContent: Alignment.Center }) {
-                                Image($r('app.media.bg4'))
-                                  .width(120)
-                                  .aspectRatio(1)
-                                  .borderRadius(Constants.RADIUS_CARD)
-                                  .draggable(false)
-                                Text('更多排行')
-                                  .fontSize(Constants.FONT_SIZE_COMMON + 3)
-                                  .fontWeight(FontWeight.Bold)
-                                  .fontColor(Color.White)
-                              }
-                              .width(120)
-                              .aspectRatio(1)
-                              .backgroundColor(Color.Transparent)
+                if(this.validApiUrl) {
+                  GridItem() {
+                    Column({ space: 5 }) {
+                      this.Intro('推荐歌单', () => {
+                      })
+                      // 推荐歌单
+                      if (this.isLoadingPersonalized) {
+                        GridItem() {
+                          this.Loading(300)
+                        }
+                      } else {
+                        List() {
+                          ListItem().width(5)
+                          ListItem().width(5)
+                          ForEach(this.personalizedList, (item: PersonalListItem, index) => {
+                            ListItem() {
+                              PersonalizedCard({ item: item }).padding(5)
                             }
-                          }
-                          .backgroundColor(Color.Transparent)
-                          .borderRadius(Constants.RADIUS_CARD)
-                          .type(ButtonType.Normal)
-                          .width(120)
-                          .aspectRatio(1)
-                          .clickEffect({ level: ClickEffectLevel.LIGHT, scale: 0.9 })
-                          .onClick(() => { this.pageInfos.pushPathByName('TopListPage', null) })
-                        }.padding(5)
-                        ListItem().width(15)
+                          }, (item: PersonalListItem) => item.id.toString())
+                          ListItem().width(5)
+                          ListItem().width(5)
+                        }
+                        .lanes(2)
+                        .listDirection(Axis.Horizontal)
+                        .scrollBar(BarState.Off)
+                        .width('100%')
                       }
-                      .listDirection(Axis.Horizontal)
-                      .scrollBar(BarState.Off)
-                      .width('100%')
+                    }
+                  }
+                  .padding({ top: 20 })
+
+                  GridItem() {
+                    Column({ space: 15 }) {
+                      this.Intro('排行榜', () => {
+                        this.pageInfos.pushPathByName('TopListPage', null)
+                      })
+                      // 排行榜
+                      if (this.isLoading) {
+                        GridItem() {
+                          this.Loading(300)
+                        }
+                      } else {
+                        List() {
+                          ListItem().width(15)
+                          ForEach(this.topList.slice(0, 5), (item: TopListItem, index) => {
+                            ListItem() {
+                              TopListItemCard({ topListItem: item }).padding(5)
+                            }
+                          })
+                          ListItem() {
+                            Button() {
+                              Column({ space: 5 }) {
+                                Stack({ alignContent: Alignment.Center }) {
+                                  Image($r('app.media.bg4'))
+                                    .width(120)
+                                    .aspectRatio(1)
+                                    .borderRadius(Constants.RADIUS_CARD)
+                                    .draggable(false)
+                                  Text('更多排行')
+                                    .fontSize(Constants.FONT_SIZE_COMMON + 3)
+                                    .fontWeight(FontWeight.Bold)
+                                    .fontColor(Color.White)
+                                }
+                                .width(120)
+                                .aspectRatio(1)
+                                .backgroundColor(Color.Transparent)
+                              }
+                            }
+                            .backgroundColor(Color.Transparent)
+                            .borderRadius(Constants.RADIUS_CARD)
+                            .type(ButtonType.Normal)
+                            .width(120)
+                            .aspectRatio(1)
+                            .clickEffect({ level: ClickEffectLevel.LIGHT, scale: 0.9 })
+                            .onClick(() => {
+                              this.pageInfos.pushPathByName('TopListPage', null)
+                            })
+                          }.padding(5)
+
+                          ListItem().width(15)
+                        }
+                        .listDirection(Axis.Horizontal)
+                        .scrollBar(BarState.Off)
+                        .width('100%')
+                      }
                     }
                   }
                 }
-
                 GridItem()
                   .height(px2vp(this.bottomRectHeight) + 115)
               }
               .height('auto')
               .width('100%')
-              .edgeEffect(EdgeEffect.None)
+              .edgeEffect(EdgeEffect.Spring)
               .scrollBar(BarState.Off)
               .rowsGap(15)
               .columnsTemplate(this.columnsTemplate)
               .layoutDirection(GridDirection.Column)
               .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
+              .backToTop(true)
             }
             .height('100%')
             .scrollBar(BarState.Off)

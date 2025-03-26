@@ -22,21 +22,20 @@ export struct ApiSetPage {
   build() {
     NavDestination() {
       Column({ space: 20 }) {
-        this.SetApiUrl()
         Text() {
           Span(`当前服务器状态: `)
-          Span(`${this.validApiUrl ? '可用' : '不可用'}`)
+          Span(`${this.validApiUrl ? '正常' : '不可用'}`)
             .fontWeight(FontWeight.Bold)
+            .fontColor(this.validApiUrl ? Color.Green : $r('app.color.app_red'))
         }
         .width('100%')
-        .textAlign(TextAlign.Center)
         .fontColor($r('app.color.reverse'))
         .fontSize(Constants.FONT_SIZE_COMMON)
-        .padding({ bottom: 30 })
-
+        .padding(Constants.PADDING_EDGE_DEFAULT)
+        this.SetApiUrl()
         this.SetCookie()
       }
-      .padding({ top: Constants.PADDING_EDGE_TEXT, left: Constants.PADDING_EDGE_DEFAULT, right: Constants.PADDING_EDGE_DEFAULT, bottom: px2vp(this.bottomRectHeight) + Constants.PADDING_EDGE_TEXT })
+      .padding({ top: Constants.PADDING_EDGE_DEFAULT, left: Constants.PADDING_EDGE_DEFAULT, right: Constants.PADDING_EDGE_DEFAULT, bottom: px2vp(this.bottomRectHeight) + Constants.PADDING_EDGE_TEXT })
       .width('100%')
       .constraintSize({
         minWidth: 200,
@@ -44,7 +43,7 @@ export struct ApiSetPage {
       })
     }
     .backgroundColor($r('app.color.background'))
-    .title('API与Cookie设置')
+    .title('在线服务设置')
   }
 
   @Builder SetApiUrl() {
@@ -78,7 +77,6 @@ export struct ApiSetPage {
       }
       .width('100%')
       .justifyContent(FlexAlign.SpaceBetween)
-      .padding({ left: Constants.PADDING_EDGE_TEXT, right: Constants.PADDING_EDGE_TEXT })
 
       Column({ space: 10 }) {
         Row({ space: 10 }) {
@@ -95,10 +93,10 @@ export struct ApiSetPage {
         }
         .justifyContent(FlexAlign.Center)
         .width('100%')
-        .padding({ left: Constants.PADDING_EDGE_TEXT, right: Constants.PADDING_EDGE_TEXT })
       }
       .width('100%')
     }
+    .itemStyle()
   }
 
   @Builder SetCookie() {
@@ -124,7 +122,6 @@ export struct ApiSetPage {
       }
       .width('100%')
       .justifyContent(FlexAlign.SpaceBetween)
-      .padding({ left: Constants.PADDING_EDGE_TEXT, right: Constants.PADDING_EDGE_TEXT })
 
       if(this.isCustomCookie) {
         Column({ space: 10 }) {
@@ -137,15 +134,17 @@ export struct ApiSetPage {
           Button('设置')
             .backgroundColor($r('app.color.app_red'))
             .width(100)
+            .type(ButtonType.Normal)
+            .borderRadius(Constants.RADIUS_BUTTON)
             .onClick(() => {
               this.setCustomCookie()
             })
         }
         .justifyContent(FlexAlign.Center)
         .width('100%')
-        .padding({ left: Constants.PADDING_EDGE_TEXT, right: Constants.PADDING_EDGE_TEXT })
       }
     }
+    .itemStyle()
   }
 
   toggleCustomCookie(isOn: boolean) {
@@ -170,9 +169,16 @@ export struct ApiSetPage {
     PreferencesUtils.putPreferenceValue(StorageConstants.SET_PERF ,StorageConstants.CUSTOM_COOKIE, cookie)
     ToastUtil.showToast('设置成功')
   }
+
+  @Styles itemStyle() {
+    .backgroundColor($r('app.color.main'))
+    .padding(Constants.PADDING_EDGE_DEFAULT)
+    .margin({ left: Constants.PADDING_EDGE_DEFAULT, right: Constants.PADDING_EDGE_DEFAULT })
+    .borderRadius(Constants.RADIUS_CARD)
+  }
 }
 
 @Extend(Text) function LeftText() {
-  .fontSize(18)
+  .fontSize(Constants.FONT_SIZE_COMMON)
   .fontWeight(FontWeight.Bold)
 }

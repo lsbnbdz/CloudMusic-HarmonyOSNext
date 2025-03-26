@@ -38,6 +38,8 @@ export struct PlayerActionSheet {
         .width('70%')
         .textAlign(TextAlign.Start)
         .alignSelf(ItemAlign.Start)
+        .fontColor($r('app.color.app_red'))
+        .padding({ left: 10 })
 
       SetPlayQuality().padding(10)
       Divider()
@@ -45,7 +47,7 @@ export struct PlayerActionSheet {
         Column({ space: 10 }) {
           if (this.song.id != 0) {
             this.Item(this.isLiked ? $r('app.media.ic_public_favor') : $r('app.media.ic_public_favor_filled'),
-              this.isLiked ? '取消喜欢该歌曲' : '喜欢该歌曲', () => {
+              this.isLiked ? '取消喜欢当前歌曲' : '喜欢当前歌曲', () => {
                 this.isShow = false
                 likeThisSong()
               })

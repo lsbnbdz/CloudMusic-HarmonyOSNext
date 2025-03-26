@@ -24,6 +24,7 @@ export struct MixWithOthers {
         })
         .selectedColor($r('app.color.app_red'))
     }
+    .height(Constants.HEIGHT_SETTINGS_ITEM)
     .width('100%')
     .justifyContent(FlexAlign.SpaceBetween)
   }

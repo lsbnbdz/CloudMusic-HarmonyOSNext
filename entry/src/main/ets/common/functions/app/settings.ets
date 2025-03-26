@@ -1,6 +1,9 @@
 import { LogUtil, ToastUtil } from "@pura/harmony-utils"
 import { StorageConstants } from "../../constants/StorageConstants"
+import { LyricStyle, LyricStyleItem } from "../../entities/Settings"
 import PreferencesUtils from "../../utils/data/PreferencesUtils"
+import { preferences } from "@kit.ArkData"
+
 /**
  * 设置项
  */
@@ -14,49 +17,19 @@ export async function initSettings() {
 
   // 并行处理无依赖的配置项
   await Promise.all([
-    // API地址
-    (async () => {
-      const exists = await PreferencesUtils.hasPreferenceValue(SetPerf, StorageConstants.API_URL)
-      const value = exists
-        ? await PreferencesUtils.getPreferenceValue(SetPerf, StorageConstants.API_URL, '')
-        : ''
-      if (!exists) await PreferencesUtils.putPreferenceValue(SetPerf, StorageConstants.API_URL, '')
-      AppStorage.setOrCreate(StorageConstants.API_URL, value)
-    })(),
-
-    // 默认主页
-    (async () => {
-      const exists = await PreferencesUtils.hasPreferenceValue(SetPerf, StorageConstants.DEFAULT_PAGE_INDEX)
-      const value = exists
-        ? await PreferencesUtils.getPreferenceValue(SetPerf, StorageConstants.DEFAULT_PAGE_INDEX, 0)
-        : 0
-      if (!exists) await PreferencesUtils.putPreferenceValue(SetPerf, StorageConstants.DEFAULT_PAGE_INDEX, 0)
-      AppStorage.setOrCreate(StorageConstants.DEFAULT_PAGE_INDEX, value)
-    })(),
-
-    // 播放质量
-    (async () => {
-      const exists = await PreferencesUtils.hasPreferenceValue(SetPerf, StorageConstants.PLAY_QUALITY)
-      const value = exists
-        ? await PreferencesUtils.getPreferenceValue(SetPerf, StorageConstants.PLAY_QUALITY, 0)
-        : 0
-      if (!exists) await PreferencesUtils.putPreferenceValue(SetPerf, StorageConstants.PLAY_QUALITY, 0)
-      AppStorage.setOrCreate(StorageConstants.PLAY_QUALITY, value)
-    })(),
-
-    // 播放卡片操作
-    (async () => {
-      const exists = await PreferencesUtils.hasPreferenceValue(SetPerf, StorageConstants.SONG_CLICK_ACTION)
-      const value = exists
-        ? await PreferencesUtils.getPreferenceValue(SetPerf, StorageConstants.SONG_CLICK_ACTION, 0)
-        : 0
-      if (!exists) await PreferencesUtils.putPreferenceValue(SetPerf, StorageConstants.SONG_CLICK_ACTION, 0)
-      AppStorage.setOrCreate(StorageConstants.SONG_CLICK_ACTION, value)
-    })()
-
+    // API
+    handleSetting<string>(StorageConstants.API_URL, ''),
+    // Default Index
+    handleSetting<number>(StorageConstants.DEFAULT_PAGE_INDEX, 0),
+    // Play Quality
+    handleSetting<number>(StorageConstants.PLAY_QUALITY, 0),
+    // SongCard Click Action
+    handleSetting<number>(StorageConstants.SONG_CLICK_ACTION, 0),
+    // Lyric
+    handleSetting<LyricStyle>(StorageConstants.LYRIC_STYLE, LyricStyleItem)
   ])
 
-  // 处理关联配置项（自定义API URL）
+  // 处理关联配置项（API URL）
   const results = await Promise.all([
     PreferencesUtils.hasPreferenceValue(SetPerf, StorageConstants.IS_CUSTOM_COOKIE),
     PreferencesUtils.hasPreferenceValue(SetPerf, StorageConstants.MIX_WITH_OTHERS)
@@ -64,7 +37,7 @@ export async function initSettings() {
   const isCustomCookieExist = results[0]
   const isMixExist = results[1]
 
-  // 自定义Cookie设置
+  // 手动Cookie设置
   if (!isCustomCookieExist) {
     await Promise.all([
       PreferencesUtils.putPreferenceValue(SetPerf, StorageConstants.IS_CUSTOM_COOKIE, false),
@@ -83,7 +56,7 @@ export async function initSettings() {
     AppStorage.setOrCreate(StorageConstants.CUSTOM_COOKIE, cookie)
   }
 
-  // 混音设置
+  // 允许一同播放
   if (!isMixExist) {
     await PreferencesUtils.putPreferenceValue(SetPerf, StorageConstants.MIX_WITH_OTHERS, false)
     AppStorage.setOrCreate(StorageConstants.MIX_WITH_OTHERS, false)
@@ -91,9 +64,13 @@ export async function initSettings() {
     const mixValue = await PreferencesUtils.getPreferenceValue(SetPerf, StorageConstants.MIX_WITH_OTHERS, false)
     AppStorage.setOrCreate(StorageConstants.MIX_WITH_OTHERS, mixValue)
   }
+
+  // 私人FM
+  AppStorage.setOrCreate(StorageConstants.IS_PERSONAL_FM, false)
+  AppStorage.setOrCreate(StorageConstants.PERSONAL_FM_MODE, 0)
 }
 
-export async function changeSettings(name: string, value: number | boolean) {
+export async function changeSettings<T extends preferences.ValueType>(name: string, value: T) {
   try {
     await PreferencesUtils.putPreferenceValue(StorageConstants.SET_PERF, name, value)
     AppStorage.setOrCreate(name, value)
@@ -101,4 +78,19 @@ export async function changeSettings(name: string, value: number | boolean) {
     ToastUtil.showToast('更改设置失败')
     LogUtil.error(TAG + 'Error while changing settings: ' + e.message)
   }
+}
+
+async function handleSetting<T extends preferences.ValueType>(
+  key: string,
+  defaultValue: T,
+  storageArea: string = StorageConstants.SET_PERF
+): Promise<void> {
+  const exists = await PreferencesUtils.hasPreferenceValue(storageArea, key)
+  let value: T = exists
+    ? (await PreferencesUtils.getPreferenceValue(storageArea, key, defaultValue))
+    : defaultValue
+  if (!exists) {
+    await PreferencesUtils.putPreferenceValue(storageArea, key, defaultValue)
+  }
+  AppStorage.setOrCreate(key, value)
 }

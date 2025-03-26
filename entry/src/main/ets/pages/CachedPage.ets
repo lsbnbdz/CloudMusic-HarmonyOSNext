@@ -93,7 +93,6 @@ export struct CachedPage {
               })
                 .id('search')
                 .height(Constants.HEIGHT_SEARCH)
-                .height(Constants.HEIGHT_SELECT)
                 .width('100%')
                 .searchButton('搜索')
                 .onChange((value) => {
@@ -284,6 +283,7 @@ export struct CachedPage {
   private handleDelete() {
     DialogUtil.showPrimaryDialog({
       title: '确认',
+      message: `是否删除选中的 ${this.selectedSongs.length} 个文件?`,
       message: `是否删除选中的 ${this.selectedSongs.length} 个文件?`,
       primaryButton: "取消",
       secondaryButton: {

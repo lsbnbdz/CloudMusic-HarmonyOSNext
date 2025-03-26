@@ -1,6 +1,6 @@
 ## Cloud Music For HarmonyOS NEXT
 
-🎵 云音汇 | ✨ 鸿蒙原生应用 🎼 第三方云音乐客户端 
+🎵 云音汇 | ✨ 鸿蒙原生应用 🎼 第三方云音乐客户端
 
 本分支根据[**`CloudMusic-HarmonyOSNext`**](https://github.com/Chenlvin/CloudMusic-HarmonyOSNext)进行改版（原版适合平板和手机，但本版本只适合手机使用），在界面上与原版的主要差别是去除tabs切换组件，并增加悬浮按钮，切换tab的操作依靠悬浮按钮手势操作：
 - 按住悬浮按钮`左滑/右滑`：左/右切换tab
@@ -65,25 +65,19 @@
 
 
 ### 界面预览：
+|1|2|3|4|5|
+|:------------------------------:|:------------------------------:|:------------------------------:|:------------------------------:|:------------------------------:|
+|<img src="./images/02.jpg"/>|<img src="./images/03.jpg"/>|<img src="./images/04.jpg"/>|<img src="./images/05.jpg"/>|<img src="./images/06.jpg"/>|
+|6|7|8|9|10|
+|<img src="./images/001.jpg"/>|<img src="./images/002.jpg"/>|<img src="./images/003.jpg"/>|<img src="./images/004.jpg"/>|<img src="./images/005.jpg"/>|
 
-<img src="./images/01.jpg" width="20%" />
-<img src="./images/02.jpg" width="20%" />
-<img src="./images/03.jpg" width="20%" />
-<img src="./images/04.jpg" width="20%" />
-<img src="./images/05.jpg" width="20%" />
-<img src="./images/06.jpg" width="20%" />
-<br>
-<img src="./images/001.jpg" width="20%" />
-<img src="./images/002.jpg" width="20%" />
-<img src="./images/003.jpg" width="20%" />
-<img src="./images/004.jpg" width="20%" />
-<img src="./images/005.jpg" width="20%" />
-<video src="./images/006.mp4" width='20%'></video>
-<br>
-<img src="./images/07.jpg" width="60%" />
-<img src="./images/08.jpg" width="60%" />
-<img src="./images/09.jpg" width="60%" />
-<img src="./images/10.jpg" width="60%" />
+|11|12|
+|:-------------------------:|:-------------------------:|
+|<img src="./images/07.jpg"/>|<img src="./images/08.jpg"/>|
+
+|              13              |14|
+|:----------------------------:|:-------------------------:|
+| <img src="./images/09.jpg"/> |<img src="./images/10.jpg"/>|
 
 ### 开源许可：
 

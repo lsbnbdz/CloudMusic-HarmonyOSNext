@@ -58,7 +58,7 @@ export struct AddToPlayListCircleButton {
       })
       .bindSheet(this.isShowAddSheet, this.Sheet(), {
         preferType: SheetType.CENTER,
-        detents: [SheetSize.MEDIUM, SheetSize.LARGE],
+        height: '70%',
         dragBar: false,
         showClose: false,
         backgroundColor: Color.Transparent,
@@ -70,6 +70,10 @@ export struct AddToPlayListCircleButton {
   }
 
   @Builder Sheet() {
-    PlayListAddSheet({ isShow: this.isShowAddSheet, songId: this.song.id })
+    PlayListAddSheet({
+      isShow: this.isShowAddSheet,
+      songId: this.song.id,
+      showLikeList: false
+    })
   }
 }

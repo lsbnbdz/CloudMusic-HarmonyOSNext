@@ -137,7 +137,7 @@ export struct PlayingCover {
             song: this.song,
             imgColor: Color.White,
             imgHeight: 29,
-            isShowAddSheet: this.isShowAddSheet
+            isShowAddSheet: this.isShowAddSheet,
           })
             .clickEffect({ level: ClickEffectLevel.LIGHT, scale: 0.7 })
 

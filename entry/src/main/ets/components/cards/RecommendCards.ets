@@ -9,8 +9,8 @@ import { DateUtil, ToastUtil } from "@pura/harmony-utils"
 
 
 const cardRadius: number = 5
-const cardHeight: number = 250
-const cardWidth: number = 200
+const cardHeight: number = 225
+const cardWidth: number = 180
 
 @Builder function ContentButton(firText:string, secText:string, imgUrl:ResourceStr, onClick?: () => void, showDate: boolean = false) {
   Stack({ alignContent: Alignment.Center }) {

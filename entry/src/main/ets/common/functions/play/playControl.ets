@@ -1,5 +1,5 @@
 import { EmitterUtil, FileUtil, LogUtil, RandomUtil, ToastUtil } from "@pura/harmony-utils";
-import { Song } from "../../entities/SongsResult";
+import { Song } from "../../entities/song/SongsResult";
 import FileUtils from "../../utils/file/FileUtils";
 import { getPersonalFmSong, getSongPicUrl, getSongUrl } from "../../../api/songApi";
 import { fetchMetadata, fetchSongInfo, getArtists, sanitizeFileName } from "../common/convert";
@@ -7,7 +7,7 @@ import PlayQueueUtils from "../../utils/play/PlayQueueUtils";
 import AVSessionUtils from "../../utils/play/AVSessionUtils";
 import PreferencesUtils from "../../utils/data/PreferencesUtils";
 import { fileIo } from "@kit.CoreFileKit";
-import { SongPlay } from "../../entities/SongPlay";
+import { SongPlay } from "../../entities/song/SongPlay";
 import LyricUtils from "../../utils/play/LyricUtils";
 import { PlayConstants } from "../../constants/PlayConstants";
 import { EmitterConstants } from "../../constants/EmitterConstants";
@@ -15,6 +15,7 @@ import { StorageConstants } from "../../constants/StorageConstants";
 import { JSON } from "@kit.ArkTS";
 import AVPlayerUtils from "../../utils/play/AVPlayerUtils";
 import { isThisSongLiked } from "./songLike";
+import { getLocalSongArtistsString } from "../common/get";
 
 
 /**
@@ -72,11 +73,12 @@ export async function playMusicWithFile(song: Song, fileName: string) {
     let file = await fileIo.open(fileUrl)
     let fdPath = 'fd://' + file.fd
     const metadata = await fetchMetadata(fileUrl)
+    const artistsString = await getArtists(song.artists)
     if(metadata) {
       song.duration = (metadata.duration) ? parseInt(metadata.duration) : 0
     }
     if(FileUtil.accessSync(fileUrl)) {
-      setPlayData(0, song, song.artists[0].name, fileName)
+      setPlayData(0, song, artistsString, fileName)
       let picUrl = song.id == 0 ? $r('app.media.ic_files_audio') : `file://${filesDir}/pic/${song.id}.jpg`
       setPicUrl(picUrl)
       await AVPlayerUtils.setUrl(fdPath)
@@ -88,16 +90,16 @@ export async function playMusicWithFile(song: Song, fileName: string) {
         LyricUtils.setLyricString('')
       }
       // AVSession
-      AVSessionUtils.setMetadata(song,song.artists[0].name, picUrl)
+      AVSessionUtils.setMetadata(song, artistsString, picUrl)
       AVSessionUtils.activate()
-      saveCurrentSongInfo(0, song, song.artists[0].name, picUrl)
+      saveCurrentSongInfo(0, song, artistsString, picUrl)
       EmitterUtil.post(EmitterConstants.EMITTER_LYRIC_UPDATE, 'Lyric Updated')
     } else {
       ToastUtil.showToast('未找到文件')
       playNext()
     }
   } catch (e) {
-    LogUtil.error(TAG + '播放File出错: ' + JSON.stringify(e))
+    LogUtil.error(TAG + '播放本地文件 PlayMusicWithFile 出错: ' + JSON.stringify(e))
     playNext()
   }
 }
@@ -120,8 +122,8 @@ export async function resumeMusic() {
 }
 
 export async function seekMusic(time: number) {
+  await AVPlayerUtils.seek(time)
   AVPlayerUtils.play()
-  AVPlayerUtils.seek(time)
 }
 
 export async function playQueue(index: number) {

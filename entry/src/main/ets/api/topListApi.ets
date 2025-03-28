@@ -1,6 +1,6 @@
 import { LogUtil } from "@pura/harmony-utils"
 import { StorageConstants } from "../common/constants/StorageConstants"
-import { TopList, TopListItem } from "../common/entities/TopList"
+import { TopList, TopListItem } from "../common/entities/recommend/TopList"
 import { getApiUrl } from "../common/functions/common/get"
 import PreferencesUtils from "../common/utils/data/PreferencesUtils"
 import { HttpRequest } from "../common/utils/request/HttpRequestUtils"

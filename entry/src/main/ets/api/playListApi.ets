@@ -1,15 +1,15 @@
 import { LogUtil, ToastUtil } from "@pura/harmony-utils"
-import { PlayList, PlayListOperationRes, PlayListSearchResult } from "../common/entities/PlayList"
-import { CloudSongs, DailyListSongs, PlayListSongItem, PlayListSongs } from "../common/entities/PlayListSongs"
-import { PlayQueue } from "../common/entities/PlayQueue"
-import { Artist, Song } from "../common/entities/SongsResult"
-import { User, UserClass } from "../common/entities/User"
+import { PlayList, PlayListOperationRes, PlayListSearchResult } from "../common/entities/playlist/PlayList"
+import { CloudSongs, DailyListSongs, PlayListSongItem, PlayListSongs } from "../common/entities/playlist/PlayListSongs"
+import { PlayQueue } from "../common/entities/local/PlayQueue"
+import { Artist, Song } from "../common/entities/song/SongsResult"
+import { User, UserClass } from "../common/entities/user/User"
 import { getArtists } from "../common/functions/common/convert"
 import { HttpRequest } from "../common/utils/request/HttpRequestUtils"
 import PlayQueueUtils from "../common/utils/play/PlayQueueUtils"
 import PreferencesUtils from "../common/utils/data/PreferencesUtils"
 import { StorageConstants } from "../common/constants/StorageConstants"
-import { Personalized, PersonalListItem } from "../common/entities/Personalized"
+import { Personalized, PersonalListItem } from "../common/entities/recommend/Personalized"
 import { getApiUrl } from "../common/functions/common/get"
 import { JSON } from "@kit.ArkTS"
 import { http } from "@kit.NetworkKit"
@@ -181,7 +181,6 @@ export async function PlayListOperation(op:OperationType, pid:number, tracks:num
   const request = new HttpRequest(url)
   return request.Request().then((data) => {
     const dataGot: PlayListOperationRes = data.result as PlayListOperationRes
-    LogUtil.info(TAG + 'data result: ' + JSON.stringify(data.result))
     if(dataGot.body.code === 200) {
       return true
     }
@@ -313,10 +312,8 @@ export async function createPlayList(name: string, isPrivacy: boolean) {
   try {
     const rootUrl = await getApiUrl()
     const url: string = `${rootUrl}/playlist/create?name=${encodeURIComponent(name)}${isPrivacy ? '&privacy=10' : ''}&timestamp=${new Date().getTime()}`
-    LogUtil.info(TAG + 'request Url: ' + url)
     const request = new HttpRequest(url)
     const data = await request.Request()
-    LogUtil.info(TAG + JSON.stringify(data.result))
   } catch (e) {
     LogUtil.error(TAG + 'createPlayList Error: ' + e.message)
 

@@ -1,7 +1,11 @@
 import { LogUtil } from "@pura/harmony-utils";
 import { StorageConstants } from "../../constants/StorageConstants";
+import { LocalSong } from "../../entities/local/LocalData";
+import { Artist } from "../../entities/song/SongsResult";
 import { HttpRequest } from "../../utils/request/HttpRequestUtils";
+import { getArtists } from "./convert";
 
+const TAG = '[get function] '
 /**
  * 获取网易云API Url
  * （根据用户设置）
@@ -47,4 +51,25 @@ export async function checkValidUrl(): Promise<boolean> {
     AppStorage.setOrCreate(StorageConstants.VALID_API_URL, false)
     return false
   }
+}
+
+export async function getLocalSongArtistsString(localSongArtists: string): Promise<string> {
+  let artists: string = localSongArtists
+  try {
+    const artistsArr: Artist[] = JSON.parse(localSongArtists)
+    artists = await getArtists(artistsArr)
+  } catch (e) {
+    LogUtil.warn(TAG + 'getLocalSongArtistString Error')
+  }
+  return artists
+}
+
+export async function getLocalSongArtists(localSongArtists: string): Promise<Artist[]> {
+  let artists: Artist[] = [{ id: 0, name: localSongArtists.toString() }]
+  try {
+    artists = JSON.parse(localSongArtists)
+  } catch (e) {
+    LogUtil.warn(TAG + 'getLocalSongArtists Error')
+  }
+  return artists
 }

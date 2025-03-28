@@ -2,12 +2,12 @@ import { EmitterUtil, FileUtil, LogUtil } from "@pura/harmony-utils"
 import { getLyric } from "../../../api/LyricApi"
 import { EmitterConstants } from "../../constants/EmitterConstants"
 import { StorageConstants } from "../../constants/StorageConstants"
-import { Lyric, LyricResult, LyricResultClass } from "../../entities/Lyric"
-import { Song } from "../../entities/SongsResult"
+import { Lyric, LyricResult, LyricResultClass } from "../../entities/song/Lyric"
+import { Song } from "../../entities/song/SongsResult"
 import FileUtils from "../file/FileUtils"
 import { fileIo, ReadOptions } from "@kit.CoreFileKit"
 import { buffer } from "@kit.ArkTS"
-import { LyricStyle } from "../../entities/Settings"
+import { LyricStyle } from "../../entities/local/Settings"
 
 const TAG = '[LyricUtils] '
 
@@ -173,7 +173,6 @@ class LyricUtils {
       // 目标路径
       const targetDir = filesDir + '/lyric'
       const descPath = targetDir + `/${fileName}`
-      LogUtil.info(TAG + 'hasDirPath: ' + targetDir)
       if(!fileIo.accessSync(targetDir)) {
         fileIo.mkdirSync(targetDir)
       }

@@ -1,6 +1,6 @@
 import Constants from "../../common/constants/Constants"
-import { PlayListPageParam } from "../../common/entities/PageParams"
-import { TopListItem } from "../../common/entities/TopList"
+import { PlayListPageParam } from "../../common/entities/local/PageParams"
+import { TopListItem } from "../../common/entities/recommend/TopList"
 
 @Component
 

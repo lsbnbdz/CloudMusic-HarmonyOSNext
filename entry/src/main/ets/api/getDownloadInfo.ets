@@ -1,4 +1,4 @@
-import { QualityType, SongDownload } from "../common/entities/SongDownload"
+import { QualityType, SongDownload } from "../common/entities/song/SongDownload"
 import { HttpRequest } from "../common/utils/request/HttpRequestUtils"
 import { LogUtil } from "@pura/harmony-utils"
 import { getApiUrl } from "../common/functions/common/get"

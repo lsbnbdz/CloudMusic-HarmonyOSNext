@@ -1,8 +1,8 @@
 import { getPlayLists } from "../../api/playListApi"
-import { PlayList } from "../../common/entities/PlayList"
+import { PlayList } from "../../common/entities/playlist/PlayList"
 import { PlayListCard, PlayListCard_Skeleton } from "../cards/PlayListCard"
 import { LogUtil, ToastUtil } from "@pura/harmony-utils";
-import { User, UserClass } from "../../common/entities/User";
+import { User, UserClass } from "../../common/entities/user/User";
 import Constants from "../../common/constants/Constants";
 import { StorageConstants } from "../../common/constants/StorageConstants";
 

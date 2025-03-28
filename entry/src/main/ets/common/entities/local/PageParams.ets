@@ -1,5 +1,5 @@
-import { PlayList } from "./PlayList";
-import { Artist } from "./SongsResult";
+import { PlayList } from "../playlist/PlayList";
+import { Artist } from "../song/SongsResult";
 
 /**
  * 歌单详情页参数

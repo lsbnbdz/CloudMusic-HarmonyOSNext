@@ -1,15 +1,16 @@
-import { Song, SongClass } from "../../common/entities/SongsResult"
+import { Song, SongClass } from "../../common/entities/song/SongsResult"
 import { changeDuration, getArtists } from "../../common/functions/common/convert"
 import PlayQueueUtils from "../../common/utils/play/PlayQueueUtils"
 import { promptAction } from "@kit.ArkUI"
-import { PlayList, playListClass } from "../../common/entities/PlayList"
+import { PlayList, playListClass } from "../../common/entities/playlist/PlayList"
 import Constants from "../../common/constants/Constants"
 import { cleanLastPlayInfo, playListToQueue } from "../../common/functions/play/playListOp"
 import { playQueue } from "../../common/functions/play/playControl"
-import { LogUtil, PasteboardUtil } from "@pura/harmony-utils"
+import { PasteboardUtil } from "@pura/harmony-utils"
 import { DownloadDialog } from "../dialog/DownloadDialog"
 import { StorageConstants } from "../../common/constants/StorageConstants"
 import VibratorUtils from "../../common/utils/system/VibratorUtils"
+import { ArtistsSheet } from "../sheets/ArtistsSheet"
 
 @Component
 export struct SongCard {
@@ -23,8 +24,10 @@ export struct SongCard {
   @State index: number = 0
   @State reason: string = ''
   @State isShowMenu: boolean = false
-  song: Song = SongClass
   @State sid: number = -1
+  @State isShowArtists: boolean = false
+  @State allowToArtist: boolean = true
+  song: Song = SongClass
   artists: string = ''
 
   downloadDialogController: CustomDialogController = new CustomDialogController({
@@ -37,7 +40,6 @@ export struct SongCard {
   })
 
   async aboutToAppear(): Promise<void> {
-    LogUtil.info('SongItem: ' + JSON.stringify(this.song))
     if(this.song.artists[0].id == 0) {
      this.artists = '未知'
       this.song.artists[0] = {"id": 0, "name": '未知'}
@@ -136,6 +138,15 @@ export struct SongCard {
       }
     })
     .bindContextMenu(this.isShowMenu, this.ClickMenu, { onDisappear: () => { this.isShowMenu = false }})
+    .bindSheet(this.isShowArtists, this.ArtistsSheet(), {
+      preferType: SheetType.CENTER,
+      height: SheetSize.FIT_CONTENT,
+      dragBar: false,
+      showClose: false,
+      backgroundColor: Color.Transparent,
+      blurStyle: BlurStyle.Regular,
+      onDisappear: () => { this.isShowArtists = false }
+    })
     .gesture(
       LongPressGesture({
         duration: 500
@@ -146,27 +157,39 @@ export struct SongCard {
     )
   }
 
-  @Builder
-  ClickMenu() {
+  @Builder ArtistsSheet() {
+    ArtistsSheet({ isShow: this.isShowArtists, isShowCover: this.isShowArtists, artists: this.song.artists })
+  }
+
+  @Builder ClickMenu() {
     Menu() {
       MenuItem(this.MenuInfo())
       if(this.isPlayerLoading) {
         MenuItem(this.Loading())
-      } else {
+      }
+      else {
         MenuItem(this.MenuContent($r('app.media.ic_public_play_norm'), '单曲播放'))
           .onClick(() => {
             this.playSingleSong()
           })
-        if(this.isPlayList) {
-          MenuItem(this.MenuContent($r('app.media.ic_public_play_norm'), '随歌单播放'))
-            .onClick(() => {
-              playListToQueue(this.playList.id, this.playList.trackCount, this.index)
-            })
-        }
+
+        MenuItem(this.MenuContent($r('app.media.ic_public_play_norm'), '随歌单播放'))
+          .visibility(this.isPlayList ? Visibility.Visible : Visibility.None)
+          .onClick(() => {
+            playListToQueue(this.playList.id, this.playList.trackCount, this.index)
+          })
+
         MenuItem(this.MenuContent($r('app.media.ic_public_add_norm'), '添加到下一首'))
           .onClick(() => {
             this.addToQueue()
           })
+
+        MenuItem(this.MenuContent($r('app.media.ic_user_portrait'), '查看歌手'))
+          .visibility(this.song.artists[0].id !== 0 && this.allowToArtist ? Visibility.Visible : Visibility.None)
+          .onClick(() => {
+            this.isShowArtists = true
+          })
+
         MenuItem(this.MenuContent($r('app.media.ic_public_cloud_download'), '缓存至本地曲库'))
           .onClick(() => {
             this.downloadDialogController.open()

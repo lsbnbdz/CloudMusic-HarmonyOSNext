@@ -1,4 +1,4 @@
-import { LyricResult, LyricResultClass } from "../common/entities/Lyric";
+import { LyricResult, LyricResultClass } from "../common/entities/song/Lyric";
 import { HttpRequest } from "../common/utils/request/HttpRequestUtils";
 import LyricUtils from "../common/utils/play/LyricUtils";
 import { getApiUrl } from "../common/functions/common/get";

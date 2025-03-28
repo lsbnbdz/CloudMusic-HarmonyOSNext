@@ -1,10 +1,10 @@
 import { EmitterUtil } from "@pura/harmony-utils"
-import { Lyric } from "../../common/entities/Lyric"
+import { Lyric } from "../../common/entities/song/Lyric"
 import { seekMusic } from "../../common/functions/play/playControl"
 import { LengthUnit } from "@kit.ArkUI"
 import { EmitterConstants } from "../../common/constants/EmitterConstants"
 import { StorageConstants } from "../../common/constants/StorageConstants"
-import { LyricStyle, LyricStyleItem } from "../../common/entities/Settings"
+import { LyricStyle, LyricStyleItem } from "../../common/entities/local/Settings"
 import LyricUtils from "../../common/utils/play/LyricUtils"
 
 @Component
@@ -15,6 +15,7 @@ export struct LyricComponent {
   @State userScrolling: number = 0
   @State userScrollingInterval: number = 0
   @State lyric: Lyric[] = []
+  @State listCenterIndex: number = 0
   @StorageProp(StorageConstants.LYRIC_STYLE) lyricStyle: LyricStyle = LyricStyleItem
 
   private scroller: Scroller = new Scroller()
@@ -48,45 +49,68 @@ export struct LyricComponent {
       List({ scroller: this.scroller, space: this.lyricStyle.size * 1.5 }) {
         ForEach(this.lyric, (item: Lyric, index) => {
           ListItem() {
-            Text(item.content)
-              .width('100%')
-              .textAlign(TextAlign.Center)
-              .fontSize(this.lyricStyle.size)
-              .fontColor(Color.White)
-              .opacity(index == this.currentLyricIndex ? 1 : 0.35)
-              .fontWeight(FontWeight.Bold)
-              .textAlign(TextAlign.Center)
-              .lineHeight(this.lyricStyle.size + 15)
-              .onClick(() => {
-                this.userScrolling = 0
-                seekMusic(item.time)
-              })
-              .animation({
-                duration: 300,
-                curve: Curve.LinearOutSlowIn
-              })
+            LyricLine({
+              lyricStyle: this.lyricStyle,
+              currentLyricIndex: this.currentLyricIndex,
+              userScrolling: this.userScrolling,
+              index: index,
+              item: item
+            })
           }
-          .clickEffect({ level: ClickEffectLevel.LIGHT, scale: 0.9 })
-          .padding({ left: 20, right: 20 })
         })
       }
-      .fadingEdge(true, {
-        fadingEdgeLength: {
-        unit: LengthUnit.PERCENT,
-        value: 40
-        }
-      })
       .padding({ top: 30 })
+      .width('95%')
+      .height('100%')
       .edgeEffect(EdgeEffect.None)
       .scrollSnapAlign(ScrollSnapAlign.CENTER)
       .scrollBar(BarState.Off)
-      .width('90%')
-      .height('100%')
+      .fadingEdge(true, {
+        fadingEdgeLength: {
+          unit: LengthUnit.PERCENT,
+          value: 40
+        }
+      })
       .onTouch(() => {
         this.userScrolling = 2
       })
+      .onScrollIndex((start, end, center) => {
+        this.listCenterIndex = center
+      })
     }
-    .width('100%')
-    .height('100%')
+  }
+}
+
+@Component struct LyricLine {
+  @State index: number = 0
+  @State item: Lyric = { time: 0, content: ''}
+  @Prop currentLyricIndex: number = 0
+  @Prop lyricStyle: LyricStyle = LyricStyleItem
+  @Link userScrolling: number
+
+  build() {
+    Text(this.item.content)
+      .width('100%')
+      .textAlign(TextAlign.Center)
+      .fontSize(this.lyricStyle.size)
+      .fontColor(this.index === this.currentLyricIndex ? this.lyricStyle.color : Color.White)
+      .opacity(this.index == this.currentLyricIndex ? 1 : 0.35)
+      .fontWeight(this.index === this.currentLyricIndex ? FontWeight.Bolder : FontWeight.Bold)
+      .textAlign(this.lyricStyle.align === 'center' ? TextAlign.Center : TextAlign.Start)
+      .clickEffect({ level: ClickEffectLevel.LIGHT, scale: 0.9 })
+      .padding({ left: 20, right: 20 })
+      .onClick(() => {
+        this.userScrolling = 0
+        seekMusic(this.item.time)
+      })
+      .animation({
+        duration: 500,
+        curve: Curve.Ease,
+        expectedFrameRateRange: {
+          expected: 120,
+          min: 60,
+          max: 120
+        }
+      })
   }
 }

@@ -1,5 +1,5 @@
 import Constants from "../../common/constants/Constants"
-import { LyricTranslate, SetLyricSize } from "../../components/settings/LyricSettings"
+import { LyricTranslate, SetLyricStyle } from "../../components/settings/LyricSettings"
 import { MixWithOthers } from "../../components/settings/MixWithOthers"
 import { SetPlayQuality } from "../../components/settings/SetPlayQuality"
 
@@ -27,7 +27,7 @@ export struct PlaySettingsPage {
         .itemStyle()
 
         ListItem() {
-          SetLyricSize()
+          SetLyricStyle()
         }
         .itemStyle()
       }

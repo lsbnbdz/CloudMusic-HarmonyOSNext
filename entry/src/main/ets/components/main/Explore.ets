@@ -1,16 +1,16 @@
 import { DialogUtil, LogUtil, ToastUtil} from "@pura/harmony-utils";
 import { RecommendCards, RecommendCards_Skeleton } from "../cards/RecommendCards";
-import { User, UserClass } from "../../common/entities/User";
+import { User, UserClass } from "../../common/entities/user/User";
 import Constants from "../../common/constants/Constants";
-import { TopListItem } from "../../common/entities/TopList";
+import { TopListItem } from "../../common/entities/recommend/TopList";
 import { getTopList } from "../../api/topListApi";
 import { TopListItemCard } from "../cards/TopListItemCard";
 import { StorageConstants } from "../../common/constants/StorageConstants";
-import { PlayList } from "../../common/entities/PlayList";
+import { PlayList } from "../../common/entities/playlist/PlayList";
 import { getPersonalizedList, getPlayLists } from "../../api/playListApi";
-import { PersonalListItem } from "../../common/entities/Personalized";
+import { PersonalListItem } from "../../common/entities/recommend/Personalized";
 import { PersonalizedCard } from "../cards/PersonalizedCard";
-import { AppInfo, AppInfoClass } from "../../common/entities/AppInfo";
+import { AppInfo, AppInfoClass } from "../../common/entities/local/AppInfo";
 
 @Component
 export struct Explore {

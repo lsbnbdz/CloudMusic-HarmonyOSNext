@@ -1,7 +1,7 @@
 import { LogUtil, ToastUtil } from "@pura/harmony-utils";
 import Constants from "../common/constants/Constants";
 import { StorageConstants } from "../common/constants/StorageConstants";
-import { AppInfo, AppInfoClass } from "../common/entities/AppInfo";
+import { AppInfo, AppInfoClass } from "../common/entities/local/AppInfo";
 import { HttpRequest } from "../common/utils/request/HttpRequestUtils";
 
 /**

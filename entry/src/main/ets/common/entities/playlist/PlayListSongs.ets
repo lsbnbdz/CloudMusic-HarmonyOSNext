@@ -1,4 +1,4 @@
-import { Artist } from "./SongsResult"
+import { Artist } from "../song/SongsResult"
 
 /**
  * 歌单内歌曲

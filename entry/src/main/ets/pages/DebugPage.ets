@@ -1,5 +1,5 @@
 import { StorageConstants } from "../common/constants/StorageConstants";
-import { User, UserClass } from "../common/entities/User";
+import { User, UserClass } from "../common/entities/user/User";
 import { JSON } from "@kit.ArkTS";
 import Constants from "../common/constants/Constants";
 import { resourceManager } from "@kit.LocalizationKit";

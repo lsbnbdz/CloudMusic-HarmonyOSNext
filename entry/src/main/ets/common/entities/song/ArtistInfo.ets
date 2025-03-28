@@ -1,4 +1,4 @@
-import { PlayListSongItem } from "./PlayListSongs"
+import { PlayListSongItem } from "../playlist/PlayListSongs"
 
 interface ArtistBody {
   briefDesc: string // 简介

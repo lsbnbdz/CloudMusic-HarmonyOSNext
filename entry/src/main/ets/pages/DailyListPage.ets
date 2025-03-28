@@ -1,4 +1,4 @@
-import { Song } from '../common/entities/SongsResult'
+import { Song } from '../common/entities/song/SongsResult'
 import { SongCard } from '../components/cards/SongCard'
 import { LogUtil } from '@pura/harmony-utils'
 import { DailySongRes, PlayDailySongs } from '../api/playListApi'

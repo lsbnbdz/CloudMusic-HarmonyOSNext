@@ -1,4 +1,4 @@
-import { Song } from "./SongsResult"
+import { Song } from "../song/SongsResult"
 
 export interface PlayQueue {
   playmode: number

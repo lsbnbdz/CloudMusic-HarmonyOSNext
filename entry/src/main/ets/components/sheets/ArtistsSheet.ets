@@ -1,6 +1,6 @@
 import Constants from "../../common/constants/Constants"
-import { ArtistParam } from "../../common/entities/PageParams"
-import { Artist } from "../../common/entities/SongsResult"
+import { ArtistParam } from "../../common/entities/local/PageParams"
+import { Artist } from "../../common/entities/song/SongsResult"
 
 @Component
 export struct ArtistsSheet {

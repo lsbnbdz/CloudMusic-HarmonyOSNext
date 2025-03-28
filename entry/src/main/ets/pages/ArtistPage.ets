@@ -3,9 +3,9 @@ import { DialogUtil, ToastUtil } from "@pura/harmony-utils"
 import { getArtistInfo } from "../api/artistApi"
 import Constants from "../common/constants/Constants"
 import { StorageConstants } from "../common/constants/StorageConstants"
-import { ArtistInfo, ArtistInfoItem } from "../common/entities/ArtistResult"
-import { ArtistParam } from "../common/entities/PageParams"
-import { PlayListSongItem } from "../common/entities/PlayListSongs"
+import { ArtistInfo, ArtistInfoItem } from "../common/entities/song/ArtistInfo"
+import { ArtistParam } from "../common/entities/local/PageParams"
+import { PlayListSongItem } from "../common/entities/playlist/PlayListSongs"
 import { SongCard } from "../components/cards/SongCard"
 import { BottomBarComponent } from "../components/play/BottomBarComponent"
 
@@ -36,7 +36,7 @@ export struct ArtistPage {
           ListItem() {
             Column({ space: 10 }) {
               Stack({ alignContent: Alignment.Bottom }) {
-                Image(this.artist.artist.picUrl)
+                Image(this.artist.artist.picUrl + '?param=512y512')
                   .width('100%')
                   .height('100%')
                   .autoResize(true)

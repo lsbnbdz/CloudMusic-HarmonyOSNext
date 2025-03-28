@@ -5,7 +5,7 @@ import fs from '@ohos.file.fs'
 import { Environment, fileUri } from '@kit.CoreFileKit'
 import { picker } from '@kit.CoreFileKit'
 import { BusinessError } from '@kit.BasicServicesKit'
-import { LocalSong } from '../../entities/LocalData'
+import { LocalSong } from '../../entities/local/LocalData'
 import RelationalStoreUtils from '../data/RelationalStoreUtils'
 import { JSON } from '@kit.ArkTS'
 import { fetchSongInfo, getArtists } from '../../functions/common/convert'
@@ -59,7 +59,6 @@ class FileUtils {
     try {
       let successCount = 0
       for (const localSong of localSongs) {
-        LogUtil.info(TAG + 'delete count + 1')
         try {
           RelationalStoreUtils.deleteSong(localSong.id)
           await FileUtil.unlink(this.filesDir + `/${localSong.songFile}`)

@@ -1,14 +1,14 @@
 import { DialogUtil, EmitterUtil, LogUtil, PasteboardUtil, ToastUtil } from "@pura/harmony-utils"
 import Constants from "../../common/constants/Constants"
-import { LocalSong, LocalSongClass } from "../../common/entities/LocalData"
-import { Song } from "../../common/entities/SongsResult"
+import { LocalSong, LocalSongClass } from "../../common/entities/local/LocalData"
+import { Song } from "../../common/entities/song/SongsResult"
 import { fetchMetadata } from "../../common/functions/common/convert"
 import { playQueue } from "../../common/functions/play/playControl"
 import FileUtils from "../../common/utils/file/FileUtils"
 import PlayQueueUtils from "../../common/utils/play/PlayQueueUtils"
 import { promptAction } from "@kit.ArkUI"
-import RelationalStoreUtils from "../../common/utils/data/RelationalStoreUtils"
 import { MatchSongSheet } from "../sheets/MatchSongSheet"
+import { getLocalSongArtists, getLocalSongArtistsString } from "../../common/functions/common/get"
 
 /**
  * 文件卡片组件
@@ -18,9 +18,11 @@ export struct FileCard {
   @State localSong: LocalSong = LocalSongClass
   @State showMatchSheet: boolean = false
   @State filesDir: string = ''
+  @State artistsString: string = ''
 
   async aboutToAppear() {
     this.filesDir = FileUtils.getFilesDir()
+    this.artistsString = await getLocalSongArtistsString(this.localSong.artists)
   }
 
   build() {
@@ -34,7 +36,7 @@ export struct FileCard {
           Text(this.localSong.name)
             .textStyle(16)
             .fontWeight(FontWeight.Medium)
-          Text(this.localSong.artists)
+          Text(this.artistsString)
             .textStyle(12)
             .fontColor(Color.Gray)
         }
@@ -51,7 +53,7 @@ export struct FileCard {
       preferType: SheetType.CENTER,
       height: '70%',
       dragBar: false,
-      showClose: true,
+      showClose: false,
       backgroundColor: $r('app.color.background'),
       onDisappear: () => { this.showMatchSheet = false }
     })
@@ -71,20 +73,16 @@ export struct FileCard {
             const rootUrl = FileUtils.getFilesDir()
             const fileUrl = rootUrl + `/${this.localSong.songFile}`
             const metadata = await fetchMetadata(fileUrl)
+            let artists = await getLocalSongArtists(this.localSong.artists)
             let song: Song = {
               id: this.localSong.songId,
               name: this.localSong.name,
-              artists: [
-                {
-                  id: 0,
-                  name: this.localSong.artists
-                }
-              ],
+              artists: artists,
               duration: metadata ? ((metadata.duration) ? parseInt(metadata.duration) : 0) : 0,
               alias: [],
               fee: 0
             }
-            PlayQueueUtils.queueAdd(0, song, this.localSong.artists, this.localSong.songFile)
+            PlayQueueUtils.queueAdd(0, song, this.artistsString, this.localSong.songFile)
             playQueue(PlayQueueUtils.currentQueueIndex + 1)
           } catch (e) {
             LogUtil.error('Play local song error: ' + e.message)

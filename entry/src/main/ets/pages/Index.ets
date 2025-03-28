@@ -7,7 +7,7 @@ import { CloudPage } from './CloudPage';
 import { DailyListPage } from './DailyListPage';
 import { SearchPage } from './SearchPage';
 import { PlayListPage } from './PlayListPage';
-import { ArtistParam, PlayListPageParam, WebPageParam } from '../common/entities/PageParams';
+import { ArtistParam, PlayListPageParam, WebPageParam } from '../common/entities/local/PageParams';
 import { LoginPage } from './login/LoginPage';
 import { QrCodeLogin } from './login/QrCodeLogin';
 import { WebLogin } from './login/WebLogin';

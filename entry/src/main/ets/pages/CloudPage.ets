@@ -1,4 +1,4 @@
-import { Song } from '../common/entities/SongsResult'
+import { Song } from '../common/entities/song/SongsResult'
 import { SongCard } from '../components/cards/SongCard'
 import { DialogUtil, LogUtil } from '@pura/harmony-utils'
 import { getCloudList } from '../api/playListApi'
@@ -7,7 +7,7 @@ import { AddToPlayListButton } from '../components/buttons/play/AddToPlayListBut
 import Constants from '../common/constants/Constants'
 import { ClickToLoadButton, LoadingMoreButton, NoMoreButton } from '../components/buttons/LoadMoreButtons'
 import { StorageConstants } from '../common/constants/StorageConstants'
-import { PlayListSongItem } from '../common/entities/PlayListSongs'
+import { PlayListSongItem } from '../common/entities/playlist/PlayListSongs'
 import { LazyData } from '@pie/lazy-data'
 
 /**

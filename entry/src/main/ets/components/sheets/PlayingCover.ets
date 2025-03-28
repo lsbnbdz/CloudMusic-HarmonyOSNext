@@ -1,4 +1,4 @@
-import { Song, SongClass } from "../../common/entities/SongsResult"
+import { Song, SongClass } from "../../common/entities/song/SongsResult"
 import { changeDuration } from "../../common/functions/common/convert"
 import { pauseMusic, playNext, playPre, resumeMusic, seekMusic } from "../../common/functions/play/playControl"
 import { AddToPlayListCircleButton } from "../buttons/play/AddToPlayListButton"
@@ -70,10 +70,6 @@ export struct PlayingCover {
          .blur(100)
          .width('100%')
          .height('100%')
-         .animation({
-           duration: 300,
-           curve: Curve.Linear
-         })
          .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
        Column()
          .width('100%')
@@ -336,52 +332,31 @@ export struct PlayingCover {
   SongInfo() {
     Column({ space: 20 }) {
       // 歌曲封面图片
-      if (this.playmode == 0) {
+      Column({ space: 10 }) {
+        Button(`私人FM - ${PlayConstants.PERSONAL_FM_MODE_NAME[this.personalFmMode]}`)
+          .fontColor(Color.White)
+          .fontSize(Constants.FONT_SIZE_COMMON)
+          .backgroundColor(Color.Transparent)
+          .backdropBlur(50)
+          .clickEffect({ level: ClickEffectLevel.LIGHT, scale: 0.8 })
+          .borderRadius(1)
+          .padding({ left: 10, right: 10 })
+          .shadow({ radius: 10 })
+          .visibility(this.isPersonalFm && this.playmode === 1 ? Visibility.Visible : Visibility.None)
+          .bindMenu(this.PersonalFmMenu())
+
         Stack() {
-          Column() {
-          }
-          .height('60%')
-          .borderRadius(5)
-          .aspectRatio(1)
-          Image(this.picUrl)
-            .height(this.song.id == 0 ? '30%' : '60%')
+          LoadingProgress().width(40)
+          Image(this.playmode === 0 ? this.picUrl : this.picUrl + '?param=512y512')
+            .height(this.song.id == 0 ? '70%' : '100%')
             .borderRadius(5)
             .aspectRatio(1)
+            .shadow({ radius: 30, type: ShadowType.BLUR, offsetX: 20, offsetY: 20 })
         }
+        .height('60%')
         .padding({ bottom: 30 })
-      } else {
-        Column({ space: 10 }) {
-          if(this.isPersonalFm) {
-            Button(`私人FM - ${PlayConstants.PERSONAL_FM_MODE_NAME[this.personalFmMode]}`)
-              .fontColor(Color.White)
-              .fontSize(Constants.FONT_SIZE_COMMON)
-              .backgroundColor(Color.Transparent)
-              .backdropBlur(50)
-              .clickEffect({ level: ClickEffectLevel.LIGHT, scale: 0.8 })
-              .borderRadius(1)
-              .padding({ left: 10, right: 10 })
-              .shadow({ radius: 10 })
-              .bindMenu(this.PersonalFmMenu())
-          }
-          Stack() {
-            LoadingProgress().width(60)
-            if(this.picUrl != '') {
-              Image(this.picUrl + '?param=512y512')
-                .height('60%')
-                .borderRadius(5)
-                .aspectRatio(1)
-                .shadow({ radius: 30, type: ShadowType.BLUR, offsetX: 20, offsetY: 20 })
-            } else {
-              Column()
-                .height('60%')
-                .borderRadius(5)
-                .aspectRatio(1)
-            }
-          }
-          .padding({ bottom: 30 })
-        }
-        .width('100%')
       }
+      .width('100%')
 
       // 歌曲名称&艺术家
       Text(this.song.name)

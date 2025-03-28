@@ -1,4 +1,5 @@
-import { ArtistInfo, ArtistInfoItem } from "../common/entities/ArtistResult"
+import { ArtistInfo, ArtistInfoItem } from "../common/entities/song/ArtistInfo"
+import { ArtistItem, ArtistsResult } from "../common/entities/song/ArtistsResult"
 import { getApiUrl } from "../common/functions/common/get"
 import { HttpRequest } from "../common/utils/request/HttpRequestUtils"
 
@@ -10,11 +11,24 @@ const TAG = '[artistApi] '
  * @returns
  */
 export async function getArtistInfo(id: number): Promise<ArtistInfo> {
-  let empty = ArtistInfoItem
   const rootUrl = await getApiUrl()
   const url = `${rootUrl}/artists?id=${id}`
   const request = new HttpRequest(url)
   const data = await request.RequestInStream()
   const dataGot: ArtistInfo = data.result as ArtistInfo
-  return dataGot ?? empty
+  return dataGot ?? ArtistInfoItem
+}
+
+/**
+ * 搜索歌手列表
+ * @param keyword
+ * @returns
+ */
+export async function getArtistsList(keyword: string): Promise<Array<ArtistItem>> {
+  const rootUrl = await getApiUrl()
+  const url = `${rootUrl}/ugc/artist/search?keyword=${encodeURIComponent(keyword)}`
+  const request = new HttpRequest(url)
+  const data = await request.Request()
+  const dataGot: ArtistsResult = data.result as ArtistsResult
+  return dataGot.data.list ?? []
 }

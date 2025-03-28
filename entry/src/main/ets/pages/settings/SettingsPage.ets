@@ -5,7 +5,7 @@ import { SetDefaultHomePage } from '../../components/settings/SetDefaultHomePage
 import { SongClickActionPage } from './SongClickActionPage'
 import { ApiSetPage } from './ApiSetPage'
 import { WebPage } from '../WebPage'
-import { WebPageParam } from '../../common/entities/PageParams'
+import { WebPageParam } from '../../common/entities/local/PageParams'
 import { DebugPage } from '../DebugPage'
 import { CommonSettingsCard } from '../../components/cards/SettingsCard'
 import { PlaySettingsPage } from './PlaySettingsPage'

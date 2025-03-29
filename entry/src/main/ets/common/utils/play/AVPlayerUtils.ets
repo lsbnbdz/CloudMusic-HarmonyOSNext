@@ -17,6 +17,10 @@ class AVPlayerUtils {
   private audioSessionManager: audio.AudioSessionManager = this.audioManager.getSessionManager()
   private updateFlag: boolean = false
 
+  getCurrentTime() {
+    return this.avPlayer!.currentTime
+  }
+
   async init() {
     if (!this.avPlayer) {
       this.avPlayer = await media.createAVPlayer()

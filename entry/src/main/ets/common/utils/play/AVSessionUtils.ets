@@ -5,6 +5,7 @@ import { Song, SongClass } from "../../entities/song/SongsResult";
 import { changeCycleMode,
   pauseMusic, playNext, playPre, resumeMusic, seekMusic } from "../../functions/play/playControl";
 import { likeThisSong } from "../../functions/play/songLike";
+import AVPlayerUtils from "./AVPlayerUtils";
 import LyricUtils from "./LyricUtils";
 
 /**
@@ -49,7 +50,9 @@ class AVSessionUtils {
         seekMusic(time)
       });
       session.on('toggleFavorite', (isFavor) => {
-        likeThisSong()
+        likeThisSong().then(async () => {
+          (await this.session).setAVPlaybackState({ isFavorite: this.isFavorite() })
+        })
       })
       session.on('setLoopMode', (loopMode) => {
         if(loopMode == 0) { changeCycleMode(1) }

@@ -121,7 +121,7 @@ export struct DownloadDialog {
       }
     }
     .backgroundColor(Color.Transparent)
-    .backdropBlur(20)
+    .backdropBlur(BlurStyle.Regular)
     .margin({ left:10, right:10, top:20, bottom:20})
     .borderRadius(5)
   }

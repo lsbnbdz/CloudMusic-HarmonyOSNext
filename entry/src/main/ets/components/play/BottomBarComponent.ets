@@ -5,6 +5,7 @@ import { PlayQueueButton } from "../buttons/play/PlayQueueButton"
 import { PlayingCover } from "../sheets/PlayingCover"
 import { StorageConstants } from "../../common/constants/StorageConstants"
 import Constants from "../../common/constants/Constants"
+import { curves } from "@kit.ArkUI"
 
 /**
  * 底部播控组件
@@ -27,8 +28,9 @@ export struct BottomBarComponent {
 
   build() {
     Row() {
-      if(this.playmode == 0) { Image(this.picUrl).songImg() }
-      else { Image(this.picUrl + '?param=512y512').songImg() }
+      Image(this.playmode == 0 ? this.picUrl : this.picUrl + '?param=512y512')
+        .songImg()
+        // .geometryTransition('coverImg')
 
       Column({ space: 5 }) {
         Text(this.song.name)
@@ -67,18 +69,21 @@ export struct BottomBarComponent {
       if(!this.isPlaying) {
         await playQueue(playQueueUtils.currentQueueIndex)
       }
-      this.isShow = true
+      animateTo({ duration: 300, curve: Curve.EaseInOut }, () => {
+        this.isShow = true
+      })
     })
     .bindContentCover($$this.isShow, this.Cover(), {
-      modalTransition: ModalTransition.DEFAULT,
-      backgroundColor: $r('app.color.background')
+      modalTransition: ModalTransition.DEFAULT
     })
   }
 
   @Builder
   Cover() {
-    PlayingCover({ isShow: this.isShow })
-      .height('100%')
+    Column() {
+      PlayingCover({ isShow: this.isShow })
+        .height('100%')
+    }
   }
 }
 

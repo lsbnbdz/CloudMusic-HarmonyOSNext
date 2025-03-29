@@ -60,11 +60,12 @@ export struct LyricComponent {
         })
       }
       .padding({ top: 30 })
-      .width('95%')
+      .width('100%')
       .height('100%')
       .edgeEffect(EdgeEffect.None)
       .scrollSnapAlign(ScrollSnapAlign.CENTER)
       .scrollBar(BarState.Off)
+      .chainAnimation(true)
       .fadingEdge(true, {
         fadingEdgeLength: {
           unit: LengthUnit.PERCENT,
@@ -104,8 +105,8 @@ export struct LyricComponent {
         seekMusic(this.item.time)
       })
       .animation({
-        duration: 500,
-        curve: Curve.Ease,
+        duration: 300,
+        curve: Curve.EaseInOut,
         expectedFrameRateRange: {
           expected: 120,
           min: 60,

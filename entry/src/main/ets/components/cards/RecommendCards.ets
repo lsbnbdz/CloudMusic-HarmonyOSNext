@@ -28,7 +28,7 @@ const cardWidth: number = 180
         .textShadow({ radius: 5 })
         .borderRadius({ bottomLeft: cardRadius, bottomRight: cardRadius })
         .height(Constants.FONT_SIZE_COMMON * 2)
-        .backdropBlur(100)
+        .backdropBlur(BlurStyle.Regular)
     }
     .width(cardWidth - 20)
     .height(cardHeight - 20)

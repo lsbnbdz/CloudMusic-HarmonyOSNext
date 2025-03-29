@@ -25,7 +25,6 @@ export async function isThisSongLiked(sid: number) {
   }
 }
 
-
 /**
  * 喜欢当前歌曲
  */

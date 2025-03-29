@@ -331,13 +331,12 @@ export struct PlayingCover {
   @Builder
   SongInfo() {
     Column({ space: 20 }) {
-      // 歌曲封面图片
       Column({ space: 10 }) {
         Button(`私人FM - ${PlayConstants.PERSONAL_FM_MODE_NAME[this.personalFmMode]}`)
           .fontColor(Color.White)
           .fontSize(Constants.FONT_SIZE_COMMON)
           .backgroundColor(Color.Transparent)
-          .backdropBlur(50)
+          .backdropBlur(BlurStyle.Regular)
           .clickEffect({ level: ClickEffectLevel.LIGHT, scale: 0.8 })
           .borderRadius(1)
           .padding({ left: 10, right: 10 })
@@ -345,6 +344,7 @@ export struct PlayingCover {
           .visibility(this.isPersonalFm && this.playmode === 1 ? Visibility.Visible : Visibility.None)
           .bindMenu(this.PersonalFmMenu())
 
+        // 歌曲封面图片
         Stack() {
           LoadingProgress().width(40)
           Image(this.playmode === 0 ? this.picUrl : this.picUrl + '?param=512y512')
@@ -352,6 +352,7 @@ export struct PlayingCover {
             .borderRadius(5)
             .aspectRatio(1)
             .shadow({ radius: 30, type: ShadowType.BLUR, offsetX: 20, offsetY: 20 })
+            .geometryTransition('coverImg')
         }
         .height('60%')
         .padding({ bottom: 30 })

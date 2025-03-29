@@ -1,7 +1,7 @@
 import { LogUtil } from "@pura/harmony-utils"
 import { putPlayListInQueue } from "../../../api/playListApi"
 import { StorageConstants } from "../../constants/StorageConstants"
-import { PlayingPlayList } from "../../entities/PlayList"
+import { PlayingPlayList } from "../../entities/playlist/PlayList"
 import { playQueue } from "./playControl"
 
 const TAG = '[playListOp] '

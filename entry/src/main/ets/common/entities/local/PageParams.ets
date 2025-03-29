@@ -1,4 +1,5 @@
-import { PlayList } from "./PlayList";
+import { PlayList } from "../playlist/PlayList";
+import { Artist } from "../song/SongsResult";
 
 /**
  * 歌单详情页参数
@@ -15,4 +16,11 @@ export interface PlayListPageParam {
 export interface WebPageParam {
   title: string
   url: string
+}
+
+/**
+ * 歌手信息参数
+ */
+export interface ArtistParam {
+  artist: Artist
 }

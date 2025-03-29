@@ -1,7 +1,7 @@
 import { ToastUtil } from "@pura/harmony-utils"
 import Constants from "../../common/constants/Constants"
 import { StorageConstants } from "../../common/constants/StorageConstants"
-import { Song } from "../../common/entities/SongsResult"
+import { Song } from "../../common/entities/song/SongsResult"
 import PreferencesUtils from "../../common/utils/data/PreferencesUtils"
 import VibratorUtils from "../../common/utils/system/VibratorUtils"
 import { SongCard } from "../../components/cards/SongCard"

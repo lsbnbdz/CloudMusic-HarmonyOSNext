@@ -1,6 +1,6 @@
 import { LogUtil, ToastUtil } from "@pura/harmony-utils"
 import { StorageConstants } from "../../constants/StorageConstants"
-import { LyricStyle, LyricStyleItem } from "../../entities/Settings"
+import { LyricStyle, LyricStyleItem } from "../../entities/local/Settings"
 import PreferencesUtils from "../../utils/data/PreferencesUtils"
 import { preferences } from "@kit.ArkData"
 

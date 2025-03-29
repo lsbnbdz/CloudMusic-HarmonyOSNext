@@ -1,6 +1,6 @@
 import Constants from "../common/constants/Constants"
 import { StorageConstants } from "../common/constants/StorageConstants"
-import { TopListItem } from "../common/entities/TopList"
+import { TopListItem } from "../common/entities/recommend/TopList"
 import { TopListItemCard } from "../components/cards/TopListItemCard"
 
 @Component

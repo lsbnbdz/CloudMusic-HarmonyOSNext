@@ -1,4 +1,4 @@
-import { PlayQueue } from "../../../common/entities/PlayQueue"
+import { PlayQueue } from "../../../common/entities/local/PlayQueue"
 import { PlayQueueSheet } from "../../sheets/PlayQueueSheet"
 
 @Component

@@ -8,8 +8,7 @@
 - `单击`悬浮按钮：返回置顶
 - `双击`悬浮按钮：播放/暂停
 
-**应用市场审核不通过，请各位自行侧载安装**
-<img src="./images/img.png" width="100%" />
+**本项目为第三方应用，需要侧载安装**
 
 **[在Release下载hap包](https://github.com/lsbnbdz/CloudMusic-HarmonyOSNext/releases)**
 

@@ -1,4 +1,4 @@
-import { QualityType } from "../entities/SongDownload"
+import { QualityType } from "../entities/song/SongDownload"
 
 export class PlayConstants {
   /**

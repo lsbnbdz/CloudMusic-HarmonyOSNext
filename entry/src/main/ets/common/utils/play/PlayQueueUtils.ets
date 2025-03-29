@@ -1,8 +1,8 @@
 import { EmitterUtil, LogUtil, ToastUtil } from '@pura/harmony-utils'
 import { EmitterConstants } from '../../constants/EmitterConstants'
 import { StorageConstants } from '../../constants/StorageConstants'
-import { PlayQueue } from '../../entities/PlayQueue'
-import { Song, SongClass } from '../../entities/SongsResult'
+import { PlayQueue } from '../../entities/local/PlayQueue'
+import { Song, SongClass } from '../../entities/song/SongsResult'
 import PreferencesUtils from '../data/PreferencesUtils'
 
 /**

@@ -5,7 +5,7 @@ import { SetDefaultHomePage } from '../../components/settings/SetDefaultHomePage
 import { SongClickActionPage } from './SongClickActionPage'
 import { ApiSetPage } from './ApiSetPage'
 import { WebPage } from '../WebPage'
-import { WebPageParam } from '../../common/entities/PageParams'
+import { WebPageParam } from '../../common/entities/local/PageParams'
 import { DebugPage } from '../DebugPage'
 import { CommonSettingsCard } from '../../components/cards/SettingsCard'
 import { PlaySettingsPage } from './PlaySettingsPage'
@@ -44,16 +44,7 @@ export struct SettingsPage {
 
               ListItemGroup() {
                 VersionCard()
-
-                CommonSettingsCard({
-                  title: '使用文档',
-                  action: () => {
-                    let param: WebPageParam = {
-                      title: '使用文档', url: 'https://docs.chenlvin.cc/cloudmusic/#/help'
-                    }
-                    this.settingsPageInfos.pushPathByName('WebPage', param)
-                  }
-                })
+                this.OtherItems()
               }
               .listItemGroupStyle()
 
@@ -144,6 +135,28 @@ export struct SettingsPage {
         }
       })
     }
+  }
+
+  @Builder OtherItems() {
+    CommonSettingsCard({
+      title: '使用文档',
+      action: () => {
+        let param: WebPageParam = {
+          title: '使用文档', url: 'https://docs.chenlvin.cc/cloudmusic/#/help'
+        }
+        this.settingsPageInfos.pushPathByName('WebPage', param)
+      }
+    })
+
+    CommonSettingsCard({
+      title: '建议反馈',
+      action: () => {
+        let param: WebPageParam = {
+          title: '建议反馈', url: 'https://www.wjx.cn/vm/PeLnYfc.aspx# '
+        }
+        this.settingsPageInfos.pushPathByName('WebPage', param)
+      }
+    })
   }
 }
 

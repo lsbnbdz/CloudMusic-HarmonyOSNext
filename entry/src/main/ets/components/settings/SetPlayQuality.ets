@@ -1,7 +1,7 @@
 import Constants from "../../common/constants/Constants"
 import { PlayConstants } from "../../common/constants/PlayConstants"
 import { StorageConstants } from "../../common/constants/StorageConstants"
-import { QualityType } from "../../common/entities/SongDownload"
+import { QualityType } from "../../common/entities/song/SongDownload"
 import PreferencesUtils from "../../common/utils/data/PreferencesUtils"
 
 /**

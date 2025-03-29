@@ -7,7 +7,7 @@ import { CloudPage } from './CloudPage';
 import { DailyListPage } from './DailyListPage';
 import { SearchPage } from './SearchPage';
 import { PlayListPage } from './PlayListPage';
-import { PlayListPageParam, WebPageParam } from '../common/entities/PageParams';
+import { ArtistParam, PlayListPageParam, WebPageParam } from '../common/entities/local/PageParams';
 import { LoginPage } from './login/LoginPage';
 import { QrCodeLogin } from './login/QrCodeLogin';
 import { WebLogin } from './login/WebLogin';
@@ -26,6 +26,7 @@ import BreakpointUtils from '../common/utils/system/BreakpointUtils';
 import { ObservableScroller } from '../common/utils/ObservableScroller';
 import { ObservableTabsController } from '../common/utils/ObservableTabsController';
 import { ApiDialog } from '../components/dialog/ApiDialog';
+import { ArtistPage } from './ArtistPage';
 
 const _arrStr: string[] = ['发现', '歌单', '我的'];
 const _subArrStr: string[] = ['所有', '自建', '收藏'];
@@ -170,6 +171,9 @@ struct Index {
     }
     else if(name === 'PLayListPage') {
       PlayListPage({ param: param as PlayListPageParam })
+    }
+    else if(name === 'ArtistPage') {
+      ArtistPage({ param: param as ArtistParam })
     }
     else if(name === 'LoginPage') {
       LoginPage()

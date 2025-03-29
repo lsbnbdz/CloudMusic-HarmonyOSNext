@@ -5,13 +5,13 @@
         "name": "default",
         "type": "HarmonyOS",
         "material": {
-          "storePassword": "0000001B1FE3A8F8F584D30040BCC24511FFBFB5EB08B6284AF696034C9F665EBB8DBB2397C94F951B95A2",
-          "certpath": "D:/HMOS/Cer/CloudMusic/Key/CloudMusic.cer",
-          "keyAlias": "test",
-          "keyPassword": "0000001B9B493F8630FC0B5B1FF838EC990075C99F355F2C84C581242F6FF58FA62F60656E475F483BE0B7",
-          "profile": "D:/HMOS/Cer/CloudMusic/Key/cloudmusicRelease.p7b",
+          "certpath": "C:\\Users\\lsbnbdz\\.ohos\\config\\default_CloudMusic-HarmonyOSNext_ek8n4iMcip4Xmz0dcwccX5dzz1dG-Z0xmzFUnbXfiMA=.cer",
+          "keyAlias": "debugKey",
+          "keyPassword": "0000001A60C4A1DD2E257CDA3A3B860BA99E5EDACEC307B80E8A974ACD293608FAE815D3E4112F0EC6FC",
+          "profile": "C:\\Users\\lsbnbdz\\.ohos\\config\\default_CloudMusic-HarmonyOSNext_ek8n4iMcip4Xmz0dcwccX5dzz1dG-Z0xmzFUnbXfiMA=.p7b",
           "signAlg": "SHA256withECDSA",
-          "storeFile": "D:/HMOS/Cer/CloudMusic/Key/CloudMusic.p12"
+          "storeFile": "C:\\Users\\lsbnbdz\\.ohos\\config\\default_CloudMusic-HarmonyOSNext_ek8n4iMcip4Xmz0dcwccX5dzz1dG-Z0xmzFUnbXfiMA=.p12",
+          "storePassword": "0000001A14C4013493ACED3CBE17033E7C6C2F1F0B2AD7311C1547FB50BFE5982A4D3FE3FC76837C3C67"
         }
       },
       {

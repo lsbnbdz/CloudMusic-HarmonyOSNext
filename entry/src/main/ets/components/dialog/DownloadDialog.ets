@@ -1,6 +1,6 @@
 import { getDownloadInfo } from "../../api/getDownloadInfo"
-import { SongDownload, SongDownloadClass } from "../../common/entities/SongDownload"
-import { Song, SongClass } from "../../common/entities/SongsResult"
+import { SongDownload, SongDownloadClass } from "../../common/entities/song/SongDownload"
+import { Song, SongClass } from "../../common/entities/song/SongsResult"
 import { pasteboard } from "@kit.BasicServicesKit"
 import { promptAction } from "@kit.ArkUI"
 import FileDownloadUtils from "../../common/utils/file/FileDownloadUtils"

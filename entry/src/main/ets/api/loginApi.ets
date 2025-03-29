@@ -1,5 +1,5 @@
 import { LogUtil } from "@pura/harmony-utils"
-import { User } from "../common/entities/User"
+import { User } from "../common/entities/user/User"
 import { HttpRequest } from "../common/utils/request/HttpRequestUtils"
 import PreferencesUtils from "../common/utils/data/PreferencesUtils"
 import { StorageConstants } from "../common/constants/StorageConstants"

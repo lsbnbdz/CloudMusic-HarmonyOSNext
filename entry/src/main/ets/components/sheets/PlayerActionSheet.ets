@@ -2,7 +2,7 @@ import { PasteboardUtil, ToastUtil } from "@pura/harmony-utils"
 import Constants from "../../common/constants/Constants"
 import { MsgConstants } from "../../common/constants/MsgConstants"
 import { StorageConstants } from "../../common/constants/StorageConstants"
-import { Song, SongClass } from "../../common/entities/SongsResult"
+import { Song, SongClass } from "../../common/entities/song/SongsResult"
 import { changeDuration } from "../../common/functions/common/convert"
 import { likeThisSong } from "../../common/functions/play/songLike"
 import { DownloadDialog } from "../dialog/DownloadDialog"
@@ -13,6 +13,7 @@ export struct PlayerActionSheet {
   @Link isShow: boolean
   @Link isShowTimer: boolean
   @Link isShowAddSheet: boolean
+  @Link isShowArtists: boolean
   @StorageProp(StorageConstants.PLAY_SONG) song: Song = SongClass
   @StorageProp(StorageConstants.PLAY_ARTISTS) artists: string = ''
   @StorageProp(StorageConstants.PIC_URL) picUrl: string = ''
@@ -75,11 +76,10 @@ export struct PlayerActionSheet {
               ToastUtil.showToast('已复制歌曲名至剪贴板')
             }, 300)
           })
-          this.Item($r('app.media.ic_user_portrait'), `复制歌手名: ${this.artists}`, () => {
+          this.Item($r('app.media.ic_user_portrait'), `歌手: ${this.artists}`, () => {
             this.isShow = false
             setTimeout(() => {
-              PasteboardUtil.setDataText(this.artists)
-              ToastUtil.showToast('已复制歌手名至剪贴板')
+              this.isShowArtists = true
             }, 300)
           })
           this.Item($r('app.media.ic_public_share_filled'), `分享`, () => {

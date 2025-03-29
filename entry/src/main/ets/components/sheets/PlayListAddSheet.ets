@@ -2,9 +2,9 @@ import { LogUtil, ToastUtil } from "@pura/harmony-utils"
 import { getPlayLists, PlayListOperation } from "../../api/playListApi"
 import Constants from "../../common/constants/Constants"
 import { StorageConstants } from "../../common/constants/StorageConstants"
-import { PlayList } from "../../common/entities/PlayList"
-import { Song } from "../../common/entities/SongsResult"
-import { User, UserClass } from "../../common/entities/User"
+import { PlayList } from "../../common/entities/playlist/PlayList"
+import { Song } from "../../common/entities/song/SongsResult"
+import { User, UserClass } from "../../common/entities/user/User"
 import { PlayQueueButton } from "../buttons/play/PlayQueueButton"
 import { PlayListCard } from "../cards/PlayListCard"
 
@@ -60,7 +60,7 @@ export struct PlayListAddSheet {
                 ListItem() {
                   Button() {
                     Row({ space: 15 }) {
-                      Image(`${item.coverImgUrl}?param=256y256`).width(40).borderRadius(15)
+                      Image(`${item.coverImgUrl}?param=256y256`).width(Constants.SIZE_IMG_CARD).borderRadius(10).draggable(false)
                       Column({ space: 8 }) {
                         Text(item.name)
                           .fontSize(Constants.FONT_SIZE_COMMON)
@@ -83,9 +83,9 @@ export struct PlayListAddSheet {
                   .height(60)
                   .onClick(async () => {
                     try {
+                      this.isShow = false
                       const result = await PlayListOperation('add', item.id, this.songId)
                       if (result) ToastUtil.showToast('成功添加到歌单')
-                      this.isShow = false
                     } catch (e) {
                       LogUtil.error(TAG + 'Add to PlayList Error: ' + e)
                       ToastUtil.showToast(e.message)

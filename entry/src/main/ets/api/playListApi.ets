@@ -1,17 +1,18 @@
 import { LogUtil, ToastUtil } from "@pura/harmony-utils"
-import { PlayList, PlayListOperationRes, PlayListSearchResult } from "../common/entities/PlayList"
-import { CloudSongs, DailyListSongs, PlayListSongItem, PlayListSongs } from "../common/entities/PlayListSongs"
-import { PlayQueue } from "../common/entities/PlayQueue"
-import { Artist, Song } from "../common/entities/SongsResult"
-import { User, UserClass } from "../common/entities/User"
+import { PlayList, PlayListOperationRes, PlayListSearchResult } from "../common/entities/playlist/PlayList"
+import { CloudSongs, DailyListSongs, PlayListSongItem, PlayListSongs } from "../common/entities/playlist/PlayListSongs"
+import { PlayQueue } from "../common/entities/local/PlayQueue"
+import { Artist, Song } from "../common/entities/song/SongsResult"
+import { User, UserClass } from "../common/entities/user/User"
 import { getArtists } from "../common/functions/common/convert"
 import { HttpRequest } from "../common/utils/request/HttpRequestUtils"
 import PlayQueueUtils from "../common/utils/play/PlayQueueUtils"
 import PreferencesUtils from "../common/utils/data/PreferencesUtils"
 import { StorageConstants } from "../common/constants/StorageConstants"
-import { Personalized, PersonalListItem } from "../common/entities/Personalized"
+import { Personalized, PersonalListItem } from "../common/entities/recommend/Personalized"
 import { getApiUrl } from "../common/functions/common/get"
 import { JSON } from "@kit.ArkTS"
+import { http } from "@kit.NetworkKit"
 
 /**
  * 歌单类API
@@ -97,28 +98,28 @@ export async function getPlayListSongs(listId: number, trackCount: number, offse
 export async function putPlayListInQueue(listId: number, trackCount: number, limit: number, offset: number = 0, first: boolean = true): Promise<void> {
   const rootUrl = await getApiUrl()
   let tempQueue:Array<PlayQueue> = []
+
   while(offset < trackCount) {
     const url: string = `${rootUrl}/playlist/track/all?id=${listId}&limit=${limit}&offset=${offset}&timestamp=${new Date().getTime()}`
     const request = new HttpRequest(url)
     let data = await request.RequestInStream()
     let dataResult: PlayListSongs = data.result as PlayListSongs
-    for (let item of dataResult.songs) {
-      let artists = await getArtists(item.ar)
-      tempQueue.push({
-        playmode: 1,
-        song: {
-          id: item.id,
-          name: item.name,
-          artists: item.ar,
-          duration: item.dt,
-          alias: [],
-          fee: item.fee
-        },
-        artists: artists,
-        fileName: '',
-        picUrl: item.al.picUrl ?? $r('app.media.ic_public_music')
-      })
-    }
+    const artistsPromises = dataResult.songs.map(item => getArtists(item.ar))
+    const artistsResults = await Promise.all(artistsPromises)
+    tempQueue = dataResult.songs.map((item, index) => ({
+      playmode: 1,
+      song: {
+        id: item.id,
+        name: item.name,
+        artists: item.ar,
+        duration: item.dt,
+        alias: [],
+        fee: item.fee
+      } as Song,
+      artists: artistsResults[index],
+      fileName: '',
+      picUrl: item.al?.picUrl ?? $r('app.media.ic_public_music')
+    } as PlayQueue))
     if(first) {
       await PlayQueueUtils.cleanQueue()
       first = false
@@ -180,7 +181,6 @@ export async function PlayListOperation(op:OperationType, pid:number, tracks:num
   const request = new HttpRequest(url)
   return request.Request().then((data) => {
     const dataGot: PlayListOperationRes = data.result as PlayListOperationRes
-    LogUtil.info(TAG + 'data result: ' + JSON.stringify(data.result))
     if(dataGot.body.code === 200) {
       return true
     }
@@ -312,10 +312,8 @@ export async function createPlayList(name: string, isPrivacy: boolean) {
   try {
     const rootUrl = await getApiUrl()
     const url: string = `${rootUrl}/playlist/create?name=${encodeURIComponent(name)}${isPrivacy ? '&privacy=10' : ''}&timestamp=${new Date().getTime()}`
-    LogUtil.info(TAG + 'request Url: ' + url)
     const request = new HttpRequest(url)
     const data = await request.Request()
-    LogUtil.info(TAG + JSON.stringify(data.result))
   } catch (e) {
     LogUtil.error(TAG + 'createPlayList Error: ' + e.message)
 

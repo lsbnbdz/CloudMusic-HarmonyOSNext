@@ -1,8 +1,7 @@
-import { EmitterUtil, LogUtil } from "@pura/harmony-utils"
+import { LogUtil } from "@pura/harmony-utils"
 import { searchPlayLists } from "../../api/playListApi"
 import Constants from "../../common/constants/Constants"
-import { EmitterConstants } from "../../common/constants/EmitterConstants"
-import { PlayList } from "../../common/entities/PlayList"
+import { PlayList } from "../../common/entities/playlist/PlayList"
 import { ClickToLoadButton, LoadingMoreButton, NoMoreButton } from "../buttons/LoadMoreButtons"
 import { PlayListCard } from "../cards/PlayListCard"
 
@@ -23,10 +22,6 @@ export struct SearchPlayListsList {
     if(this.searchKeyword) {
       await this.loadPlayLists(0)
     }
-  }
-
-  aboutToDisappear(): void {
-    EmitterUtil.unSubscribe(EmitterConstants.EMITTER_SEARCH)
   }
 
   async handleSearch() {

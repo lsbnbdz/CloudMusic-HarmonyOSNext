@@ -20,14 +20,18 @@ export struct WebLogin {
       value: 'refresh',
       icon: $r('app.media.ic_public_refresh'),
       action: () => {
-        this.controller.removeCache(true);
+        this.controller.removeCache(true)
         this.loadUrl() }
     }
   ]
 
+  aboutToAppear(): void {
+    this.controller.prefetchPage('https://music.163.com/#/login/')
+  }
+
   private loadUrl() {
     this.controller.setCustomUserAgent(this.userAgent)
-    this.controller.loadUrl(`https://music.163.com/#/login/`)
+    this.controller.loadUrl('https://music.163.com/#/login/')
   }
 
   build() {

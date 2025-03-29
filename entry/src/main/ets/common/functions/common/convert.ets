@@ -1,4 +1,4 @@
-import { Artist, Song } from "../../entities/SongsResult"
+import { Artist, Song } from "../../entities/song/SongsResult"
 import { util } from "@kit.ArkTS"
 import { media } from "@kit.MediaKit"
 import { fileIo } from "@kit.CoreFileKit"
@@ -19,9 +19,6 @@ export async function fetchMetadata(fileUrl: string) {
   } else {
     return undefined
   }
-}
-
-export async function setMetadata(fileUrl: string, title: string, artists: string) {
 }
 
 /**

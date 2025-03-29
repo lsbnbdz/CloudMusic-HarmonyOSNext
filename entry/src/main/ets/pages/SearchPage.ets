@@ -4,14 +4,12 @@ import { SearchPlayListsList } from '../components/lists/SearchPlayListsList';
 import { SearchSongsList } from '../components/lists/SearchSongsList';
 import Constants from '../common/constants/Constants';
 import { StorageConstants } from '../common/constants/StorageConstants';
-import { resourceManager } from '@kit.LocalizationKit';
 import { SearchHistoryComponent } from '../components/lists/SearchHistoryComponent';
+import { SearchArtistsList } from '../components/lists/SearchArtistsList';
 
 /**
  * 歌曲列表页（搜索结果）
  */
-const TAG = "[SearchPage] "
-
 @Component
 export struct SearchPage {
   @StorageProp(StorageConstants.BREAKPOINT) breakpoint: string = 'sm'
@@ -24,6 +22,8 @@ export struct SearchPage {
 
   syncKeyword() {
     this.keyword = this.searchKeyword
+    this.tabPageIndex = 0
+    this.tabsController.changeIndex(0)
     this.searchController.stopEditing()
   }
 
@@ -37,6 +37,7 @@ export struct SearchPage {
               Tabs({ controller: this.tabsController }) {
                 TabContent() { SearchSongsList({ searchKeyword: this.searchKeyword }) }.expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.BOTTOM])
                 TabContent() { SearchPlayListsList({ searchKeyword: this.searchKeyword }) }.expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.BOTTOM])
+                TabContent() { SearchArtistsList({ searchKeyword: this.keyword })}.expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.BOTTOM])
               }
               .layoutWeight(1)
               .onChange((index) => {
@@ -76,7 +77,7 @@ export struct SearchPage {
     Button() {
       Text(content)
         .fontColor(this.tabPageIndex == toIndex ? '#ffee6f6f' : $r('app.color.reverse'))
-        .fontWeight(FontWeight.Medium)
+        .fontWeight(FontWeight.Bold)
     }
     .layoutWeight(1)
     .padding({ left: 10, right: 10, top: 5, bottom: 5 })
@@ -92,6 +93,7 @@ export struct SearchPage {
     Row({ space: 5 }) {
       this.TabBarButton('单曲', 0)
       this.TabBarButton('歌单', 1)
+      this.TabBarButton('歌手', 2)
     }
     .width('80%')
     .justifyContent(FlexAlign.SpaceAround)

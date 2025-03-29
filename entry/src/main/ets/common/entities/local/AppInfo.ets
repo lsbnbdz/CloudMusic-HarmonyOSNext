@@ -1,4 +1,4 @@
-import { AppConstants } from "../constants/AppConstants"
+import { AppConstants } from "../../constants/AppConstants"
 
 interface Version {
   currentVersion: string
@@ -15,6 +15,7 @@ interface Announcement {
 interface Data {
   Version: Version
   Announcement: Announcement
+  Sponser: string[]
 }
 
 export interface AppInfo {
@@ -32,6 +33,7 @@ export const AppInfoClass: AppInfo = {
       isShow: false,
       title: '',
       message: ''
-    }
+    },
+    Sponser: []
   }
 }

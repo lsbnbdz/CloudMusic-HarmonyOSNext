@@ -4,7 +4,7 @@ import { BottomBarComponent } from '../components/play/BottomBarComponent';
 import Constants from '../common/constants/Constants';
 import { StorageConstants } from '../common/constants/StorageConstants';
 import { DialogUtil, EmitterUtil, LogUtil, PickerUtil, ToastUtil } from '@pura/harmony-utils';
-import { LocalSong } from '../common/entities/LocalData';
+import { LocalSong } from '../common/entities/local/LocalData';
 import RelationalStoreUtils from '../common/utils/data/RelationalStoreUtils';
 import { LocalMigrationSheet } from '../components/sheets/LocalMigrationSheet';
 import { LazyData } from '@pie/lazy-data';
@@ -241,7 +241,7 @@ export struct CachedPage {
         this.dataSourceFiltered.setData([])
       }
       const keyword = this.searchKeyword.trim().toLowerCase()
-      this.dataSourceFiltered.setData(this.localSongs.reverse().filter((item: LocalSong) => {
+      this.dataSourceFiltered.setData(this.localSongs.filter((item: LocalSong) => {
         return item.songFile.toString().toLowerCase().includes(keyword)
       }))
     } catch (e) {
@@ -251,11 +251,11 @@ export struct CachedPage {
   }
 
   private async refreshList() {
-    this.localSongs = await RelationalStoreUtils.getAllSongs()
+    this.localSongs = (await RelationalStoreUtils.getAllSongs()).reverse()
     this.originalOrderList = [...this.localSongs]
     this.isSelecting = false
     this.selectedSongs = []
-    this.dataSource.setData(this.localSongs.reverse())
+    this.dataSource.setData(this.localSongs)
     this.dataSource.notifyDataReload()
     this.loadStatus = true
   }
@@ -267,7 +267,7 @@ export struct CachedPage {
     }).then((uris) => {
       FileUtils.saveFilesToDirectory(uris).then(async (result) => {
         if(result) {
-          ToastUtil.showToast(`成功上传 ${result} 个文件`)
+          ToastUtil.showToast(`上传 ${result} 个文件`)
           await this.refreshList()
         }
       })

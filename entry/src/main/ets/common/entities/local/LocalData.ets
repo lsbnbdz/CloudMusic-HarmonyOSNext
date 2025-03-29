@@ -1,3 +1,5 @@
+import { Artist } from "../song/SongsResult"
+
 export interface LocalSong {
   id: number
   songId: number
@@ -15,5 +17,5 @@ export const LocalSongClass: LocalSong = {
   artists: "",
   picFile: "",
   songFile: "",
-  lyricFile: ""
+  lyricFile: "",
 }

@@ -1,6 +1,6 @@
 import Constants from "../../common/constants/Constants"
-import { PlayListPageParam } from "../../common/entities/PageParams"
-import { PersonalListItem } from "../../common/entities/Personalized"
+import { PlayListPageParam } from "../../common/entities/local/PageParams"
+import { PersonalListItem } from "../../common/entities/recommend/Personalized"
 
 @Component
 export struct PersonalizedCard {

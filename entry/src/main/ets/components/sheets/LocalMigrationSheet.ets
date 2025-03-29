@@ -1,7 +1,7 @@
 import { LogUtil, ToastUtil } from "@pura/harmony-utils";
 import Constants from "../../common/constants/Constants";
 import { StorageConstants } from "../../common/constants/StorageConstants";
-import { LocalSong } from "../../common/entities/LocalData";
+import { LocalSong } from "../../common/entities/local/LocalData";
 import { fetchSongInfo, getArtists } from "../../common/functions/common/convert";
 import RelationalStoreUtils from "../../common/utils/data/RelationalStoreUtils";
 import FileUtils from "../../common/utils/file/FileUtils";

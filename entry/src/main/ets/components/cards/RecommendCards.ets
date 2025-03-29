@@ -1,7 +1,7 @@
 import { setHeartMode } from "../../api/songApi"
 import Constants from "../../common/constants/Constants"
 import { StorageConstants } from "../../common/constants/StorageConstants"
-import { PlayList } from "../../common/entities/PlayList"
+import { PlayList } from "../../common/entities/playlist/PlayList"
 import { playNext, playQueue } from "../../common/functions/play/playControl"
 import PlayQueueUtils from "../../common/utils/play/PlayQueueUtils"
 import { promptAction } from "@kit.ArkUI"

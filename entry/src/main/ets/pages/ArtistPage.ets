@@ -35,7 +35,7 @@ export struct ArtistPage {
         List() {
           ListItem() {
             Column({ space: 10 }) {
-              Stack({ alignContent: Alignment.Bottom }) {
+              Stack({ alignContent: Alignment.BottomStart }) {
                 Image(this.artist.artist.picUrl + '?param=512y512')
                   .width('100%')
                   .height('100%')
@@ -62,6 +62,10 @@ export struct ArtistPage {
               }
               .width('100%')
               .aspectRatio(1.3)
+              .constraintSize({
+                minHeight: 100,
+                maxHeight: 300
+              })
 
               Row() {
                 Text(this.artist.artist.briefDesc)

@@ -103,7 +103,8 @@ export struct ArtistPage {
                 duration: item.dt,
                 alias: [],
                 fee: item.fee
-              }
+              },
+              isShowArtists: false
             })
           })
           ListItem()

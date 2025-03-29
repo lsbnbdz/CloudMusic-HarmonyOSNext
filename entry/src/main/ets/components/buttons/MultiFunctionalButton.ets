@@ -1,8 +1,8 @@
-import { VibrateOptions, Vibrator } from "@kit.SensorServiceKit"
 import { ObservableScroller } from "../../common/utils/ObservableScroller"
-import { pauseMusic, playNext, playPre, resumeMusic, seekMusic, playQueue } from "../../common/functions/play/playControl"
+import { pauseMusic, playNext, playPre, resumeMusic, playQueue } from "../../common/functions/play/playControl"
 import { promptAction } from "@kit.ArkUI"
 import playQueueUtils from "../../common/utils/play/PlayQueueUtils"
+import { VibrationControl } from "../../common/utils/system/DeviceController"
 
 const maxNum: number = 2
 const slideHorizontalThreshold: number = 20
@@ -77,27 +77,6 @@ export struct SlideButton {
     .backgroundColor('transparent')
   }
 
-  triggerVibration() {
-    try {
-      let vibrateOptions: VibrateOptions = {
-        mode: 'short',
-        success: () => {
-          // console.info('Succeed in vibrating');
-        },
-        fail: (data: string, code: number) => {
-          console.info(`Failed to vibrate. Data: ${data}, code: ${code}`);
-        },
-        complete: () => {
-          console.info('completed in vibrating');
-        }
-      };
-
-      Vibrator.vibrate(vibrateOptions)
-    } catch (error) {
-      console.error('震动功能不可用')
-    }
-  }
-
   // 触摸按下处理
   handleTouchDown(event: TouchEvent) {
     this._startX = event.touches[0].x
@@ -147,7 +126,7 @@ export struct SlideButton {
 
     this.btnScale = 1
     if(this._slideDirection != 'none'){
-      this.triggerVibration()
+      VibrationControl.handlePresetVibration(1, 100)
     }
   }
 
@@ -265,27 +244,6 @@ export struct MultiFunctionalButton {
 
   }
 
-  triggerVibration() {
-    try {
-      let vibrateOptions: VibrateOptions = {
-        mode: 'short',
-        success: () => {
-          // console.info('Succeed in vibrating');
-        },
-        fail: (data: string, code: number) => {
-          console.info(`Failed to vibrate. Data: ${data}, code: ${code}`);
-        },
-        complete: () => {
-          console.info('completed in vibrating');
-        }
-      };
-
-      Vibrator.vibrate(vibrateOptions)
-    } catch (error) {
-      console.error('震动功能不可用')
-    }
-  }
-
   // 触摸按下处理
   handleTouchDown(event: TouchEvent) {
     this._startX = event.touches[0].x
@@ -335,7 +293,7 @@ export struct MultiFunctionalButton {
 
     this.btnScale = 1
     if(this._slideDirection != 'none'){
-      this.triggerVibration()
+      VibrationControl.handlePresetVibration(1, 100)
     }
   }
 
@@ -453,27 +411,6 @@ export struct MultiFunctionalButton2 {
 
   }
 
-  triggerVibration() {
-    try {
-      let vibrateOptions: VibrateOptions = {
-        mode: 'short',
-        success: () => {
-          // console.info('Succeed in vibrating');
-        },
-        fail: (data: string, code: number) => {
-          console.info(`Failed to vibrate. Data: ${data}, code: ${code}`);
-        },
-        complete: () => {
-          console.info('completed in vibrating');
-        }
-      };
-
-      Vibrator.vibrate(vibrateOptions)
-    } catch (error) {
-      console.error('震动功能不可用')
-    }
-  }
-
   // 触摸按下处理
   handleTouchDown(event: TouchEvent) {
     this._startX = event.touches[0].x
@@ -523,7 +460,7 @@ export struct MultiFunctionalButton2 {
 
     this.btnScale = 1
     if(this._slideDirection != 'none'){
-      this.triggerVibration()
+      VibrationControl.handlePresetVibration(1, 100)
     }
   }
 
@@ -639,27 +576,6 @@ export struct PlayListOverlayButton {
 
   }
 
-  triggerVibration() {
-    try {
-      let vibrateOptions: VibrateOptions = {
-        mode: 'short',
-        success: () => {
-          // console.info('Succeed in vibrating');
-        },
-        fail: (data: string, code: number) => {
-          console.info(`Failed to vibrate. Data: ${data}, code: ${code}`);
-        },
-        complete: () => {
-          console.info('completed in vibrating');
-        }
-      };
-
-      Vibrator.vibrate(vibrateOptions)
-    } catch (error) {
-      console.error('震动功能不可用')
-    }
-  }
-
   // 触摸按下处理
   handleTouchDown(event: TouchEvent) {
     this._startX = event.touches[0].x
@@ -691,12 +607,12 @@ export struct PlayListOverlayButton {
     switch (this._slideDirection){
       case 'down':
         playPre()
-        this.triggerVibration()
+        VibrationControl.handlePresetVibration(1, 100)
         this.showToast('上一首')
         break
       case 'up':
         playNext()
-        this.triggerVibration()
+        VibrationControl.handlePresetVibration(1, 100)
         this.showToast('下一首')
         break
     }

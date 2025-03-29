@@ -57,8 +57,10 @@ export struct PersonalizedCard {
           subscribed: false,
           creator: {
             userId: 0,
-            nickname: '推荐歌单'
-          }
+            nickname: '推荐歌单',
+            avatarUrl: ''
+          },
+          description: ''
         },
         isShowHeart: false,
         useTimestamp: false

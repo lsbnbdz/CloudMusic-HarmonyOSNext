@@ -7,19 +7,19 @@ export struct ArtistCard {
   @Consume('pageInfos') pageInfos: NavPathStack
 
   artistItem: ArtistItem = {
-    artistId: 0,
-    artistName: "",
-    artistAvatarPicUrl: ""
+    id: 0,
+    name: "",
+    picUrl: ""
   }
 
   build() {
     Button() {
       Row({ space: 10 }) {
-        Image(this.artistItem.artistAvatarPicUrl)
+        Image(this.artistItem.picUrl + '?param=256y256')
           .width(Constants.SIZE_IMG_CARD)
           .aspectRatio(1)
           .borderRadius(Constants.RADIUS_CARD)
-        Text(this.artistItem.artistName)
+        Text(this.artistItem.name)
           .fontSize(Constants.FONT_SIZE_COMMON)
           .fontWeight(FontWeight.Medium)
           .fontColor($r('app.color.reverse'))
@@ -35,8 +35,8 @@ export struct ArtistCard {
     .onClick(() => {
       const param: ArtistParam = {
         artist: {
-          id: this.artistItem.artistId,
-          name: this.artistItem.artistName
+          id: this.artistItem.id,
+          name: this.artistItem.name
         }
       }
       this.pageInfos.pushPathByName('ArtistPage', param)

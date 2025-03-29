@@ -1,15 +1,14 @@
 export interface ArtistItem {
-  artistId: number
-  artistName: string
-  artistAvatarPicUrl: string
+  id: number,
+  name: string,
+  picUrl: string
 }
 
-interface Data {
-  totalCount: number
-  list: ArtistItem[]
+interface Body {
+  artistCount: number
+  artists: ArtistItem[]
 }
 
 export interface ArtistsResult {
-  code: number
-  data: Data
+  result: Body
 }

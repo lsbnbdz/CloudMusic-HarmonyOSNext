@@ -1,6 +1,6 @@
 import { SongCard } from '../components/cards/SongCard'
 import { PlayList, playListClass } from '../common/entities/playlist/PlayList'
-import { DialogUtil, LogUtil, ToastUtil } from '@pura/harmony-utils'
+import { DialogUtil, LogUtil, PasteboardUtil, ToastUtil } from '@pura/harmony-utils'
 import { deletePlayList, getPlayListSongs, PlayListOperation, subscribePlayList } from '../api/playListApi'
 import { BottomBarComponent } from '../components/play/BottomBarComponent'
 import { formatNumber } from '../common/functions/common/convert'
@@ -51,6 +51,7 @@ export struct PlayListPage {
   @State selectedSongs: PlayListSongItem[] = []
   @State searchKeyword: string = ''
   @State trackCount: number = -1
+  @State showTitleBar: boolean = false
   @State menuItem: NavigationMenuItem[] = [
     {
       value: 'help',
@@ -84,7 +85,7 @@ export struct PlayListPage {
             ListItem() {
              this.PlayListInfo()
             }
-            .padding({ bottom: 15 })
+            .padding({ bottom: Constants.PADDING_EDGE_DEFAULT })
             ListItem() {
               Row() {
                 Button() {
@@ -108,18 +109,6 @@ export struct PlayListPage {
                     playListToQueue(this.param.playList.id, this.param.playList.trackCount, 0)
                   }
                 })
-
-                // 删除歌单
-                if(this.isLogged && this.user.data.account?.id == this.param.playList.userId &&
-                  this.param.playList.id != this.userPlayLists[0]?.id) {
-                  Image($r('app.media.ic_public_delete'))
-                    .width(20)
-                    .clickEffect({ level: ClickEffectLevel.LIGHT, scale: 0.9 })
-                    .fillColor($r('app.color.app_red'))
-                    .onClick(() => {
-                      this.deleteButtonAction()
-                    })
-                }
               }
               .justifyContent(FlexAlign.SpaceBetween)
               .width('100%')
@@ -170,6 +159,7 @@ export struct PlayListPage {
 
             ListItem().height(px2vp(this.bottomRectHeight) + Constants.HEIGHT_MINI)
           }
+          .edgeEffect(EdgeEffect.None)
           .cachedCount(3)
           .height('100%')
           .layoutWeight(1)
@@ -272,52 +262,78 @@ export struct PlayListPage {
   }
 
   @Builder PlayListInfo() {
-    Column() {
-      Row({ space: 15 }) {
-        Column() {
-          Stack() {
-            Image('')
-              .width('100%')
-              .borderRadius(10)
-            LoadingProgress().width(40)
-            Image(`${this.param.playList.coverImgUrl}?param=256y256`)
-              .width('100%')
-              .borderRadius(10)
-          }
-          .height('100%')
-          .width('100%')
+    Column({ space: 20 }) {
+      Row() {
+        // CoverImage
+        Stack() {
+          Image('')
+            .width('100%')
+            .borderRadius(10)
+          LoadingProgress().width(40)
+          Image(`${this.param.playList.coverImgUrl}?param=256y256`)
+            .width('100%')
+            .borderRadius(10)
         }
-        .height(80)
-        .width(80)
+        .height(100)
+        .aspectRatio(1)
 
-        Column() {
+        // TextInfo
+        Column({ space: 5 }) {
           Text(this.param.playList.name)
-            .fontSize(18)
-            .fontWeight(FontWeight.Medium)
+            .fontSize(16)
+            .fontWeight(FontWeight.Bold)
             .width('100%')
-            .padding({ bottom: 5 })
-          Text(`来自 ${this.param.playList.creator.nickname}`)
-            .fontSize(12)
-            .width('100%')
-            .textAlign(TextAlign.Start)
-          Text(`${this.param.playList.trackCount}首歌曲     ${formatNumber(this.param.playList.playCount)}次播放`)
-            .fontSize(12)
-            .width('100%')
-            .textAlign(TextAlign.Start)
-        }
-        .height(80)
-        .layoutWeight(1)
-        .justifyContent(FlexAlign.SpaceEvenly)
+          Row({ space: 5 }) {
+            Image(this.param.playList.creator?.avatarUrl ? this.param.playList.creator.avatarUrl + '?param=100y100' : $r('app.media.ic_user_portrait'))
+              .width(14)
+              .aspectRatio(1)
+              .borderRadius(50)
+            Text(`${this.param.playList.creator.nickname}   |   ${formatNumber(this.param.playList.playCount)} 次播放`)
+              .fontSize(12)
+              .width('100%')
+              .textAlign(TextAlign.Start)
+          }
+          .width('100%')
 
+          Text(this.param.playList?.description ? this.param.playList.description : '暂无介绍')
+            .fontSize(12)
+            .width('100%')
+            .maxLines(2)
+            .textOverflow({ overflow: TextOverflow.Ellipsis })
+            .textAlign(TextAlign.Start)
+            .clickEffect({ level: ClickEffectLevel.LIGHT, scale: 0.9 })
+            .onClick(() => {
+              DialogUtil.showConfirmDialog({
+                title: '歌单介绍',
+                message: this.param.playList?.description ? this.param.playList.description : '暂无介绍'
+              })
+            })
+        }
+        .height(100)
+        .layoutWeight(1)
+        .padding({ left: Constants.PADDING_EDGE_DEFAULT })
+        .justifyContent(FlexAlign.SpaceAround)
+      }
+      .width('100%')
+      .padding({ left: Constants.PADDING_EDGE_DEFAULT, right: Constants.PADDING_EDGE_DEFAULT })
+      .justifyContent(FlexAlign.SpaceAround)
+
+      Row({ space: 15 }) {
+        // 分享歌单
+        this.ToolButton($r('app.media.ic_public_share_filled'), '分享歌单', () => {
+          PasteboardUtil.setDataText(`[${this.param.playList.name}] https://music.163.com/playlist?id=${this.param.playList.id}`)
+          ToastUtil.showToast('已复制链接至剪贴板')
+        })
+        // 喜欢歌单
         if(this.param.isShowHeart) {
-          if (this.isSubscribed) {
-            Image($r('app.media.ic_heart_filled')).fillColor(Color.Pink).width(25)
-              .onClick(async () => {
+          if(this.isSubscribed) {
+            this.ToolButton($r('app.media.ic_public_favor_filled'), '取消喜欢',
+              () => {
                 this.UnSubScribe()
               })
           } else {
-            Image($r('app.media.ic_heart_filled')).fillColor($r('app.color.main')).width(25)
-              .onClick(async () => {
+            this.ToolButton($r('app.media.ic_public_favor'), '喜欢歌单',
+              async () => {
                 let res:boolean = await subscribePlayList(this.param.playList.id, 1)
                 if(res) {
                   ToastUtil.showToast('成功收藏歌单')
@@ -326,12 +342,22 @@ export struct PlayListPage {
               })
           }
         }
+        // 删除歌单
+        if(this.isLogged && this.user.data.account?.id == this.param.playList.userId &&
+          this.param.playList.id != this.userPlayLists[0]?.id) {
+          this.ToolButton($r('app.media.ic_public_delete_filled'), '删除歌单', () => {
+            this.deleteButtonAction()
+          })
+        }
       }
-      .width('90%')
-      .justifyContent(FlexAlign.SpaceAround)
+      .width('100%')
+      .justifyContent(FlexAlign.Center)
     }
+    .backgroundImage(`${this.param.playList.coverImgUrl}?param=256y256`)
+    .backgroundBlurStyle(BlurStyle.Regular)
+    .backgroundImageSize({ width: '100%', height: '100%' })
+    .padding({ top: Constants.PADDING_EDGE_TEXT, bottom: 20 })
     .width('100%')
-    .justifyContent(FlexAlign.Center)
   }
 
   @Builder SwipeItem(listSong: PlayListSongItem, index: number) {
@@ -389,6 +415,26 @@ export struct PlayListPage {
           this.selectedSongs = this.selectedSongs.filter(item => item.id != item.id)
         }
       })
+  }
+
+  @Builder ToolButton(icon: ResourceStr, text: string, action: () => void) {
+    Button() {
+      Row({ space: 5 }) {
+        Image(icon)
+          .fillColor(Color.White)
+          .width(Constants.FONT_SIZE_COMMON)
+          .aspectRatio(1)
+        Text(text)
+          .fontSize(Constants.FONT_SIZE_COMMON)
+          .fontColor(Color.White)
+      }
+      .padding(Constants.PADDING_EDGE_DEFAULT)
+    }
+    .backgroundColor(Color.Transparent)
+    .backgroundBrightness({ rate: 0.1, lightUpDegree: -0.1 })
+    .backdropBlur(BlurStyle.Regular)
+    .clickEffect({ level: ClickEffectLevel.LIGHT, scale: 0.9 })
+    .onClick(action)
   }
 
   async loadSongs(limit: number, offset: number): Promise<void> {

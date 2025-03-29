@@ -46,8 +46,10 @@ export struct TopListItemCard {
           subscribed: false,
           creator: {
             userId: 0,
-            nickname: '官方'
-          }
+            nickname: '排行榜',
+            avatarUrl: ''
+          },
+          description: ''
         },
         isShowHeart: false,
         useTimestamp: false

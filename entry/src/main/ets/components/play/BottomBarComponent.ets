@@ -30,7 +30,7 @@ export struct BottomBarComponent {
     Row() {
       Image(this.playmode == 0 ? this.picUrl : this.picUrl + '?param=512y512')
         .songImg()
-        .geometryTransition('coverImg')
+        // .geometryTransition('coverImg')
 
       Column({ space: 5 }) {
         Text(this.song.name).textStyle(16).fontWeight(FontWeight.Medium)

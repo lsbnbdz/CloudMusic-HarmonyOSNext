@@ -336,7 +336,7 @@ export struct PlayingCover {
           .fontColor(Color.White)
           .fontSize(Constants.FONT_SIZE_COMMON)
           .backgroundColor(Color.Transparent)
-          .backdropBlur(50)
+          .backdropBlur(BlurStyle.Regular)
           .clickEffect({ level: ClickEffectLevel.LIGHT, scale: 0.8 })
           .borderRadius(1)
           .padding({ left: 10, right: 10 })

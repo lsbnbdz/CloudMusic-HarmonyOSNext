@@ -80,7 +80,7 @@ export struct CachedPage {
             Grid() {
               GridItem() {
                 Search({
-                  placeholder: '搜索文件',
+                  placeholder: '搜索内容',
                   icon: '/resources/base/media/ic_public_search_filled.svg'
                 })
                   .id('search')

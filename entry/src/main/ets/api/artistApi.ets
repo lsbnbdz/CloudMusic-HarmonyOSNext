@@ -26,9 +26,9 @@ export async function getArtistInfo(id: number): Promise<ArtistInfo> {
  */
 export async function getArtistsList(keyword: string): Promise<Array<ArtistItem>> {
   const rootUrl = await getApiUrl()
-  const url = `${rootUrl}/ugc/artist/search?keyword=${encodeURIComponent(keyword)}`
+  const url = `${rootUrl}/search?keywords=${encodeURIComponent(keyword)}&type=100`
   const request = new HttpRequest(url)
   const data = await request.Request()
   const dataGot: ArtistsResult = data.result as ArtistsResult
-  return dataGot.data.list ?? []
+  return dataGot.result.artists ?? []
 }

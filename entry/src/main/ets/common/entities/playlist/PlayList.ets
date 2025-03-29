@@ -4,6 +4,7 @@
 interface Creator {
   userId: number
   nickname: string
+  avatarUrl: string
 }
 
 export interface PlayList {
@@ -16,6 +17,7 @@ export interface PlayList {
   trackCount: number
   subscribed: boolean
   creator: Creator
+  description: string
 }
 
 export interface PlayListResult {
@@ -34,8 +36,10 @@ export const playListClass: PlayList = {
   subscribed: false,
   creator: {
     userId: -1,
-    nickname: ''
-  }
+    nickname: '',
+    avatarUrl: ''
+  },
+  description: ""
 };
 
 export const PlayListClass: PlayListResult = {
@@ -52,8 +56,10 @@ export const PlayListClass: PlayListResult = {
       subscribed: false,
       creator: {
         userId: -1,
-        nickname: ''
-      }
+        nickname: '',
+        avatarUrl: ''
+      },
+      description: ''
     }
   ]
 };

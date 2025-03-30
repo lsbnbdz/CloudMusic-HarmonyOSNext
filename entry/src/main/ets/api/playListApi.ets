@@ -76,12 +76,12 @@ class SongC {
  * @param offset 偏移
  * @returns list 歌曲列表
  */
-export async function getPlayListSongs(listId: number, trackCount: number, offset: number, timestamp: boolean = true): Promise<Array<PlayListSongItem>> {
+export async function getPlayListSongs(listId: number, trackCount: number, offset: number, usetimestamp: boolean = true): Promise<Array<PlayListSongItem>> {
   let list: PlayListSongItem[] = []
   const rootUrl = await getApiUrl()
-  const suffix = timestamp ? `&timestamp=${new Date().getTime()}` : ''
+  const suffix = usetimestamp ? `&timestamp=${new Date().getTime()}` : ''
   const url:string = `${rootUrl}/playlist/track/all?id=${listId}&limit=100&offset=${offset}${suffix}`
-  const request = new HttpRequest(url)
+  const request = new HttpRequest(url, !usetimestamp)
   await request.RequestInStream().then((data) => {
     const dataGot: PlayListSongs = data.result as PlayListSongs
     list = dataGot.songs
@@ -278,7 +278,6 @@ export async function getPersonalizedList(): Promise<Array<PersonalListItem>> {
   await request.RequestInStream().then((data) => {
     const dataGot = data.result as Personalized
     list = dataGot.result
-    AppStorage.setOrCreate(StorageConstants.PERSONALIZED_LIST, list)
     PreferencesUtils.putPreferenceValue(StorageConstants.USER_PREF, StorageConstants.PERSONALIZED_LIST, list)
   })
   return list

@@ -69,7 +69,7 @@ export default class Constants {
   /**
    * Image 默认弧度
    */
-  static readonly RADIUS_IMG: number = 5
+  static readonly RADIUS_IMG: number = 10
   /**
    * 标题栏字体尺寸
    */

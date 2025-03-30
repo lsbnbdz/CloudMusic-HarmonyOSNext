@@ -102,11 +102,11 @@ export struct SetLyricStyle {
 
       Column({ space: 15 }) {
         Text('When your dreams come alive you\'re unstoppable')
-          .lyricStyle(this.lyricStyle.size, this.lyricStyle.align)
+          .lyricStyle(this.lyricStyle.size, this.lyricStyle.align).scale({ x: 0.9, y: 0.9, centerX: this.lyricStyle.align === 'center' ? '50%' : 0 })
         Text('我一路向北 离开有你的季节')
           .lyricStyle(this.lyricStyle.size, this.lyricStyle.align).opacity(1)
         Text('君と集まって星座になれたら')
-          .lyricStyle(this.lyricStyle.size, this.lyricStyle.align)
+          .lyricStyle(this.lyricStyle.size, this.lyricStyle.align).scale({ x: 0.9, y: 0.9, centerX: this.lyricStyle.align === 'center' ? '50%' : 0})
       }
       .padding({ left: Constants.PADDING_EDGE_DEFAULT, right: Constants.PADDING_EDGE_DEFAULT })
     }

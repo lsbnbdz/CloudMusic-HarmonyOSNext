@@ -2,8 +2,9 @@
   "modelVersion": "5.0.0",
   "description": "Please describe the basic information.",
   "dependencies": {
-    "@pura/harmony-utils": "^1.2.4",
-    "@pie/lazy-data": "^1.0.0"
+    "@pura/harmony-utils": "^1.3.0",
+    "@pie/lazy-data": "^1.0.0",
+    "@pura/picker_utils": "^1.0.0"
   },
   "devDependencies": {
     "@ohos/hypium": "1.0.19",

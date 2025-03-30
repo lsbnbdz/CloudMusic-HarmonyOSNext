@@ -54,9 +54,6 @@ export struct PlayQueueSheet {
               Span('播放列表').fontSize(Constants.FONT_SIZE_TITLE).fontColor(Color.Gray).fontWeight(FontWeight.Bold)
               Span(`  (${this.queue.length})`).fontSize(Constants.FONT_SIZE_COMMON).fontColor(Color.Gray)
             }
-
-            LoopModeButton({ imgWidth: Constants.SIZE_ICON_BUTTON_BAR, btnWidth: Constants.SIZE_ICON_BUTTON_BAR })
-
             if(this.isPersonalFm) {
               Button('私人FM')
                 .type(ButtonType.Normal)

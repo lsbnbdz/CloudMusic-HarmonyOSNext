@@ -82,6 +82,7 @@ export struct LyricComponent {
   }
 }
 
+@Reusable
 @Component struct LyricLine {
   @State index: number = 0
   @State item: Lyric = { time: 0, content: ''}
@@ -94,10 +95,14 @@ export struct LyricComponent {
       .width('100%')
       .textAlign(TextAlign.Center)
       .fontSize(this.lyricStyle.size)
+      .lineHeight(this.lyricStyle.size * 1.3)
       .fontColor(this.index === this.currentLyricIndex ? this.lyricStyle.color : Color.White)
       .opacity(this.index == this.currentLyricIndex ? 1 : 0.35)
       .fontWeight(this.index === this.currentLyricIndex ? FontWeight.Bolder : FontWeight.Bold)
       .textAlign(this.lyricStyle.align === 'center' ? TextAlign.Center : TextAlign.Start)
+      .scale(this.index === this.currentLyricIndex ?
+        { x: 1.0, y: 1.0, centerX: this.lyricStyle.align === 'center' ? '50%' : 0 } :
+        { x: 0.9, y: 0.9, centerX: this.lyricStyle.align === 'center' ? '50%' : 0 })
       .clickEffect({ level: ClickEffectLevel.LIGHT, scale: 0.9 })
       .padding({ left: 20, right: 20 })
       .onClick(() => {
@@ -105,8 +110,8 @@ export struct LyricComponent {
         seekMusic(this.item.time)
       })
       .animation({
-        duration: 300,
-        curve: Curve.EaseInOut,
+        duration: 600,
+        curve: Curve.Smooth,
         expectedFrameRateRange: {
           expected: 120,
           min: 60,

@@ -6,7 +6,7 @@ import { PlayList, playListClass } from "../../common/entities/playlist/PlayList
 import Constants from "../../common/constants/Constants"
 import { cleanLastPlayInfo, playListToQueue } from "../../common/functions/play/playListOp"
 import { playQueue } from "../../common/functions/play/playControl"
-import { PasteboardUtil } from "@pura/harmony-utils"
+import { PasteboardUtil, ToastUtil } from "@pura/harmony-utils"
 import { DownloadDialog } from "../dialog/DownloadDialog"
 import { StorageConstants } from "../../common/constants/StorageConstants"
 import VibratorUtils from "../../common/utils/system/VibratorUtils"
@@ -52,16 +52,19 @@ export struct SongCard {
     Button() {
       Row() {
         Row() {
-          if(this.sid != -1) {
-            Text(`${this.sid + 1}`)
-              .width(40)
-              .fontWeight(FontWeight.Bold)
-              .textAlign(TextAlign.JUSTIFY)
-          }
+          Text(`${this.sid + 1}`)
+            .width(40)
+            .fontSize(Constants.FONT_SIZE_BAR)
+            .fontColor(Color.Gray)
+            .fontWeight(FontWeight.Bold)
+            .textAlign(TextAlign.Center)
+            .visibility(this.sid === -1 ? Visibility.None : Visibility.Visible)
+            .padding({ right: 5 })
           if(this.picUrl) {
             Image(typeof this.picUrl === 'string' ? this.picUrl + '?param=100y100' : this.picUrl)
-              .width(50)
-              .padding({ right: 10 })
+              .width(Constants.SIZE_IMG_CARD)
+              .padding(3)
+              .aspectRatio(1)
               .borderRadius(5)
               .draggable(false)
           }
@@ -95,6 +98,7 @@ export struct SongCard {
             .width('100%')
           }
           .layoutWeight(1)
+          .padding({ left: Constants.PADDING_EDGE_DEFAULT })
           .width(`100%`)
         }
         .layoutWeight(1)
@@ -122,7 +126,7 @@ export struct SongCard {
     .type(ButtonType.Normal)
     .width('100%')
     .height(60)
-    .padding({ left: 20, right: 20 })
+    .padding({ left: this.sid === -1 ? 20 : 5 , right: 20 })
     // Card 点击
     .onClick(async () => {
       if(this.song.id == this.playSong.id) {
@@ -279,7 +283,7 @@ export struct SongCard {
   private addToQueue() {
     cleanLastPlayInfo()
     PlayQueueUtils.queueAdd(1, this.song, this.artists, '', this.picUrl ?? $r('app.media.ic_public_music'))
-    promptAction.showToast({ message: '成功添加到下一首播放', duration: 3000 })
+    ToastUtil.showToast('成功添加到下一首播放')
   }
 
   private playSingleSong() {
@@ -293,7 +297,7 @@ export struct SongCard {
         AppStorage.setOrCreate('isPlayerLoading', false)
       }, 500)
     } else {
-      promptAction.showToast({ message: '当前有正在加载的播放任务，请稍后再试', duration: 3000})
+      ToastUtil.showToast('当前有正在加载的播放任务，请稍后再试')
     }
   }
 
@@ -303,7 +307,7 @@ export struct SongCard {
       await playListToQueue(this.playList.id, this.playList.trackCount, this.index)
       this.isPlayerLoading = false
     } else {
-      promptAction.showToast({ message: '当前有正在加载的播放任务，请稍后再试', duration: 3000})
+      ToastUtil.showToast('当前有正在加载的播放任务，请稍后再试')
     }
   }
 }

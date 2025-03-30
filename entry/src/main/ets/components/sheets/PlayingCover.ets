@@ -206,20 +206,18 @@ export struct PlayingCover {
           .textAlign(TextAlign.Start)
           .fontColor(Color.White)
           .opacity(this.tabPageIndex == 0 ? 0.7 : 0.1)
+          .alignSelf(ItemAlign.Start)
 
         // 拖动进度条时，显示即将跳转的时间
-        if (this.isMovingSlider) {
-          Column() {
-            Text(`${changeDuration(this.sliderMovingTime)}`)
-              .fontColor(Color.White)
-              .backgroundColor(Color.Gray)
-              .borderRadius(15)
-              .fontSize(Constants.FONT_SIZE_COMMON)
-              .textAlign(TextAlign.Center)
-              .padding({ left: 10, right: 10 })
-          }
-          .layoutWeight(1)
-        }
+        Text(`${changeDuration(this.sliderMovingTime)}`)
+          .fontColor(Color.White)
+          .backgroundColor(Color.Gray)
+          .borderRadius(15)
+          .fontSize(Constants.FONT_SIZE_COMMON)
+          .textAlign(TextAlign.Center)
+          .padding({ left: 10, right: 10 })
+          .alignSelf(ItemAlign.Center)
+          .visibility(this.isMovingSlider ? Visibility.Visible : Visibility.Hidden)
 
         // 总时间
         Text(`${changeDuration(this.song.duration)}`)
@@ -228,40 +226,40 @@ export struct PlayingCover {
           .textAlign(TextAlign.End)
           .fontColor(Color.White)
           .opacity(this.tabPageIndex == 0 ? 0.7 : 0.1)
+          .alignSelf(ItemAlign.End)
       }
       .width('90%')
-      .justifyContent(FlexAlign.SpaceAround)
 
       // 进度条
       Slider({
         value: this.time,
+        min: 0,
         max: this.song.duration,
+        step: 1,
         style: SliderStyle.InSet
       })
         .width('90%')
-        .blockColor(Color.White)
         .trackColor(Color.Gray)
         .trackThickness(this.sliderThickness)
         .selectedColor(Color.White)
         .showSteps(false)
         .showTips(false)
         .opacity(this.tabPageIndex == 0 ? 0.7 : 0.1)
-        .animation({
-          duration: 600,
-          curve: Curve.LinearOutSlowIn,
-        })
         .onChange((value: number, mode: SliderChangeMode) => {
-          if (mode == SliderChangeMode.Begin) {
-            this.isMovingSlider = true
-            this.sliderThickness = 20
-          } else if (mode == SliderChangeMode.Moving) {
-            this.sliderMovingTime = value
-          } else if (mode == SliderChangeMode.End) {
-            this.time = value
-            this.isMovingSlider = false
-            this.sliderThickness = 10
-            seekMusic(value)
-          }
+          animateTo({ duration: 500, curve: Curve.Smooth, }, () => {
+            if (mode == SliderChangeMode.Begin) {
+              this.isMovingSlider = true
+              this.sliderMovingTime = value
+              this.sliderThickness = 20
+            } else if (mode == SliderChangeMode.Moving) {
+              this.sliderMovingTime = value
+            } else if (mode == SliderChangeMode.End) {
+              this.time = value
+              this.sliderThickness = 10
+              this.isMovingSlider = false
+              seekMusic(this.sliderMovingTime)
+            }
+          })
         })
     }
   }

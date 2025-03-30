@@ -23,12 +23,12 @@ export struct TopListItemCard {
         Image(this.topListItem.coverImgUrl)
           .width(120)
           .aspectRatio(1)
-          .borderRadius(Constants.RADIUS_CARD)
+          .borderRadius(Constants.RADIUS_IMG)
           .draggable(false)
       }
     }
     .backgroundColor(Color.Transparent)
-    .borderRadius(Constants.RADIUS_CARD)
+    .borderRadius(Constants.RADIUS_IMG)
     .type(ButtonType.Normal)
     .width(120)
     .aspectRatio(1)

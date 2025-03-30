@@ -64,7 +64,7 @@ export struct SongClickActionPage {
               } else if(this.clickAction == 1) {
                 ToastUtil.showToast('单曲播放')
               } else {
-                ToastUtil.showToast('随歌单一同播放')
+                ToastUtil.showToast('随歌单一同播放',)
               }
             })
         }

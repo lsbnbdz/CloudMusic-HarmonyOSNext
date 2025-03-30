@@ -154,5 +154,5 @@ function copyDownloadUrl(url:string) {
   const pasteboardData = pasteboard.createData(pasteboard.MIMETYPE_TEXT_PLAIN, url)
   const systemPasteboard = pasteboard.getSystemPasteboard()
   systemPasteboard.setData(pasteboardData)
-  promptAction.showToast({ message: '成功复制到剪切板' })
+  ToastUtil.showToast('成功复制到剪切板')
 }

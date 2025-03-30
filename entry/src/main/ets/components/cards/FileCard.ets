@@ -86,7 +86,7 @@ export struct FileCard {
             playQueue(PlayQueueUtils.currentQueueIndex + 1)
           } catch (e) {
             LogUtil.error('Play local song error: ' + e.message)
-            promptAction.showToast({ message: '播放失败' })
+            ToastUtil.showToast('播放失败')
           }
         })
 

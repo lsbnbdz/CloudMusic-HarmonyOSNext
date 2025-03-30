@@ -10,13 +10,13 @@ import { promptAction } from "@kit.ArkUI"
  * 网络请求工具类
  * HTTP Request
  */
-const TAG = '[HTTPRequest]'
+const TAG = '[HTTPRequest] '
 
 export class HttpRequest {
   private url: string = ''
-  private usingCache:boolean = true
+  private usingCache: boolean = true
 
-  constructor(url: string, usingCache?:boolean) {
+  constructor(url: string, usingCache?: boolean) {
     this.url = url
     if(usingCache) { this.usingCache = usingCache }
   }

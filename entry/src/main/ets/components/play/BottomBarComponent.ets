@@ -5,7 +5,6 @@ import { PlayQueueButton } from "../buttons/play/PlayQueueButton"
 import { PlayingCover } from "../sheets/PlayingCover"
 import { StorageConstants } from "../../common/constants/StorageConstants"
 import Constants from "../../common/constants/Constants"
-import { curves } from "@kit.ArkUI"
 
 /**
  * 底部播控组件
@@ -49,7 +48,7 @@ export struct BottomBarComponent {
     }
     .justifyContent(FlexAlign.SpaceBetween)
     .width('100%')
-    .borderRadius(Constants.RADIUS_CARD)
+    .borderRadius(Constants.RADIUS_IMG)
     .backgroundColor($r('app.color.main'))
     .height(Constants.HEIGHT_MINI)
     .clickEffect({ level: ClickEffectLevel.LIGHT, scale: 0.9 })
@@ -138,6 +137,6 @@ struct ControlButtons {
 @Extend(Image) function songImg() {
   .height(Constants.HEIGHT_MINI)
   .aspectRatio(1)
-  .borderRadius(10)
+  .borderRadius(Constants.RADIUS_IMG)
   .padding(5)
 }

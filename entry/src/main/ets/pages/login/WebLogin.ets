@@ -1,5 +1,5 @@
 import { webview } from '@kit.ArkWeb';
-import { promptAction } from '@kit.ArkUI';
+
 import { getLoginStatus } from '../../api/loginApi';
 import { DialogUtil, LogUtil, ToastUtil } from '@pura/harmony-utils';
 import { MsgConstants } from '../../common/constants/MsgConstants';
@@ -105,10 +105,8 @@ export struct WebLogin {
         return false
       }
     } catch (error) {
-      console.error('获取Cookie失败', error.message)
-      promptAction.showToast({
-        message: '获取Cookie失败：' + error.message
-      })
+      LogUtil.error('获取Cookie失败', error.message)
+      ToastUtil.showToast('获取Cookie失败：' + error.message)
       return false
     }
   }

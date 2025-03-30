@@ -1,7 +1,7 @@
 import { ToastUtil } from '@pura/harmony-utils';
 import { checkQrLogin, getQrCode } from '../../api/QrCodeLogin';
 import Constants from '../../common/constants/Constants';
-import { promptAction } from '@kit.ArkUI';
+
 
 @Component
 export struct QrCodeLogin {
@@ -14,7 +14,7 @@ export struct QrCodeLogin {
       try {
         this.qrCode = await getQrCode()
       } catch (e) {
-        promptAction.showToast({ message: '获取二维码出错: ' + e.message })
+        ToastUtil.showToast('获取二维码出错: ' + e.message)
       } finally {
         this.first = false
       }

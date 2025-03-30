@@ -18,7 +18,7 @@ export struct ArtistCard {
         Image(this.artistItem.picUrl + '?param=256y256')
           .width(Constants.SIZE_IMG_CARD)
           .aspectRatio(1)
-          .borderRadius(Constants.RADIUS_CARD)
+          .borderRadius(Constants.RADIUS_IMG)
         Text(this.artistItem.name)
           .fontSize(Constants.FONT_SIZE_COMMON)
           .fontWeight(FontWeight.Medium)

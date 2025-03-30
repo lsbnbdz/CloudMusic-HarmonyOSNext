@@ -51,12 +51,12 @@ class FileDownloadUtils {
           downloadTask.on('complete', () => {
             FileUtils.moveFile(cachePath, descPath).then(() => {
               NotificationUtils.download(song.id, MsgConstants.DOWNLOAD_COMPLETE, `${song.name} - ${artists}`, 100)
-              promptAction.showToast({ message: `缓存完成: ${song.name}` })
+              ToastUtil.showToast(`缓存完成: ${song.name}`)
               RelationalStoreUtils.addSong({
                 id: 0,
                 songId: song.id,
                 name: song.name,
-                artists: artists,
+                artists: JSON.stringify(song.artists),
                 picFile: "",
                 songFile: fileName,
                 lyricFile: ""

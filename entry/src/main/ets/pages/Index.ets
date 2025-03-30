@@ -103,6 +103,7 @@ struct Index {
         .onAnimationStart((from, target) => {
           this.index = target
         })
+        .onChange((index) => { this.index = index })
 
         BottomBarComponent()
           .padding({ left: Constants.PADDING_EDGE_DEFAULT, right: Constants.PADDING_EDGE_DEFAULT, bottom: px2vp(this.bottomRectHeight) + 35 })

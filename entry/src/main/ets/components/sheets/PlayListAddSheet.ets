@@ -44,7 +44,7 @@ export struct PlayListAddSheet {
   build() {
     Column({ space: 10 }) {
       Text('添加到歌单')
-        .fontSize(Constants.FONT_SIZE_COMMON)
+        .fontSize(18)
         .fontWeight(FontWeight.Bold)
       if(this.isLoading) {
         Column() {
@@ -59,25 +59,31 @@ export struct PlayListAddSheet {
               if (item.userId == this.user.data.profile.userId) {
                 ListItem() {
                   Button() {
-                    Row({ space: 15 }) {
-                      Image(`${item.coverImgUrl}?param=256y256`).width(Constants.SIZE_IMG_CARD).borderRadius(10).draggable(false)
+                    Row({ space: 10 }) {
+                      Image(`${item.coverImgUrl}?param=256y256`)
+                        .width(Constants.SIZE_IMG_CARD)
+                        .borderRadius(Constants.RADIUS_IMG)
+                        .padding(3)
+                        .draggable(false)
                       Column({ space: 8 }) {
                         Text(item.name)
                           .fontSize(Constants.FONT_SIZE_COMMON)
-                          .fontWeight(FontWeight.Medium)
+                          .fontWeight(FontWeight.Bold)
                           .textAlign(TextAlign.Start)
                           .width('100%')
                         Text(`${item.trackCount} 首歌曲`)
+                          .fontColor(Color.Gray)
                           .fontSize(12)
                           .textAlign(TextAlign.Start)
                           .width('100%')
                       }
                       .layoutWeight(1)
                     }
+                    .padding({ left: Constants.PADDING_EDGE_DEFAULT, right: Constants.PADDING_EDGE_DEFAULT })
                     .width('100%')
                   }
                   .backgroundColor(Color.Transparent)
-                  .borderRadius(5)
+                  .borderRadius(Constants.RADIUS_IMG)
                   .type(ButtonType.Normal)
                   .width('100%')
                   .height(60)
@@ -92,7 +98,6 @@ export struct PlayListAddSheet {
                     }
                   })
                 }
-                .padding({ left: 15, right: 15 })
               }
             })
             ListItem().height(px2vp(this.bottomRectHeight) * 2)

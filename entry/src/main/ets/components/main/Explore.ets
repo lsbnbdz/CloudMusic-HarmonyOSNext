@@ -48,7 +48,7 @@ export struct Explore {
   private async getTopLists() {
     if(this.topList.length == 0 && this.validApiUrl) {
       this.isLoading = true
-      await getTopList()
+      this.topList = await getTopList()
       this.isLoading = false
     }
     else return
@@ -66,7 +66,7 @@ export struct Explore {
   async getPersonalizedList() {
     if(this.isLogged && this.personalizedList.length == 0 && this.validApiUrl) {
       this.isLoadingPersonalized = true
-      await getPersonalizedList()
+      this.personalizedList = await getPersonalizedList()
       this.isLoadingPersonalized = false
     }
     else return
@@ -79,8 +79,8 @@ export struct Explore {
       ToastUtil.showToast('操作过于频繁，请5秒后再试')
     } else {
       try {
-        await getTopList()
-        await getPersonalizedList()
+        this.topList = await getTopList()
+        this.personalizedList = await getPersonalizedList()
         this.lastRefreshTime = currentTime
         ToastUtil.showToast('刷新成功')
       } catch (e) {

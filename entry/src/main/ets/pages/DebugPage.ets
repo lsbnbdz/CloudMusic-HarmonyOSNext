@@ -8,6 +8,7 @@ import { promptAction } from "@kit.ArkUI";
 import { HttpRequest } from "../common/utils/request/HttpRequestUtils";
 import { getApiUrl } from "../common/functions/common/get";
 import RelationalStoreUtils from "../common/utils/data/RelationalStoreUtils";
+import { ToastUtil } from "@pura/harmony-utils";
 
 @Component
 export struct DebugPage {
@@ -64,11 +65,11 @@ export struct DebugPage {
       const request = new HttpRequest(url)
       const data = await request.RequestInStream()
       if(data.responseCode == 200) {
-        promptAction.showToast({ message: '200 OK' })
+        ToastUtil.showToast('200 OK')
         this.result = JSON.stringify(data.result, null, 2).replace(/\n/g, '\n')
       }
     } catch (e) {
-      promptAction.showToast({ message: 'Error:' + e.message })
+      ToastUtil.showToast('Request Error:\n' + e.message)
     }
   }
 }

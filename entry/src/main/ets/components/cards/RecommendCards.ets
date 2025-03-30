@@ -117,7 +117,7 @@ export struct RecommendCards {
                 this.pageInfos.replacePathByName('CloudPage', null)
               }
             } else {
-              promptAction.showToast({ message: '请登录后再试' })
+              ToastUtil.showToast('请登录后再试')
             }
           })
         }
@@ -131,21 +131,21 @@ export struct RecommendCards {
               if(!this.isLoadingSongs) {
                 try {
                   this.isLoadingSongs = true
-                  promptAction.showToast({ message: '开始播放心动歌单' })
+                  ToastUtil.showToast('开始播放心动歌单')
                   await setHeartMode(PlayQueueUtils.getCurrentSong().id, this.playLists[0].id)
                   playQueue(0)
                 } catch (e) {
-                  promptAction.showToast({ message: '获取心动歌单失败: ' + e.message })
+                  ToastUtil.showToast('获取心动歌单失败: ' + e.message)
                 } finally {
                   setTimeout(() => {
                     this.isLoadingSongs = false
                   }, 1000)
                 }
               } else {
-                promptAction.showToast({ message: '正在加载, 请稍后' })
+                ToastUtil.showToast('正在加载, 请稍后')
               }
             } else {
-              promptAction.showToast({ message: '请登录后再试' })
+              ToastUtil.showToast('请登录后再试')
             }
           })
         }

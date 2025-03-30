@@ -1,6 +1,7 @@
 import Constants from "../../common/constants/Constants"
 import { promptAction } from "@kit.ArkUI"
 import { createPlayList } from "../../api/playListApi"
+import { ToastUtil } from "@pura/harmony-utils"
 
 @CustomDialog
 export struct AddPlayListDialog {
@@ -10,9 +11,9 @@ export struct AddPlayListDialog {
 
   private async handleCreate() {
     if(this.name == '') {
-      promptAction.showToast({ message: '歌单名不能为空' })
+      ToastUtil.showToast('歌单名不能为空')
     } else if(this.name.length > 40) {
-      promptAction.showToast({ message: '歌单名长度不能超过 40', duration: 5000 })
+      ToastUtil.showToast('歌单名长度不能超过 40')
     } else {
       await createPlayList(this.name, this.isPrivacy)
     }

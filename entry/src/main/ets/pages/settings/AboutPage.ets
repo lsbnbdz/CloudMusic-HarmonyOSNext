@@ -1,4 +1,4 @@
-import { DialogUtil, LogUtil } from "@pura/harmony-utils"
+import { DialogUtil, LogUtil, ToastUtil } from "@pura/harmony-utils"
 import { AppConstants } from "../../common/constants/AppConstants"
 import Constants from "../../common/constants/Constants"
 import { StorageConstants } from "../../common/constants/StorageConstants"
@@ -70,10 +70,10 @@ export struct AboutPage {
                 if(!this.isCheckingUpdate) {
                   this.isCheckingUpdate = true
                   try {
-                    promptAction.showToast({ message: '正在检查更新...' })
+                    ToastUtil.showToast('正在检查更新...')
                     await getAppInfo()
                   } catch (e) {
-                    promptAction.showToast({ message: '检查更新失败: ' + e.message })
+                    ToastUtil.showToast('检查更新失败: ' + e.message)
                     LogUtil.error('Get AppInfo Error: ' + e.message + '\nStack: ' + e.stack)
                   } finally {
                     setTimeout(() => {

@@ -21,6 +21,7 @@ export struct ArtistPage {
   @StorageProp(StorageConstants.BREAKPOINT) breakpoint: string = 'sm'
   @State artist: ArtistInfo = ArtistInfoItem
   @State isLoading: boolean = true
+  @State showTitleBar: boolean = false
   @State dataSource: LazyData<PlayListSongItem> = new LazyData()
 
   async aboutToAppear(): Promise<void> {
@@ -122,6 +123,15 @@ export struct ArtistPage {
         .visibility(this.isLoading ? Visibility.None : Visibility.Visible)
         .edgeEffect(EdgeEffect.None)
         .backToTop(true)
+        .onScrollIndex((start) => {
+          animateTo({ duration: 500, curve: Curve.Ease }, () => {
+            if(start === 0) {
+              this.showTitleBar = false
+            } else {
+              this.showTitleBar = true
+            }
+          })
+        })
 
         Column() {
           LoadingProgress().width(Constants.SIZE_LOADING_PROGRESS_DEFAULT)
@@ -140,7 +150,12 @@ export struct ArtistPage {
       .width('100%')
       .height('100%')
     }
-    .title(this.artist.artist.name)
+    .title(this.showTitleBar ? this.param.artist.name : '',
+      {
+        backgroundColor: Color.Transparent,
+        barStyle: BarStyle.STACK,
+        backgroundBlurStyle: this.showTitleBar ? BlurStyle.Regular : BlurStyle.NONE
+      })
     .backgroundColor($r('app.color.background'))
   }
 

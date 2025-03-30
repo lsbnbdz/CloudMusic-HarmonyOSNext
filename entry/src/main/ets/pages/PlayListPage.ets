@@ -165,9 +165,18 @@ export struct PlayListPage {
           .layoutWeight(1)
           .width('100%')
           .scrollBar(BarState.Off)
-          .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.BOTTOM])
+          .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
           .sticky(StickyStyle.Header | StickyStyle.Footer)
           .backToTop(true)
+          .onScrollIndex((start) => {
+            animateTo({ duration: 500, curve: Curve.Ease }, () => {
+              if(start === 0) {
+                this.showTitleBar = false
+              } else {
+                this.showTitleBar = true
+              }
+            })
+          })
         }
         .height('100%')
 
@@ -181,7 +190,12 @@ export struct PlayListPage {
       .height('100%')
       .backgroundColor($r('app.color.background'))
     }
-    .title(this.param.playList.name)
+    .title(this.showTitleBar ? this.param.playList.name : '',
+      {
+        backgroundColor: Color.Transparent,
+        barStyle: BarStyle.STACK,
+        backgroundBlurStyle: this.showTitleBar ? BlurStyle.Regular : BlurStyle.NONE
+      })
     .menus(this.menuItem)
     .backgroundColor($r('app.color.background'))
   }
@@ -257,7 +271,7 @@ export struct PlayListPage {
         .padding(5)
       }
     }
-    .padding({ left: 20, right: 20 })
+    .padding({ left: 20, right: 20, top: this.showTitleBar ? Constants.PADDING_EDGE_TEXT + px2vp(this.topRectHeight) : 0 })
     .justifyContent(FlexAlign.Center)
   }
 
@@ -356,8 +370,9 @@ export struct PlayListPage {
     .backgroundImage(`${this.param.playList.coverImgUrl}?param=256y256`)
     .backgroundBlurStyle(BlurStyle.Regular)
     .backgroundImageSize({ width: '100%', height: '100%' })
-    .padding({ top: Constants.PADDING_EDGE_TEXT, bottom: 20 })
+    .padding({ top: Constants.PADDING_EDGE_TEXT + px2vp(this.topRectHeight), bottom: 20 })
     .width('100%')
+    .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
   }
 
   @Builder SwipeItem(listSong: PlayListSongItem, index: number) {
@@ -534,10 +549,10 @@ export struct PlayListPage {
   private async handleDelete() {
     const result = await deletePlayList(this.param.playList.id)
     if(result) {
-      promptAction.showToast({ message: '成功删除歌单', duration: 4000 })
+      ToastUtil.showToast('成功删除歌单')
       this.pageInfos.pop()
     } else {
-      promptAction.showToast({ message: '删除歌单失败', duration: 4000 })
+      ToastUtil.showToast('删除歌单失败')
     }
   }
 }

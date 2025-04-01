@@ -62,8 +62,9 @@
 ### 三方库
 
 - [@pura/harmony-utils](https://ohpm.openharmony.cn/#/cn/detail/@pura%2Fharmony-utils)
-- [@pura/picker_utils(https://ohpm.openharmony.cn/#/cn/detail/@pura%2Fpicker_utils)]
+- [@pura/picker_utils](https://ohpm.openharmony.cn/#/cn/detail/@pura%2Fpicker_utils)
 - [@pie/lazy-data](https://ohpm.openharmony.cn/#/cn/detail/@pie%2Flazy-data)
+- [@sj/mediacache](https://ohpm.openharmony.cn/#/cn/detail/@sj%2Fmediacache)
 
 
 

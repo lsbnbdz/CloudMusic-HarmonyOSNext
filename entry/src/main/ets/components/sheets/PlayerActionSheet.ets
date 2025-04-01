@@ -1,8 +1,7 @@
 import { PasteboardUtil, ToastUtil } from "@pura/harmony-utils"
 import Constants from "../../common/constants/Constants"
-import { MsgConstants } from "../../common/constants/MsgConstants"
 import { StorageConstants } from "../../common/constants/StorageConstants"
-import { Song, SongClass } from "../../common/entities/song/SongsResult"
+import { Song, SongItem } from "../../common/entities/song/SongsResult"
 import { changeDuration } from "../../common/functions/common/convert"
 import { likeThisSong } from "../../common/functions/play/songLike"
 import { DownloadDialog } from "../dialog/DownloadDialog"
@@ -14,7 +13,7 @@ export struct PlayerActionSheet {
   @Link isShowTimer: boolean
   @Link isShowAddSheet: boolean
   @Link isShowArtists: boolean
-  @StorageProp(StorageConstants.PLAY_SONG) song: Song = SongClass
+  @StorageProp(StorageConstants.PLAY_SONG) song: Song = SongItem
   @StorageProp(StorageConstants.PLAY_ARTISTS) artists: string = ''
   @StorageProp(StorageConstants.PIC_URL) picUrl: string = ''
   @StorageProp(StorageConstants.PLAY_MODE) playmode: number = 1
@@ -46,7 +45,7 @@ export struct PlayerActionSheet {
       Divider()
       Scroll() {
         Column({ space: 10 }) {
-          if (this.song.id != 0) {
+          if (this.song.id !== 0 && this.playmode !== 3) {
             this.Item(this.isLiked ? $r('app.media.ic_public_favor') : $r('app.media.ic_public_favor_filled'),
               this.isLiked ? '取消喜欢当前歌曲' : '喜欢当前歌曲', () => {
                 this.isShow = false
@@ -58,6 +57,9 @@ export struct PlayerActionSheet {
                 this.isShowAddSheet = true
               }, 300)
             }, 24)
+          }
+
+          if(this.song.id !== 0) {
             this.Item($r('app.media.ic_arrow_down_o_icon'), '缓存到本地', () => {
               this.isShow = false
               this.dialogController.open()
@@ -76,18 +78,20 @@ export struct PlayerActionSheet {
               ToastUtil.showToast('已复制歌曲名至剪贴板')
             }, 300)
           })
-          this.Item($r('app.media.ic_user_portrait'), `歌手: ${this.artists}`, () => {
-            this.isShow = false
-            setTimeout(() => {
-              this.isShowArtists = true
-            }, 300)
-          })
-          this.Item($r('app.media.ic_public_share_filled'), `分享`, () => {
-            this.isShow = false
-            setTimeout(() => {
-              ToastUtil.showToast(MsgConstants.DEVELOPING)
-            }, 300)
-          })
+          if(this.playmode !== 3) {
+            this.Item($r('app.media.ic_user_portrait'), `歌手: ${this.artists}`, () => {
+              this.isShow = false
+              setTimeout(() => {
+                this.isShowArtists = true
+              }, 300)
+            })
+          }
+          // this.Item($r('app.media.ic_public_share_filled'), `分享`, () => {
+          //   this.isShow = false
+          //   setTimeout(() => {
+          //     ToastUtil.showToast(MsgConstants.DEVELOPING)
+          //   }, 300)
+          // })
           Column().height(px2vp(this.bottomRectHeight)).width('100%')
         }
         .height('auto')
@@ -122,7 +126,6 @@ export struct PlayerActionSheet {
         .width(25)
         .justifyContent(FlexAlign.Center)
         Text(name)
-          .fontColor($r('app.color.reverse'))
           .fontSize(Constants.FONT_SIZE_COMMON + 2)
           .fontWeight(FontWeight.Medium)
           .layoutWeight(1)

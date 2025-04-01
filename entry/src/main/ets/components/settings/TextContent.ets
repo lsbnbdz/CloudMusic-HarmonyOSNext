@@ -17,7 +17,7 @@ export struct VersionCard {
             Text('关于应用')
               .fontColor($r('app.color.reverse'))
               .fontSize(Constants.FONT_SIZE_COMMON)
-              .fontWeight(Constants.FONT_WEIGHT_SETTINGS)
+              .fontWeight(Constants.FONT_WEIGHT_BOLD)
             if(this.appInfo.data.Version.currentVersionCode > AppConstants.VERSIONCODE) {
               Text('发现新版本')
                 .fontWeight(FontWeight.Medium)

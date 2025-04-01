@@ -64,12 +64,17 @@ export struct ArtistsSheet {
     .backgroundColor(Color.Transparent)
     .onClick(() => {
       if(artist.id !== 0 && artist.id !== -1) {
-        this.isShow = false
-        this.isShowCover = false
         const param: ArtistParam = {
           artist: artist
         }
-        this.pageInfos.pushPathByName('ArtistPage', param)
+        // if(this.pageInfos.size() < 3) {
+        //   this.pageInfos.pushPathByName('ArtistPage', param, true)
+        // } else {
+        //   this.pageInfos.replacePathByName('ArtistPage', param, true)
+        // }
+        this.pageInfos.pushPathByName('ArtistPage', param, true)
+        this.isShow = false
+        this.isShowCover = false
       }
     })
   }

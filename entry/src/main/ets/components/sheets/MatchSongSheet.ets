@@ -43,7 +43,7 @@ export struct MatchSongSheet {
         ForEach(this.songsList, (item: Song, index) => {
           ListItem() {
             Row({ space: 5 }) {
-              SongCard({ song: item, showAddQueueButton: false, allowToArtist: false })
+              SongCard({ song: item, allowToArtist: false })
                 .layoutWeight(1)
               Button() {
                 Row() {

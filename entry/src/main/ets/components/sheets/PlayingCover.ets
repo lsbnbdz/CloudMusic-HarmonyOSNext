@@ -1,4 +1,4 @@
-import { Song, SongClass } from "../../common/entities/song/SongsResult"
+import { Song, SongItem } from "../../common/entities/song/SongsResult"
 import { changeDuration } from "../../common/functions/common/convert"
 import { pauseMusic, playNext, playPre, resumeMusic, seekMusic } from "../../common/functions/play/playControl"
 import { AddToPlayListCircleButton } from "../buttons/play/AddToPlayListButton"
@@ -22,7 +22,7 @@ export struct PlayingCover {
   @StorageProp('topRectHeight') topRectHeight: number = 0
   @StorageProp('bottomRectHeight') bottomRectHeight: number = 0
   @StorageProp(StorageConstants.PLAY_MODE) playmode: number = 1
-  @StorageProp(StorageConstants.PLAY_SONG) song: Song = SongClass
+  @StorageProp(StorageConstants.PLAY_SONG) song: Song = SongItem
   @StorageProp(StorageConstants.PLAY_ARTISTS) artists: string = ''
   @StorageProp(StorageConstants.IS_PAUSED) isPaused: boolean = false
   @StorageProp(StorageConstants.PIC_URL) picUrl: string = ''
@@ -106,90 +106,92 @@ export struct PlayingCover {
    */
   @Builder
   ToolBar() {
-    if(this.tabPageIndex == 0) {
-      Row() {
+    Row() {
+      /**
+       * Clock-Timer
+       */
+      TimerButton({ isTimerWorking: this.isTimerWorking, isShow: this.isShowTimer })
+        .clickEffect({ level: ClickEffectLevel.LIGHT, scale: 0.7 })
+      if (this.song.id !== 0) {
         /**
-         * Clock-Timer
+         * Download
          */
-        TimerButton({ isTimerWorking: this.isTimerWorking, isShow: this.isShowTimer })
-          .clickEffect({ level: ClickEffectLevel.LIGHT, scale: 0.7 })
-        if (this.song.id != 0) {
-          /**
-           * Download
-           */
-          Image($r('app.media.ic_arrow_down_o_icon'))
-            .fillColor(Color.White)
-            .height(25)
-            .aspectRatio(1)
-            .draggable(false)
-            .backgroundColor(Color.Transparent)
-            .clickEffect({ level: ClickEffectLevel.LIGHT, scale: 0.7 })
-            .onClick(() => {
-              this.dialogController.open()
-            })
-
-          /**
-           * AddToPlayList
-           */
-          AddToPlayListCircleButton({
-            song: this.song,
-            imgColor: Color.White,
-            imgHeight: 29,
-            isShowAddSheet: this.isShowAddSheet,
-          })
-            .clickEffect({ level: ClickEffectLevel.LIGHT, scale: 0.7 })
-
-          /**
-           * Heart
-           */
-          Image(this.isLiked ? $r('app.media.ic_public_favor_filled') : $r('app.media.ic_public_favor'))
-            .fillColor(Color.White)
-            .height(25)
-            .aspectRatio(1)
-            .draggable(false)
-            .backgroundColor(Color.Transparent)
-            .clickEffect({ level: ClickEffectLevel.LIGHT, scale: 0.7 })
-            .onClick(async () => {
-              if(this.isLikeProcessing) return
-              this.isLikeProcessing = true
-              try {
-                await likeThisSong()
-              } finally {
-                this.isLikeProcessing = false
-              }
-            })
-        }
-
-        /**
-         * More
-         */
-        Image($r('app.media.ic_more_vertical_o_icon'))
+        Image($r('app.media.ic_arrow_down_o_icon'))
           .fillColor(Color.White)
-          .height(23)
+          .height(25)
           .aspectRatio(1)
           .draggable(false)
           .backgroundColor(Color.Transparent)
           .clickEffect({ level: ClickEffectLevel.LIGHT, scale: 0.7 })
-          .bindSheet(this.isShowMenu, this.MenuSheet(), {
-            backgroundColor: Color.Transparent,
-            showClose: true,
-            height: SheetSize.MEDIUM,
-            dragBar: false,
-            blurStyle: BlurStyle.Regular,
-            preferType: SheetType.CENTER,
-            onDisappear: () => {
-              this.isShowMenu = false
+          .onClick(() => {
+            this.dialogController.open()
+          })
+
+        /**
+         * AddToPlayList
+         */
+        AddToPlayListCircleButton({
+          song: this.song,
+          imgColor: Color.White,
+          imgHeight: 29,
+          isShowAddSheet: this.isShowAddSheet,
+        })
+          .clickEffect({ level: ClickEffectLevel.LIGHT, scale: 0.7 })
+          .visibility(this.playmode !== 3 ? Visibility.Visible : Visibility.None)
+
+        /**
+         * Heart
+         */
+        Image(this.isLiked ? $r('app.media.ic_public_favor_filled') : $r('app.media.ic_public_favor'))
+          .fillColor(Color.White)
+          .height(25)
+          .aspectRatio(1)
+          .draggable(false)
+          .backgroundColor(Color.Transparent)
+          .clickEffect({ level: ClickEffectLevel.LIGHT, scale: 0.7 })
+          .visibility(this.playmode !== 3 ? Visibility.Visible : Visibility.None)
+          .onClick(async () => {
+            if(this.isLikeProcessing) return
+            this.isLikeProcessing = true
+            try {
+              await likeThisSong()
+            } finally {
+              this.isLikeProcessing = false
             }
           })
-          .onClick(() => {
-            this.isShowMenu = true
-          })
       }
-      .justifyContent(FlexAlign.SpaceEvenly)
-      .width('100%')
-      .height(30)
-      .opacity(0.6)
+
+      /**
+       * More
+       */
+      Image($r('app.media.ic_more_vertical_o_icon'))
+        .fillColor(Color.White)
+        .height(23)
+        .aspectRatio(1)
+        .draggable(false)
+        .backgroundColor(Color.Transparent)
+        .clickEffect({ level: ClickEffectLevel.LIGHT, scale: 0.7 })
+        .bindSheet(this.isShowMenu, this.MenuSheet(), {
+          backgroundColor: Color.Transparent,
+          showClose: true,
+          height: SheetSize.MEDIUM,
+          dragBar: false,
+          blurStyle: BlurStyle.Regular,
+          preferType: SheetType.CENTER,
+          onDisappear: () => {
+            this.isShowMenu = false
+          }
+        })
+        .onClick(() => {
+          this.isShowMenu = true
+        })
     }
+    .justifyContent(FlexAlign.SpaceEvenly)
+    .width('100%')
+    .height(30)
+    .opacity(0.6)
+    .animation({ duration: 300, curve:Curve.Ease })
+    .visibility(this.tabPageIndex == 0 ? Visibility.Visible : Visibility.None)
   }
 
   /**

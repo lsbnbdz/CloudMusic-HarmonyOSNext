@@ -1,13 +1,13 @@
-import { Song } from '../common/entities/song/SongsResult'
-import { SongCard } from '../components/cards/SongCard'
+import { Song } from '../../common/entities/song/SongsResult'
+import { SongCard } from '../../components/cards/SongCard'
 import { DialogUtil, LogUtil } from '@pura/harmony-utils'
-import { getCloudList } from '../api/playListApi'
-import { BottomBarComponent } from '../components/play/BottomBarComponent'
-import { AddToPlayListButton } from '../components/buttons/play/AddToPlayListButton'
-import Constants from '../common/constants/Constants'
-import { ClickToLoadButton, LoadingMoreButton, NoMoreButton } from '../components/buttons/LoadMoreButtons'
-import { StorageConstants } from '../common/constants/StorageConstants'
-import { PlayListSongItem } from '../common/entities/playlist/PlayListSongs'
+import { getCloudList } from '../../api/playListApi'
+import { BottomBarComponent } from '../../components/play/BottomBarComponent'
+import { AddToPlayListButton } from '../../components/buttons/play/AddToPlayListButton'
+import Constants from '../../common/constants/Constants'
+import { ClickToLoadButton, LoadingMoreButton, NoMoreButton } from '../../components/buttons/LoadMoreButtons'
+import { StorageConstants } from '../../common/constants/StorageConstants'
+import { PlayListSong } from '../../common/entities/playlist/PlayListSongs'
 import { LazyData } from '@pie/lazy-data'
 
 /**
@@ -22,8 +22,8 @@ export struct CloudPage {
   @StorageProp('topRectHeight') topRectHeight: number = 0
   @StorageProp(StorageConstants.BREAKPOINT) breakpoint: string = 'sm'
   private currentOffset: number = 0
-  @State list: Array<PlayListSongItem> = new Array()
-  @State dataSource: LazyData<PlayListSongItem> = new LazyData()
+  @State list: Array<PlayListSong> = new Array()
+  @State dataSource: LazyData<PlayListSong> = new LazyData()
   @State hasMore: boolean = true
   @State hasLoaded: boolean = false
   @State isLoading: boolean = true
@@ -80,7 +80,7 @@ export struct CloudPage {
             }.height('100%').width('100%').justifyContent(FlexAlign.Center)
           } else {
             List() {
-              LazyForEach(this.dataSource, (item: PlayListSongItem, index) => {
+              LazyForEach(this.dataSource, (item: PlayListSong, index) => {
                 ListItem() {
                   SongCard({
                     song: {
@@ -92,7 +92,6 @@ export struct CloudPage {
                       fee: item.fee
                     },
                     sid: this.list.indexOf(item),
-                    isPlayList: false,
                     picUrl: item.al?.picUrl ?? $r('app.media.ic_public_music')
                   })
                 }
@@ -149,7 +148,7 @@ export struct CloudPage {
   }
 
   @Builder
-  SwipeItem(listSong: PlayListSongItem) {
+  SwipeItem(listSong: PlayListSong) {
     AddToPlayListButton({ songId: listSong.id })
   }
 }

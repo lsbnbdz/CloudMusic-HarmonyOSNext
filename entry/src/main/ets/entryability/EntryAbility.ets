@@ -20,7 +20,7 @@ export default class EntryAbility extends UIAbility {
     await PreferencesUtils.loadPreference(this.context, StorageConstants.QUEUE_PREF)
 
     // 初始化应用信息
-    appInit()
+    await appInit()
   }
 
   onDestroy(): void {

@@ -1,5 +1,5 @@
 import { PlayList } from "../../common/entities/playlist/PlayList"
-import { playListClass } from "../../common/entities/playlist/PlayList"
+import { playListItem } from "../../common/entities/playlist/PlayList"
 import { PlayListPageParam } from "../../common/entities/local/PageParams"
 import Constants from "../../common/constants/Constants"
 
@@ -7,7 +7,7 @@ import Constants from "../../common/constants/Constants"
 export struct PlayListCard {
   @Consume('pageInfos') pageInfos: NavPathStack
   @State isShowHeart: boolean = true
-  playList:PlayList = playListClass
+  playList:PlayList = playListItem
 
   build() {
     Button() {

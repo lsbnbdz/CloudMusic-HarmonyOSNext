@@ -1,20 +1,21 @@
-import { SongCard } from '../components/cards/SongCard'
-import { PlayList, playListClass } from '../common/entities/playlist/PlayList'
-import { DialogUtil, LogUtil, PasteboardUtil, ToastUtil } from '@pura/harmony-utils'
-import { deletePlayList, getPlayListSongs, PlayListOperation, subscribePlayList } from '../api/playListApi'
-import { BottomBarComponent } from '../components/play/BottomBarComponent'
-import { formatNumber } from '../common/functions/common/convert'
-import { cleanLastPlayInfo, playListToQueue } from '../common/functions/play/playListOp'
-import { AddToPlayListButton } from '../components/buttons/play/AddToPlayListButton'
-import Constants from '../common/constants/Constants'
-import { ClickToLoadButton, LoadingMoreButton, NoMoreButton } from '../components/buttons/LoadMoreButtons'
-import { PlayListPageParam } from '../common/entities/local/PageParams'
-import { PlayListCard_Skeleton } from '../components/cards/PlayListCard'
-import { StorageConstants } from '../common/constants/StorageConstants'
-import { PlayListSongItem } from '../common/entities/playlist/PlayListSongs'
-import { User, UserClass } from '../common/entities/user/User'
+import { SongCard } from '../../components/cards/SongCard'
+import { PlayList, playListItem } from '../../common/entities/playlist/PlayList'
+import { DialogUtil, EmitterUtil, LogUtil, PasteboardUtil, ToastUtil } from '@pura/harmony-utils'
+import { deletePlayList, getPlayListSongs, PlayListOperation, subscribePlayList } from '../../api/playListApi'
+import { BottomBarComponent } from '../../components/play/BottomBarComponent'
+import { formatNumber } from '../../common/functions/common/convert'
+import { cleanLastPlayInfo, playListToQueue } from '../../common/functions/play/playListOp'
+import { AddToPlayListButton } from '../../components/buttons/play/AddToPlayListButton'
+import Constants from '../../common/constants/Constants'
+import { ClickToLoadButton, LoadingMoreButton, NoMoreButton } from '../../components/buttons/LoadMoreButtons'
+import { PlayListPageParam } from '../../common/entities/local/PageParams'
+import { PlayListCard_Skeleton } from '../../components/cards/PlayListCard'
+import { StorageConstants } from '../../common/constants/StorageConstants'
+import { PlayListSong } from '../../common/entities/playlist/PlayListSongs'
+import { User, UserItem } from '../../common/entities/user/User'
 import { promptAction } from '@kit.ArkUI'
 import { LazyData } from '@pie/lazy-data'
+import { EmitterConstants } from '../../common/constants/EmitterConstants'
 
 /**
  * 歌单二级页面
@@ -25,30 +26,30 @@ const TAG = '[PlayListPage] '
 @Component
 export struct PlayListPage {
   @State param: PlayListPageParam = {
-    playList: playListClass,
+    playList: playListItem,
     isShowHeart: false,
     useTimestamp: true
   }
   @StorageProp('bottomRectHeight') bottomRectHeight: number = 0
   @StorageProp('topRectHeight') topRectHeight: number = 0
   @StorageProp(StorageConstants.IS_PLAYER_LOADING) isPlayerLoading: boolean = false
-  @StorageProp(StorageConstants.USER) user: User = UserClass
+  @StorageProp(StorageConstants.USER) user: User = UserItem
   @StorageProp(StorageConstants.BREAKPOINT) breakpoint: string = 'sm'
   @StorageProp(StorageConstants.USER_PLAYLISTS) userPlayLists: PlayList[] = []
   @StorageProp(StorageConstants.IS_LOGGED) isLogged: boolean = false
   @Consume('pageInfos') pageInfos: NavPathStack
   @State isSubscribed: boolean = false
-  @State list: PlayListSongItem[] = new Array()
-  @State filteredList: PlayListSongItem[] = new Array()
-  @State listDataSource: LazyData<PlayListSongItem> = new LazyData()
-  @State filteredDataSource: LazyData<PlayListSongItem> = new LazyData()
+  @State list: PlayListSong[] = new Array()
+  @State filteredList: PlayListSong[] = new Array()
+  @State listDataSource: LazyData<PlayListSong> = new LazyData()
+  @State filteredDataSource: LazyData<PlayListSong> = new LazyData()
   @State hasMore: boolean = true
   @State hasLoaded: boolean = false // 判定是否已加载 避免重复加载
   @State isLoading: boolean = true
   @State isLoadingMore: boolean = false
   @State isSelecting: boolean = false
   @State translateY: number = 40
-  @State selectedSongs: PlayListSongItem[] = []
+  @State selectedSongs: PlayListSong[] = []
   @State searchKeyword: string = ''
   @State trackCount: number = -1
   @State showTitleBar: boolean = false
@@ -72,6 +73,12 @@ export struct PlayListPage {
   async aboutToAppear(): Promise<void> {
     this.isSubscribed = this.param.playList.subscribed
     this.trackCount = this.param.playList.trackCount
+    EmitterUtil.onSubscribe(EmitterConstants.EMITTER_DELETE_FROM_PLAYLIST, ((index: number) => {
+      this.list.splice(index, 1)
+      this.trackCount -= 1
+      this.listDataSource.notifyDataReload()
+      cleanLastPlayInfo()
+    }))
     if (!this.hasLoaded) {
       await this.loadSongs(100, 0)
     }
@@ -86,6 +93,7 @@ export struct PlayListPage {
              this.PlayListInfo()
             }
             .padding({ bottom: Constants.PADDING_EDGE_DEFAULT })
+
             ListItem() {
               Row() {
                 Button() {
@@ -121,19 +129,13 @@ export struct PlayListPage {
                 }
               })
             } else {
-              ListItemGroup({ header: this.ToolBar() }) {
+              ListItemGroup() {
                 if(this.searchKeyword) {
                   this.ContentList(this.filteredDataSource)
                 } else {
                   this.ContentList(this.listDataSource)
                 }
               }
-              .translate({ y: this.translateY })
-              .animation({
-                duration: 600,
-                curve: Curve.LinearOutSlowIn
-              })
-              .onAppear(() => { this.translateY = 0 })
 
               // 添加加载更多
               if (this.isLoadingMore) {
@@ -160,7 +162,7 @@ export struct PlayListPage {
             ListItem().height(px2vp(this.bottomRectHeight) + Constants.HEIGHT_MINI)
           }
           .edgeEffect(EdgeEffect.None)
-          .cachedCount(3)
+          .cachedCount(10)
           .height('100%')
           .layoutWeight(1)
           .width('100%')
@@ -190,7 +192,7 @@ export struct PlayListPage {
       .height('100%')
       .backgroundColor($r('app.color.background'))
     }
-    .title(this.showTitleBar ? this.param.playList.name : '',
+    .title(this.showTitleBar || this.searchKeyword !== '' ? this.ToolBar : '',
       {
         backgroundColor: Color.Transparent,
         barStyle: BarStyle.STACK,
@@ -200,8 +202,8 @@ export struct PlayListPage {
     .backgroundColor($r('app.color.background'))
   }
 
-  @Builder ContentList(dataSource: LazyData<PlayListSongItem>) {
-    LazyForEach(dataSource, (item: PlayListSongItem, index) => {
+  @Builder ContentList(dataSource: LazyData<PlayListSong>) {
+    LazyForEach(dataSource, (item: PlayListSong, index) => {
         ListItem() {
           Row() {
             SongCard({
@@ -214,8 +216,7 @@ export struct PlayListPage {
                 fee: item.fee
               },
               sid: this.list.indexOf(item),
-              isPlayList: true,
-              playList: this.param.playList,
+              playlist: this.param.playList,
               picUrl: item.al?.picUrl ?? $r('app.media.ic_public_music'),
               index: this.list.indexOf(item)
             })
@@ -225,16 +226,21 @@ export struct PlayListPage {
             }
           }
         }
-        .key(this.searchKeyword)
-        .swipeAction({ end: this.SwipeItem(item, index), edgeEffect: SwipeEdgeEffect.None })
+        .swipeAction({ end: this.SwipeItem(item as PlayListSong, index), edgeEffect: SwipeEdgeEffect.None })
+        .translate({ y: this.translateY })
+        .animation({
+          duration: 600,
+          curve: Curve.LinearOutSlowIn
+        })
+        .onAppear(() => { this.translateY = 0 })
       }
-      ,(item: PlayListSongItem, index) => item.name + index)
+      ,(item: PlayListSong, index) => item.name + index)
   }
 
   @Builder ToolBar() {
     Row({ space: 5 }) {
       Search({
-        placeholder: '搜索歌名或歌手',
+        placeholder: '搜索',
         icon: '/resources/base/media/ic_public_search_filled.svg'
       })
         .backgroundBlurStyle(BlurStyle.Thin)
@@ -271,7 +277,7 @@ export struct PlayListPage {
         .padding(5)
       }
     }
-    .padding({ left: 20, right: 20, top: this.showTitleBar ? Constants.PADDING_EDGE_TEXT + px2vp(this.topRectHeight) : 0 })
+    .padding({ left: 20, right: 20 })
     .justifyContent(FlexAlign.Center)
   }
 
@@ -375,7 +381,7 @@ export struct PlayListPage {
     .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
   }
 
-  @Builder SwipeItem(listSong: PlayListSongItem, index: number) {
+  @Builder SwipeItem(listSong: PlayListSong, index: number) {
     Row() {
       AddToPlayListButton({ songId: listSong.id })
       // Delete button
@@ -401,10 +407,7 @@ export struct PlayListPage {
               action: async () => {
                 try {
                   await PlayListOperation('del', this.param.playList.id, listSong.id)
-                  this.list.splice(index, 1)
-                  this.trackCount -= 1
-                  this.listDataSource.notifyDataReload()
-                  cleanLastPlayInfo()
+
                   ToastUtil.showToast('删除成功')
                 } catch (e) {
                   ToastUtil.showToast('删除失败: ' + e)
@@ -417,7 +420,7 @@ export struct PlayListPage {
     }
   }
 
-  @Builder CardCheckBox(item: PlayListSongItem) {
+  @Builder CardCheckBox(item: PlayListSong) {
     Checkbox({ group: 'playListSongs' })
       .padding({ right: 5 })
       .shape(CheckBoxShape.ROUNDED_SQUARE)
@@ -519,7 +522,7 @@ export struct PlayListPage {
         this.filteredDataSource.setData([])
       }
       const keyword = this.searchKeyword.toLowerCase()
-      this.filteredDataSource.setData(this.list.filter((item: PlayListSongItem) => {
+      this.filteredDataSource.setData(this.list.filter((item: PlayListSong) => {
         const idMatch = item.name.toString().toLowerCase().includes(keyword)
         const artistMatch = item.ar.some(artist =>
         artist.name.toLowerCase().includes(keyword))

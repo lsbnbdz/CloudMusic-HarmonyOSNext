@@ -21,7 +21,7 @@ export interface User {
   data:Data
 }
 
-export const UserClass: User = {
+export const UserItem: User = {
   data: {
     account: {
       id: 0,

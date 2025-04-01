@@ -1,4 +1,4 @@
-import { Song, SongClass } from "../../common/entities/song/SongsResult"
+import { Song, SongItem } from "../../common/entities/song/SongsResult"
 import { pauseMusic, playNext, playPre, playQueue, resumeMusic } from "../../common/functions/play/playControl"
 import playQueueUtils from "../../common/utils/play/PlayQueueUtils"
 import { PlayQueueButton } from "../buttons/play/PlayQueueButton"
@@ -16,7 +16,7 @@ export struct BottomBarComponent {
   @StorageLink(StorageConstants.IS_PLAYING) isPlaying: boolean = false
   @StorageProp(StorageConstants.PLAY_MODE) playmode: number = 1
   @StorageProp(StorageConstants.PLAY_FILE_NAME) fileName: string = ''
-  @StorageProp(StorageConstants.PLAY_SONG) song: Song = SongClass
+  @StorageProp(StorageConstants.PLAY_SONG) song: Song = SongItem
   @StorageProp(StorageConstants.PLAY_ARTISTS) artists: string = ''
   @StorageProp(StorageConstants.IS_PAUSED) isPaused: boolean = true
   @StorageProp(StorageConstants.PIC_URL) picUrl: string = ''
@@ -98,7 +98,11 @@ struct ControlButtons {
         Image($r('app.media.ic_public_play_norm')).buttonImgStyle()
           .fillColor($r('app.color.app_red'))
           .onClick(() => {
-          if(!this.isPlaying) playQueue(playQueueUtils.currentQueueIndex)
+          if(!this.isPlaying) {
+            setTimeout(() => {
+              playQueue(playQueueUtils.currentQueueIndex)
+            }, 100)
+          }
           else resumeMusic()
         })
       }

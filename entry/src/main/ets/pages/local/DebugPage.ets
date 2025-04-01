@@ -1,19 +1,19 @@
-import { StorageConstants } from "../common/constants/StorageConstants";
-import { User, UserClass } from "../common/entities/user/User";
+import { StorageConstants } from "../../common/constants/StorageConstants";
+import { User, UserItem } from "../../common/entities/user/User";
 import { JSON } from "@kit.ArkTS";
-import Constants from "../common/constants/Constants";
+import Constants from "../../common/constants/Constants";
 import { resourceManager } from "@kit.LocalizationKit";
-import { AppConstants } from "../common/constants/AppConstants";
+import { AppConstants } from "../../common/constants/AppConstants";
 import { promptAction } from "@kit.ArkUI";
-import { HttpRequest } from "../common/utils/request/HttpRequestUtils";
-import { getApiUrl } from "../common/functions/common/get";
-import RelationalStoreUtils from "../common/utils/data/RelationalStoreUtils";
+import { HttpRequest } from "../../common/utils/request/HttpRequestUtils";
+import { getApiUrl } from "../../common/functions/common/get";
+import RelationalStoreUtils from "../../common/utils/data/RelationalStoreUtils";
 import { ToastUtil } from "@pura/harmony-utils";
 
 @Component
 export struct DebugPage {
   @StorageProp(StorageConstants.COOKIE) cookie: string = ''
-  @StorageProp(StorageConstants.USER) user: User = UserClass
+  @StorageProp(StorageConstants.USER) user: User = UserItem
   @StorageProp(StorageConstants.DEVICE_TYPE) deviceType: resourceManager.DeviceType = resourceManager.DeviceType.DEVICE_TYPE_PHONE
   @StorageProp(StorageConstants.BREAKPOINT) breakpoint: string = 'sm'
   @State apiUrl: string = ''

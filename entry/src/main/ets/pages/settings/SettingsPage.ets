@@ -4,9 +4,9 @@ import Constants from '../../common/constants/Constants'
 import { SetDefaultHomePage } from '../../components/settings/SetDefaultHomePage'
 import { SongClickActionPage } from './SongClickActionPage'
 import { ApiSetPage } from './ApiSetPage'
-import { WebPage } from '../WebPage'
+import { WebPage } from '../web/WebPage'
 import { WebPageParam } from '../../common/entities/local/PageParams'
-import { DebugPage } from '../DebugPage'
+import { DebugPage } from '../local/DebugPage'
 import { CommonSettingsCard } from '../../components/cards/SettingsCard'
 import { PlaySettingsPage } from './PlaySettingsPage'
 import { AboutPage } from './AboutPage'
@@ -102,7 +102,7 @@ export struct SettingsPage {
   @Builder PlaySettings() {
     ListItem() {
       CommonSettingsCard({
-        title: '播放设置',
+        title: '播放与歌词',
         action: () => {
           this.settingsPageInfos.pushPathByName('PlaySettingsPage', null)
         }

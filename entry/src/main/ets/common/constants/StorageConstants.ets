@@ -193,6 +193,11 @@ export class StorageConstants {
    * 用户歌单
    * @description AppStorage & Preference
    */
+  static readonly USER_DJRADIO_LIST: string = 'userDjRadioList'
+  /**
+   * 用户歌单
+   * @description AppStorage & Preference
+   */
   static readonly TOPLISTS: string = 'topLists'
   /**
    * 循环模式
@@ -242,6 +247,11 @@ export class StorageConstants {
    * @description AppStorage & Preference
    */
   static readonly PERSONALIZED_LIST: string = 'personalizedList'
+  /**
+   * 推荐电台
+   * @description AppStorage & Preference
+   */
+  static readonly RECOMMENDED_DJ: string = 'recommendedDj'
   /**
    * 歌词样式
    * @description AppStorage & Preference

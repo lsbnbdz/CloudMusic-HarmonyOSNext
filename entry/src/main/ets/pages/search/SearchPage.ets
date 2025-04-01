@@ -1,11 +1,11 @@
 import { ToastUtil } from '@pura/harmony-utils';
-import { BottomBarComponent } from '../components/play/BottomBarComponent';
-import { SearchPlayListsList } from '../components/lists/SearchPlayListsList';
-import { SearchSongsList } from '../components/lists/SearchSongsList';
-import Constants from '../common/constants/Constants';
-import { StorageConstants } from '../common/constants/StorageConstants';
-import { SearchHistoryComponent } from '../components/lists/SearchHistoryComponent';
-import { SearchArtistsList } from '../components/lists/SearchArtistsList';
+import { BottomBarComponent } from '../../components/play/BottomBarComponent';
+import { SearchPlayListsList } from './SearchPlayListsList';
+import { SearchSongsList } from './SearchSongsList';
+import Constants from '../../common/constants/Constants';
+import { StorageConstants } from '../../common/constants/StorageConstants';
+import { SearchHistoryComponent } from './SearchHistoryComponent';
+import { SearchArtistsList } from './SearchArtistsList';
 
 /**
  * 歌曲列表页（搜索结果）

@@ -1,6 +1,6 @@
 import { AppUtil, LogUtil, ToastUtil } from "@pura/harmony-utils"
 import { getAppInfo } from "../../../api/chenlvinApi"
-import { Song, SongClass } from "../../entities/song/SongsResult"
+import { Song, SongItem } from "../../entities/song/SongsResult"
 import PlayQueueUtils from "../../utils/play/PlayQueueUtils"
 import PreferencesUtils from "../../utils/data/PreferencesUtils"
 import { StorageConstants } from "../../constants/StorageConstants"
@@ -13,6 +13,11 @@ import { TopListItem } from "../../entities/recommend/TopList"
 import { getLikeList } from "../../../api/songApi"
 import { PersonalListItem } from "../../entities/recommend/Personalized"
 import RelationalStoreUtils from "../../utils/data/RelationalStoreUtils"
+import { RecommendDjRadio } from "../../entities/dj/DjRecommend"
+import App from "@system.app"
+import Constants from "../../constants/Constants"
+import AudioCacheUtils from "../../utils/play/AudioCacheUtils"
+import { DjRadio } from "../../entities/dj/DjResult"
 
 /**
  * App初始化
@@ -21,6 +26,7 @@ const TAG = '[appInit] '
 
 export async function appInit() {
   AppStorage.setOrCreate(StorageConstants.APP_LOADING, true)
+  initApp()
   await initSettings()
   await initPlayQueue()
   loadSavedSong()
@@ -29,6 +35,11 @@ export async function appInit() {
   getAppInfo()
   await initUserInfo()
   AppStorage.setOrCreate(StorageConstants.APP_LOADING, false)
+}
+
+function initApp() {
+  App.setImageCacheCount(Constants.CACHE_DISK_MAX_SIZE)
+  AudioCacheUtils.init()
 }
 
 async function initPermission() {
@@ -63,7 +74,9 @@ async function initLocalData() {
     PreferencesUtils.getPreferenceValue<PlayList[]>(StorageConstants.USER_PREF, StorageConstants.USER_PLAYLISTS, []),
     PreferencesUtils.getPreferenceValue<TopListItem[]>(StorageConstants.USER_PREF, StorageConstants.TOPLISTS, []),
     PreferencesUtils.getPreferenceValue<PersonalListItem[]>(StorageConstants.USER_PREF, StorageConstants.PERSONALIZED_LIST, []),
-    PreferencesUtils.getPreferenceValue<string[]>(StorageConstants.USER_PREF, StorageConstants.SEARCH_HISTORY, [])
+    PreferencesUtils.getPreferenceValue<string[]>(StorageConstants.USER_PREF, StorageConstants.SEARCH_HISTORY, []),
+    // PreferencesUtils.getPreferenceValue<RecommendDjRadio[]>(StorageConstants.USER_PREF, StorageConstants.RECOMMENDED_DJ, []),
+    PreferencesUtils.getPreferenceValue<DjRadio[]>(StorageConstants.USER_PREF, StorageConstants.USER_DJRADIO_LIST, [])
   ])
 
   AppStorage.setOrCreate(StorageConstants.DEVICE_TYPE, results[0])
@@ -71,6 +84,8 @@ async function initLocalData() {
   AppStorage.setOrCreate(StorageConstants.TOPLISTS, results[2])
   AppStorage.setOrCreate(StorageConstants.PERSONALIZED_LIST, results[3])
   AppStorage.setOrCreate(StorageConstants.SEARCH_HISTORY, results[4])
+  // AppStorage.setOrCreate(StorageConstants.RECOMMENDED_DJ, results[5])
+  AppStorage.setOrCreate(StorageConstants.USER_DJRADIO_LIST, results[5])
 }
 
 /**
@@ -98,7 +113,7 @@ async function loadSavedSong() {
   let playMode: number = 0
 
   if(has) {
-    song = await PreferencesUtils.getPreferenceValue<Song>('Play', 'CurrentSong', SongClass)
+    song = await PreferencesUtils.getPreferenceValue<Song>('Play', 'CurrentSong', SongItem)
     playMode = await PreferencesUtils.getPreferenceValue<number>('Play', 'PlayMode', 1)
     artists = await PreferencesUtils.getPreferenceValue<string>('Play', 'CurrentArtists', '')
     picUrl = await PreferencesUtils.getPreferenceValue<string>('Play', 'CurrentImage', '')

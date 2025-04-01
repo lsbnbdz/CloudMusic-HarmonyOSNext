@@ -16,7 +16,7 @@ export struct SongClickActionPage {
   @StorageLink(StorageConstants.SONG_CLICK_ACTION) @Watch('changeActionType') clickAction: number = 0
   @StorageProp(StorageConstants.BREAKPOINT) breakpoint: string = 'sm'
   @StorageProp('bottomRectHeight') bottomRectHeight: number = 0
-  @State isShowMenu: boolean = false
+  @State isShowSheet: boolean = false
   @State egSong: Song = {
     id: -1,
     name: '歌曲名',
@@ -41,26 +41,33 @@ export struct SongClickActionPage {
         Stack() {
           SongCard({
             picUrl: $r('app.media.ic_files_audio'),
-            song: this.egSong,
-            isShowMenu: false
+            song: this.egSong
           })
           Button()
             .backgroundColor(Color.Transparent)
             .width('100%')
             .height(60)
             .type(ButtonType.Normal)
-            .bindContextMenu(this.isShowMenu, this.ClickMenu, { onDisappear: () => { this.isShowMenu = false }})
+            .bindSheet(this.isShowSheet, this.EgSheet(), {
+              preferType: SheetType.CENTER,
+              height: '50%',
+              dragBar: false,
+              showClose: false,
+              backgroundColor: Color.Transparent,
+              blurStyle: BlurStyle.Regular,
+              onDisappear: (() => { this.isShowSheet = false })
+            })
             .gesture(
               LongPressGesture({
                 duration: 500
               }).onAction(() => {
                 VibratorUtils.startCount('sharp', 1, 100)
-                this.isShowMenu = true
+                this.isShowSheet = true
               })
             )
             .onClick(async () => {
               if(this.clickAction == 0) {
-                this.isShowMenu = true
+                this.isShowSheet = true
               } else if(this.clickAction == 1) {
                 ToastUtil.showToast('单曲播放')
               } else {
@@ -69,11 +76,25 @@ export struct SongClickActionPage {
             })
         }
 
-        Text('卡片点击操作')
+        Text('设置卡片单击操作')
           .titleStyle()
-        this.SettingItem(0, '单击或长按显示歌曲信息菜单')
-        this.SettingItem(1, '单击后直接播放（单首播放）\n长按显示歌曲信息菜单')
-        this.SettingItem(2, '单击后直接播放（随歌单一同播放）\n长按显示歌曲信息菜单')
+        this.SettingItem(0, '优先弹出半模态界面')
+        this.SettingItem(1, '直接播放（优先播放单曲）')
+        this.SettingItem(2, '直接播放（优先随歌单播放）')
+
+        Text('歌曲卡片操作说明')
+          .titleStyle()
+
+        Text() {
+          Span('单击：支持设置对应操作' + '\n')
+          Span('长按：弹出半模态界面')
+        }
+          .fontColor($r('app.color.reverse'))
+          .fontSize(12)
+          .fontWeight(FontWeight.Medium)
+          .width('100%')
+          .textAlign(TextAlign.Start)
+          .lineHeight(20)
       }
       .padding({
         left: 20,
@@ -100,6 +121,7 @@ export struct SongClickActionPage {
           }
         })
       Text(text)
+        .fontColor($r('app.color.reverse'))
         .fontSize(Constants.FONT_SIZE_COMMON)
         .fontWeight(FontWeight.Medium)
         .width('100%')
@@ -111,19 +133,14 @@ export struct SongClickActionPage {
     .itemStyle()
   }
 
-  @Builder ClickMenu() {
-    Menu() {
-      MenuItem() {
-        Text('歌曲信息菜单')
-          .titleStyle()
-          .padding({ top: 10, bottom: 10 })
-      }
+  @Builder EgSheet() {
+    Column() {
+      Text('半模态界面样例')
+        .padding(Constants.PADDING_EDGE_TEXT)
+        .width('100%')
+        .textAlign(TextAlign.Center)
     }
-    .constraintSize({
-      minWidth: 100,
-      maxWidth: 200
-    })
-    .padding(Constants.PADDING_EDGE_DEFAULT)
+    .width(200)
   }
 
   @Styles itemStyle() {

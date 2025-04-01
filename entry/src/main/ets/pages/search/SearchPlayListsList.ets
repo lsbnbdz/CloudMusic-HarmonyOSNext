@@ -2,8 +2,8 @@ import { LogUtil } from "@pura/harmony-utils"
 import { searchPlayLists } from "../../api/playListApi"
 import Constants from "../../common/constants/Constants"
 import { PlayList } from "../../common/entities/playlist/PlayList"
-import { ClickToLoadButton, LoadingMoreButton, NoMoreButton } from "../buttons/LoadMoreButtons"
-import { PlayListCard } from "../cards/PlayListCard"
+import { ClickToLoadButton, LoadingMoreButton, NoMoreButton } from "../../components/buttons/LoadMoreButtons"
+import { PlayListCard } from "../../components/cards/PlayListCard"
 
 const TAG = "[SearchPlayListsList] "
 @Component

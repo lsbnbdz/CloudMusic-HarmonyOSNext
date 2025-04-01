@@ -1,8 +1,8 @@
 import { EmitterUtil, FileUtil, LogUtil, RandomUtil, ToastUtil } from "@pura/harmony-utils";
-import { Song } from "../../entities/song/SongsResult";
+import { Song, SongItem } from "../../entities/song/SongsResult";
 import FileUtils from "../../utils/file/FileUtils";
 import { getPersonalFmSong, getSongPicUrl, getSongUrl } from "../../../api/songApi";
-import { fetchMetadata, fetchSongInfo, getArtists, sanitizeFileName } from "../common/convert";
+import { fetchMetadata, getArtists, sanitizeFileName } from "../common/convert";
 import PlayQueueUtils from "../../utils/play/PlayQueueUtils";
 import AVSessionUtils from "../../utils/play/AVSessionUtils";
 import PreferencesUtils from "../../utils/data/PreferencesUtils";
@@ -15,7 +15,8 @@ import { StorageConstants } from "../../constants/StorageConstants";
 import { JSON } from "@kit.ArkTS";
 import AVPlayerUtils from "../../utils/play/AVPlayerUtils";
 import { isThisSongLiked } from "./songLike";
-import { getLocalSongArtistsString } from "../common/get";
+import { PlayListSong } from "../../entities/playlist/PlayListSongs";
+import AudioCacheUtils from "../../utils/play/AudioCacheUtils";
 
 
 /**
@@ -24,12 +25,26 @@ import { getLocalSongArtistsString } from "../common/get";
 const TAG = '[playerControl] '
 const pref = StorageConstants.QUEUE_PREF
 
-export async function playMusicByUrl(song: Song, artists: string, isLogged: boolean, picUrl: string | ResourceStr = '') {
+export async function playMusicByUrl(song: Song | PlayListSong, artists: string, isLogged: boolean, picUrl: string | ResourceStr = '', mode: number = 1) {
   try {
     isThisSongLiked(song.id)
-    const quality:number | undefined = await AppStorage.get(StorageConstants.PLAY_QUALITY)
-    const songPlay:SongPlay = await getSongUrl(song.id, quality ? PlayConstants.QUALITY[quality] : "standard", isLogged)
-    setPlayData(1, song, artists)
+    const quality: number | undefined = await AppStorage.get(StorageConstants.PLAY_QUALITY)
+    const songPlay: SongPlay = await getSongUrl(song.id, quality ? PlayConstants.QUALITY[quality] : "standard", isLogged)
+    let playSong: Song = SongItem
+    if(mode === 2) {
+      song = song as PlayListSong
+      playSong = {
+        id: song.id,
+        name: song.name,
+        artists: song.ar,
+        duration: song.dt,
+        fee: song.fee,
+        alias: []
+      }
+    } else {
+      playSong = song as Song
+    }
+    setPlayData(mode, playSong, artists)
     let localPath: string = ''
     let tempArtists: string = artists
     try {
@@ -45,7 +60,9 @@ export async function playMusicByUrl(song: Song, artists: string, isLogged: bool
       await AVPlayerUtils.setUrl(localPath)
     } else if(songPlay.data[0].url) {
       AppStorage.setOrCreate(StorageConstants.PLAY_IS_LOCALFILE, false)
-      await AVPlayerUtils.setUrl(songPlay.data[0].url)
+      const proxyUrl = await AudioCacheUtils.getProxyUrl(songPlay.data[0].url)
+      LogUtil.info(TAG + 'proxyUrl: ' + proxyUrl)
+      await AVPlayerUtils.setUrl(proxyUrl ?? songPlay.data[0].url)
     } else {
       ToastUtil.showToast('获取播放资源失败')
       playNext()
@@ -54,11 +71,11 @@ export async function playMusicByUrl(song: Song, artists: string, isLogged: bool
       picUrl = await getSongPicUrl(song.id)
     }
     setPicUrl(picUrl)
-    LyricUtils.setLyric(song).then(() => {
-      AVSessionUtils.setMetadata(song, artists, picUrl)
+    LyricUtils.setLyric(playSong).then(() => {
+      AVSessionUtils.setMetadata(playSong, artists, picUrl)
       AVSessionUtils.activate()
     })
-    saveCurrentSongInfo(1, song, artists, picUrl)
+    saveCurrentSongInfo(1, playSong, artists, picUrl)
   } catch (e) {
     LogUtil.error(TAG + '播放Url出错: ' + e)
     playNext()
@@ -121,9 +138,8 @@ export async function resumeMusic() {
   AppStorage.setOrCreate(StorageConstants.IS_PAUSED, false)
 }
 
-export async function seekMusic(time: number) {
-  await AVPlayerUtils.seek(time)
-  AVPlayerUtils.play()
+export function seekMusic(time: number) {
+  AVPlayerUtils.seek(time)
 }
 
 export async function playQueue(index: number) {
@@ -131,10 +147,10 @@ export async function playQueue(index: number) {
   const playqueue = queue[index]
   PlayQueueUtils.setIndex(index)
   if(playqueue.playmode == 0) { // Play with file
-    playMusicWithFile(playqueue.song, playqueue.fileName)
+    playMusicWithFile(playqueue.song as Song, playqueue.fileName)
   } else { // Play with url
     const isLogged: boolean | undefined = AppStorage.get(StorageConstants.IS_LOGGED)
-    playMusicByUrl(playqueue.song, playqueue.artists, isLogged ? true : false, playqueue.picUrl)
+    playMusicByUrl(playqueue.song, playqueue.artists, isLogged ? true : false, playqueue.picUrl, playqueue.playmode)
   }
 }
 
@@ -144,9 +160,9 @@ export async function playPre() {
   if(PlayQueueUtils.pre()) {
     const res = PlayQueueUtils.getQueueElement(PlayQueueUtils.currentQueueIndex)
     if(res.playmode == 0) {
-      playMusicWithFile(res.song, res.fileName)
+      playMusicWithFile(res.song as Song, res.fileName)
     } else {
-      playMusicByUrl(res.song, res.artists, isLogged ? isLogged : false, res.picUrl)
+      playMusicByUrl(res.song, res.artists, isLogged ? isLogged : false, res.picUrl, res.playmode)
     }
   } else {
     if(cycleMode == 2) { playQueue(PlayQueueUtils.getQueueLength() - 1) }
@@ -178,9 +194,9 @@ export async function playNext() {
   else if(PlayQueueUtils.next()) {
     const res = PlayQueueUtils.getQueueElement(PlayQueueUtils.currentQueueIndex)
     if(res.playmode == 0) {
-      playMusicWithFile(res.song, res.fileName)
+      playMusicWithFile(res.song as Song, res.fileName)
     } else {
-      playMusicByUrl(res.song, res.artists, isLogged ?? false, res.picUrl)
+      playMusicByUrl(res.song, res.artists, isLogged ?? false, res.picUrl, res.playmode)
     }
   } else {
     if(cycleMode == 2) { playQueue(0) }
@@ -263,7 +279,7 @@ async function getPlayTime(): Promise<number> {
  * @param artists
  * @param fileName
  */
-async function setPlayData(mode: number, song:Song, artists: string, fileName: string = '') {
+async function setPlayData(mode: number, song: Song, artists: string, fileName: string = '') {
   AppStorage.setOrCreate(StorageConstants.IS_PLAYING ,true)
   AppStorage.setOrCreate(StorageConstants.IS_PAUSED, false)
   AppStorage.setOrCreate(StorageConstants.PLAY_MODE, mode)

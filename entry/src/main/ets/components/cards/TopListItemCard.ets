@@ -2,8 +2,9 @@ import Constants from "../../common/constants/Constants"
 import { PlayListPageParam } from "../../common/entities/local/PageParams"
 import { TopListItem } from "../../common/entities/recommend/TopList"
 
-@Component
+const cardHeight = Constants.HEIGHT_EXPLORE_LARGECARD
 
+@Component
 export struct TopListItemCard {
   @State topListItem: TopListItem = {
     id: 0,
@@ -18,19 +19,14 @@ export struct TopListItemCard {
   @Consume('pageInfos') pageInfos: NavPathStack
 
   build() {
-    Button() {
-      Column({ space: 5 }) {
-        Image(this.topListItem.coverImgUrl)
-          .width(120)
-          .aspectRatio(1)
-          .borderRadius(Constants.RADIUS_IMG)
-          .draggable(false)
-      }
+    Column({ space: 5 }) {
+      Image(this.topListItem.coverImgUrl)
+        .width('100%')
+        .aspectRatio(1)
+        .borderRadius(Constants.RADIUS_IMG)
+        .draggable(false)
     }
-    .backgroundColor(Color.Transparent)
-    .borderRadius(Constants.RADIUS_IMG)
-    .type(ButtonType.Normal)
-    .width(120)
+    .width(cardHeight)
     .aspectRatio(1)
     .clickEffect({ level: ClickEffectLevel.LIGHT, scale: 0.9 })
     .onClick(() => {

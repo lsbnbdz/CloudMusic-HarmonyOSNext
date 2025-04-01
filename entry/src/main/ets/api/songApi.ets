@@ -7,7 +7,7 @@ import { PlayQueue } from "../common/entities/local/PlayQueue"
 import { SongDetail } from "../common/entities/song/SongDetail"
 import { QualityType } from "../common/entities/song/SongDownload"
 import { SongPlay } from "../common/entities/song/SongPlay"
-import { Song, SongClass, SongsData } from "../common/entities/song/SongsResult"
+import { Song, SongItem, SongsData } from "../common/entities/song/SongsResult"
 import { User } from "../common/entities/user/User"
 import { getArtists } from "../common/functions/common/convert"
 import { getApiUrl } from "../common/functions/common/get"
@@ -205,5 +205,5 @@ export async function getPersonalFmSong(mode: number): Promise<Song> {
   if(data.result["code"] == 200) {
     let dataGot = data.result["data"][0] as Song
     return dataGot
-  } else return SongClass
+  } else return SongItem
 }

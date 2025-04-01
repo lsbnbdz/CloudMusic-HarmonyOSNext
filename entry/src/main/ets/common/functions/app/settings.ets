@@ -26,16 +26,16 @@ export async function initSettings() {
     // SongCard Click Action
     handleSetting<number>(StorageConstants.SONG_CLICK_ACTION, 0),
     // Lyric
-    handleSetting<LyricStyle>(StorageConstants.LYRIC_STYLE, LyricStyleItem)
+    handleSetting<LyricStyle>(StorageConstants.LYRIC_STYLE, LyricStyleItem),
+    // mixWithOthers
+    handleSetting<boolean>(StorageConstants.MIX_WITH_OTHERS, false)
   ])
 
   // 处理关联配置项（API URL）
   const results = await Promise.all([
     PreferencesUtils.hasPreferenceValue(SetPerf, StorageConstants.IS_CUSTOM_COOKIE),
-    PreferencesUtils.hasPreferenceValue(SetPerf, StorageConstants.MIX_WITH_OTHERS)
   ])
   const isCustomCookieExist = results[0]
-  const isMixExist = results[1]
 
   // 手动Cookie设置
   if (!isCustomCookieExist) {
@@ -54,15 +54,6 @@ export async function initSettings() {
     const cookie = customResults[1]
     AppStorage.setOrCreate(StorageConstants.IS_CUSTOM_COOKIE, isCustom)
     AppStorage.setOrCreate(StorageConstants.CUSTOM_COOKIE, cookie)
-  }
-
-  // 允许一同播放
-  if (!isMixExist) {
-    await PreferencesUtils.putPreferenceValue(SetPerf, StorageConstants.MIX_WITH_OTHERS, false)
-    AppStorage.setOrCreate(StorageConstants.MIX_WITH_OTHERS, false)
-  } else {
-    const mixValue = await PreferencesUtils.getPreferenceValue(SetPerf, StorageConstants.MIX_WITH_OTHERS, false)
-    AppStorage.setOrCreate(StorageConstants.MIX_WITH_OTHERS, mixValue)
   }
 
   // 私人FM

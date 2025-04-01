@@ -1,27 +1,29 @@
-import { Explore } from '../components/main/Explore'
+import { Explore } from '../components/main/Explore/Explore'
 import { BottomBarComponent } from '../components/play/BottomBarComponent';
 import Constants from '../common/constants/Constants';
 import { SettingsPage } from './settings/SettingsPage';
-import { CachedPage } from './CachedPage';
-import { CloudPage } from './CloudPage';
-import { DailyListPage } from './DailyListPage';
-import { SearchPage } from './SearchPage';
-import { PlayListPage } from './PlayListPage';
-import { ArtistParam, PlayListPageParam, WebPageParam } from '../common/entities/local/PageParams';
+import { CachedPage } from './local/CachedPage';
+import { CloudPage } from './playlist/CloudPage';
+import { DailyListPage } from './playlist/DailyListPage';
+import { SearchPage } from './search/SearchPage';
+import { PlayListPage } from './playlist/PlayListPage';
+import { ArtistParam, DjRadioParam, PlayListPageParam, WebPageParam } from '../common/entities/local/PageParams';
 import { LoginPage } from './login/LoginPage';
 import { QrCodeLogin } from './login/QrCodeLogin';
 import { WebLogin } from './login/WebLogin';
-import { WebPage } from './WebPage';
-import { UserPlayLists } from '../components/main/UserPlayLists';
-import { Me } from '../components/main/Me';
+import { WebPage } from './web/WebPage';
+import { UserLists } from '../components/main/UserPlayLists/UserLists';
+import { Me } from '../components/main/Me/Me';
 import { StorageConstants } from '../common/constants/StorageConstants';
 import { WarrantyDialog } from '../components/dialog/WarrantyDialog';
-import { TopListPage } from './TopListPage';
+import { TopListPage } from './list/TopListPage';
 import PreferencesUtils from '../common/utils/data/PreferencesUtils';
-import { DebugPage } from './DebugPage';
+import { DebugPage } from './local/DebugPage';
 import BreakpointUtils from '../common/utils/system/BreakpointUtils';
 import { ApiDialog } from '../components/dialog/ApiDialog';
-import { ArtistPage } from './ArtistPage';
+import { ArtistPage } from './artist/ArtistPage';
+import { DjRadioPage } from './playlist/DjRadioPage';
+import App from '@system.app';
 
 @Entry
 @Component
@@ -34,7 +36,9 @@ struct Index {
   @StorageProp('bottomRectHeight') bottomRectHeight: number = 0
   @StorageProp(StorageConstants.BREAKPOINT) breakpoint: string = 'sm'
   @StorageProp(StorageConstants.DEFAULT_PAGE_INDEX) index: number = 0
+  @State currentHour: number = 0
   @State tabCurrentIndex: number = 0
+  @State categoryTabIndex: number = 0
 
   warrantyDialogController: CustomDialogController = new CustomDialogController({
     builder: WarrantyDialog(),
@@ -46,31 +50,8 @@ struct Index {
     autoCancel: false
   })
 
-  private getMenuItems(): NavigationMenuItem[] {
-    let items: NavigationMenuItem[] = []
-    if(this.index == 0 || this.index == 1) {
-      items.push({
-        value: 'Search',
-        icon: $r('app.media.ic_public_search_filled'),
-        action: () => {
-          this.pageInfos.clear()
-          this.pageInfos.pushPathByName('SearchPage', null, true)
-        }
-      })
-    }
-    // if(this.index == 1) {
-    //   items.unshift({
-    //     value: 'Add',
-    //     icon: $r('app.media.ic_public_add_filled'),
-    //     action: () => {
-    //       this.addPlayListController.open()
-    //     }
-    //   })
-    // }
-    return items
-  }
-
   async aboutToAppear(): Promise<void> {
+    this.currentHour = new Date().getHours()
     BreakpointUtils.register()
     setTimeout(() => {
       this.tabCurrentIndex = this.index
@@ -87,12 +68,50 @@ struct Index {
     BreakpointUtils.unregister()
   }
 
+  onPageShow(): void {
+    App.setImageRawDataCacheSize(Constants.CACHE_DISK_MAX_SIZE)
+    this.currentHour = new Date().getHours()
+  }
+
+  private getMenuItems(): NavigationMenuItem[] {
+    let items: NavigationMenuItem[] = []
+    if(this.index === 0 || this.index === 1) {
+      items.push({
+        value: 'Search',
+        icon: $r('app.media.ic_public_search_filled'),
+        action: () => {
+          this.pageInfos.clear()
+          this.pageInfos.pushPathByName('SearchPage', null, true)
+        }
+      })
+    }
+    if(this.index === 2) {
+      items.push({
+        value: 'Settings',
+        icon: $r('app.media.ic_public_settings'),
+        action: () => {
+          AppStorage.setOrCreate('isShowSettings', true)
+        }
+      })
+    }
+    // if(this.index == 1) {
+    //   items.unshift({
+    //     value: 'Add',
+    //     icon: $r('app.media.ic_public_add_filled'),
+    //     action: () => {
+    //       this.addPlayListController.open()
+    //     }
+    //   })
+    // }
+    return items
+  }
+
   async build() {
     Navigation(this.pageInfos) {
       Stack({ alignContent: Alignment.Bottom }) {
         Tabs({ controller: this.tabController, index: this.tabCurrentIndex }) {
-          TabContent() { Explore() }
-          TabContent() { UserPlayLists() }
+          TabContent() { Explore({ currentHour: this.currentHour }) }
+          TabContent() { UserLists({ categoryTabIndex: this.categoryTabIndex }) }
           TabContent() { Me() }
         }
         .height('100%')
@@ -116,7 +135,7 @@ struct Index {
     .navBarPosition(NavBarPosition.Start)
     .mode(this.breakpoint == 'lg' ? NavigationMode.Split : NavigationMode.Stack)
     .titleMode(NavigationTitleMode.Mini)
-    .title(this.index == 0 ? '发现' : this.index == 1 ? '歌单' : '我的')
+    .title(this.index === 1 ? this.CategoryTabBar : this.index === 0 ? '发现' : '我的')
     .menus(this.getMenuItems())
     .hideBackButton(true)
     .backgroundColor($r('app.color.background'))
@@ -146,6 +165,9 @@ struct Index {
     else if(name === 'ArtistPage') {
       ArtistPage({ param: param as ArtistParam })
     }
+    else if(name === 'DjRadioPage') {
+      DjRadioPage({ param: param as DjRadioParam})
+    }
     else if(name === 'LoginPage') {
       LoginPage()
     }
@@ -169,7 +191,7 @@ struct Index {
   @Builder ToolBar() {
     Row() {
       this.ToolBarItem(0, $r('app.media.ic_gallery_discover'), $r('app.media.ic_gallery_discover_filled'), '发现')
-      this.ToolBarItem(1, $r('app.media.ic_public_drawer'), $r('app.media.ic_public_drawer_filled'),'歌单')
+      this.ToolBarItem(1, $r('app.media.ic_public_drawer'), $r('app.media.ic_public_drawer_filled'),'播单')
       this.ToolBarItem(2, $r('app.media.ic_public_contacts'), $r('app.media.ic_public_contacts_filled'), '我的')
     }
     .backgroundColor(Color.Transparent)
@@ -190,5 +212,35 @@ struct Index {
     .onClick(() => {
       this.tabController.changeIndex(index)
     })
+  }
+
+  @Builder CategoryTabBar() {
+    Column() {
+      Row({ space: Constants.PADDING_EDGE_TEXT }) {
+        this.CategoryBarButtonItem('歌单', 0)
+        this.CategoryBarButtonItem('播客', 1)
+      }
+      .backgroundColor($r('app.color.main'))
+      .borderRadius(Constants.RADIUS_CARD)
+      .justifyContent(FlexAlign.Center)
+      .padding({ left: Constants.PADDING_EDGE_DEFAULT, right: Constants.PADDING_EDGE_DEFAULT })
+    }
+    .width('100%')
+    .height('100%')
+    .justifyContent(FlexAlign.Center)
+  }
+
+  @Builder CategoryBarButtonItem(title: string, index: number) {
+    Button() {
+      Text(title)
+        .fontSize(18)
+        .fontColor(this.categoryTabIndex === index ? $r('app.color.app_red') : Color.Gray)
+        .fontWeight(FontWeight.Bold)
+    }
+    .width(50)
+    .backgroundColor(Color.Transparent)
+    .padding(5)
+    .clickEffect({ level: ClickEffectLevel.LIGHT, scale: 0.7 })
+    .onClick(() => { this.categoryTabIndex = index })
   }
 }

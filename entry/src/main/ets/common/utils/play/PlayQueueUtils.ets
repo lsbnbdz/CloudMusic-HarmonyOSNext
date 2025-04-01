@@ -1,8 +1,9 @@
-import { EmitterUtil, LogUtil, ToastUtil } from '@pura/harmony-utils'
+import { EmitterUtil, LogUtil } from '@pura/harmony-utils'
 import { EmitterConstants } from '../../constants/EmitterConstants'
 import { StorageConstants } from '../../constants/StorageConstants'
 import { PlayQueue } from '../../entities/local/PlayQueue'
-import { Song, SongClass } from '../../entities/song/SongsResult'
+import { PlayListSong } from '../../entities/playlist/PlayListSongs'
+import { Song, SongItem } from '../../entities/song/SongsResult'
 import PreferencesUtils from '../data/PreferencesUtils'
 
 /**
@@ -51,7 +52,7 @@ class PlayQueueUtils {
   /**
    * 添加歌曲至播放列表
    */
-  async queueAdd(playmode:number, song:Song = SongClass, artists: string = '', fileName: string = '', picUrl: string | ResourceStr = '') {
+  async queueAdd(playmode: number, song: Song | PlayListSong , artists: string = '', fileName: string = '', picUrl: string | ResourceStr = '') {
     try {
       this.queue.splice(this.currentQueueIndex + 1 , 0 ,{
         playmode: playmode,
@@ -117,13 +118,16 @@ class PlayQueueUtils {
     return this.queue
   }
 
-  getCurrentSong(): Song {
+  getCurrentSong(): Song | PlayListSong {
     try {
       if(this.queue[this.currentQueueIndex]) {
-        return this.queue[this.currentQueueIndex].song
-      } else return SongClass
+        if(this.queue[this.currentQueueIndex].playmode === 2) {
+          return this.queue[this.currentQueueIndex].song as PlayListSong
+        }
+        return this.queue[this.currentQueueIndex].song as Song
+      } else return SongItem
     } catch (e) {
-      return SongClass
+      return SongItem
     }
   }
 

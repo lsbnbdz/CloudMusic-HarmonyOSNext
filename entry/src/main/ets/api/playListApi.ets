@@ -1,9 +1,9 @@
 import { LogUtil, ToastUtil } from "@pura/harmony-utils"
 import { PlayList, PlayListOperationRes, PlayListSearchResult } from "../common/entities/playlist/PlayList"
-import { CloudSongs, DailyListSongs, PlayListSongItem, PlayListSongs } from "../common/entities/playlist/PlayListSongs"
+import { CloudSongs, DailyListSongs, PlayListSong, PlayListSongs } from "../common/entities/playlist/PlayListSongs"
 import { PlayQueue } from "../common/entities/local/PlayQueue"
 import { Artist, Song } from "../common/entities/song/SongsResult"
-import { User, UserClass } from "../common/entities/user/User"
+import { User, UserItem } from "../common/entities/user/User"
 import { getArtists } from "../common/functions/common/convert"
 import { HttpRequest } from "../common/utils/request/HttpRequestUtils"
 import PlayQueueUtils from "../common/utils/play/PlayQueueUtils"
@@ -31,10 +31,10 @@ export interface PlayListsResult {
  * @param offset - 偏移量
  * @returns list
  */
-export async function getPlayLists(offset:number): Promise<PlayListsResult> {
+export async function getPlayLists(offset: number): Promise<PlayListsResult> {
   let list:Array<PlayList> = new Array()
   let hasMore:boolean = false
-  const user = await PreferencesUtils.getPreferenceValue<User>(StorageConstants.USER_PREF,'user',UserClass)
+  const user = await PreferencesUtils.getPreferenceValue<User>(StorageConstants.USER_PREF,'user',UserItem)
   const rootUrl = await getApiUrl()
   const url:string = `${rootUrl}/user/playlist?uid=${user.data.account.id}&limit=10&offset=${offset}&timestamp=${new Date().getTime()}`
   const request = new HttpRequest(url)
@@ -53,22 +53,6 @@ export async function getPlayLists(offset:number): Promise<PlayListsResult> {
   return result
 }
 
-class SongC {
-  id: number
-  name: string
-  artists: Artist[]
-  duration: number
-  alias: string[]
-
-  constructor(id: number, name: string, artists: Artist[], duration: number, alias: string[]) {
-    this.id = id
-    this.name = name
-    this.artists = artists
-    this.duration = duration
-    this.alias = alias
-  }
-}
-
 /**
  * 获取歌单内歌曲列表
  * @param listId 歌单ID
@@ -76,8 +60,8 @@ class SongC {
  * @param offset 偏移
  * @returns list 歌曲列表
  */
-export async function getPlayListSongs(listId: number, trackCount: number, offset: number, usetimestamp: boolean = true): Promise<Array<PlayListSongItem>> {
-  let list: PlayListSongItem[] = []
+export async function getPlayListSongs(listId: number, trackCount: number, offset: number, usetimestamp: boolean = true): Promise<Array<PlayListSong>> {
+  let list: PlayListSong[] = []
   const rootUrl = await getApiUrl()
   const suffix = usetimestamp ? `&timestamp=${new Date().getTime()}` : ''
   const url:string = `${rootUrl}/playlist/track/all?id=${listId}&limit=100&offset=${offset}${suffix}`
@@ -107,15 +91,8 @@ export async function putPlayListInQueue(listId: number, trackCount: number, lim
     const artistsPromises = dataResult.songs.map(item => getArtists(item.ar))
     const artistsResults = await Promise.all(artistsPromises)
     tempQueue = dataResult.songs.map((item, index) => ({
-      playmode: 1,
-      song: {
-        id: item.id,
-        name: item.name,
-        artists: item.ar,
-        duration: item.dt,
-        alias: [],
-        fee: item.fee
-      } as Song,
+      playmode: 2,
+      song: item as PlayListSong,
       artists: artistsResults[index],
       fileName: '',
       picUrl: item.al?.picUrl ?? $r('app.media.ic_public_music')
@@ -207,8 +184,8 @@ export interface DailySongRes {
  * @param offset 偏移
  * @returns list 歌曲列表
  */
-export async function getCloudList(offset: number): Promise<Array<PlayListSongItem>> {
-  let list:Array<PlayListSongItem> = new Array()
+export async function getCloudList(offset: number): Promise<Array<PlayListSong>> {
+  let list:Array<PlayListSong> = new Array()
   const rootUrl = await getApiUrl()
   const url:string = `${rootUrl}/user/cloud?limit=50&offset=${offset}`
   const request = new HttpRequest(url)

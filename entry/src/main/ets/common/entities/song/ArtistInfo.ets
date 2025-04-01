@@ -1,4 +1,4 @@
-import { PlayListSongItem } from "../playlist/PlayListSongs"
+import { PlayListSong } from "../playlist/PlayListSongs"
 
 interface ArtistBody {
   briefDesc: string // 简介
@@ -10,7 +10,7 @@ interface ArtistBody {
 
 export interface ArtistInfo {
   artist: ArtistBody
-  hotSongs: PlayListSongItem[]
+  hotSongs: PlayListSong[]
   code: number
   more: boolean
 }

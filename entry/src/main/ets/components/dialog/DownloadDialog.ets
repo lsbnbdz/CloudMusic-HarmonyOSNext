@@ -1,6 +1,6 @@
 import { getDownloadInfo } from "../../api/getDownloadInfo"
 import { SongDownload, SongDownloadClass } from "../../common/entities/song/SongDownload"
-import { Song, SongClass } from "../../common/entities/song/SongsResult"
+import { Song, SongItem } from "../../common/entities/song/SongsResult"
 import { pasteboard } from "@kit.BasicServicesKit"
 import { promptAction } from "@kit.ArkUI"
 import FileDownloadUtils from "../../common/utils/file/FileDownloadUtils"
@@ -18,7 +18,7 @@ export struct DownloadDialog {
   @State isLoading:boolean = false
   @State songDownload:SongDownload = SongDownloadClass
   @State succ:boolean = true
-  @State song: Song = SongClass
+  @State song: Song = SongItem
   @State picUrl: string | ResourceStr = ''
   @State artists: string = ''
   @State duration: string = ''

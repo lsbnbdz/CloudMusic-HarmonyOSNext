@@ -137,9 +137,11 @@ export struct PlayQueueSheet {
           .width('100%')
           .textAlign(TextAlign.Start)
         Row({ space: 5 }) {
-          if(item.playmode == 0) {
+          if(item.playmode === 0) {
             Image($r('app.media.ic_public_todo')).width(14).fillColor(Color.Green)
-          } else if(item.song.fee == 1) {
+          } else if(item.playmode === 3) {
+            Image($r('app.media.ic_public_play_norm')).width(14).fillColor($r('app.color.blue'))
+          } else if(item.song.fee === 1) {
             Text(' VIP ')
               .fontColor('#ffff3232')
               .fontSize(10)

@@ -1,14 +1,14 @@
-import { Song } from '../common/entities/song/SongsResult'
-import { SongCard } from '../components/cards/SongCard'
+import { Song } from '../../common/entities/song/SongsResult'
+import { SongCard } from '../../components/cards/SongCard'
 import { LogUtil } from '@pura/harmony-utils'
-import { DailySongRes, PlayDailySongs } from '../api/playListApi'
-import { BottomBarComponent } from '../components/play/BottomBarComponent'
-import { playQueue } from '../common/functions/play/playControl'
-import { AddToPlayListButton } from '../components/buttons/play/AddToPlayListButton'
-import { getDailySongs } from '../api/songApi'
-import Constants from '../common/constants/Constants'
+import { DailySongRes, PlayDailySongs } from '../../api/playListApi'
+import { BottomBarComponent } from '../../components/play/BottomBarComponent'
+import { playQueue } from '../../common/functions/play/playControl'
+import { AddToPlayListButton } from '../../components/buttons/play/AddToPlayListButton'
+import { getDailySongs } from '../../api/songApi'
+import Constants from '../../common/constants/Constants'
 import { resourceManager } from '@kit.LocalizationKit'
-import { StorageConstants } from '../common/constants/StorageConstants'
+import { StorageConstants } from '../../common/constants/StorageConstants'
 
 /**
  * 每日推荐歌单页面
@@ -97,7 +97,6 @@ export struct DailyListPage {
                     SongCard({
                       song: item.song,
                       sid: index,
-                      isPlayList: false,
                       index: index,
                       reason: item.reason,
                       picUrl: item.picUrl ?? $r('app.media.ic_public_music')

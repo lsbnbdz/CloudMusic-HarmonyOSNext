@@ -26,7 +26,7 @@ export interface SongsData {
   result: Result
 }
 
-export const SongClass: Song = {
+export const SongItem: Song = {
   id: 0,
   name: '',
   artists: [

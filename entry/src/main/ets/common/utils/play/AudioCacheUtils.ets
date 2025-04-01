@@ -1,0 +1,25 @@
+import { MCMediaCache } from "@sj/mediacache";
+import Constants from "../../constants/Constants";
+import { getCookie } from "../../functions/common/get";
+
+export default class AudioCacheUtils {
+  static async init() {
+    MCMediaCache.setRequestHandler(async (request) => {
+      request.setHeader('cookie', await getCookie())
+    })
+    MCMediaCache.setAssetIdentifierPreprocessor(async (url) => {
+      url = url.split('?')[0]
+      let start: number = url.lastIndexOf("/")
+      let end: number = url.lastIndexOf(".")
+      let cacheName: string = url.substring(start + 1, end) + '-' + url.substring(end + 1)
+      return cacheName
+    })
+    MCMediaCache.cacheConfig.maxDiskSize = Constants.CACHE_DISK_MAX_SIZE
+
+    await MCMediaCache.prepare(getContext())
+  }
+
+  static async getProxyUrl(url: string) {
+    return await MCMediaCache.proxy(url)
+  }
+}

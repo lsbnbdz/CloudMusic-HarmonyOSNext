@@ -4,7 +4,7 @@ import Constants from "../../common/constants/Constants"
 import { StorageConstants } from "../../common/constants/StorageConstants"
 import { PlayList } from "../../common/entities/playlist/PlayList"
 import { Song } from "../../common/entities/song/SongsResult"
-import { User, UserClass } from "../../common/entities/user/User"
+import { User, UserItem } from "../../common/entities/user/User"
 import { PlayQueueButton } from "../buttons/play/PlayQueueButton"
 import { PlayListCard } from "../cards/PlayListCard"
 
@@ -17,7 +17,7 @@ const TAG = '[PlayListAddSheet] '
 export struct PlayListAddSheet {
   @StorageProp('currentQueueIndex') currentQueueIndex: number = 0
   @StorageProp('bottomRectHeight') bottomRectHeight: number = 0
-  @StorageProp(StorageConstants.USER) user: User = UserClass
+  @StorageProp(StorageConstants.USER) user: User = UserItem
   @StorageLink(StorageConstants.USER_PLAYLISTS) playLists: Array<PlayList> = []
   @State isLoading: boolean = false
   @State isRefreshing: boolean = false

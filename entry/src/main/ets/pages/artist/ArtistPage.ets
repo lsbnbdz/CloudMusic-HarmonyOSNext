@@ -1,13 +1,13 @@
 import { LazyData } from "@pie/lazy-data"
 import { DialogUtil, ToastUtil } from "@pura/harmony-utils"
-import { getArtistInfo } from "../api/artistApi"
-import Constants from "../common/constants/Constants"
-import { StorageConstants } from "../common/constants/StorageConstants"
-import { ArtistInfo, ArtistInfoItem } from "../common/entities/song/ArtistInfo"
-import { ArtistParam } from "../common/entities/local/PageParams"
-import { PlayListSongItem } from "../common/entities/playlist/PlayListSongs"
-import { SongCard } from "../components/cards/SongCard"
-import { BottomBarComponent } from "../components/play/BottomBarComponent"
+import { getArtistInfo } from "../../api/artistApi"
+import Constants from "../../common/constants/Constants"
+import { StorageConstants } from "../../common/constants/StorageConstants"
+import { ArtistInfo, ArtistInfoItem } from "../../common/entities/song/ArtistInfo"
+import { ArtistParam } from "../../common/entities/local/PageParams"
+import { PlayListSong } from "../../common/entities/playlist/PlayListSongs"
+import { SongCard } from "../../components/cards/SongCard"
+import { BottomBarComponent } from "../../components/play/BottomBarComponent"
 
 @Component
 export struct ArtistPage {
@@ -22,7 +22,7 @@ export struct ArtistPage {
   @State artist: ArtistInfo = ArtistInfoItem
   @State isLoading: boolean = true
   @State showTitleBar: boolean = false
-  @State dataSource: LazyData<PlayListSongItem> = new LazyData()
+  @State dataSource: LazyData<PlayListSong> = new LazyData()
 
   async aboutToAppear(): Promise<void> {
     if(this.param.artist.id !== 0) {
@@ -99,7 +99,7 @@ export struct ArtistPage {
               .fontColor($r('app.color.reverse'))
               .padding({ left: 20, bottom: Constants.PADDING_EDGE_DEFAULT })
           }
-          LazyForEach(this.dataSource, (item: PlayListSongItem) => {
+          LazyForEach(this.dataSource, (item: PlayListSong) => {
             SongCard({
               song: {
                 id: item.id,
@@ -109,7 +109,7 @@ export struct ArtistPage {
                 alias: [],
                 fee: item.fee
               },
-              isShowArtists: false
+              isShowArtistSheet: false
             })
           })
           ListItem()

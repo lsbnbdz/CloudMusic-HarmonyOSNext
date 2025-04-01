@@ -1,7 +1,7 @@
 import { avSession } from "@kit.AVSessionKit";
 import { AppUtil, LogUtil } from "@pura/harmony-utils";
 import { StorageConstants } from "../../constants/StorageConstants";
-import { Song, SongClass } from "../../entities/song/SongsResult";
+import { Song, SongItem } from "../../entities/song/SongsResult";
 import { changeCycleMode,
   pauseMusic, playNext, playPre, resumeMusic, seekMusic } from "../../functions/play/playControl";
 import { likeThisSong } from "../../functions/play/songLike";
@@ -19,7 +19,7 @@ class AVSessionUtils {
 
   private isActivating = false
   private cycleMode: number = 0
-  private currentSong: Song = SongClass
+  private currentSong: Song = SongItem
   private currentArtists: string = ''
   private currentPic: string | ResourceStr  = ''
   private lyric: string = ''

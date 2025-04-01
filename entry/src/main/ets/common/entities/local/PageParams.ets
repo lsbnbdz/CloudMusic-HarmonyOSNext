@@ -1,3 +1,4 @@
+import { DjRadio } from "../dj/DjResult";
 import { PlayList } from "../playlist/PlayList";
 import { Artist } from "../song/SongsResult";
 
@@ -23,4 +24,11 @@ export interface WebPageParam {
  */
 export interface ArtistParam {
   artist: Artist
+}
+
+/**
+ * DjRadio信息参数
+ */
+export interface DjRadioParam {
+  djRadio: DjRadio
 }

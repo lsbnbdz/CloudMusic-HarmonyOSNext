@@ -3,9 +3,9 @@ import { searchSongs } from "../../api/songApi"
 import Constants from "../../common/constants/Constants"
 import { EmitterConstants } from "../../common/constants/EmitterConstants"
 import { Song } from "../../common/entities/song/SongsResult"
-import { ClickToLoadButton, LoadingMoreButton, NoMoreButton } from "../buttons/LoadMoreButtons"
-import { AddToPlayListButton } from "../buttons/play/AddToPlayListButton"
-import { SongCard } from "../cards/SongCard"
+import { ClickToLoadButton, LoadingMoreButton, NoMoreButton } from "../../components/buttons/LoadMoreButtons"
+import { AddToPlayListButton } from "../../components/buttons/play/AddToPlayListButton"
+import { SongCard } from "../../components/cards/SongCard"
 
 /**
  * 搜索结果——单曲列表

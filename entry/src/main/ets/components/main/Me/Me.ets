@@ -1,22 +1,22 @@
 import { DialogUtil, ToastUtil } from "@pura/harmony-utils"
-import { getLoginStatus, logOut } from "../../api/loginApi"
-import Constants from "../../common/constants/Constants"
-import { StorageConstants } from "../../common/constants/StorageConstants"
-import { User, UserClass } from "../../common/entities/user/User"
-import { initUserInfo } from "../../common/functions/app/appInit"
-import { SettingsPage } from "../../pages/settings/SettingsPage"
-import { CircleImageButton } from "../buttons/CircleButton"
+import { getLoginStatus, logOut } from "../../../api/loginApi"
+import Constants from "../../../common/constants/Constants"
+import { StorageConstants } from "../../../common/constants/StorageConstants"
+import { User, UserItem } from "../../../common/entities/user/User"
+import { initUserInfo } from "../../../common/functions/app/appInit"
+import { SettingsPage } from "../../../pages/settings/SettingsPage"
+import { CircleImageButton } from "../../buttons/CircleButton"
 
 @Component
 export struct Me {
   @StorageProp(StorageConstants.IS_LOGGED) isLogged: boolean = false
-  @StorageProp(StorageConstants.USER) user: User = UserClass
+  @StorageProp(StorageConstants.USER) user: User = UserItem
   @StorageProp(StorageConstants.VALID_API_URL) isValidAPI: boolean = true
   @StorageProp(StorageConstants.VALID_COOKIE) isValidCookie: boolean = true
   @StorageProp(StorageConstants.COOKIE) cookie: string = ''
   @StorageProp(StorageConstants.APP_LOADING) appLoading: boolean = true
   @State isRefreshing: boolean = false
-  @State isShowSettings: boolean = false
+  @StorageLink('isShowSettings') isShowSettings: boolean = false
   @Consume('pageInfos') pageInfos: NavPathStack
 
   async aboutToAppear(): Promise<void> {

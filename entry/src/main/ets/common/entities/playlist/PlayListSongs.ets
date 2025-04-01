@@ -1,4 +1,5 @@
 import { Artist } from "../song/SongsResult"
+import { PlayList } from "./PlayList"
 
 /**
  * 歌单内歌曲
@@ -8,7 +9,7 @@ interface Album {
   picUrl: string
 }
 
-export interface PlayListSongItem {
+export interface PlayListSong {
   name: string
   id: number
   dt: number
@@ -18,7 +19,7 @@ export interface PlayListSongItem {
 }
 
 export interface PlayListSongs {
-  songs: PlayListSongItem[]
+  songs: PlayListSong[]
 }
 
 /**
@@ -46,9 +47,21 @@ export interface DailyListSongs {
  * 云盘歌单内歌曲
  */
 interface CloudData {
-  simpleSong: PlayListSongItem
+  simpleSong: PlayListSong
 }
 
 export interface CloudSongs {
   data: CloudData[]
+}
+
+export const PlayListSongItem: PlayListSong = {
+  name: "",
+  id: 0,
+  dt: 0,
+  al: {
+    id: 0,
+    picUrl: ''
+  },
+  ar: [],
+  fee: 0
 }

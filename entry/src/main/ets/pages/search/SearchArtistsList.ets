@@ -2,7 +2,7 @@ import { LogUtil } from "@pura/harmony-utils"
 import { getArtistsList } from "../../api/artistApi"
 import Constants from "../../common/constants/Constants"
 import { ArtistItem } from "../../common/entities/song/ArtistsResult"
-import { ArtistCard } from "../cards/ArtistCard"
+import { ArtistCard } from "../../components/cards/ArtistCard"
 
 /**
  * 歌手搜索结果列表

@@ -90,6 +90,10 @@ export struct LyricComponent {
   @Prop lyricStyle: LyricStyle = LyricStyleItem
   @Link userScrolling: number
 
+  aboutToReuse(params: ESObject): void {
+    this.index = params.index
+    this.item = params.item as Lyric
+  }
   build() {
     Text(this.item.content)
       .width('100%')

@@ -70,8 +70,9 @@ class AVPlayerUtils {
           setTimeout(() => {
             AVSessionUtils.playState(avPlayer.currentTime)
           }, 1000)
+        } else {
+          AppStorage.setOrCreate(StorageConstants.PLAY_TIME, time)
         }
-        AppStorage.setOrCreate(StorageConstants.PLAY_TIME, time)
       })
     } catch (e) {
       LogUtil.error(TAG + '播放错误: ' + e.message)
@@ -96,7 +97,7 @@ class AVPlayerUtils {
     this.updateFlag = false
     AppStorage.setOrCreate(StorageConstants.PLAY_TIME, time)
     const avPlayer = await this.init()
-    avPlayer.seek(time, media.SeekMode.SEEK_CLOSEST)
+    avPlayer.seek(time)
   }
 
   private clearInterval() {

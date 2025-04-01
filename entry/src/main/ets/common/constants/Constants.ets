@@ -31,6 +31,10 @@ export default class Constants {
    */
   static readonly HEIGHT_SETTINGS_ITEM: number = 50
   /**
+   * 发现页大按钮尺寸
+   */
+  static readonly HEIGHT_EXPLORE_LARGECARD: number = 120
+  /**
    * 默认圆形icon按钮尺寸
    */
   static readonly SIZE_ICON_BUTTON_COMMON: number = 35
@@ -87,9 +91,9 @@ export default class Constants {
    */
   static readonly FONT_SIZE_BAR: number = 10
   /**
-   * Font Weight Settins
+   * 粗体
    */
-  static readonly FONT_WEIGHT_SETTINGS: number = 800
+  static readonly FONT_WEIGHT_BOLD: number = 800
   /**
    * 默认边缘避让尺寸
    */
@@ -106,4 +110,8 @@ export default class Constants {
    * 组件内边缘避让
    */
   static readonly PADDING_INNER_DEFAULT: number = 5
+  /**
+   * 允许缓存占用总大小
+   */
+  static readonly CACHE_DISK_MAX_SIZE: number = 2147482648
 }

@@ -22,7 +22,7 @@ export struct DonatePage {
             if(this.appInfo.data?.Sponser.length > 0) {
               Text('特别鸣谢')
                 .fontSize(Constants.FONT_SIZE_TITLE)
-                .fontWeight(Constants.FONT_WEIGHT_SETTINGS)
+                .fontWeight(Constants.FONT_WEIGHT_BOLD)
                 .fontColor($r('app.color.reverse'))
               Flex({
                 wrap: FlexWrap.Wrap,

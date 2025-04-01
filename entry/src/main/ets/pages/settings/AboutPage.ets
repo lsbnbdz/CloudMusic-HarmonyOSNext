@@ -32,7 +32,7 @@ export struct AboutPage {
               .aspectRatio(1)
 
             Text('云音汇')
-              .fontWeight(Constants.FONT_WEIGHT_SETTINGS)
+              .fontWeight(Constants.FONT_WEIGHT_BOLD)
               .fontSize(Constants.FONT_SIZE_TITLE)
               .fontColor($r('app.color.reverse'))
           }
@@ -57,7 +57,7 @@ export struct AboutPage {
                 }
               }
               .layoutWeight(1)
-              Text(AppConstants.VERSION)
+              Text(AppConstants.VERSION + ' ' + AppConstants.VER_DESC)
                 .textStyle()
             }
             .height(Constants.HEIGHT_SETTINGS_ITEM)
@@ -175,6 +175,6 @@ export struct AboutPage {
 
 @Extend(Text) function textStyle() {
   .fontSize(16)
-  .fontWeight(Constants.FONT_WEIGHT_SETTINGS)
+  .fontWeight(Constants.FONT_WEIGHT_BOLD)
   .fontColor($r('app.color.reverse'))
 }

@@ -25,10 +25,6 @@ export struct WebLogin {
     }
   ]
 
-  aboutToAppear(): void {
-    this.controller.prefetchPage('https://music.163.com/#/login/')
-  }
-
   private loadUrl() {
     this.controller.setCustomUserAgent(this.userAgent)
     this.controller.loadUrl('https://music.163.com/#/login/')

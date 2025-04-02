@@ -124,7 +124,7 @@ export struct UserPlayLists {
             .padding( this.breakpoint == 'md' ? 5 : { bottom: 10 } )
         }
       })
-      ListItem().height(px2vp(this.bottomRectHeight) + 160)
+      ListItem().height(px2vp(this.bottomRectHeight) + 120)
     }
     .height('100%')
     .width('100%')

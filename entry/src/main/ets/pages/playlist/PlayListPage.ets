@@ -92,6 +92,7 @@ export struct PlayListPage {
             ListItem() {
              this.PlayListInfo()
             }
+            .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP])
             .padding({ bottom: Constants.PADDING_EDGE_DEFAULT })
 
             ListItem() {
@@ -226,7 +227,6 @@ export struct PlayListPage {
             }
           }
         }
-        .swipeAction({ end: this.SwipeItem(item as PlayListSong, index), edgeEffect: SwipeEdgeEffect.None })
         .translate({ y: this.translateY })
         .animation({
           duration: 600,
@@ -241,7 +241,8 @@ export struct PlayListPage {
     Row({ space: 5 }) {
       Search({
         placeholder: '搜索',
-        icon: '/resources/base/media/ic_public_search_filled.svg'
+        icon: '/resources/base/media/ic_public_search_filled.svg',
+        value: this.searchKeyword
       })
         .backgroundBlurStyle(BlurStyle.Thin)
         .height(Constants.HEIGHT_SEARCH)
@@ -295,6 +296,7 @@ export struct PlayListPage {
             .borderRadius(10)
         }
         .height(100)
+        .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP])
         .aspectRatio(1)
 
         // TextInfo
@@ -377,47 +379,8 @@ export struct PlayListPage {
     .backgroundBlurStyle(BlurStyle.Regular)
     .backgroundImageSize({ width: '100%', height: '100%' })
     .padding({ top: Constants.PADDING_EDGE_TEXT + px2vp(this.topRectHeight), bottom: 20 })
+    .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP])
     .width('100%')
-    .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
-  }
-
-  @Builder SwipeItem(listSong: PlayListSong, index: number) {
-    Row() {
-      AddToPlayListButton({ songId: listSong.id })
-      // Delete button
-      if (!this.param.isShowHeart) {
-        Button() {
-          Text('从歌单删除')
-            .height('100%')
-            .fontColor(Color.White)
-            .padding({ left: 10, right: 10 })
-            .textAlign(TextAlign.Center)
-        }
-        .type(ButtonType.Normal)
-        .height('100%')
-        .backgroundColor('#ffee4c51')
-        .onClick(() => {
-          DialogUtil.showPrimaryDialog({
-            title: '从歌单删除歌曲',
-            message: `${listSong.name}`,
-            primaryButton: "取消",
-            secondaryButton: {
-              value: '删除',
-              fontColor: Color.Red,
-              action: async () => {
-                try {
-                  await PlayListOperation('del', this.param.playList.id, listSong.id)
-
-                  ToastUtil.showToast('删除成功')
-                } catch (e) {
-                  ToastUtil.showToast('删除失败: ' + e)
-                }
-              }
-            }
-          })
-        })
-      }
-    }
   }
 
   @Builder CardCheckBox(item: PlayListSong) {

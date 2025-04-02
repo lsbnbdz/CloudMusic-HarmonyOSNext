@@ -95,7 +95,6 @@ export struct CloudPage {
                     picUrl: item.al?.picUrl ?? $r('app.media.ic_public_music')
                   })
                 }
-                .swipeAction({ end: this.SwipeItem(item) })
 
               })
               if (this.isLoadingMore) {
@@ -145,10 +144,5 @@ export struct CloudPage {
     .title('音乐云盘')
     .menus(this.menuItem)
     .backgroundColor($r('app.color.background'))
-  }
-
-  @Builder
-  SwipeItem(listSong: PlayListSong) {
-    AddToPlayListButton({ songId: listSong.id })
   }
 }

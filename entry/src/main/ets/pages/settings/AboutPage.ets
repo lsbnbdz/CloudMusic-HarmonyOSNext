@@ -1,15 +1,13 @@
-import { DialogUtil, LogUtil, ToastUtil } from "@pura/harmony-utils"
+import { DialogUtil, LogUtil, PasteboardUtil, ToastUtil } from "@pura/harmony-utils"
 import { AppConstants } from "../../common/constants/AppConstants"
 import Constants from "../../common/constants/Constants"
 import { StorageConstants } from "../../common/constants/StorageConstants"
 import { AppInfo, AppInfoClass } from "../../common/entities/local/AppInfo"
 import SystemAppUtils from "../../common/utils/system/SystemAppUtils"
-import { promptAction } from "@kit.ArkUI"
 import { getAppInfo } from "../../api/chenlvinApi"
 import { CommonSettingsCard } from "../../components/cards/SettingsCard"
 import { WebPageParam } from "../../common/entities/local/PageParams"
 import { WarrantyDialog } from "../../components/dialog/WarrantyDialog"
-import { Settings_Bottom } from "../../components/settings/TextContent"
 
 @Component
 export struct AboutPage {
@@ -119,6 +117,14 @@ export struct AboutPage {
           }
           ListItem() {
             CommonSettingsCard({
+              title: 'QQ交流群',
+              action: () => {
+                PasteboardUtil.setDataText('1019225012').then(() => { ToastUtil.showToast('已复制群号至剪贴板: 1019225012')})
+              }
+            })
+          }
+          ListItem() {
+            CommonSettingsCard({
               title: '捐赠',
               action: () => {
                 this.settingsPageInfos.pushPathByName('DonatePage', null)
@@ -128,11 +134,6 @@ export struct AboutPage {
         }
         .itemStyle()
         .divider({ strokeWidth: 0.1, startMargin: 10, endMargin: 10, color: Color.Gray })
-
-        ListItem() {
-          Settings_Bottom()
-        }
-        .padding({ top: Constants.PADDING_EDGE_TEXT })
       }
       .height('100%')
       .width('100%')

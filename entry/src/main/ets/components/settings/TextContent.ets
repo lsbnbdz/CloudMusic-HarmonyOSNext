@@ -47,29 +47,3 @@ export struct VersionCard {
     }
   }
 }
-
-/**
- * 底部信息
- */
-@Component
-export struct Settings_Bottom {
-  @Consume('pageInfos') pageInfos: NavPathStack
-
-  build() {
-    Column() {
-      Text('云音汇 For HarmonyOS NEXT\n' +
-        'Chenlvin/CloudMusic-HarmonyOSNext').BottomText()
-    }
-    .width('100%')
-  }
-}
-
-@Extend(Text) function BottomText() {
-  .lineHeight(20)
-  .fontSize(12)
-  .textAlign(TextAlign.Center)
-  .onClick(() => {
-    PasteboardUtil.setDataText('https://github.com/Chenlvin/CloudMusic-HarmonyOSNext')
-    ToastUtil.showToast('已复制GitHub链接到剪贴板')
-  })
-}

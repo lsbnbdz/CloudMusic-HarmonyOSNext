@@ -72,6 +72,7 @@ export struct ArtistsSheet {
         // } else {
         //   this.pageInfos.replacePathByName('ArtistPage', param, true)
         // }
+        this.pageInfos.removeByName('ArtistPage')
         this.pageInfos.pushPathByName('ArtistPage', param, true)
         this.isShow = false
         this.isShowCover = false

@@ -15,6 +15,7 @@ export struct DjRadioPage {
   @StorageProp(StorageConstants.BREAKPOINT) breakpoint: string = 'sm'
   @StorageProp('topRectHeight') topRectHeight: number = 0
   @StorageProp('bottomRectHeight') bottomRectHeight: number = 0
+  @StorageProp(StorageConstants.IS_PLAYER_LOADING) isPlayerLoading: boolean = false
   @State programs: DjRadioProgram[] = []
   @State dataSource: LazyData<DjRadioProgram> = new LazyData()
   @State songsOffset: number = 0

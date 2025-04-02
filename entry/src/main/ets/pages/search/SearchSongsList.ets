@@ -55,7 +55,6 @@ export struct SearchSongsList {
           ListItem() {
             SongCard({ song: item })
           }
-          .swipeAction({ end: this.SwipeItem(item)})
           .translate({ y: -40 })
           .animation({
             duration: 600,
@@ -88,10 +87,6 @@ export struct SearchSongsList {
       .height('100%')
       .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.BOTTOM])
     }
-  }
-
-  @Builder SwipeItem(song: Song) {
-    AddToPlayListButton({ songId: song.id })
   }
 
   async loadSongs(offset: number): Promise<void> {

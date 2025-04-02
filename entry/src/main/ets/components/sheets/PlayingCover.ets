@@ -370,7 +370,7 @@ export struct PlayingCover {
       Text(this.artists)
         .textStyle(16)
         .onClick(() => {
-          if(this.song.id !== 0) {
+          if(this.song.id !== 0 && this.playmode !== 3) {
             this.isShowArtists = true
           }
         })

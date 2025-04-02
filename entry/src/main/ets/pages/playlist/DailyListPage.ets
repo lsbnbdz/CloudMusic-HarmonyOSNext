@@ -102,7 +102,6 @@ export struct DailyListPage {
                       picUrl: item.picUrl ?? $r('app.media.ic_public_music')
                     })
                   }
-                  .swipeAction({ end: this.SwipeItem(item.song) })
                   .translate({ y: -40 })
                   .animation({
                     duration: 600,
@@ -172,9 +171,4 @@ export struct DailyListPage {
     .width('100%')
     .padding({ left: 20, right: 20, bottom: 20 })
   }
-
-  @Builder SwipeItem(song: Song) {
-    AddToPlayListButton({ songId: song.id })
-  }
-
 }

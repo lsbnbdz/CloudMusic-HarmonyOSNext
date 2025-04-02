@@ -38,7 +38,7 @@ export struct SongInfoSheet {
 
   private addToQueue() {
     cleanLastPlayInfo()
-    PlayQueueUtils.queueAdd(1, this.song, this.artists, '', this.picUrl ?? $r('app.media.ic_public_music'))
+    PlayQueueUtils.queueAdd(this.playmode, this.song, this.artists, '', this.picUrl ?? $r('app.media.ic_public_music'))
     ToastUtil.showToast('成功添加到下一首播放')
   }
 

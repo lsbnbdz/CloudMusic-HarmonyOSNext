@@ -144,6 +144,11 @@ export class StorageConstants {
    */
   static readonly LAST_PLAYED_LIST: string = 'lastPlayedList'
   /**
+   * 上一次播放的播客数据
+   * @description AppStorage
+   */
+  static readonly LAST_PLAYED_DJRADIO: string = 'lastPlayedDjRadio'
+  /**
    * 是否开启私人FM模式
    * @description AppStorage
    */

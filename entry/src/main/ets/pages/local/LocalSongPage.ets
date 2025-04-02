@@ -14,10 +14,10 @@ import { PickerUtil } from '@pura/picker_utils';
  * 缓存管理页
  * DownloadPage
  */
-const TAG = '[CachedPage] '
+const TAG = '[LocalSongPage]] '
 
 @Component
-export struct CachedPage {
+export struct LocalSongPage {
   @StorageProp('bottomRectHeight') bottomRectHeight: number = 0
   @StorageProp('topRectHeight') topRectHeight: number = 0
   @StorageProp(StorageConstants.BREAKPOINT) breakpoint: string = 'sm'
@@ -58,7 +58,7 @@ export struct CachedPage {
           title: '上传文件',
           message: '支持上传本机音频文件至缓存目录\n' +
             '支持格式为.mp3 .flac\n\n' +
-            '文件名格式：歌手 - 歌名.mp3\n\n' +
+            '* 文件名格式：歌手 - 歌名.flac* \n\n' +
             '文件名格式不正确会导致无法识别\n' +
             '在线播放时，将自动匹配文件名调取本地文件进行播放'
         })
@@ -170,7 +170,7 @@ export struct CachedPage {
                   else {
                     Column({ space: 20 }) {
                       Text('本地文件列表为空').width('100%').textAlign(TextAlign.Center).padding({ left: 30, right: 30, top: 10 })
-                      if(this.filesList.length > 1) {
+                      if(this.filesList.length > 0) {
                         Button('迁移旧版本数据').padding({ left: 10, right: 10, top: 5, bottom: 5 })
                           .onClick(() => { this.isShowMigration = true })
                           .bindSheet(this.isShowMigration, this.Migration(), {

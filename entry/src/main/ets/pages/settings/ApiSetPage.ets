@@ -23,7 +23,7 @@ export struct ApiSetPage {
     NavDestination() {
       Column({ space: 20 }) {
         Text() {
-          Span(`当前服务器状态: `)
+          Span(`用户云服务状态: `)
           Span(`${this.validApiUrl ? '正常' : '不可用'}`)
             .fontWeight(FontWeight.Bold)
             .fontColor(this.validApiUrl ? Color.Green : $r('app.color.app_red'))
@@ -33,7 +33,9 @@ export struct ApiSetPage {
         .fontSize(Constants.FONT_SIZE_COMMON)
         .padding(Constants.PADDING_EDGE_DEFAULT)
         this.SetApiUrl()
-        this.SetCookie()
+        if(this.validApiUrl) {
+          this.SetCookie()
+        }
       }
       .padding({ top: Constants.PADDING_EDGE_DEFAULT, left: Constants.PADDING_EDGE_DEFAULT, right: Constants.PADDING_EDGE_DEFAULT, bottom: px2vp(this.bottomRectHeight) + Constants.PADDING_EDGE_TEXT })
       .width('100%')
@@ -43,36 +45,14 @@ export struct ApiSetPage {
       })
     }
     .backgroundColor($r('app.color.background'))
-    .title('在线服务设置')
+    .title('云服务配置')
   }
 
   @Builder SetApiUrl() {
     Column({ space: 10 }) {
       Row() {
         Row({ space: 5 }) {
-          Text('API服务器地址').LeftText()
-          Button() {
-            Image($r('app.media.ic_public_help'))
-              .fillColor($r('app.color.reverse'))
-              .width(15)
-              .draggable(false)
-          }
-          .type(ButtonType.Circle)
-          .backgroundColor(Color.Transparent)
-          .onClick(() => {
-            DialogUtil.showPrimaryDialog({
-              title: 'API服务器地址',
-              message: '你需要填入API服务器地址才可以正常使用本软件\n' +
-                '需要自行搭建NeteaseCloudMusicApi服务\n\n' +
-                '地址格式: http://example.com:3000\n' +
-                '(注意末尾不带\"/\")',
-              primaryButton: {
-                value: '使用文档',
-                action: () => { openInWeb('https://docs.chenlvin.cc/cloudmusic/#/help?timestamp=' + new Date().getTime()) }
-              },
-              secondaryButton: '确认'
-            })
-          })
+          Text('用户自定义云服务配置').LeftText()
         }
       }
       .width('100%')

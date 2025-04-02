@@ -53,15 +53,16 @@ export async function playMusicByUrl(song: Song | PlayListSong, artists: string,
         catch (e) { artists = '未知' }
       }
       localPath = await FileUtils.accessLocalFile(sanitizeFileName(`${tempArtists} - ${song.name}`))
-    } catch (e) {}
+    } catch (e) {
+      playNext()
+    }
 
     if(localPath != '') { // 是否存在本地文件
       AppStorage.setOrCreate(StorageConstants.PLAY_IS_LOCALFILE, true)
       await AVPlayerUtils.setUrl(localPath)
     } else if(songPlay.data[0].url) {
       AppStorage.setOrCreate(StorageConstants.PLAY_IS_LOCALFILE, false)
-      const proxyUrl = await AudioCacheUtils.getProxyUrl(songPlay.data[0].url)
-      LogUtil.info(TAG + 'proxyUrl: ' + proxyUrl)
+      let proxyUrl = await AudioCacheUtils.getProxyUrl(songPlay.data[0].url)
       await AVPlayerUtils.setUrl(proxyUrl ?? songPlay.data[0].url)
     } else {
       ToastUtil.showToast('获取播放资源失败')

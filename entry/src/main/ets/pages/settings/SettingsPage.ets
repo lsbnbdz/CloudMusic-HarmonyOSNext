@@ -121,7 +121,7 @@ export struct SettingsPage {
   @Builder MainSettings() {
     ListItem() {
       CommonSettingsCard({
-        title: '在线服务设置',
+        title: '云服务设置',
         action: () => {
           this.settingsPageInfos.pushPathByName('ApiSetPage', null)
         }
@@ -138,16 +138,6 @@ export struct SettingsPage {
   }
 
   @Builder OtherItems() {
-    CommonSettingsCard({
-      title: '使用文档',
-      action: () => {
-        let param: WebPageParam = {
-          title: '使用文档', url: 'https://docs.chenlvin.cc/cloudmusic/#/help'
-        }
-        this.settingsPageInfos.pushPathByName('WebPage', param)
-      }
-    })
-
     CommonSettingsCard({
       title: '建议反馈',
       action: () => {

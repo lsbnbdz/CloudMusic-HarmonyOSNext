@@ -97,7 +97,7 @@ export struct DownloadDialog {
               .onClick(() => {
                 copyDownloadUrl(this.songDownload.data[0].url)
               })
-            Button('缓存至本地曲库').ButtonStyle()
+            Button('下载到本地曲库').ButtonStyle()
               .onClick(async () => {
                 this.controller.close()
                 FileDownloadUtils.download(this.picUrl + '?param=512y512', `${this.song.id}.jpg`, 'pic')

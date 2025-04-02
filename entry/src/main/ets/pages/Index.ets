@@ -2,7 +2,7 @@ import { Explore } from '../components/main/Explore/Explore'
 import { BottomBarComponent } from '../components/play/BottomBarComponent';
 import Constants from '../common/constants/Constants';
 import { SettingsPage } from './settings/SettingsPage';
-import { CachedPage } from './local/CachedPage';
+import { LocalSongPage } from './local/LocalSongPage';
 import { CloudPage } from './playlist/CloudPage';
 import { DailyListPage } from './playlist/DailyListPage';
 import { SearchPage } from './search/SearchPage';
@@ -15,12 +15,10 @@ import { WebPage } from './web/WebPage';
 import { UserLists } from '../components/main/UserPlayLists/UserLists';
 import { Me } from '../components/main/Me/Me';
 import { StorageConstants } from '../common/constants/StorageConstants';
-import { WarrantyDialog } from '../components/dialog/WarrantyDialog';
 import { TopListPage } from './list/TopListPage';
 import PreferencesUtils from '../common/utils/data/PreferencesUtils';
 import { DebugPage } from './local/DebugPage';
 import BreakpointUtils from '../common/utils/system/BreakpointUtils';
-import { ApiDialog } from '../components/dialog/ApiDialog';
 import { ArtistPage } from './artist/ArtistPage';
 import { DjRadioPage } from './playlist/DjRadioPage';
 import App from '@system.app';
@@ -40,16 +38,6 @@ struct Index {
   @State tabCurrentIndex: number = 0
   @State categoryTabIndex: number = 0
 
-  warrantyDialogController: CustomDialogController = new CustomDialogController({
-    builder: WarrantyDialog(),
-    autoCancel: false
-  })
-
-  apiDialogController: CustomDialogController = new CustomDialogController({
-    builder: ApiDialog(),
-    autoCancel: false
-  })
-
   async aboutToAppear(): Promise<void> {
     this.currentHour = new Date().getHours()
     BreakpointUtils.register()
@@ -58,8 +46,6 @@ struct Index {
     }, 1)
     const isFirstLaunch = await PreferencesUtils.getPreferenceValue<boolean>(StorageConstants.USER_PREF, 'isFirstLaunch', true)
     if(isFirstLaunch) {
-      this.apiDialogController.open()
-      this.warrantyDialogController.open()
       PreferencesUtils.putPreferenceValue(StorageConstants.USER_PREF, 'isFirstLaunch', false)
     }
   }
@@ -147,8 +133,8 @@ struct Index {
     if(name === 'SettingsPage') {
       SettingsPage()
     }
-    else if(name === 'CachedPage') {
-      CachedPage()
+    else if(name === 'LocalSongPage') {
+      LocalSongPage()
     }
     else if(name === 'CloudPage') {
       CloudPage()

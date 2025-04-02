@@ -33,8 +33,11 @@ export async function fetchSongInfo(fileName: string): Promise<Song> {
     LogUtil.error('文件名格式错误: ' + fileName)
     return {
       id: -1,
-      name: '[错误] ' + fileName,
-      artists: [],
+      name: fileName,
+      artists: [{
+        id: 0,
+        name: '未知'
+      }],
       duration: -1,
       alias: [],
       fee: 0

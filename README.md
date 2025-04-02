@@ -1,8 +1,8 @@
 ## Cloud Music For HarmonyOS NEXT
 
-🎵 云音汇 | ✨ 鸿蒙原生应用 🎼 第三方云音乐客户端 
+🎵 云音汇 | ✨ 鸿蒙原生应用
 
-**本项目为第三方应用，需要侧载安装**
+**本项目为第三方应用, 应用不提供在线服务, 仅提供UI界面**
 
 **[在Release下载hap包](https://github.com/Chenlvin/CloudMusic-HarmonyOSNext/releases)**
 
@@ -10,9 +10,9 @@
 
 ### 使用说明
 
-支持**本地播放**与**在线服务**
+支持**本地播放**与**在线播放**
 
-在线服务基于 **[NeteaseCloudMusicApi](https://gitlab.com/Binaryify/neteasecloudmusicapi)** , 需手动填入API服务器以启用。
+在线播放需要用户自行设置播放源
 
 使用文档：https://docs.chenlvin.cc/cloudmusic/#/help
 
@@ -40,6 +40,7 @@
 - 【歌单】查看自己的歌单、收藏/取消收藏歌单、增删歌单内歌曲、删除歌单
 - 【歌曲】喜欢歌曲、查看歌手
 - 【歌手】歌手详情页支持查看歌手简介和热门歌曲
+- 【播客】支持查看、播放用户收藏的播客
 - 【云盘】查看、播放、缓存自己音乐网盘内的歌曲
 - 【缓存】缓存歌曲至应用沙箱、导入导出沙箱文件
 - 【播放】播放在线歌曲和本地文件、歌词显示、定时关闭、播放列表
@@ -49,18 +50,13 @@
 
 ### 免责声明
 
-本应用为**第三方开源客户端**，**仅提供音乐播放界面**，不分发任何受版权保护的内容。 请注意：
-
-- 📜本应用基于 [NeteaseCloudMusicApi](https://gitlab.com/Binaryify/neteasecloudmusicapi) 开发 **应用本身不提供音乐数据**，部分功能使用网易云音乐第三方API服务，仅供个人学习使用，禁止用于商业用途
-- 🔒用户需对自行配置的API合法性负责，**禁止**用于商业或侵权行为
-- ⚖️音乐**版权归属**网易云音乐/原始权利人，应用与其**无任何关联**
-
-本项目开发者承诺严格遵守相关法律法规，**不承担**因滥用导致的版权纠纷等风险，请通过**官方渠道**支持创作者。
+本应用为**第三方开源客户端**，**仅提供音乐播放界面**，不分发任何受版权保护的内容。
 
 
 
-### 三方库
+### 开发参考与三方库
 
+- [NeteaseCloudMusicApi](https://gitlab.com/Binaryify/neteasecloudmusicapi)
 - [@pura/harmony-utils](https://ohpm.openharmony.cn/#/cn/detail/@pura%2Fharmony-utils)
 - [@pura/picker_utils](https://ohpm.openharmony.cn/#/cn/detail/@pura%2Fpicker_utils)
 - [@pie/lazy-data](https://ohpm.openharmony.cn/#/cn/detail/@pie%2Flazy-data)

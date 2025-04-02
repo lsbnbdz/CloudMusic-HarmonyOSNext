@@ -73,9 +73,9 @@ export struct Me {
       Column() {
         this.ItemCard($r('app.media.ic_public_folder_filled'), '本地曲库', () => {
           if(this.pageInfos.size() == 0) {
-            this.pageInfos.pushPathByName('CachedPage', null)
+            this.pageInfos.pushPathByName('LocalSongPage', null)
           } else {
-            this.pageInfos.replacePathByName('CachedPage', null)
+            this.pageInfos.replacePathByName('LocalSongPage', null)
           }
         })
       }

@@ -102,8 +102,10 @@ export struct PlayListPage {
                     if (this.isPlayerLoading) {
                       LoadingProgress().height(35).padding({ left: 30 })
                     } else {
-                      Image($r('app.media.ic_play_fill')).width(Constants.FONT_SIZE_COMMON).fillColor(Color.Gray)
-                      Text(`播放全部 (${this.trackCount})`).fontSize(Constants.FONT_SIZE_COMMON)
+                      Image($r('app.media.ic_play_fill')).width(Constants.FONT_SIZE_COMMON)
+                        .fillColor(Color.Gray)
+                      Text(this.param.playList.trackCount > 1000 ? `播放前 1000 首` : `播放全部 (${this.trackCount})`)
+                        .fontSize(Constants.FONT_SIZE_COMMON)
                     }
                   }
                   .height(Constants.HEIGHT_TEXT_BUTTON)
@@ -115,7 +117,7 @@ export struct PlayListPage {
                   if (this.isPlayerLoading) {
                     ToastUtil.showToast('当前有正在加载的播放任务，请稍后再试')
                   } else {
-                    playListToQueue(this.param.playList.id, this.param.playList.trackCount, 0)
+                    playListToQueue(this.param.playList.id, this.param.playList.trackCount > 1000 ? 1000 : this.param.playList.trackCount, 0)
                   }
                 })
               }
@@ -415,7 +417,7 @@ export struct PlayListPage {
     .backgroundBrightness({ rate: 0.1, lightUpDegree: -0.1 })
     .backdropBlur(BlurStyle.Regular)
     .clickEffect({ level: ClickEffectLevel.LIGHT, scale: 0.9 })
-    .onClick(action)
+    .onClick(() => { action() })
   }
 
   async loadSongs(limit: number, offset: number): Promise<void> {

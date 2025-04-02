@@ -157,9 +157,9 @@ export struct RecommendCards {
       ListItem() {
         ContentButton(`本地曲库`,`随时随地畅听`,$r('app.media.bg_local'),() => {
           if(this.pageInfos.size() == 0) {
-            this.pageInfos.pushPathByName('CachedPage', null)
+            this.pageInfos.pushPathByName('LocalSongPage', null)
           } else {
-            this.pageInfos.replacePathByName('CachedPage', null)
+            this.pageInfos.replacePathByName('LocalSongPage', null)
           }
         })
       }

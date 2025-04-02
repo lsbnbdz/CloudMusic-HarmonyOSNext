@@ -113,8 +113,10 @@ export struct SongInfoSheet {
         this.Item($r('app.media.ic_public_play_norm'), '立即播放', () => { this.playSingleSong() })
       }
       if(this.playmode !== 3) {
-        ListItem() {
-          this.Item($r('app.media.ic_play_fill'), '随歌单播放', () => { this.playWithPlayList() })
+        if(this.playlist.id !== 0) {
+          ListItem() {
+            this.Item($r('app.media.ic_play_fill'), '随歌单播放', () => { this.playWithPlayList() })
+          }
         }
         if(this.allowToArtist) {
           ListItem() {
@@ -128,7 +130,7 @@ export struct SongInfoSheet {
         }
       }
       ListItem() {
-        this.Item($r('app.media.ic_public_cloud_download'), '缓存至本地曲库', () => { this.downloadDialogController.open() })
+        this.Item($r('app.media.ic_public_cloud_download'), '下载到本地曲库', () => { this.downloadDialogController.open() })
       }
       if(this.user.data.account.id === this.playlist.userId) {
         ListItem() {

@@ -21,8 +21,6 @@ export struct ApiDialog {
           .lineHeight(30)
       }
 
-      this.Explain()
-
       this.SetApiUrl()
 
       Text() {
@@ -73,33 +71,5 @@ export struct ApiDialog {
     PreferencesUtils.putPreferenceValue(StorageConstants.SET_PERF ,StorageConstants.API_URL,this.customApiUrl)
     ToastUtil.showToast('设置成功')
     checkValidUrl()
-  }
-
-  @Builder Explain() {
-    Button() {
-      Row({ space: 5 }) {
-        Image($r('app.media.ic_public_help'))
-          .fillColor($r('app.color.reverse'))
-          .width(15)
-          .draggable(false)
-        Text('设置说明')
-          .fontColor($r('app.color.reverse'))
-          .fontSize(12)
-      }
-    }
-    .backgroundColor(Color.Transparent)
-    .onClick(() => {
-      DialogUtil.showPrimaryDialog({
-        title: 'API服务器',
-        message: '填入API服务器地址以启用在线服务\n' +
-          '地址格式: http://example.com:3000\n' +
-          '(注意末尾不带\"/\")',
-        primaryButton: {
-          value: '使用文档',
-          action: () => { openInWeb('https://docs.chenlvin.cc/cloudmusic/#/help?timestamp=' + new Date().getTime()) }
-        },
-        secondaryButton: '确认'
-      })
-    })
   }
 }

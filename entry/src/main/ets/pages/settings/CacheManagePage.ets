@@ -7,18 +7,22 @@ import FileUtils from "../../common/utils/file/FileUtils"
  */
 @Component
 export struct CacheManagePage {
-  @State cacheSize: number = -1
-  aboutToAppear(): void {
-    this.cacheSize = FileUtils.getCacheSize()
+  @State cacheDirSize: number = -1
+  @State songCacheSize: number = -1
+
+  async aboutToAppear(): Promise<void> {
+    this.cacheDirSize = FileUtils.getCacheSize()
+    this.songCacheSize = await FileUtils.getSongCacheSize()
   }
+
   build() {
     NavDestination() {
       Column({ space: 10 }) {
         Column({ space: 10 }) {
-          Text('缓存目录占用')
+          Text('图片与下载临时文件')
             .fontSize(Constants.FONT_SIZE_TITLE)
             .fontWeight(FontWeight.Medium)
-          Text(`${(this.cacheSize / (1024 * 1024)).toFixed(2)} MB`)
+          Text(`${(this.cacheDirSize / (1024 * 1024)).toFixed(2)} MB`)
             .fontSize(Constants.FONT_SIZE_TITLE)
             .fontWeight(FontWeight.Bold)
         }
@@ -26,7 +30,22 @@ export struct CacheManagePage {
         .borderRadius(Constants.RADIUS_CARD)
         .backgroundColor($r('app.color.main'))
         .padding(Constants.PADDING_EDGE_DEFAULT)
-        Button('清理缓存')
+
+        Column({ space: 10 }) {
+          Text('已缓存的歌曲')
+            .fontSize(Constants.FONT_SIZE_TITLE)
+            .fontWeight(FontWeight.Medium)
+          Text(`${(this.songCacheSize / (1024 * 1024 * 1024)).toFixed(2)} MB`)
+            .fontSize(Constants.FONT_SIZE_TITLE)
+            .fontWeight(FontWeight.Bold)
+        }
+        .width('100%')
+        .borderRadius(Constants.RADIUS_CARD)
+        .backgroundColor($r('app.color.main'))
+        .padding(Constants.PADDING_EDGE_DEFAULT)
+
+
+        Button('清理临时文件缓存')
           .fontSize(Constants.FONT_SIZE_COMMON)
           .backgroundColor($r('app.color.app_red'))
           .fontColor(Color.White)
@@ -46,7 +65,7 @@ export struct CacheManagePage {
   private showDialog() {
     DialogUtil.showPrimaryDialog({
       title: '清理缓存',
-      message: '清理应用缓存，不会影响缓存到沙箱的歌曲\n\n请勿在缓存歌曲过程中清理，否则可能导致正在缓存的歌曲异常',
+      message: '清理应用缓存，不会影响缓存到沙箱的歌曲\n\n请勿在下载过程中清理，否则可能导致下载中的歌曲异常',
       primaryButton: "取消",
       secondaryButton: {
         fontColor: Color.Red,
@@ -62,7 +81,7 @@ export struct CacheManagePage {
           } catch (e) {
             ToastUtil.showToast('清理缓存目录出错: ' + e)
           } finally {
-            this.cacheSize = FileUtils.getCacheSize()
+            this.cacheDirSize = FileUtils.getCacheSize()
           }
         }
       }

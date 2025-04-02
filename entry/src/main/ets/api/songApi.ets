@@ -17,6 +17,17 @@ import { DailySongRes } from "./playListApi"
 
 const TAG = '[Song API - songApi] '
 
+export async function checkMusic(songId: number): Promise<boolean> {
+  const rootUrl = await getApiUrl()
+  const url: string = `${rootUrl}/check/music?id=${songId}`
+  const request = new HttpRequest(url)
+  const response = await request.Request()
+  if(response.responseCode === 200) {
+    return response.result["success"] as boolean ?? false
+  }
+  return false
+}
+
 export interface SearchReturn {
   list: Array<Song>
   hasMore: boolean

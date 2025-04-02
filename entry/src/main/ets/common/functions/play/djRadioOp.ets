@@ -1,11 +1,11 @@
-import { LogUtil } from "@pura/harmony-utils"
-import { putPlayListInQueue } from "../../../api/playListApi"
+import { LogUtil, ToastUtil } from "@pura/harmony-utils"
+import { putDjRadioInQueue } from "../../../api/djApi"
 import { StorageConstants } from "../../constants/StorageConstants"
 import { PlayingPlayList } from "../../entities/playlist/PlayList"
 import { playQueue } from "./playControl"
 
 const TAG = '[playListOp] '
-export async function playListToQueue(id: number, count: number, currentIndex: number = 0) {
+export async function djRadioToQueue(id: number, count: number, currentIndex: number = 0) {
   try {
     AppStorage.setOrCreate(StorageConstants.IS_PLAYER_LOADING, true)
     const lastPlayInfo = await AppStorage.get(StorageConstants.LAST_PLAYED_LIST) as PlayingPlayList
@@ -16,12 +16,13 @@ export async function playListToQueue(id: number, count: number, currentIndex: n
       if (currentIndex > 100) {
         limit = currentIndex
       }
-      await putPlayListInQueue(id, limit, 100, 0)
+      await putDjRadioInQueue(id, limit, 100, 0)
       playQueue(currentIndex)
-      await putPlayListInQueue(id, count, 450, limit, false)
+      await putDjRadioInQueue(id, count, 200, limit, false)
     }
   } catch (e) {
-    LogUtil.error(TAG + '播放歌单失败: ' + e.message)
+    LogUtil.error(TAG + '' + e.message)
+    ToastUtil.showToast('播放播客出错')
   } finally {
     const playInfo: PlayingPlayList = {
       id: id,
@@ -30,12 +31,4 @@ export async function playListToQueue(id: number, count: number, currentIndex: n
     AppStorage.setOrCreate(StorageConstants.LAST_PLAYED_LIST, playInfo)
     AppStorage.setOrCreate(StorageConstants.IS_PLAYER_LOADING, false)
   }
-}
-
-export function cleanLastPlayInfo() {
-  const playInfo: PlayingPlayList = {
-    id: -1,
-    count: -1
-  }
-  AppStorage.setOrCreate(StorageConstants.LAST_PLAYED_LIST, playInfo)
 }

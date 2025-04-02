@@ -2,7 +2,7 @@ import { common } from '@kit.AbilityKit'
 import fileIo from '@ohos.file.fs'
 import {  FileUtil, LogUtil, PreviewUtil, ToastUtil } from '@pura/harmony-utils'
 import fs from '@ohos.file.fs'
-import { Environment, fileUri } from '@kit.CoreFileKit'
+import { Environment, fileUri, statfs } from '@kit.CoreFileKit'
 import { picker } from '@kit.CoreFileKit'
 import { BusinessError } from '@kit.BasicServicesKit'
 import { LocalSong } from '../../entities/local/LocalData'
@@ -166,18 +166,16 @@ class FileUtils {
         fs.closeSync(file)
         fs.closeSync(file2)
         let song = await fetchSongInfo(fileUriObject.name)
-        if(song.id != -1) {
-          let localSong: LocalSong = {
-            id: 0,
-            songId: 0,
-            name: song.name,
-            artists: await getArtists(song.artists),
-            picFile: "",
-            songFile: fileUriObject.name,
-            lyricFile: "",
-          }
-          await RelationalStoreUtils.addSong(localSong)
+        let localSong: LocalSong = {
+          id: 0,
+          songId: 0,
+          name: song.name,
+          artists: await getArtists(song.artists),
+          picFile: "",
+          songFile: fileUriObject.name,
+          lyricFile: "",
         }
+        await RelationalStoreUtils.addSong(localSong)
         result ++
       }
     } catch (e) {
@@ -199,6 +197,17 @@ class FileUtils {
       ToastUtil.showToast('获取公共目录失败: ' + e.message)
     } finally {
       return dir
+    }
+  }
+
+  async getSongCacheSize(): Promise<number> {
+    try {
+      let path = this.filesDir + '/mc_media_cache'
+      let size = await statfs.getTotalSize(path)
+      return size
+    } catch (e) {
+      LogUtil.error(TAG + 'getSongCacheSize Error: ' + e.message)
+      return 0
     }
   }
 }

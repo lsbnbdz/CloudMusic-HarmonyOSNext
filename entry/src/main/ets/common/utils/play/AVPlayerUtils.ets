@@ -1,7 +1,7 @@
-import { LogUtil } from '@pura/harmony-utils'
+import { LogUtil, ToastUtil } from '@pura/harmony-utils'
 import ContinuousTask from './ContinuousTask'
 import AVSessionUtils from './AVSessionUtils'
-import { completeDo } from '../../functions/play/playControl'
+import { completeDo, playNext } from '../../functions/play/playControl'
 import LyricUtils from './LyricUtils'
 import { audio } from '@kit.AudioKit'
 import { StorageConstants } from '../../constants/StorageConstants'
@@ -16,12 +16,15 @@ class AVPlayerUtils {
   private audioManager = audio.getAudioManager()
   private audioSessionManager: audio.AudioSessionManager = this.audioManager.getSessionManager()
   private updateFlag: boolean = false
+  private isSeeking: boolean = false
 
   getCurrentTime() {
     return this.avPlayer!.currentTime
   }
 
   async init() {
+    this.isSeeking = false
+    this.updateFlag = false
     if (!this.avPlayer) {
       this.avPlayer = await media.createAVPlayer()
       this.setCallback(this.avPlayer)
@@ -35,15 +38,22 @@ class AVPlayerUtils {
 
   async release() {
     await this.avPlayer?.release()
-    this.avPlayer?.off('stateChange')
     this.avPlayer?.off('error')
+    this.avPlayer?.off('stateChange')
     this.avPlayer?.off('timeUpdate')
+    this.avPlayer?.off('audioOutputDeviceChangeWithInfo')
+    this.avPlayer?.off('audioInterrupt')
+    this.avPlayer?.off('seekDone')
   }
 
   async setUrl(url: string) {
-    await this.reset()
-    const avPlayer = await this.init()
-    avPlayer.url = url
+    try {
+      await this.reset()
+      const avPlayer = await this.init()
+      avPlayer.url = url
+    } catch (e) {
+      LogUtil.error(TAG + 'Error to reset: ' + e.message)
+    }
   }
 
   async setFdSrc(url: media.AVFileDescriptor) {
@@ -64,8 +74,8 @@ class AVPlayerUtils {
       //   }
       // }, 1000)
       avPlayer.on('timeUpdate', (time: number) => {
-        if(!this.updateFlag) {
-          this.updateFlag = !this.updateFlag
+        if(this.updateFlag) {
+          this.updateFlag = false
           AVSessionUtils.playState(avPlayer.currentTime)
           setTimeout(() => {
             AVSessionUtils.playState(avPlayer.currentTime)
@@ -93,10 +103,11 @@ class AVPlayerUtils {
   }
 
   async seek(time: number) {
-    if(this.updateFlag === false) return
-    this.updateFlag = false
-    AppStorage.setOrCreate(StorageConstants.PLAY_TIME, time)
+    if(this.isSeeking === true) return
     const avPlayer = await this.init()
+    this.isSeeking = true
+    this.updateFlag = true
+    AppStorage.setOrCreate(StorageConstants.PLAY_TIME, time)
     avPlayer.seek(time)
   }
 
@@ -108,7 +119,9 @@ class AVPlayerUtils {
   private setCallback(avPlayer: media.AVPlayer) {
     avPlayer.on('error', (err: BusinessError) => {
       LogUtil.error(TAG + `Invoke avPlayer failed, code is ${err.code}, message is ${err.message}`)
-      avPlayer.reset()
+      setTimeout(() => {
+        playNext()
+      }, 100)
     })
     avPlayer.on('audioOutputDeviceChangeWithInfo', async(changeInfo: audio.AudioStreamDeviceChangeInfo) => {
       if (changeInfo.changeReason == audio.AudioStreamDeviceChangeReason.REASON_OLD_DEVICE_UNAVAILABLE) {
@@ -137,6 +150,9 @@ class AVPlayerUtils {
         }
       }
     })
+    avPlayer.on('seekDone', () => {
+      this.isSeeking = false
+    })
     avPlayer.on('stateChange', async (state: string) => {
       switch (state) {
         case 'idle':
@@ -155,19 +171,19 @@ class AVPlayerUtils {
           break
         case 'playing':
           AVSessionUtils.playState(avPlayer.currentTime)
-          AppStorage.setOrCreate('player-isplaying', true)
-          AppStorage.setOrCreate('player-ispaused', false)
+          AppStorage.setOrCreate(StorageConstants.IS_PLAYING, true)
+          AppStorage.setOrCreate(StorageConstants.IS_PAUSED, false)
           LyricUtils.startInterval()
           break
         case 'paused':
           this.clearInterval()
           ContinuousTask.stopTask()
-          AppStorage.setOrCreate('player-ispaused', true)
+          AppStorage.setOrCreate(StorageConstants.IS_PAUSED, true)
           AVSessionUtils.pauseState(avPlayer.currentTime)
           break
         case 'completed':
           this.clearInterval()
-          AppStorage.setOrCreate('player-ispaused', true)
+          AppStorage.setOrCreate(StorageConstants.IS_PAUSED, true)
           ContinuousTask.stopTask()
           completeDo()
           break

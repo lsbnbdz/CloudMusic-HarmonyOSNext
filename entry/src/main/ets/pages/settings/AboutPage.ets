@@ -90,28 +90,12 @@ export struct AboutPage {
         ListItemGroup() {
           ListItem() {
             CommonSettingsCard({
-              title: '免责声明',
-              action: () => {
-                this.warrantyDialogController.open()
-              }
-            })
-          }
-          ListItem() {
-            CommonSettingsCard({
               title: '隐私政策',
               action: () => {
                 let param: WebPageParam = {
                   title: '隐私政策', url: 'https://docs.chenlvin.cc/cloudmusic/#/privacy'
                 }
                 this.pushWebPage(param)
-              }
-            })
-          }
-          ListItem() {
-            CommonSettingsCard({
-              title: 'GitHub仓库',
-              action: () => {
-                SystemAppUtils.openInBrowser('https://github.com/Chenlvin/CloudMusic-HarmonyOSNext')
               }
             })
           }

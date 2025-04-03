@@ -12,13 +12,10 @@ export async function playListToQueue(id: number, count: number, currentIndex: n
     if(lastPlayInfo.id != -1 && lastPlayInfo.id == id && lastPlayInfo.count == count) {
       playQueue(currentIndex)
     } else {
-      let limit = 100
-      if (currentIndex > 100) {
-        limit = currentIndex
-      }
-      await putPlayListInQueue(id, limit, 100, 0)
+      let limit = currentIndex > 100 ? currentIndex + 5 : 100
+      await putPlayListInQueue(id, limit, limit, 0)
       playQueue(currentIndex)
-      await putPlayListInQueue(id, count, 450, limit, false)
+      await putPlayListInQueue(id, count, 1000, limit, false)
     }
   } catch (e) {
     LogUtil.error(TAG + '播放歌单失败: ' + e.message)

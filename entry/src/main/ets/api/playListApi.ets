@@ -60,11 +60,11 @@ export async function getPlayLists(offset: number): Promise<PlayListsResult> {
  * @param offset 偏移
  * @returns list 歌曲列表
  */
-export async function getPlayListSongs(listId: number, trackCount: number, offset: number, usetimestamp: boolean = true): Promise<Array<PlayListSong>> {
+export async function getPlayListSongs(listId: number, limit: number, offset: number, usetimestamp: boolean = true): Promise<Array<PlayListSong>> {
   let list: PlayListSong[] = []
   const rootUrl = await getApiUrl()
   const suffix = usetimestamp ? `&timestamp=${new Date().getTime()}` : ''
-  const url:string = `${rootUrl}/playlist/track/all?id=${listId}&limit=100&offset=${offset}${suffix}`
+  const url:string = `${rootUrl}/playlist/track/all?id=${listId}&limit=${limit}&offset=${offset}${suffix}`
   const request = new HttpRequest(url, !usetimestamp)
   await request.RequestInStream().then((data) => {
     const dataGot: PlayListSongs = data.result as PlayListSongs
@@ -81,30 +81,32 @@ export async function getPlayListSongs(listId: number, trackCount: number, offse
  */
 export async function putPlayListInQueue(listId: number, trackCount: number, limit: number, offset: number = 0, first: boolean = true): Promise<void> {
   const rootUrl = await getApiUrl()
-  let tempQueue:Array<PlayQueue> = []
+  let allQueue: PlayQueue[] = []
 
-  while(offset < trackCount) {
-    const url: string = `${rootUrl}/playlist/track/all?id=${listId}&limit=${limit}&offset=${offset}&timestamp=${new Date().getTime()}`
-    const request = new HttpRequest(url)
-    let data = await request.RequestInStream()
-    let dataResult: PlayListSongs = data.result as PlayListSongs
-    const artistsPromises = dataResult.songs.map(item => getArtists(item.ar))
-    const artistsResults = await Promise.all(artistsPromises)
-    tempQueue = dataResult.songs.map((item, index) => ({
+  while (offset < trackCount) {
+    const url = `${rootUrl}/playlist/track/all?id=${listId}&limit=${limit}&offset=${offset}&timestamp=${new Date().getTime()}`
+    const data = await new HttpRequest(url).RequestInStream()
+    const dataResult = data.result as PlayListSongs
+
+    allQueue.push(...dataResult.songs.map((item): PlayQueue => ({
       playmode: 2,
-      song: item as PlayListSong,
-      artists: artistsResults[index],
+      song: {
+        id: item.id,
+        name: item.name,
+        artists: item.ar,
+        duration: item.dt,
+        fee: item.fee,
+        alias: []
+      },
       fileName: '',
       picUrl: item.al?.picUrl ?? $r('app.media.ic_public_music')
-    } as PlayQueue))
-    if(first) {
-      await PlayQueueUtils.cleanQueue()
-      first = false
-    }
-    await PlayQueueUtils.queueAdd_array(tempQueue)
-    tempQueue = []
+    })))
+
     offset += limit
   }
+
+  if (first) await PlayQueueUtils.cleanQueue()
+  await PlayQueueUtils.queueAdd_array(allQueue)
 }
 
 /**
@@ -120,7 +122,6 @@ export async function PlayDailySongs(): Promise<void> {
   await request.RequestInStream().then(async (data) => {
     const dataGot: DailyListSongs = data.result as DailyListSongs
     for (let item of dataGot.data.dailySongs) {
-      let artists = await getArtists(item.ar)
       let tempSong: Song = {
         id: item.id,
         name: item.name,
@@ -132,7 +133,6 @@ export async function PlayDailySongs(): Promise<void> {
       queue.push({
         playmode: 1,
         song: tempSong,
-        artists: artists,
         fileName: '',
         picUrl: item.al?.picUrl ?? $r('app.media.ic_public_music')
       })

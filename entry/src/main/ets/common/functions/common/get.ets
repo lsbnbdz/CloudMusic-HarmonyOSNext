@@ -1,6 +1,8 @@
 import { LogUtil } from "@pura/harmony-utils";
+import Constants from "../../constants/Constants";
 import { StorageConstants } from "../../constants/StorageConstants";
 import { LocalSong } from "../../entities/local/LocalData";
+import { CacheSet, CacheSetItem } from "../../entities/local/Settings";
 import { Artist } from "../../entities/song/SongsResult";
 import { HttpRequest } from "../../utils/request/HttpRequestUtils";
 import { getArtists } from "./convert";
@@ -57,7 +59,7 @@ export async function getLocalSongArtistsString(localSongArtists: string): Promi
   let artists: string = localSongArtists
   try {
     const artistsArr: Artist[] = JSON.parse(localSongArtists)
-    artists = await getArtists(artistsArr)
+    artists = getArtists(artistsArr)
   } catch (e) {
     LogUtil.warn(TAG + 'getLocalSongArtistString Error')
   }
@@ -72,4 +74,14 @@ export async function getLocalSongArtists(localSongArtists: string): Promise<Art
     LogUtil.warn(TAG + 'getLocalSongArtists Error')
   }
   return artists
+}
+
+export async function getCacheSet() {
+  try {
+    const cacheSet = await AppStorage.get(StorageConstants.CACHE_SETTINGS) as CacheSet
+    return cacheSet ?? CacheSetItem
+  } catch (e) {
+    LogUtil.error(TAG + 'getCacheSet Error: ' + e.message)
+    return CacheSetItem
+  }
 }

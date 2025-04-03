@@ -1,21 +1,22 @@
 import { SongCard } from '../../components/cards/SongCard'
 import { PlayList, playListItem } from '../../common/entities/playlist/PlayList'
 import { DialogUtil, EmitterUtil, LogUtil, PasteboardUtil, ToastUtil } from '@pura/harmony-utils'
-import { deletePlayList, getPlayListSongs, PlayListOperation, subscribePlayList } from '../../api/playListApi'
+import { deletePlayList, getPlayListSongs, subscribePlayList } from '../../api/playListApi'
 import { BottomBarComponent } from '../../components/play/BottomBarComponent'
 import { formatNumber } from '../../common/functions/common/convert'
-import { cleanLastPlayInfo, playListToQueue } from '../../common/functions/play/playListOp'
-import { AddToPlayListButton } from '../../components/buttons/play/AddToPlayListButton'
+import { cleanLastPlayInfo } from '../../common/functions/play/playListOp'
 import Constants from '../../common/constants/Constants'
-import { ClickToLoadButton, LoadingMoreButton, NoMoreButton } from '../../components/buttons/LoadMoreButtons'
+import { LoadingMoreButton, NoMoreButton } from '../../components/buttons/LoadMoreButtons'
 import { PlayListPageParam } from '../../common/entities/local/PageParams'
 import { PlayListCard_Skeleton } from '../../components/cards/PlayListCard'
 import { StorageConstants } from '../../common/constants/StorageConstants'
 import { PlayListSong } from '../../common/entities/playlist/PlayListSongs'
 import { User, UserItem } from '../../common/entities/user/User'
-import { promptAction } from '@kit.ArkUI'
 import { LazyData } from '@pie/lazy-data'
 import { EmitterConstants } from '../../common/constants/EmitterConstants'
+import PlayQueueUtils from '../../common/utils/play/PlayQueueUtils'
+import { PlayQueue } from '../../common/entities/local/PlayQueue'
+import { playQueue } from '../../common/functions/play/playControl'
 
 /**
  * 歌单二级页面
@@ -39,7 +40,7 @@ export struct PlayListPage {
   @StorageProp(StorageConstants.IS_LOGGED) isLogged: boolean = false
   @Consume('pageInfos') pageInfos: NavPathStack
   @State isSubscribed: boolean = false
-  @State list: PlayListSong[] = new Array()
+  @State @Watch('initUpdateFlag') list: PlayListSong[] = new Array()
   @State filteredList: PlayListSong[] = new Array()
   @State listDataSource: LazyData<PlayListSong> = new LazyData()
   @State filteredDataSource: LazyData<PlayListSong> = new LazyData()
@@ -53,6 +54,7 @@ export struct PlayListPage {
   @State searchKeyword: string = ''
   @State trackCount: number = -1
   @State showTitleBar: boolean = false
+  @State isPageActive: boolean = false
   @State menuItem: NavigationMenuItem[] = [
     {
       value: 'help',
@@ -69,8 +71,10 @@ export struct PlayListPage {
   ]
   private currentOffset: number = 0 // 歌曲偏移量
   private useTimestamp: boolean = true
+  private updateFlag: boolean = true
 
   async aboutToAppear(): Promise<void> {
+    this.isPageActive = true
     this.isSubscribed = this.param.playList.subscribed
     this.trackCount = this.param.playList.trackCount
     EmitterUtil.onSubscribe(EmitterConstants.EMITTER_DELETE_FROM_PLAYLIST, ((index: number) => {
@@ -79,9 +83,52 @@ export struct PlayListPage {
       this.listDataSource.notifyDataReload()
       cleanLastPlayInfo()
     }))
+    EmitterUtil.onSubscribe(EmitterConstants.PLAY_PLAYLIST_SONGS, ((index: number) => {
+      this.playSong(index)
+    }))
+
     if (!this.hasLoaded) {
       await this.loadSongs(100, 0)
+      await this.loadSongs(this.param.playList.trackCount - 100, 100)
     }
+  }
+
+  initUpdateFlag() {
+    this.updateFlag = true
+  }
+
+  private async playSong(songIndex: number) {
+    try {
+      if(this.updateFlag) {
+        let queue: PlayQueue[] = this.list.map((item): PlayQueue => ({
+          playmode: 1,
+          song: {
+            id: item.id,
+            name: item.name,
+            artists: item.ar,
+            duration: item.dt,
+            fee: item.fee,
+            alias: []
+          },
+          fileName: '',
+          picUrl: item.al.picUrl
+        }))
+        await PlayQueueUtils.cleanQueue()
+        await PlayQueueUtils.queueAdd_array(queue)
+      }
+      await playQueue(songIndex)
+    } catch (e) {
+      ToastUtil.showToast('播放失败: ' + e.message)
+      LogUtil.error(TAG + 'playSong Error: ' + e.stack)
+    } finally {
+      this.updateFlag = false
+    }
+  }
+
+  aboutToDisappear(): void {
+    this.isPageActive = false
+    EmitterUtil.unSubscribe(EmitterConstants.EMITTER_DELETE_FROM_PLAYLIST)
+    EmitterUtil.unSubscribe(EmitterConstants.PLAY_PLAYLIST_SONGS)
   }
 
   build() {
@@ -104,7 +151,7 @@ export struct PlayListPage {
                     } else {
                       Image($r('app.media.ic_play_fill')).width(Constants.FONT_SIZE_COMMON)
                         .fillColor(Color.Gray)
-                      Text(this.param.playList.trackCount > 1000 ? `播放前 1000 首` : `播放全部 (${this.trackCount})`)
+                      Text(`播放全部 (${this.trackCount})`)
                         .fontSize(Constants.FONT_SIZE_COMMON)
                     }
                   }
@@ -117,7 +164,7 @@ export struct PlayListPage {
                   if (this.isPlayerLoading) {
                     ToastUtil.showToast('当前有正在加载的播放任务，请稍后再试')
                   } else {
-                    playListToQueue(this.param.playList.id, this.param.playList.trackCount > 1000 ? 1000 : this.param.playList.trackCount, 0)
+                    this.playSong(0)
                   }
                 })
               }
@@ -145,17 +192,19 @@ export struct PlayListPage {
                 ListItem() {
                   LoadingMoreButton()
                 }
-              } else if (this.hasMore) {
-                ListItem() {
-                  ClickToLoadButton()
-                    .onClick(async () => {
-                      await this.loadSongs(100, this.currentOffset)
-                      if(this.searchKeyword) {
-                        this.handelSearch()
-                      }
-                    })
-                }
-              } else if (!this.hasMore) {
+              }
+              // else if (this.hasMore) {
+              //   ListItem() {
+              //     ClickToLoadButton()
+              //       .onClick(async () => {
+              //         await this.loadSongs(100, this.currentOffset)
+              //         if(this.searchKeyword) {
+              //           this.handelSearch()
+              //         }
+              //       })
+              //   }
+              // }
+              else if (!this.hasMore) {
                 ListItem() {
                   NoMoreButton()
                 }
@@ -421,20 +470,24 @@ export struct PlayListPage {
   }
 
   async loadSongs(limit: number, offset: number): Promise<void> {
-    if (!this.hasMore) return // 没有更多歌曲直接返回
+    if (!this.hasMore || !this.isPageActive) return // 直接返回
     if (offset == 0) {
       this.isLoading = true // 初次加载
     } else {
       this.isLoadingMore = true // 加载更多
     }
     try {
-      const result = await getPlayListSongs(this.param.playList.id, this.param.playList.trackCount, offset, this.useTimestamp)
+      const result = await getPlayListSongs(this.param.playList.id, limit <= 1000 ? limit : 1000, offset, this.useTimestamp)
       this.list = [...this.list, ...result] // 合并歌曲列表
       this.listDataSource.setData(this.list)
       this.listDataSource.notifyDataReload()
-      this.currentOffset += limit
+      this.currentOffset += limit <= 1000 ? limit : 1000
       if (this.list.length >= this.param.playList.trackCount) {
         this.hasMore = false
+      }
+      limit -= 1000
+      if(limit > 0) {
+        this.loadSongs(limit, this.currentOffset)
       }
     } catch (e) {
       LogUtil.error(TAG + 'Error fetching songs: ', e.message)

@@ -52,12 +52,11 @@ class PlayQueueUtils {
   /**
    * 添加歌曲至播放列表
    */
-  async queueAdd(playmode: number, song: Song | PlayListSong , artists: string = '', fileName: string = '', picUrl: string | ResourceStr = '') {
+  async queueAdd(playmode: number, song: Song, artists: string = '', fileName: string = '', picUrl: string | ResourceStr = '') {
     try {
       this.queue.splice(this.currentQueueIndex + 1 , 0 ,{
         playmode: playmode,
         song: song,
-        artists: artists,
         fileName: fileName,
         picUrl: picUrl
       })
@@ -67,7 +66,7 @@ class PlayQueueUtils {
     }
   }
 
-  async queueAdd_array(queue:Array<PlayQueue>) {
+  async queueAdd_array(queue: PlayQueue[]) {
     try {
       this.queue = this.queue.concat(queue)
       AppStorage.setOrCreate('PlayQueue', this.queue)
@@ -118,12 +117,9 @@ class PlayQueueUtils {
     return this.queue
   }
 
-  getCurrentSong(): Song | PlayListSong {
+  getCurrentSong(): Song {
     try {
-      if(this.queue[this.currentQueueIndex]) {
-        if(this.queue[this.currentQueueIndex].playmode === 2) {
-          return this.queue[this.currentQueueIndex].song as PlayListSong
-        }
+      if(this.queue[this.currentQueueIndex].playmode !== 0 ) {
         return this.queue[this.currentQueueIndex].song as Song
       } else return SongItem
     } catch (e) {

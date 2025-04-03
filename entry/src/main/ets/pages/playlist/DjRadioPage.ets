@@ -88,7 +88,8 @@ export struct DjRadioPage {
                 picUrl: item.coverUrl,
                 playmode: 3,
                 sid: index,
-                index: index
+                index: index,
+                djRadio: item.radio
               })
                 .translate({ y: this.translateY })
                 .animation({

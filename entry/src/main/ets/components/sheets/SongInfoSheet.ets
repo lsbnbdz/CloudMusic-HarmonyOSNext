@@ -60,7 +60,8 @@ export struct SongInfoSheet {
   private async playWithPlayList() {
     if(!this.isPlayerLoading) {
       this.isPlayerLoading = true
-      await playListToQueue(this.playlist.id, this.playlist.trackCount, this.index)
+      // await playListToQueue(this.playlist.id, this.playlist.trackCount, this.index)
+      EmitterUtil.post(EmitterConstants.PLAY_PLAYLIST_SONGS, this.index)
       this.isPlayerLoading = false
     } else {
       ToastUtil.showToast('当前有正在加载的播放任务，请稍后再试')

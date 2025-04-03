@@ -5,6 +5,7 @@ import { PlayQueueButton } from "../buttons/play/PlayQueueButton"
 import { PlayingCover } from "../sheets/PlayingCover"
 import { StorageConstants } from "../../common/constants/StorageConstants"
 import Constants from "../../common/constants/Constants"
+import { ClickUtil } from "@pura/harmony-utils"
 
 /**
  * 底部播控组件
@@ -67,10 +68,8 @@ export struct BottomBarComponent {
 
   @Builder
   Cover() {
-    Column() {
-      PlayingCover({ isShow: this.isShow })
-        .height('100%')
-    }
+    PlayingCover({ isShow: this.isShow })
+      .height('100%')
   }
 }
 
@@ -84,34 +83,33 @@ struct ControlButtons {
       Image($r('app.media.ic_public_play_last')).buttonImgStyle()
         .fillColor($r('app.color.app_red'))
         .onClick(() => {
-          playPre()
+          ClickUtil.throttle(() => {
+            playPre()
+          }, 500)
         })
 
       // Play & Pause
-      if (!this.isPaused) {
-        Image($r('app.media.ic_public_pause_norm')).buttonImgStyle()
-          .fillColor($r('app.color.app_red'))
-          .onClick(() => {
-            pauseMusic()
-          })
-      } else {
-        Image($r('app.media.ic_public_play_norm')).buttonImgStyle()
-          .fillColor($r('app.color.app_red'))
-          .onClick(() => {
+      Image(this.isPaused ? $r('app.media.ic_public_play_norm') : $r('app.media.ic_public_pause_norm')).buttonImgStyle()
+        .fillColor($r('app.color.app_red'))
+        .onClick(() => {
           if(!this.isPlaying) {
             setTimeout(() => {
               playQueue(playQueueUtils.currentQueueIndex)
             }, 100)
+          } else {
+            if(this.isPaused) resumeMusic()
+            else pauseMusic()
           }
-          else resumeMusic()
         })
-      }
+
 
       // Next
       Image($r('app.media.ic_public_play_next')).buttonImgStyle()
         .fillColor($r('app.color.app_red'))
         .onClick(() => {
-          playNext()
+          ClickUtil.throttle(() => {
+            playNext()
+          }, 500)
         })
 
       PlayQueueButton({ imgWidth: 25, imgColor: $r('app.color.app_red') })

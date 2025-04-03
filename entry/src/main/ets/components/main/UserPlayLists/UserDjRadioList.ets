@@ -1,5 +1,6 @@
 import { LogUtil, ToastUtil } from "@pura/harmony-utils";
 import { getDjSublist } from "../../../api/djApi";
+import Constants from "../../../common/constants/Constants";
 import { StorageConstants } from "../../../common/constants/StorageConstants";
 import { DjRadio } from "../../../common/entities/dj/DjResult";
 import { DjRadioParam } from "../../../common/entities/local/PageParams";
@@ -8,6 +9,7 @@ import { PlayListCard_Skeleton } from "../../cards/PlayListCard";
 
 @Component
 export struct UserDjRadioList {
+  @StorageProp('bottomRectHeight') bottomRectHeight: number = 0
   @StorageProp(StorageConstants.USER_DJRADIO_LIST) djRadioList: DjRadio[] = []
   @StorageProp(StorageConstants.IS_LOGGED) @Watch('getRadioList') isLogged: boolean = false
   @State isLoading: boolean = false
@@ -70,6 +72,8 @@ export struct UserDjRadioList {
               this.pageInfos.pushPathByName('DjRadioPage', param)
             })
         })
+
+        ListItem().height(px2vp(this.bottomRectHeight) + 120)
       }
       .width('100%')
       .height('100%')

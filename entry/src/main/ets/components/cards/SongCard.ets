@@ -3,7 +3,7 @@ import { getArtists } from "../../common/functions/common/convert"
 import { PlayList, playListItem } from "../../common/entities/playlist/PlayList"
 import Constants from "../../common/constants/Constants"
 import { cleanLastPlayInfo, playListToQueue } from "../../common/functions/play/playListOp"
-import { ToastUtil } from "@pura/harmony-utils"
+import { EmitterUtil, ToastUtil } from "@pura/harmony-utils"
 import { StorageConstants } from "../../common/constants/StorageConstants"
 import VibratorUtils from "../../common/utils/system/VibratorUtils"
 import { ArtistsSheet } from "../sheets/ArtistsSheet"
@@ -11,24 +11,29 @@ import PlayQueueUtils from "../../common/utils/play/PlayQueueUtils"
 import { playQueue } from "../../common/functions/play/playControl"
 import { SongInfoSheet } from "../sheets/SongInfoSheet"
 import { PlayListAddSheet } from "../sheets/PlayListAddSheet"
+import { djRadioToQueue } from "../../common/functions/play/djRadioOp"
+import { DjRadio, djRadioItem } from "../../common/entities/dj/DjResult"
+import { EmitterConstants } from "../../common/constants/EmitterConstants"
 
 @Component
 export struct SongCard {
   @StorageProp(StorageConstants.IS_PLAYER_LOADING) isPlayerLoading: boolean = false
   @StorageProp(StorageConstants.SONG_CLICK_ACTION) clickAction: number = 0
   @StorageProp(StorageConstants.PLAY_SONG) playSong: Song = SongItem
-  @State picUrl: string | ResourceStr = ''
-  @State playlist: PlayList = playListItem
   @State index: number = 0
-  @State reason: string = ''
   @State sid: number = -1
-  @State allowToArtist: boolean = true
   @State isShowSheet: boolean = false
   @State isShowAddSheet: boolean = false
   @State isShowArtistSheet: boolean = false
   playmode: number = 1 // 0-本地歌曲   1-单曲   2-歌单歌曲   3-电台歌曲
+  playlist: PlayList = playListItem
+  djRadio: DjRadio = djRadioItem
   song: Song = SongItem
   artists: string = ''
+  picUrl: string | ResourceStr = ''
+  reason: string = ''
+  allowToArtist: boolean = true
+  moreVisible: boolean = true
 
 
   async aboutToAppear(): Promise<void> {
@@ -36,8 +41,7 @@ export struct SongCard {
      this.artists = '未知'
       this.song.artists[0] = {"id": 0, "name": '未知'}
     }
-    const artistsStr = await getArtists(this.song.artists)
-    this.artists = artistsStr
+    this.artists = getArtists(this.song.artists)
   }
 
 
@@ -48,8 +52,10 @@ export struct SongCard {
       this.isShowSheet = true
     } else if(this.clickAction == 1) {
       this.playSingleSong()
-    } else if(this.playlist.id > 0) {
+    } else if(this.playlist.id > 0 && this.clickAction === 2) {
       this.playWithPlayList()
+    } else if(this.playmode == 3) {
+      this.playWithDjRadio()
     } else {
       this.playSingleSong()
     }
@@ -70,10 +76,21 @@ export struct SongCard {
     }
   }
 
-  private async playWithPlayList() {
+  private playWithPlayList() {
     if(!this.isPlayerLoading) {
       this.isPlayerLoading = true
-      await playListToQueue(this.playlist.id, this.playlist.trackCount, this.index)
+      // await playListToQueue(this.playlist.id, this.playlist.trackCount, this.index)
+      EmitterUtil.post(EmitterConstants.PLAY_PLAYLIST_SONGS, this.index)
+      this.isPlayerLoading = false
+    } else {
+      ToastUtil.showToast('当前有正在加载的播放任务，请稍后再试')
+    }
+  }
+
+  private async playWithDjRadio() {
+    if(!this.isPlayerLoading) {
+      this.isPlayerLoading = true
+      await djRadioToQueue(this.djRadio.id, this.djRadio.programCount, this.index)
       this.isPlayerLoading = false
     } else {
       ToastUtil.showToast('当前有正在加载的播放任务，请稍后再试')
@@ -157,23 +174,22 @@ export struct SongCard {
         /**
          * ShowSheet
          */
-        Button() {
-          Image($r('app.media.ic_public_more_list'))
-            .draggable(false)
-            .fillColor($r('app.color.reverse'))
-            .width(20)
-        }
-        .backgroundColor(Color.Transparent)
-        .onClick(() => { this.isShowSheet = true })
-        .bindSheet(this.isShowSheet, this.InfoSheet(), {
-          preferType: SheetType.CENTER,
-          height: SheetSize.FIT_CONTENT,
-          dragBar: false,
-          showClose: false,
-          backgroundColor: Color.Transparent,
-          blurStyle: BlurStyle.Regular,
-          onDisappear: () => { this.isShowSheet = false }
-        })
+        Image($r('app.media.ic_public_more_list'))
+          .draggable(false)
+          .fillColor($r('app.color.reverse'))
+          .width(20)
+          .visibility(this.moreVisible ? Visibility.Visible : Visibility.None)
+          .clickEffect({ level: ClickEffectLevel.LIGHT, scale: 0.9 })
+          .onClick(() => { this.isShowSheet = true })
+          .bindSheet(this.isShowSheet, this.InfoSheet(), {
+            preferType: SheetType.CENTER,
+            height: SheetSize.FIT_CONTENT,
+            dragBar: false,
+            showClose: false,
+            backgroundColor: Color.Transparent,
+            blurStyle: BlurStyle.Regular,
+            onDisappear: () => { this.isShowSheet = false }
+          })
       }
       .height(60)
     }

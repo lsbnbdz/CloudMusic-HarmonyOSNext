@@ -18,4 +18,8 @@ export class EmitterConstants {
    * 从歌单中删除歌曲
    */
   static readonly EMITTER_DELETE_FROM_PLAYLIST: string = 'DELETE_FROM_PLAYLIST'
+  /**
+   * 播放歌单
+   */
+  static readonly PLAY_PLAYLIST_SONGS: string = 'PLAY_PLAYLIST_SONGS'
 }

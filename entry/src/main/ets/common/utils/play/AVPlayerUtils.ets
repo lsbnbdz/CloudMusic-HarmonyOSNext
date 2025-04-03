@@ -1,12 +1,13 @@
 import { LogUtil, ToastUtil } from '@pura/harmony-utils'
 import ContinuousTask from './ContinuousTask'
 import AVSessionUtils from './AVSessionUtils'
-import { completeDo, playNext } from '../../functions/play/playControl'
+import { completeDo, playNext, playQueue } from '../../functions/play/playControl'
 import LyricUtils from './LyricUtils'
 import { audio } from '@kit.AudioKit'
 import { StorageConstants } from '../../constants/StorageConstants'
 import { media } from '@kit.MediaKit'
 import { BusinessError } from '@kit.BasicServicesKit'
+import PlayQueueUtils from './PlayQueueUtils'
 
 const TAG = '[AVPlayerUtils] '
 
@@ -17,6 +18,7 @@ class AVPlayerUtils {
   private audioSessionManager: audio.AudioSessionManager = this.audioManager.getSessionManager()
   private updateFlag: boolean = false
   private isSeeking: boolean = false
+  private errorFlag: boolean = false
 
   getCurrentTime() {
     return this.avPlayer!.currentTime
@@ -47,12 +49,10 @@ class AVPlayerUtils {
   }
 
   async setUrl(url: string) {
-    try {
-      await this.reset()
-      const avPlayer = await this.init()
+    const avPlayer = await this.init()
+    await avPlayer.reset()
+    if(avPlayer.state === 'idle') {
       avPlayer.url = url
-    } catch (e) {
-      LogUtil.error(TAG + 'Error to reset: ' + e.message)
     }
   }
 
@@ -120,7 +120,9 @@ class AVPlayerUtils {
     avPlayer.on('error', (err: BusinessError) => {
       LogUtil.error(TAG + `Invoke avPlayer failed, code is ${err.code}, message is ${err.message}`)
       setTimeout(() => {
-        playNext()
+        if(this.errorFlag) return
+        playQueue(PlayQueueUtils.currentQueueIndex)
+        this.errorFlag = false
       }, 100)
     })
     avPlayer.on('audioOutputDeviceChangeWithInfo', async(changeInfo: audio.AudioStreamDeviceChangeInfo) => {
@@ -167,7 +169,7 @@ class AVPlayerUtils {
           avPlayer.prepare()
           break
         case 'prepared':
-          await this.play()
+          this.play()
           break
         case 'playing':
           AVSessionUtils.playState(avPlayer.currentTime)

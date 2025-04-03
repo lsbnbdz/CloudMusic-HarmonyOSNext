@@ -88,6 +88,7 @@ export struct SetLyricStyle {
             animateTo({ duration: 100, curve: Curve.Linear}, () => {
               this.style.size = value
             })
+            return
           }
           this.lyricStyle.size = value
           this.updateLyricStyle()
@@ -113,7 +114,7 @@ export struct SetLyricStyle {
 
   }
 
-  updateLyricStyle() {
+  private updateLyricStyle() {
     this.style = this.lyricStyle
     changeSettings(StorageConstants.LYRIC_STYLE, this.style)
   }

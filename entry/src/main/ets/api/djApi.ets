@@ -68,30 +68,25 @@ export async function getRecommendDj(): Promise<Array<RecommendDjRadio>> {
  * @param first
  * @returns
  */
-export async function putDjRadioInQueue(rid: number, trackCount: number, limit: number, offset: number = 0, first: boolean = true): Promise<void> {
+export async function putDjRadioInQueue(rid: number, trackCount: number, limit: number = 100, offset: number = 0, first: boolean = true): Promise<void> {
   const rootUrl = await getApiUrl()
-  let tempQueue:Array<PlayQueue> = []
+  const allQueue: PlayQueue[] = []
 
-  while(offset < trackCount) {
-    const url: string = `${rootUrl}/dj/program?rid=${rid}&limit=${limit}&offset=${offset}&timestamp=${new Date().getTime()}`
-    const request = new HttpRequest(url)
-    let data = await request.RequestInStream()
-    let dataResult = data.result as DjProgramResult
-    const artistsPromises = dataResult.programs.map(item => getArtists(item.mainSong.artists))
-    const artistsResults = await Promise.all(artistsPromises)
-    tempQueue = dataResult.programs.map((item, index) => ({
+  while (offset < trackCount) {
+    const url = `${rootUrl}/dj/program?rid=${rid}&limit=${limit}&offset=${offset}`
+    const data = await new HttpRequest(url).RequestInStream()
+    const dataResult = data.result as DjProgramResult
+
+    allQueue.push(...dataResult.programs.map((item): PlayQueue => ({
       playmode: 3,
       song: item.mainSong as Song,
-      artists: artistsResults[index],
       fileName: '',
-      picUrl: item.coverUrl ?? $r('app.media.ic_public_music')
-    } as PlayQueue))
-    if(first) {
-      await PlayQueueUtils.cleanQueue()
-      first = false
-    }
-    await PlayQueueUtils.queueAdd_array(tempQueue)
-    tempQueue = []
+      picUrl: item.coverUrl || $r('app.media.ic_public_music')
+    })))
+
     offset += limit
   }
+
+  if (first) await PlayQueueUtils.cleanQueue()
+  await PlayQueueUtils.queueAdd_array(allQueue)
 }

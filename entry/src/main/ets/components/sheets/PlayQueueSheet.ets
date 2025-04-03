@@ -10,6 +10,7 @@ import { PlayList } from "../../common/entities/playlist/PlayList"
 import Constants from "../../common/constants/Constants"
 import { EmitterConstants } from "../../common/constants/EmitterConstants"
 import { cleanLastPlayInfo } from "../../common/functions/play/playListOp"
+import { getArtists } from "../../common/functions/common/convert"
 
 /**
  * 播放列表 Sheet
@@ -149,7 +150,7 @@ export struct PlayQueueSheet {
               .backgroundColor('#ffffd2d2')
               .borderRadius(5)
           }
-          Text(`${item.artists}`)
+          Text(`${getArtists(item.song.artists)}`)
             .fontSize(12)
             .fontColor(this.currentQueueIndex == index ? $r('app.color.app_red') : Color.Gray)
             .maxLines(1)

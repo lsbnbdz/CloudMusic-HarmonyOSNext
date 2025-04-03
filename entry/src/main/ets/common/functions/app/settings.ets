@@ -1,6 +1,6 @@
 import { LogUtil, ToastUtil } from "@pura/harmony-utils"
 import { StorageConstants } from "../../constants/StorageConstants"
-import { LyricStyle, LyricStyleItem } from "../../entities/local/Settings"
+import { CacheSet, CacheSetItem, LyricStyle, LyricStyleItem } from "../../entities/local/Settings"
 import PreferencesUtils from "../../utils/data/PreferencesUtils"
 import { preferences } from "@kit.ArkData"
 
@@ -27,6 +27,8 @@ export async function initSettings() {
     handleSetting<number>(StorageConstants.SONG_CLICK_ACTION, 0),
     // Lyric
     handleSetting<LyricStyle>(StorageConstants.LYRIC_STYLE, LyricStyleItem),
+    // CacheSettings
+    handleSetting<CacheSet>(StorageConstants.CACHE_SETTINGS, CacheSetItem),
     // mixWithOthers
     handleSetting<boolean>(StorageConstants.MIX_WITH_OTHERS, false)
   ])

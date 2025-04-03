@@ -66,7 +66,8 @@ export struct ApiSetPage {
             .borderRadius(Constants.RADIUS_IMG)
           Button('设置')
             .backgroundColor($r('app.color.app_red'))
-            .layoutWeight(1)
+            .type(ButtonType.Normal)
+            .borderRadius(Constants.RADIUS_BUTTON)
             .onClick(() => {
               this.setCustomApiUrl()
             })

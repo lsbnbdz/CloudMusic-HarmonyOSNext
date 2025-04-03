@@ -10,7 +10,7 @@ import { AVCastPicker } from "@kit.AVSessionKit"
 import { TimerButton } from "../buttons/play/TimerButton"
 import { StorageConstants } from "../../common/constants/StorageConstants"
 import Constants from "../../common/constants/Constants"
-import { PasteboardUtil, ToastUtil } from "@pura/harmony-utils"
+import { ClickUtil, PasteboardUtil, ToastUtil } from "@pura/harmony-utils"
 import { PlayerActionSheet } from "./PlayerActionSheet"
 import { likeThisSong } from "../../common/functions/play/songLike"
 import { resourceManager } from "@kit.LocalizationKit"
@@ -275,7 +275,9 @@ export struct PlayingCover {
     // 上一首
     Image($r('app.media.ic_public_play_last')).buttonImgStyle()
     .onClick(() => {
-      playPre()
+      ClickUtil.throttle(() => {
+        playPre()
+      }, 500)
     })
 
     // 暂停、继续
@@ -291,7 +293,9 @@ export struct PlayingCover {
     // 下一首
     Image($r('app.media.ic_public_play_next')).buttonImgStyle()
     .onClick(() => {
-      playNext()
+      ClickUtil.throttle(() => {
+        playNext()
+      }, 500)
     })
   }
 

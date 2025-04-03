@@ -25,26 +25,11 @@ import AudioCacheUtils from "../../utils/play/AudioCacheUtils";
 const TAG = '[playerControl] '
 const pref = StorageConstants.QUEUE_PREF
 
-export async function playMusicByUrl(song: Song | PlayListSong, artists: string, isLogged: boolean, picUrl: string | ResourceStr = '', mode: number = 1) {
+export async function playMusicByUrl(song: Song, isLogged: boolean, picUrl: string | ResourceStr = '', mode: number = 1) {
   try {
     isThisSongLiked(song.id)
-    const quality: number | undefined = await AppStorage.get(StorageConstants.PLAY_QUALITY)
-    const songPlay: SongPlay = await getSongUrl(song.id, quality ? PlayConstants.QUALITY[quality] : "standard", isLogged)
-    let playSong: Song = SongItem
-    if(mode === 2) {
-      song = song as PlayListSong
-      playSong = {
-        id: song.id,
-        name: song.name,
-        artists: song.ar,
-        duration: song.dt,
-        fee: song.fee,
-        alias: []
-      }
-    } else {
-      playSong = song as Song
-    }
-    setPlayData(mode, playSong, artists)
+    let artists = getArtists(song.artists)
+    setPlayData(mode, song, artists)
     let localPath: string = ''
     let tempArtists: string = artists
     try {
@@ -60,25 +45,23 @@ export async function playMusicByUrl(song: Song | PlayListSong, artists: string,
     if(localPath != '') { // 是否存在本地文件
       AppStorage.setOrCreate(StorageConstants.PLAY_IS_LOCALFILE, true)
       await AVPlayerUtils.setUrl(localPath)
-    } else if(songPlay.data[0].url) {
+    } else {
+      const quality: number | undefined = await AppStorage.get(StorageConstants.PLAY_QUALITY)
+      const songPlay: SongPlay = await getSongUrl(song.id, quality ? PlayConstants.QUALITY[quality] : "standard", isLogged)
       AppStorage.setOrCreate(StorageConstants.PLAY_IS_LOCALFILE, false)
       let proxyUrl = await AudioCacheUtils.getProxyUrl(songPlay.data[0].url)
       await AVPlayerUtils.setUrl(proxyUrl ?? songPlay.data[0].url)
-    } else {
-      ToastUtil.showToast('获取播放资源失败')
-      playNext()
     }
     if(!picUrl) {
       picUrl = await getSongPicUrl(song.id)
     }
     setPicUrl(picUrl)
-    LyricUtils.setLyric(playSong).then(() => {
-      AVSessionUtils.setMetadata(playSong, artists, picUrl)
-      AVSessionUtils.activate()
-    })
-    saveCurrentSongInfo(1, playSong, artists, picUrl)
+    await LyricUtils.setLyric(song)
+    await AVSessionUtils.setMetadata(song, artists, picUrl)
+    AVSessionUtils.activate()
+    saveCurrentSongInfo(mode, song, artists, picUrl)
   } catch (e) {
-    LogUtil.error(TAG + '播放Url出错: ' + e)
+    LogUtil.error(TAG + '播放出错: ' + e)
     playNext()
   }
 }
@@ -144,14 +127,14 @@ export function seekMusic(time: number) {
 }
 
 export async function playQueue(index: number) {
-  const queue = PlayQueueUtils.getQueue()
+  const queue = PlayQueueUtils.queue
   const playqueue = queue[index]
   PlayQueueUtils.setIndex(index)
   if(playqueue.playmode == 0) { // Play with file
     playMusicWithFile(playqueue.song as Song, playqueue.fileName)
   } else { // Play with url
     const isLogged: boolean | undefined = AppStorage.get(StorageConstants.IS_LOGGED)
-    playMusicByUrl(playqueue.song, playqueue.artists, isLogged ? true : false, playqueue.picUrl, playqueue.playmode)
+    playMusicByUrl(playqueue.song, isLogged ? true : false, playqueue.picUrl, playqueue.playmode)
   }
 }
 
@@ -163,7 +146,7 @@ export async function playPre() {
     if(res.playmode == 0) {
       playMusicWithFile(res.song as Song, res.fileName)
     } else {
-      playMusicByUrl(res.song, res.artists, isLogged ? isLogged : false, res.picUrl, res.playmode)
+      playMusicByUrl(res.song, isLogged ? isLogged : false, res.picUrl, res.playmode)
     }
   } else {
     if(cycleMode == 2) { playQueue(PlayQueueUtils.getQueueLength() - 1) }
@@ -179,7 +162,7 @@ export async function playNext() {
   if(isPersonalFm && !(PlayQueueUtils.currentQueueIndex < PlayQueueUtils.queue.length - 1)) {
     const personalFmMode = AppStorage.get(StorageConstants.PERSONAL_FM_MODE) as number
     let nextSong = await getPersonalFmSong(personalFmMode)
-    let artists = await getArtists(nextSong.artists)
+    let artists = getArtists(nextSong.artists)
     PlayQueueUtils.queueAdd(1, nextSong, artists, '')
     playQueue(PlayQueueUtils.currentQueueIndex + 1)
     return
@@ -197,7 +180,7 @@ export async function playNext() {
     if(res.playmode == 0) {
       playMusicWithFile(res.song as Song, res.fileName)
     } else {
-      playMusicByUrl(res.song, res.artists, isLogged ?? false, res.picUrl, res.playmode)
+      playMusicByUrl(res.song, isLogged ?? false, res.picUrl, res.playmode)
     }
   } else {
     if(cycleMode == 2) { playQueue(0) }

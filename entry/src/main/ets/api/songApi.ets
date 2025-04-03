@@ -199,7 +199,6 @@ export async function setHeartMode(id: number, pid: number): Promise<void> {
     queue.push({
       playmode: 1,
       song: tempSong,
-      artists: artists,
       fileName: '',
       picUrl: item.songInfo.al.picUrl ?? $r('app.media.ic_public_music')
     })

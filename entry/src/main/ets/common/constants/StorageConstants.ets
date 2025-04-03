@@ -262,4 +262,9 @@ export class StorageConstants {
    * @description AppStorage & Preference
    */
   static readonly LYRIC_STYLE: string = 'lyricStyle'
+  /**
+   * 缓存设置
+   * @description AppStorage & Preference
+   */
+  static readonly CACHE_SETTINGS: string = 'cacheSet'
 }

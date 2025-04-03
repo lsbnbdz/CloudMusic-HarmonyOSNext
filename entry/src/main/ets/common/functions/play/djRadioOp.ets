@@ -13,22 +13,19 @@ export async function djRadioToQueue(id: number, count: number, currentIndex: nu
       playQueue(currentIndex)
     } else {
       let limit = 100
-      if (currentIndex > 100) {
-        limit = currentIndex
-      }
-      await putDjRadioInQueue(id, limit, 100, 0)
-      playQueue(currentIndex)
-      await putDjRadioInQueue(id, count, 200, limit, false)
+      await putDjRadioInQueue(id, 100, limit, currentIndex < 50 ? 0 : currentIndex - 25, true)
+      playQueue(currentIndex < 50 ? currentIndex : 25)
+      // await putDjRadioInQueue(id, count, 200, limit, false)
     }
   } catch (e) {
     LogUtil.error(TAG + '' + e.message)
     ToastUtil.showToast('播放播客出错')
   } finally {
-    const playInfo: PlayingPlayList = {
-      id: id,
-      count: count
-    }
-    AppStorage.setOrCreate(StorageConstants.LAST_PLAYED_LIST, playInfo)
+    // const playInfo: PlayingPlayList = {
+    //   id: id,
+    //   count: count
+    // }
+    // AppStorage.setOrCreate(StorageConstants.LAST_PLAYED_LIST, playInfo)
     AppStorage.setOrCreate(StorageConstants.IS_PLAYER_LOADING, false)
   }
 }

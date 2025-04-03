@@ -68,7 +68,7 @@ export async function fetchSongInfo(fileName: string): Promise<Song> {
  * @param artists
  * @returns
  */
-export async function getArtists(artists:Artist[]): Promise<string> {
+export function getArtists(artists:Artist[]): string {
   let artistStr:string = ''
   for(let artist of artists) {
     artistStr = artistStr + artist.name + ', '

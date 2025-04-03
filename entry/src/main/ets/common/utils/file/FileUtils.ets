@@ -202,9 +202,10 @@ class FileUtils {
 
   async getSongCacheSize(): Promise<number> {
     try {
-      let path = this.filesDir + '/mc_media_cache'
-      let size = await statfs.getTotalSize(path)
-      return size
+      let path = this.context.filesDir + '/mc_media_cache'
+      let sizeTotal = statfs.getTotalSizeSync(path)
+      let sizeFree = statfs.getFreeSizeSync(path)
+      return sizeTotal - sizeFree
     } catch (e) {
       LogUtil.error(TAG + 'getSongCacheSize Error: ' + e.message)
       return 0

@@ -26,8 +26,8 @@ const TAG = '[appInit] '
 
 export async function appInit() {
   AppStorage.setOrCreate(StorageConstants.APP_LOADING, true)
-  initApp()
   await initSettings()
+  initApp()
   await initPlayQueue()
   loadSavedSong()
   initPermission()

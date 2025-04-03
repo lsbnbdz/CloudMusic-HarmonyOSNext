@@ -1,9 +1,9 @@
 import { MCMediaCache } from "@sj/mediacache";
-import Constants from "../../constants/Constants";
-import { getCookie } from "../../functions/common/get";
+import { getCacheSet, getCookie } from "../../functions/common/get";
 
 export default class AudioCacheUtils {
   static async init() {
+    const cacheSet = await getCacheSet()
     MCMediaCache.setRequestHandler(async (request) => {
       request.setHeader('cookie', await getCookie())
     })
@@ -14,7 +14,7 @@ export default class AudioCacheUtils {
       let cacheName: string = url.substring(start + 1, end) + '-' + url.substring(end + 1)
       return cacheName
     })
-    MCMediaCache.cacheConfig.maxDiskSize = Constants.CACHE_DISK_MAX_SIZE
+    MCMediaCache.cacheConfig.maxDiskSize = cacheSet.songCacheMaxSize
 
     await MCMediaCache.prepare(getContext())
   }

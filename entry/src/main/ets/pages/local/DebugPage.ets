@@ -27,7 +27,7 @@ export struct DebugPage {
           //   RelationalStoreUtils.clearAllData()
           //   promptAction.showToast({ message: 'RelationalStore Cleaned' })
           // })
-          Text(`APP Version: ${AppConstants.VERSION} ${AppConstants.VER_DESC}`)
+          Text(`APP Version: ${AppConstants.VERSION} ${AppConstants.VER_DESC}\nVersion Code: ${AppConstants.VERSIONCODE}`)
             .textStyle()
           Text(`deviceType: ${this.deviceType == resourceManager.DeviceType.DEVICE_TYPE_PHONE ? 'Phone' :
               this.deviceType == resourceManager.DeviceType.DEVICE_TYPE_TABLET ? 'Tablet' :

@@ -1,8 +1,7 @@
-import { DialogUtil, ToastUtil } from "@pura/harmony-utils"
+import { ToastUtil } from "@pura/harmony-utils"
 import Constants from "../../common/constants/Constants"
 import { StorageConstants } from "../../common/constants/StorageConstants"
 import { checkValidUrl } from "../../common/functions/common/get"
-import { openInWeb } from "../../common/functions/common/open"
 import PreferencesUtils from "../../common/utils/data/PreferencesUtils"
 import { ExplainButton } from "../../components/buttons/ExplainButton"
 
@@ -29,6 +28,7 @@ export struct ApiSetPage {
             .fontColor(this.validApiUrl ? Color.Green : $r('app.color.app_red'))
         }
         .width('100%')
+        .textAlign(TextAlign.Center)
         .fontColor($r('app.color.reverse'))
         .fontSize(Constants.FONT_SIZE_COMMON)
         .padding(Constants.PADDING_EDGE_DEFAULT)
@@ -59,21 +59,15 @@ export struct ApiSetPage {
       .justifyContent(FlexAlign.SpaceBetween)
 
       Column({ space: 10 }) {
-        Row({ space: 10 }) {
-          TextInput({ text: this.customApiUrl })
-            .layoutWeight(4)
-            .onChange((text) => this.customApiUrl = text)
-            .borderRadius(Constants.RADIUS_IMG)
-          Button('设置')
-            .backgroundColor($r('app.color.app_red'))
-            .type(ButtonType.Normal)
-            .borderRadius(Constants.RADIUS_BUTTON)
-            .onClick(() => {
-              this.setCustomApiUrl()
-            })
-        }
-        .justifyContent(FlexAlign.Center)
-        .width('100%')
+        TextInput({ text: this.customApiUrl })
+          .width('100%')
+          .onChange((text) => this.customApiUrl = text)
+          .borderRadius(Constants.RADIUS_IMG)
+        Button('保存配置')
+          .setButton()
+          .onClick(() => {
+            this.setCustomApiUrl()
+          })
       }
       .width('100%')
     }
@@ -112,11 +106,8 @@ export struct ApiSetPage {
             .borderRadius(Constants.RADIUS_IMG)
             .height(150)
             .textAlign(TextAlign.Start)
-          Button('设置')
-            .backgroundColor($r('app.color.app_red'))
-            .width(100)
-            .type(ButtonType.Normal)
-            .borderRadius(Constants.RADIUS_BUTTON)
+          Button('保存Cookie')
+            .setButton()
             .onClick(() => {
               this.setCustomCookie()
             })
@@ -137,7 +128,7 @@ export struct ApiSetPage {
   setCustomApiUrl() {
     AppStorage.setOrCreate(StorageConstants.API_URL,this.customApiUrl)
     PreferencesUtils.putPreferenceValue(StorageConstants.SET_PERF ,StorageConstants.API_URL,this.customApiUrl)
-    ToastUtil.showToast('设置成功')
+    ToastUtil.showToast('配置已保存, 正在检查云服务是否可用...')
     checkValidUrl()
   }
 
@@ -148,7 +139,7 @@ export struct ApiSetPage {
     }
     AppStorage.setOrCreate(StorageConstants.CUSTOM_COOKIE, cookie)
     PreferencesUtils.putPreferenceValue(StorageConstants.SET_PERF ,StorageConstants.CUSTOM_COOKIE, cookie)
-    ToastUtil.showToast('设置成功')
+    ToastUtil.showToast('配置已保存')
   }
 
   @Styles itemStyle() {
@@ -162,4 +153,14 @@ export struct ApiSetPage {
 @Extend(Text) function LeftText() {
   .fontSize(Constants.FONT_SIZE_COMMON)
   .fontWeight(FontWeight.Bold)
+}
+
+@Extend(Button) function setButton() {
+  .fontSize(Constants.FONT_SIZE_COMMON)
+  .fontColor($r('app.color.app_red'))
+  .borderColor($r('app.color.app_red'))
+  .backgroundColor(Color.Transparent)
+  .borderWidth(1)
+  .width(150)
+  .padding({ left: Constants.PADDING_EDGE_DEFAULT, right: Constants.PADDING_EDGE_DEFAULT })
 }

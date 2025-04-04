@@ -52,10 +52,8 @@ export struct SongCard {
       this.isShowSheet = true
     } else if(this.clickAction == 1) {
       this.playSingleSong()
-    } else if(this.playlist.id > 0 && this.clickAction === 2) {
+    } else if((this.playlist.id > 0 || this.djRadio.id > 0) && this.clickAction === 2) {
       this.playWithPlayList()
-    } else if(this.playmode == 3) {
-      this.playWithDjRadio()
     } else {
       this.playSingleSong()
     }

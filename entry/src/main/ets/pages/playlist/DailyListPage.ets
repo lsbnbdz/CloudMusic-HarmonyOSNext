@@ -1,14 +1,15 @@
-import { Song } from '../../common/entities/song/SongsResult'
 import { SongCard } from '../../components/cards/SongCard'
-import { LogUtil } from '@pura/harmony-utils'
+import { EmitterUtil, LogUtil } from '@pura/harmony-utils'
 import { DailySongRes, PlayDailySongs } from '../../api/playListApi'
 import { BottomBarComponent } from '../../components/play/BottomBarComponent'
-import { playQueue } from '../../common/functions/play/playControl'
-import { AddToPlayListButton } from '../../components/buttons/play/AddToPlayListButton'
 import { getDailySongs } from '../../api/songApi'
 import Constants from '../../common/constants/Constants'
-import { resourceManager } from '@kit.LocalizationKit'
 import { StorageConstants } from '../../common/constants/StorageConstants'
+import { PlayQueue } from '../../common/entities/local/PlayQueue'
+import PlayQueueUtils from '../../common/utils/play/PlayQueueUtils'
+import { playQueue } from '../../common/functions/play/playControl'
+import { EmitterConstants } from '../../common/constants/EmitterConstants'
+import { PlayList, playListItem } from '../../common/entities/playlist/PlayList'
 
 /**
  * 每日推荐歌单页面
@@ -21,32 +22,58 @@ export struct DailyListPage {
   @StorageProp('bottomRectHeight') bottomRectHeight: number = 0
   @StorageProp('topRectHeight') topRectHeight: number = 0
   @StorageProp(StorageConstants.BREAKPOINT) breakpoint: string = 'sm'
-  @State list: Array<DailySongRes> = new Array()
+  @State list: DailySongRes[] = new Array()
   @State hasLoaded: boolean = false
   @State isLoading: boolean = true
-  @State loadingPlayList:boolean = false
   @State pageOpacity: number = 1
   @State totayDate: string = ''
+  updateFlag: boolean = true
+  playListItem: PlayList = playListItem
 
   async aboutToAppear() {
     if(!this.hasLoaded) {
       await this.loadSongs()
       this.hasLoaded = true
     }
+
+    EmitterUtil.unSubscribe(EmitterConstants.PLAY_PLAYLIST_SONGS)
+    EmitterUtil.onSubscribe(EmitterConstants.PLAY_PLAYLIST_SONGS, ((index: number) => {
+      this.playSong(index)
+    }))
     let date = new Date()
     this.totayDate = `${date.toDateString()}`
+    this.playListItem.id = 1
   }
 
   async loadSongs(): Promise<void> {
     this.isLoading = true
     try {
-      let result:Array<DailySongRes> = await getDailySongs()
+      let result: DailySongRes[] = await getDailySongs()
       if(result.length < 3) { result = await getDailySongs(false) }
       this.list = result
     } catch (e) {
       LogUtil.error(TAG + 'Error fetching songs: ', e)
     } finally {
       this.isLoading = false
+    }
+  }
+
+  async playSong(songIndex: number) {
+    try {
+      if(this.updateFlag) {
+        let queue: PlayQueue[] = this.list.map((item): PlayQueue => ({
+          playmode: 2,
+          song: item.song,
+          fileName: '',
+          picUrl: item.picUrl
+        }))
+        await PlayQueueUtils.cleanQueue()
+        await PlayQueueUtils.queueAdd_array(queue)
+      }
+      playQueue(songIndex)
+    } catch (e) {
+    } finally {
+      this.updateFlag = false
     }
   }
 
@@ -84,10 +111,7 @@ export struct DailyListPage {
                   .backgroundColor(Color.Transparent)
                   .borderRadius(Constants.RADIUS_BUTTON)
                   .onClick(async () => {
-                    this.loadingPlayList = true
-                    await PlayDailySongs()
-                    this.loadingPlayList = false
-                    playQueue(0)
+                    this.playSong(0)
                   })
                 }
                 .padding({ left: 20, bottom: 10 })
@@ -95,10 +119,12 @@ export struct DailyListPage {
                 ForEach(this.list, (item: DailySongRes, index) => {
                   ListItem() {
                     SongCard({
+                      playmode: 2,
                       song: item.song,
                       sid: index,
                       index: index,
                       reason: item.reason,
+                      playlist: this.playListItem,
                       picUrl: item.picUrl ?? $r('app.media.ic_public_music')
                     })
                   }
@@ -130,22 +156,6 @@ export struct DailyListPage {
           BottomBarComponent()
             .padding(Constants.PADDING_EDGE_DEFAULT)
             .backgroundColor(Color.Transparent)
-        }
-
-        if(this.loadingPlayList) {
-          Column() {
-            Column({ space: 10 }) {
-              LoadingProgress().width(60)
-              Text('正在获取完整歌曲列表')
-            }
-            .padding(30)
-            .borderRadius(15)
-            .backgroundColor($r('app.color.main'))
-          }
-          .height('100%')
-          .width('100%')
-          .justifyContent(FlexAlign.Center)
-          .padding({ bottom: px2vp(this.topRectHeight) })
         }
       }
       .opacity(this.pageOpacity)

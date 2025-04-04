@@ -7,7 +7,7 @@ import Constants from "../../common/constants/Constants"
 export struct PlayListCard {
   @Consume('pageInfos') pageInfos: NavPathStack
   @State isShowHeart: boolean = true
-  playList:PlayList = playListItem
+  playList: PlayList = playListItem
 
   build() {
     Button() {
@@ -17,7 +17,7 @@ export struct PlayListCard {
           .borderRadius(Constants.RADIUS_IMG)
         Column({ space: 8 }) {
           Text(this.playList.name).textStyle(16).fontWeight(FontWeight.Medium)
-          Text(`歌单 · ${this.playList.trackCount} 首 · ${this.playList?.creator.nickname}`).textStyle(12).fontColor(Color.Gray)
+          Text(`歌单 · ${this.playList.trackCount} 首 · ${this.playList?.creator?.nickname}`).textStyle(12).fontColor(Color.Gray)
         }
         .layoutWeight(1)
       }

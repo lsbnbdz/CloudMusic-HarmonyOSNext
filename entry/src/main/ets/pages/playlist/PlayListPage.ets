@@ -45,9 +45,7 @@ export struct PlayListPage {
   @State listDataSource: LazyData<PlayListSong> = new LazyData()
   @State filteredDataSource: LazyData<PlayListSong> = new LazyData()
   @State hasMore: boolean = true
-  @State hasLoaded: boolean = false // 判定是否已加载 避免重复加载
   @State isLoading: boolean = true
-  @State isLoadingMore: boolean = false
   @State isSelecting: boolean = false
   @State translateY: number = 40
   @State selectedSongs: PlayListSong[] = []
@@ -83,14 +81,13 @@ export struct PlayListPage {
       this.listDataSource.notifyDataReload()
       cleanLastPlayInfo()
     }))
+    EmitterUtil.unSubscribe(EmitterConstants.PLAY_PLAYLIST_SONGS)
     EmitterUtil.onSubscribe(EmitterConstants.PLAY_PLAYLIST_SONGS, ((index: number) => {
       this.playSong(index)
     }))
 
-    if (!this.hasLoaded) {
-      await this.loadSongs(100, 0)
-      await this.loadSongs(this.param.playList.trackCount - 100, 100)
-    }
+    await this.loadSongs(200, 0)
+    await this.loadSongs(this.param.playList.trackCount - 200, 150)
   }
 
   initUpdateFlag() {
@@ -99,6 +96,7 @@ export struct PlayListPage {
 
   private async playSong(songIndex: number) {
     try {
+      if(this.list.length === 0) return
       if(this.updateFlag) {
         let queue: PlayQueue[] = this.list.map((item): PlayQueue => ({
           playmode: 1,
@@ -116,7 +114,7 @@ export struct PlayListPage {
         await PlayQueueUtils.cleanQueue()
         await PlayQueueUtils.queueAdd_array(queue)
       }
-      await playQueue(songIndex)
+      playQueue(songIndex)
     } catch (e) {
       ToastUtil.showToast('播放失败: ' + e.message)
       LogUtil.error(TAG + 'playSong Error: ' + e.stack)
@@ -128,7 +126,6 @@ export struct PlayListPage {
   aboutToDisappear(): void {
     this.isPageActive = false
     EmitterUtil.unSubscribe(EmitterConstants.EMITTER_DELETE_FROM_PLAYLIST)
-    EmitterUtil.unSubscribe(EmitterConstants.PLAY_PLAYLIST_SONGS)
   }
 
   build() {
@@ -151,8 +148,13 @@ export struct PlayListPage {
                     } else {
                       Image($r('app.media.ic_play_fill')).width(Constants.FONT_SIZE_COMMON)
                         .fillColor(Color.Gray)
-                      Text(`播放全部 (${this.trackCount})`)
-                        .fontSize(Constants.FONT_SIZE_COMMON)
+                      Row({ space: 5 }) {
+                        Text(`播放全部 (${this.list.length})`)
+                          .fontSize(Constants.FONT_SIZE_COMMON)
+                        LoadingProgress()
+                          .width(Constants.FONT_SIZE_TITLE)
+                          .visibility(this.isLoading || this.list.length !== this.param.playList.trackCount ? Visibility.Visible : Visibility.None)
+                      }
                     }
                   }
                   .height(Constants.HEIGHT_TEXT_BUTTON)
@@ -188,7 +190,7 @@ export struct PlayListPage {
               }
 
               // 添加加载更多
-              if (this.isLoadingMore) {
+              if (this.list.length !== this.param.playList.trackCount) {
                 ListItem() {
                   LoadingMoreButton()
                 }
@@ -473,8 +475,6 @@ export struct PlayListPage {
     if (!this.hasMore || !this.isPageActive) return // 直接返回
     if (offset == 0) {
       this.isLoading = true // 初次加载
-    } else {
-      this.isLoadingMore = true // 加载更多
     }
     try {
       const result = await getPlayListSongs(this.param.playList.id, limit <= 1000 ? limit : 1000, offset, this.useTimestamp)
@@ -493,8 +493,6 @@ export struct PlayListPage {
       LogUtil.error(TAG + 'Error fetching songs: ', e.message)
     } finally {
       this.isLoading = false
-      this.isLoadingMore = false
-      this.hasLoaded = true
     }
   }
 

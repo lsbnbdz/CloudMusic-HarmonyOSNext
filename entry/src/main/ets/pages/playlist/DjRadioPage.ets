@@ -1,12 +1,16 @@
 import { LazyData } from "@pie/lazy-data"
-import { ToastUtil } from "@pura/harmony-utils"
+import { EmitterUtil, ToastUtil } from "@pura/harmony-utils"
 import { getDjPrograms } from "../../api/djApi"
 import Constants from "../../common/constants/Constants"
+import { EmitterConstants } from "../../common/constants/EmitterConstants"
 import { StorageConstants } from "../../common/constants/StorageConstants"
 import { DjRadioProgram } from "../../common/entities/dj/DjProgramResult"
 import { djRadioItem } from "../../common/entities/dj/DjResult"
 import { DjRadioParam } from "../../common/entities/local/PageParams"
+import { PlayQueue } from "../../common/entities/local/PlayQueue"
 import { djRadioToQueue } from "../../common/functions/play/djRadioOp"
+import { playQueue } from "../../common/functions/play/playControl"
+import PlayQueueUtils from "../../common/utils/play/PlayQueueUtils"
 import { ClickToLoadButton, LoadingMoreButton, NoMoreButton } from "../../components/buttons/LoadMoreButtons"
 import { SongCard } from "../../components/cards/SongCard"
 import { BottomBarComponent } from "../../components/play/BottomBarComponent"
@@ -18,7 +22,7 @@ export struct DjRadioPage {
   @StorageProp('topRectHeight') topRectHeight: number = 0
   @StorageProp('bottomRectHeight') bottomRectHeight: number = 0
   @StorageProp(StorageConstants.IS_PLAYER_LOADING) isPlayerLoading: boolean = false
-  @State programs: DjRadioProgram[] = []
+  @State @Watch('handleUpdate') programs: DjRadioProgram[] = []
   @State dataSource: LazyData<DjRadioProgram> = new LazyData()
   @State songsOffset: number = 0
   @State translateY: number = 40
@@ -26,11 +30,16 @@ export struct DjRadioPage {
   @State isLoadingMore: boolean = false
   @State hasMore: boolean = false
   @Provide('playmode') playmode: number = 3
+  updateFlag: boolean = true
 
   async aboutToAppear(): Promise<void> {
     this.isLoading = true
     await this.loadSongs(0)
     this.isLoading = false
+    EmitterUtil.unSubscribe(EmitterConstants.PLAY_PLAYLIST_SONGS)
+    EmitterUtil.onSubscribe(EmitterConstants.PLAY_PLAYLIST_SONGS, (index: number) => {
+      this.playSong(index)
+    })
   }
 
   async loadSongs(offset: number) {
@@ -40,6 +49,31 @@ export struct DjRadioPage {
     this.programs = [...this.programs, ...result.programs]
     this.dataSource.setData(this.programs)
     this.dataSource.notifyDataReload()
+  }
+
+  handleUpdate() {
+    this.updateFlag = true
+  }
+
+  async playSong(songIndex: number) {
+    try {
+      if(this.programs.length === 0) return
+      if(this.updateFlag) {
+        let queue: PlayQueue[] = this.programs.map((item): PlayQueue => ({
+          playmode: 3,
+          song: item.mainSong,
+          fileName: '',
+          picUrl: item.coverUrl
+        }))
+        await PlayQueueUtils.cleanQueue()
+        await PlayQueueUtils.queueAdd_array(queue)
+      }
+      playQueue(songIndex)
+    } catch (e) {
+      ToastUtil.showToast('播放失败: ' + e.message)
+    } finally {
+      this.updateFlag = false
+    }
   }
 
   build() {

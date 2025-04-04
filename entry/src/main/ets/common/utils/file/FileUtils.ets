@@ -113,7 +113,7 @@ class FileUtils {
             LogUtil.error(TAG + `文件 ${localSongs[index].songFile} 保存失败: ${err.message}`)
           }
         })
-        ToastUtil.showToast(`成功保存 ${uris.length} 个文件`)
+        ToastUtil.showToast(`已保存 ${uris.length} 个文件`)
       }).catch((err: Error) => {
         LogUtil.error(TAG + 'File Picker 出错: ' + err.message)
       })

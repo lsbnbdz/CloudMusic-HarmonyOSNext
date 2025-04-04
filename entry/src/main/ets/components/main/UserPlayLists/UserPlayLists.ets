@@ -89,6 +89,7 @@ export struct UserPlayLists {
         await this.refreshContent()
       })
     }
+    .visibility(this.isLogged ? Visibility.Visible : Visibility.None)
   }
 
   @Builder PlayListTabBar() {

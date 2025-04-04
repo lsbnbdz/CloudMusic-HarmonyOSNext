@@ -28,6 +28,14 @@ export struct AboutPage {
               .borderRadius(Constants.RADIUS_CARD)
               .width(80)
               .aspectRatio(1)
+              .gesture(
+                TapGesture({
+                  fingers: 1,
+                  count: 5
+                }).onAction(() => {
+                  this.settingsPageInfos.pushPathByName('DebugPage', null)
+                })
+              )
 
             Text('云音汇')
               .fontWeight(Constants.FONT_WEIGHT_BOLD)

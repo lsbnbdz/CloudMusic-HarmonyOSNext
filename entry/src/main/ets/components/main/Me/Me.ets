@@ -40,7 +40,7 @@ export struct Me {
   build() {
     Column({ space: 10 }) {
       Column() {
-        if (this.isLogged && this.user) {
+        if (this.isLogged) {
           Row({ space: 20 }) {
             CircleImageButton({ imgUrl: this.user.data.profile.avatarUrl + '?param=256y256', wid: 64 })
             Text(this.user.data.profile.nickname).textStyle(Constants.FONT_SIZE_TITLE).fontWeight(FontWeight.Bold)

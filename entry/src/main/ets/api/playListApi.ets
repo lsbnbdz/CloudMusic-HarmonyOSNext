@@ -32,9 +32,15 @@ export interface PlayListsResult {
  * @returns list
  */
 export async function getPlayLists(offset: number): Promise<PlayListsResult> {
-  let list:Array<PlayList> = new Array()
+  let list: PlayList[] = new Array()
   let hasMore:boolean = false
-  const user = await PreferencesUtils.getPreferenceValue<User>(StorageConstants.USER_PREF,'user',UserItem)
+  const user = await PreferencesUtils.getPreferenceValue<User>(StorageConstants.USER_PREF, StorageConstants.USER, UserItem)
+  if(user.data.account.id === 0) {
+    return {
+      more: false,
+      playlist: []
+    }
+  }
   const rootUrl = await getApiUrl()
   const url:string = `${rootUrl}/user/playlist?uid=${user.data.account.id}&limit=10&offset=${offset}&timestamp=${new Date().getTime()}`
   const request = new HttpRequest(url)

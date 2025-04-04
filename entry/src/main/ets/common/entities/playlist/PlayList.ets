@@ -36,7 +36,7 @@ export const playListItem: PlayList = {
   subscribed: false,
   creator: {
     userId: -1,
-    nickname: '',
+    nickname: 'null',
     avatarUrl: ''
   },
   description: ""

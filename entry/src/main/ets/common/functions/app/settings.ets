@@ -24,7 +24,7 @@ export async function initSettings() {
     // Play Quality
     handleSetting<number>(StorageConstants.PLAY_QUALITY, 0),
     // SongCard Click Action
-    handleSetting<number>(StorageConstants.SONG_CLICK_ACTION, 0),
+    handleSetting<number>(StorageConstants.SONG_CLICK_ACTION, 2),
     // Lyric
     handleSetting<LyricStyle>(StorageConstants.LYRIC_STYLE, LyricStyleItem),
     // CacheSettings

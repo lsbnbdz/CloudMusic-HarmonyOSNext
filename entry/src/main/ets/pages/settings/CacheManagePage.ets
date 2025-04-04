@@ -53,16 +53,15 @@ export struct CacheManagePage {
         ListItem() {
           Button('清理临时文件缓存')
             .fontSize(Constants.FONT_SIZE_COMMON)
-            .backgroundColor($r('app.color.app_red'))
-            .fontColor(Color.White)
-            .type(ButtonType.Normal)
-            .borderRadius(Constants.RADIUS_CARD)
-            .padding({ left: 10, right: 10 })
+            .fontColor($r('app.color.app_red'))
+            .backgroundColor(Color.Transparent)
+            .width('100%')
+            .padding({ left: Constants.PADDING_EDGE_DEFAULT, right: Constants.PADDING_EDGE_DEFAULT })
             .onClick(() => {
               this.showDialog()
             })
         }
-        .width('100%')
+        .itemStyle()
       }
       .padding(Constants.PADDING_EDGE_DEFAULT)
       .width('100%')
@@ -108,7 +107,7 @@ export struct CacheManagePage {
   @Builder SetMaxCacheSize() {
     Column({ space: 5 }) {
       Row() {
-        Text('最大缓存歌曲空间')
+        Text('歌曲最大缓存空间')
           .fontSize(Constants.FONT_SIZE_COMMON)
           .fontWeight(FontWeight.Bold)
         Text(`${this.cacheSet.songCacheMaxSize / (1024 * 1024 * 1024)} G`)

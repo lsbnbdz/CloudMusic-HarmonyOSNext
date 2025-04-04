@@ -78,6 +78,7 @@ export struct UserDjRadioList {
       .width('100%')
       .height('100%')
     }
+    .visibility(this.isLogged ? Visibility.Visible : Visibility.None)
     .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
     .onRefreshing(async () => {
       await this.refreshContent()

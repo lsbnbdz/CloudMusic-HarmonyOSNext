@@ -1,5 +1,5 @@
 import { LogUtil } from "@pura/harmony-utils"
-import { User } from "../common/entities/user/User"
+import { User, UserItem } from "../common/entities/user/User"
 import { HttpRequest } from "../common/utils/request/HttpRequestUtils"
 import PreferencesUtils from "../common/utils/data/PreferencesUtils"
 import { StorageConstants } from "../common/constants/StorageConstants"
@@ -21,7 +21,7 @@ export async function getLoginStatus(cookie: string): Promise<boolean> {
     code = data.responseCode
     const user: User = data.result as User
     AppStorage.setOrCreate(StorageConstants.VALID_API_URL, true)
-    if (user.data.account.id) {
+    if (user.data.account.id && user.data.profile.nickname) {
       PreferencesUtils.putPreferenceValue(userPref, StorageConstants.USER, user)
       PreferencesUtils.putPreferenceValue(userPref, StorageConstants.COOKIE, cookie)
       AppStorage.setOrCreate(StorageConstants.VIP_TYPE, user.data.account.vipType)
@@ -30,9 +30,12 @@ export async function getLoginStatus(cookie: string): Promise<boolean> {
       AppStorage.setOrCreate(StorageConstants.IS_LOGGED, true)
       return true
     } else {
-      await PreferencesUtils.delPreferenceValue(StorageConstants.USER_PREF, StorageConstants.USER)
-      await PreferencesUtils.delPreferenceValue(StorageConstants.USER_PREF, StorageConstants.COOKIE)
-      await PreferencesUtils.delPreferenceValue(StorageConstants.USER_PREF, StorageConstants.USER_PLAYLISTS)
+      Promise.all([
+        PreferencesUtils.putPreferenceValue(StorageConstants.USER_PREF, StorageConstants.USER, UserItem),
+        PreferencesUtils.putPreferenceValue(StorageConstants.USER_PREF, StorageConstants.COOKIE, ''),
+        PreferencesUtils.putPreferenceValue(StorageConstants.USER_PREF, StorageConstants.USER_PLAYLISTS, [])
+      ])
+
       AppStorage.setOrCreate(StorageConstants.VALID_COOKIE, false)
       AppStorage.setOrCreate(StorageConstants.COOKIE, '')
       AppStorage.setOrCreate(StorageConstants.IS_LOGGED, false)

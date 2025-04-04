@@ -3,10 +3,7 @@ import { getPlayLists, PlayListOperation } from "../../api/playListApi"
 import Constants from "../../common/constants/Constants"
 import { StorageConstants } from "../../common/constants/StorageConstants"
 import { PlayList } from "../../common/entities/playlist/PlayList"
-import { Song } from "../../common/entities/song/SongsResult"
 import { User, UserItem } from "../../common/entities/user/User"
-import { PlayQueueButton } from "../buttons/play/PlayQueueButton"
-import { PlayListCard } from "../cards/PlayListCard"
 
 /**
  * 添加至歌单Sheet
@@ -18,7 +15,7 @@ export struct PlayListAddSheet {
   @StorageProp('currentQueueIndex') currentQueueIndex: number = 0
   @StorageProp('bottomRectHeight') bottomRectHeight: number = 0
   @StorageProp(StorageConstants.USER) user: User = UserItem
-  @StorageLink(StorageConstants.USER_PLAYLISTS) playLists: Array<PlayList> = []
+  @StorageLink(StorageConstants.USER_PLAYLISTS) playLists: PlayList[] = []
   @State isLoading: boolean = false
   @State isRefreshing: boolean = false
   @State lastRefreshTime: number = 0
@@ -30,7 +27,7 @@ export struct PlayListAddSheet {
   async aboutToAppear(): Promise<void> {
     this.isLoading = true
     try {
-      if(this.playLists.length == 0) {
+      if(this.playLists.length === 0 && this.user.data.account.id !== 0) {
         const result = await getPlayLists(0)
         this.playLists = result.playlist
       }

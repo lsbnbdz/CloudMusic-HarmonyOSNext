@@ -41,7 +41,7 @@ export struct SetLyricStyle {
   }
 
   build() {
-    Column({ space: 5 }) {
+    Column({ space: 20 }) {
       Row() {
         Text('歌词居中显示')
           .fontSize(Constants.FONT_SIZE_COMMON)

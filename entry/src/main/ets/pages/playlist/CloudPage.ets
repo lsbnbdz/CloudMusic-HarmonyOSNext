@@ -1,14 +1,17 @@
-import { Song } from '../../common/entities/song/SongsResult'
 import { SongCard } from '../../components/cards/SongCard'
-import { DialogUtil, LogUtil } from '@pura/harmony-utils'
+import { DialogUtil, EmitterUtil, LogUtil } from '@pura/harmony-utils'
 import { getCloudList } from '../../api/playListApi'
 import { BottomBarComponent } from '../../components/play/BottomBarComponent'
-import { AddToPlayListButton } from '../../components/buttons/play/AddToPlayListButton'
 import Constants from '../../common/constants/Constants'
 import { ClickToLoadButton, LoadingMoreButton, NoMoreButton } from '../../components/buttons/LoadMoreButtons'
 import { StorageConstants } from '../../common/constants/StorageConstants'
 import { PlayListSong } from '../../common/entities/playlist/PlayListSongs'
 import { LazyData } from '@pie/lazy-data'
+import { PlayList, playListItem } from '../../common/entities/playlist/PlayList'
+import { EmitterConstants } from '../../common/constants/EmitterConstants'
+import { PlayQueue } from '../../common/entities/local/PlayQueue'
+import PlayQueueUtils from '../../common/utils/play/PlayQueueUtils'
+import { playQueue } from '../../common/functions/play/playControl'
 
 /**
  * 云盘
@@ -22,7 +25,7 @@ export struct CloudPage {
   @StorageProp('topRectHeight') topRectHeight: number = 0
   @StorageProp(StorageConstants.BREAKPOINT) breakpoint: string = 'sm'
   private currentOffset: number = 0
-  @State list: Array<PlayListSong> = new Array()
+  @State @Watch('listUpdate') list: PlayListSong[] = new Array()
   @State dataSource: LazyData<PlayListSong> = new LazyData()
   @State hasMore: boolean = true
   @State hasLoaded: boolean = false
@@ -40,8 +43,15 @@ export struct CloudPage {
       }
     }
   ]
+  playListItem: PlayList = playListItem
+  updateFlag: boolean = true
 
   async aboutToAppear() {
+    this.playListItem.id = 2
+    EmitterUtil.unSubscribe(EmitterConstants.PLAY_PLAYLIST_SONGS)
+    EmitterUtil.onSubscribe(EmitterConstants.PLAY_PLAYLIST_SONGS, ((index: number) => {
+      this.playSong(index)
+    }))
     if (!this.hasLoaded) {
       await this.loadSongs(50, 0)
     }
@@ -70,6 +80,36 @@ export struct CloudPage {
     }
   }
 
+  async playSong(songIndex: number) {
+    try {
+      if(this.updateFlag) {
+        let queue: PlayQueue[] = this.list.map((item): PlayQueue => ({
+          playmode: 2,
+          song: {
+          id: item.id,
+          artists: item.ar,
+          name: item.name,
+          duration: item.dt,
+          alias: [],
+          fee: item.fee
+        },
+          fileName: '',
+          picUrl: item.al?.picUrl ?? $r('app.media.ic_public_music')
+        }))
+        await PlayQueueUtils.cleanQueue()
+        await PlayQueueUtils.queueAdd_array(queue)
+      }
+      playQueue(songIndex)
+    } catch (e) {
+    } finally {
+      this.updateFlag = false
+    }
+  }
+
+  listUpdate() {
+    this.updateFlag = true
+  }
+
   build() {
     NavDestination() {
       Stack({ alignContent: Alignment.Bottom }) {
@@ -92,6 +132,7 @@ export struct CloudPage {
                       fee: item.fee
                     },
                     sid: this.list.indexOf(item),
+                    index: index,
                     picUrl: item.al?.picUrl ?? $r('app.media.ic_public_music')
                   })
                 }

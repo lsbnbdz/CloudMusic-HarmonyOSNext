@@ -4,7 +4,6 @@ import { StorageConstants } from "../../common/constants/StorageConstants"
 import { PlayList } from "../../common/entities/playlist/PlayList"
 import { playNext, playQueue } from "../../common/functions/play/playControl"
 import PlayQueueUtils from "../../common/utils/play/PlayQueueUtils"
-import { promptAction } from "@kit.ArkUI"
 import { DateUtil, ToastUtil } from "@pura/harmony-utils"
 
 
@@ -61,6 +60,7 @@ export struct RecommendCards {
   @Consume('pageInfos') pageInfos: NavPathStack
   @StorageProp(StorageConstants.USER_PLAYLISTS) playLists: Array<PlayList> = []
   @Prop isLogged: boolean
+  @Prop breakpoint: string = 'sm'
   @State isLoadingSongs: boolean = false
   @StorageProp(StorageConstants.VALID_API_URL) validApiUrl: boolean = true
 
@@ -73,8 +73,8 @@ export struct RecommendCards {
          */
         ListItem() {
           ContentButton(`每日推荐`,'符合你口味的新鲜好歌',$r('app.media.bg_daily'),() => {
-            if(this.pageInfos.size() == 0) {
-              this.pageInfos.pushPathByName('DailyListPage', null)
+            if(this.pageInfos.size() === 0) {
+              this.pageInfos.pushPathByName('DailyListPage', null, this.breakpoint === 'lg' ? false : true)
             } else {
               this.pageInfos.replacePathByName('DailyListPage', null)
             }
@@ -111,8 +111,8 @@ export struct RecommendCards {
         ListItem() {
           ContentButton(`音乐云盘`,`享受云端曲目`,$r('app.media.bg_cloud'),() => {
             if(this.isLogged) {
-              if(this.pageInfos.size() == 0) {
-                this.pageInfos.pushPathByName('CloudPage', null)
+              if(this.pageInfos.size() === 0) {
+                this.pageInfos.pushPathByName('CloudPage', null, this.breakpoint === 'lg' ? false : true)
               } else {
                 this.pageInfos.replacePathByName('CloudPage', null)
               }
@@ -156,8 +156,8 @@ export struct RecommendCards {
        */
       ListItem() {
         ContentButton(`本地曲库`,`随时随地畅听`,$r('app.media.bg_local'),() => {
-          if(this.pageInfos.size() == 0) {
-            this.pageInfos.pushPathByName('LocalSongPage', null)
+          if(this.pageInfos.size() === 0) {
+            this.pageInfos.pushPathByName('LocalSongPage', null, this.breakpoint === 'lg' ? false : true)
           } else {
             this.pageInfos.replacePathByName('LocalSongPage', null)
           }
@@ -184,74 +184,4 @@ export struct RecommendCards {
   .fontSize(size)
   .fontColor(Color.White)
   .fontWeight(isBold ? FontWeight.Bold : FontWeight.Normal)
-}
-
-/**
- * RecommendCards
- * Loading
- * Skeleton
- */
-@Component
-export struct RecommendCards_Skeleton {
-  build() {
-    List({ space: 15 }) {
-      ListItem().width(5)
-      ListItem() {
-        this.ContentSkeleton()
-      }
-      .width(cardWidth)
-      ListItem() {
-        this.ContentSkeleton()
-      }
-      .width(cardWidth)
-      ListItem() {
-        this.ContentSkeleton()
-      }
-      .width(cardWidth)
-
-      ListItem().width(5)
-    }
-    .borderRadius(0)
-    .scrollBar(BarState.Off)
-    .listDirection(Axis.Horizontal)
-    .width('100%')
-  }
-
-  @Builder ContentSkeleton() {
-    Button() {
-      Column() {
-        Column()
-          .backgroundColor($r('app.color.background'))
-          .alignSelf(ItemAlign.Start)
-          .width('70%')
-          .borderRadius(cardRadius)
-          .height(Constants.FONT_SIZE_TITLE)
-          .padding(Constants.PADDING_EDGE_DEFAULT)
-        Column({ space: 3 }) {
-          Column()
-            .backgroundColor($r('app.color.background'))
-            .alignSelf(ItemAlign.Center)
-            .width('80%')
-            .borderRadius(cardRadius)
-            .height(Constants.FONT_SIZE_BAR - 2)
-            .padding(Constants.PADDING_EDGE_DEFAULT)
-          Column()
-            .backgroundColor($r('app.color.background'))
-            .alignSelf(ItemAlign.Center)
-            .width('80%')
-            .borderRadius(cardRadius)
-            .height(Constants.FONT_SIZE_BAR - 2)
-            .padding(Constants.PADDING_EDGE_DEFAULT)
-        }
-      }
-      .padding(Constants.PADDING_EDGE_DEFAULT)
-      .justifyContent(FlexAlign.SpaceBetween)
-      .height('100%')
-      .width('100%')
-    }
-    .buttonSty()
-    .backgroundColor($r('app.color.main'))
-    .width(cardWidth)
-    .height(cardHeight)
-  }
 }

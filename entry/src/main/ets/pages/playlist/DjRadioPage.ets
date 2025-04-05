@@ -22,7 +22,7 @@ export struct DjRadioPage {
   @StorageProp('topRectHeight') topRectHeight: number = 0
   @StorageProp('bottomRectHeight') bottomRectHeight: number = 0
   @StorageProp(StorageConstants.IS_PLAYER_LOADING) isPlayerLoading: boolean = false
-  @State @Watch('handleUpdate') programs: DjRadioProgram[] = []
+  @State programs: DjRadioProgram[] = []
   @State dataSource: LazyData<DjRadioProgram> = new LazyData()
   @State songsOffset: number = 0
   @State translateY: number = 40
@@ -30,7 +30,6 @@ export struct DjRadioPage {
   @State isLoadingMore: boolean = false
   @State hasMore: boolean = false
   @Provide('playmode') playmode: number = 3
-  updateFlag: boolean = true
 
   async aboutToAppear(): Promise<void> {
     this.isLoading = true
@@ -51,28 +50,20 @@ export struct DjRadioPage {
     this.dataSource.notifyDataReload()
   }
 
-  handleUpdate() {
-    this.updateFlag = true
-  }
-
   async playSong(songIndex: number) {
     try {
       if(this.programs.length === 0) return
-      if(this.updateFlag) {
-        let queue: PlayQueue[] = this.programs.map((item): PlayQueue => ({
-          playmode: 3,
-          song: item.mainSong,
-          fileName: '',
-          picUrl: item.coverUrl
-        }))
-        await PlayQueueUtils.cleanQueue()
-        await PlayQueueUtils.queueAdd_array(queue)
-      }
+      let queue: PlayQueue[] = this.programs.map((item): PlayQueue => ({
+        playmode: 3,
+        song: item.mainSong,
+        fileName: '',
+        picUrl: item.coverUrl
+      }))
+      await PlayQueueUtils.cleanQueue()
+      await PlayQueueUtils.queueAdd_array(queue)
       playQueue(songIndex)
     } catch (e) {
       ToastUtil.showToast('播放失败: ' + e.message)
-    } finally {
-      this.updateFlag = false
     }
   }
 

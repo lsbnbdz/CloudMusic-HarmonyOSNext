@@ -72,8 +72,8 @@ export struct SearchPlayListsList {
       }
       .layoutWeight(1)
       .width('100%')
-      .scrollBar(BarState.On)
       .height('100%')
+      .scrollBar(BarState.Auto)
       .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.BOTTOM])
     }
   }

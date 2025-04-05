@@ -1,32 +1,32 @@
 import { LogUtil } from "@pura/harmony-utils"
-import { getArtistsList } from "../../api/artistApi"
+import { getDjRadioList } from "../../api/djApi"
 import Constants from "../../common/constants/Constants"
-import { ArtistItem } from "../../common/entities/song/ArtistsResult"
-import { ArtistCard } from "../../components/cards/ArtistCard"
+import { DjRadio } from "../../common/entities/dj/DjResult"
+import { DjRadioCard } from "../../components/cards/DjRadioCard"
 
 /**
  * 歌手搜索结果列表
  */
-const TAG = "[SearchArtistsList] "
+const TAG = "[SearchDjRadioList] "
 
 @Component
-export struct SearchArtistsList {
+export struct SearchDjRadioList {
   @StorageProp('bottomRectHeight') bottomRectHeight: number = 0
   @StorageProp('topRectHeight') topRectHeight: number = 0
-  @State artists: Array<ArtistItem> = []
+  @State djRadios: DjRadio[] = []
   @Link @Watch('handleSearch') searchKeyword: string
-  @State hasArtistLoaded: boolean = false
+  @State hasLoaded: boolean = false
   @State isLoading: boolean = false
 
   async aboutToAppear(): Promise<void> {
     if(this.searchKeyword) {
-      await this.loadArtists()
+      await this.load()
     }
   }
 
   async handleSearch() {
-    this.artists = []
-    await this.loadArtists()
+    this.djRadios = []
+    await this.load()
   }
 
   build() {
@@ -40,9 +40,9 @@ export struct SearchArtistsList {
       .justifyContent(FlexAlign.Center)
     } else {
       List({ space: Constants.PADDING_EDGE_DEFAULT }) {
-        ForEach(this.artists, (item: ArtistItem) => {
+        ForEach(this.djRadios, (item: DjRadio) => {
           ListItem() {
-            ArtistCard({ artistItem: item })
+            DjRadioCard({ djRadio: item })
           }
           .translate({ y: -40 })
           .animation({
@@ -67,16 +67,16 @@ export struct SearchArtistsList {
     }
   }
 
-  async loadArtists(): Promise<void> {
-    if(this.hasArtistLoaded) return
+  async load(): Promise<void> {
+    if(this.hasLoaded) return
     this.isLoading = true
     try {
-      this.artists = await getArtistsList(this.searchKeyword)
+      this.djRadios = await getDjRadioList(this.searchKeyword)
     } catch (e) {
-      LogUtil.error(TAG + 'Error fetching playLists: ', JSON.stringify(e));
+      LogUtil.error(TAG + 'Error fetching DjRadio list: ', JSON.stringify(e))
     } finally {
       this.isLoading = false
-      this.hasArtistLoaded = true
+      this.hasLoaded = true
     }
   }
 }

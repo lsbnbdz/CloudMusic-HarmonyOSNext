@@ -16,6 +16,7 @@ export struct Me {
   @StorageProp(StorageConstants.COOKIE) cookie: string = ''
   @StorageProp(StorageConstants.APP_LOADING) appLoading: boolean = true
   @State isRefreshing: boolean = false
+  @Prop breakpoint: string = 'sm'
   @StorageLink('isShowSettings') isShowSettings: boolean = false
   @Consume('pageInfos') pageInfos: NavPathStack
 
@@ -73,7 +74,7 @@ export struct Me {
       Column() {
         this.ItemCard($r('app.media.ic_public_folder_filled'), '本地曲库', () => {
           if(this.pageInfos.size() == 0) {
-            this.pageInfos.pushPathByName('LocalSongPage', null)
+            this.pageInfos.pushPathByName('LocalSongPage', null, this.breakpoint === 'lg' ? false : true)
           } else {
             this.pageInfos.replacePathByName('LocalSongPage', null)
           }
@@ -90,7 +91,7 @@ export struct Me {
           })
         } else {
           this.LoginButton(Color.Blue, '登 录', () => {
-            this.pageInfos.pushPathByName('LoginPage', null, true)
+            this.pageInfos.pushPathByName('LoginPage', null, this.breakpoint === 'lg' && this.pageInfos.size() === 0 ? false : true)
           })
         }
       }

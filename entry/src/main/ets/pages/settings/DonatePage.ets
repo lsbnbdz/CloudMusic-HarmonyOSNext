@@ -37,12 +37,7 @@ export struct DonatePage {
                       .backgroundColor($r('app.color.main'))
                       .borderRadius(Constants.RADIUS_CARD)
                   }
-                  .padding({
-                    left: Constants.PADDING_EDGE_DEFAULT,
-                    right: Constants.PADDING_EDGE_DEFAULT,
-                    top: 5,
-                    bottom: 5
-                  })
+                  .padding(5)
                 })
               }
               .padding({ left: Constants.PADDING_EDGE_DEFAULT, right: Constants.PADDING_EDGE_DEFAULT})

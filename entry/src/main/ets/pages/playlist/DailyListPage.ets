@@ -27,7 +27,6 @@ export struct DailyListPage {
   @State isLoading: boolean = true
   @State pageOpacity: number = 1
   @State totayDate: string = ''
-  updateFlag: boolean = true
   playListItem: PlayList = playListItem
 
   async aboutToAppear() {
@@ -60,20 +59,16 @@ export struct DailyListPage {
 
   async playSong(songIndex: number) {
     try {
-      if(this.updateFlag) {
-        let queue: PlayQueue[] = this.list.map((item): PlayQueue => ({
-          playmode: 2,
-          song: item.song,
-          fileName: '',
-          picUrl: item.picUrl
-        }))
-        await PlayQueueUtils.cleanQueue()
-        await PlayQueueUtils.queueAdd_array(queue)
-      }
+      let queue: PlayQueue[] = this.list.map((item): PlayQueue => ({
+        playmode: 2,
+        song: item.song,
+        fileName: '',
+        picUrl: item.picUrl
+      }))
+      await PlayQueueUtils.cleanQueue()
+      await PlayQueueUtils.queueAdd_array(queue)
       playQueue(songIndex)
     } catch (e) {
-    } finally {
-      this.updateFlag = false
     }
   }
 

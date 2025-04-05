@@ -6,6 +6,7 @@ import Constants from '../../common/constants/Constants';
 import { StorageConstants } from '../../common/constants/StorageConstants';
 import { SearchHistoryComponent } from './SearchHistoryComponent';
 import { SearchArtistsList } from './SearchArtistsList';
+import { SearchDjRadioList } from './SearchDjRadioList';
 
 /**
  * 歌曲列表页（搜索结果）
@@ -38,12 +39,16 @@ export struct SearchPage {
                 TabContent() { SearchSongsList({ searchKeyword: this.searchKeyword }) }.expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.BOTTOM])
                 TabContent() { SearchPlayListsList({ searchKeyword: this.searchKeyword }) }.expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.BOTTOM])
                 TabContent() { SearchArtistsList({ searchKeyword: this.keyword })}.expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.BOTTOM])
+                TabContent() { SearchDjRadioList({ searchKeyword: this.keyword })}.expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.BOTTOM])
               }
               .layoutWeight(1)
+              .onAnimationStart((index, target) => {
+                this.tabPageIndex = target
+              })
               .onChange((index) => {
                 this.tabPageIndex = index
               })
-              .scrollable(false)
+              .scrollable(true)
               .barHeight(0)
             }
             .height('100%')
@@ -74,17 +79,26 @@ export struct SearchPage {
    */
   @Builder
   TabBarButton(content: string, toIndex: number) {
-    Button() {
+    Column() {
       Text(content)
         .fontColor(this.tabPageIndex == toIndex ? '#ffee6f6f' : $r('app.color.reverse'))
         .fontWeight(FontWeight.Bold)
+        .fontSize(Constants.FONT_SIZE_COMMON)
+        .margin({ bottom: 5 })
+      Divider()
+        .width(Constants.FONT_SIZE_TITLE)
+        .strokeWidth(3)
+        .borderRadius(Constants.RADIUS_CARD)
+        .color($r('app.color.app_red'))
+        .opacity(this.tabPageIndex === toIndex ? 1 : 0)
+        .animation({ duration: 300, curve: Curve.Smooth })
     }
     .layoutWeight(1)
-    .padding({ left: 10, right: 10, top: 5, bottom: 5 })
+    .padding({ left: 10, right: 10, top: 5 })
     .backgroundColor(Color.Transparent)
     .animation({ duration: 200 })
     .onClick(() => {
-      this.tabsController.changeIndex(toIndex)
+       this.tabsController.changeIndex(toIndex)
     })
   }
 
@@ -94,6 +108,7 @@ export struct SearchPage {
       this.TabBarButton('单曲', 0)
       this.TabBarButton('歌单', 1)
       this.TabBarButton('歌手', 2)
+      this.TabBarButton('播客', 3)
     }
     .width('80%')
     .justifyContent(FlexAlign.SpaceAround)

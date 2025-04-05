@@ -119,6 +119,7 @@ export struct UserPlayLists {
         (item: PlayList, index) => {
         ListItem() {
           PlayListCard({
+            breakpoint: this.breakpoint,
             playList: item,
             isShowHeart: item.creator?.userId == this.user.data?.account.id ? false : true
           })
@@ -130,7 +131,7 @@ export struct UserPlayLists {
     .height('100%')
     .width('100%')
     .scrollBar(BarState.Off)
-    .lanes(this.breakpoint == 'md' ? 2 : 1)
+    .lanes(this.breakpoint == 'lg' ? 2 : 1)
     .backToTop(true)
     .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
   }

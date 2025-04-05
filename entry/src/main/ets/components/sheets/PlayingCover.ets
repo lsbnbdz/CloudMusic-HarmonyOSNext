@@ -483,13 +483,13 @@ export struct PlayingCover {
           .height(30)
           .backgroundColor(Color.Transparent)
         }
-        .width('100%')
+        .width(this.deviceType === resourceManager.DeviceType.DEVICE_TYPE_TABLET ? '70%' : '90%')
       }
-      .layoutWeight(0.9)
+      .layoutWeight(1)
 
       LyricComponent()
         .width('100%')
-        .layoutWeight(1.1)
+        .layoutWeight(1)
     }
     .width('100%')
     .height('100%')

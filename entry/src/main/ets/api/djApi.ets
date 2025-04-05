@@ -90,3 +90,17 @@ export async function putDjRadioInQueue(rid: number, trackCount: number, limit: 
   if (first) await PlayQueueUtils.cleanQueue()
   await PlayQueueUtils.queueAdd_array(allQueue)
 }
+
+/**
+ * 搜索播客电台
+ * @param keyword
+ * @returns
+ */
+export async function getDjRadioList(keyword: string): Promise<DjRadio[]> {
+  const rootUrl = await getApiUrl()
+  const url = `${rootUrl}/search?keywords=${encodeURIComponent(keyword)}&type=1009`
+  const request = new HttpRequest(url)
+  const data = await request.RequestInStream()
+  const dataGot: DjRadio[] = data.result["result"]["djRadios"] as DjRadio[]
+  return dataGot ?? []
+}

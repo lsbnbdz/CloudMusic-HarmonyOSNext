@@ -18,7 +18,7 @@ export struct TopListPage {
           } }) {
             ForEach(this.topList, (item: TopListItem) => {
               GridCol() {
-                TopListItemCard({ topListItem: item }).padding(Constants.PADDING_EDGE_DEFAULT)
+                TopListItemCard({ topListItem: item, breakpoint: this.breakpoint }).padding(Constants.PADDING_EDGE_DEFAULT)
               }
             })
           }

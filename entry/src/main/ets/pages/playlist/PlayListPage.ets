@@ -40,7 +40,7 @@ export struct PlayListPage {
   @StorageProp(StorageConstants.IS_LOGGED) isLogged: boolean = false
   @Consume('pageInfos') pageInfos: NavPathStack
   @State isSubscribed: boolean = false
-  @State @Watch('initUpdateFlag') list: PlayListSong[] = new Array()
+  @State list: PlayListSong[] = new Array()
   @State filteredList: PlayListSong[] = new Array()
   @State listDataSource: LazyData<PlayListSong> = new LazyData()
   @State filteredDataSource: LazyData<PlayListSong> = new LazyData()
@@ -69,7 +69,6 @@ export struct PlayListPage {
   ]
   private currentOffset: number = 0 // 歌曲偏移量
   private useTimestamp: boolean = true
-  private updateFlag: boolean = true
 
   async aboutToAppear(): Promise<void> {
     this.isPageActive = true
@@ -90,36 +89,28 @@ export struct PlayListPage {
     await this.loadSongs(this.param.playList.trackCount - 200, 150)
   }
 
-  initUpdateFlag() {
-    this.updateFlag = true
-  }
-
   private async playSong(songIndex: number) {
     try {
       if(this.list.length === 0) return
-      if(this.updateFlag) {
-        let queue: PlayQueue[] = this.list.map((item): PlayQueue => ({
-          playmode: 1,
-          song: {
-            id: item.id,
-            name: item.name,
-            artists: item.ar,
-            duration: item.dt,
-            fee: item.fee,
-            alias: []
-          },
-          fileName: '',
-          picUrl: item.al.picUrl
-        }))
-        await PlayQueueUtils.cleanQueue()
-        await PlayQueueUtils.queueAdd_array(queue)
-      }
+      let queue: PlayQueue[] = this.list.map((item): PlayQueue => ({
+        playmode: 1,
+        song: {
+          id: item.id,
+          name: item.name,
+          artists: item.ar,
+          duration: item.dt,
+          fee: item.fee,
+          alias: []
+        },
+        fileName: '',
+        picUrl: item.al.picUrl
+      }))
+      await PlayQueueUtils.cleanQueue()
+      await PlayQueueUtils.queueAdd_array(queue)
       playQueue(songIndex)
     } catch (e) {
       ToastUtil.showToast('播放失败: ' + e.message)
       LogUtil.error(TAG + 'playSong Error: ' + e.stack)
-    } finally {
-      this.updateFlag = false
     }
   }
 

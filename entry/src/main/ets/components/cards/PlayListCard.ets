@@ -7,6 +7,7 @@ import Constants from "../../common/constants/Constants"
 export struct PlayListCard {
   @Consume('pageInfos') pageInfos: NavPathStack
   @State isShowHeart: boolean = true
+  @Prop breakpoint: string = 'sm'
   playList: PlayList = playListItem
 
   build() {
@@ -37,9 +38,10 @@ export struct PlayListCard {
         useTimestamp: true
       }
       if(this.pageInfos.size() < 2) {
-        this.pageInfos.pushPathByName('PLayListPage', param, true)
+        this.pageInfos.pushPathByName('PLayListPage', param,
+          (this.pageInfos.size() === 0 && this.breakpoint === 'lg') ? false : true)
       } else {
-        this.pageInfos.replacePathByName('PLayListPage', param, true)
+        this.pageInfos.replacePathByName('PLayListPage', param)
       }
     })
   }

@@ -49,6 +49,10 @@ export struct BottomBarComponent {
     }
     .justifyContent(FlexAlign.SpaceBetween)
     .width('100%')
+    .constraintSize({
+      minWidth: 100,
+      maxWidth: 500
+    })
     .borderRadius(Constants.RADIUS_IMG)
     .backgroundColor($r('app.color.main'))
     .height(Constants.HEIGHT_MINI)

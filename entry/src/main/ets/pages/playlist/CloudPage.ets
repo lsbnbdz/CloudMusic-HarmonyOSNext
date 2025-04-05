@@ -25,7 +25,7 @@ export struct CloudPage {
   @StorageProp('topRectHeight') topRectHeight: number = 0
   @StorageProp(StorageConstants.BREAKPOINT) breakpoint: string = 'sm'
   private currentOffset: number = 0
-  @State @Watch('listUpdate') list: PlayListSong[] = new Array()
+  @State list: PlayListSong[] = new Array()
   @State dataSource: LazyData<PlayListSong> = new LazyData()
   @State hasMore: boolean = true
   @State hasLoaded: boolean = false
@@ -44,7 +44,6 @@ export struct CloudPage {
     }
   ]
   playListItem: PlayList = playListItem
-  updateFlag: boolean = true
 
   async aboutToAppear() {
     this.playListItem.id = 2
@@ -82,10 +81,9 @@ export struct CloudPage {
 
   async playSong(songIndex: number) {
     try {
-      if(this.updateFlag) {
-        let queue: PlayQueue[] = this.list.map((item): PlayQueue => ({
-          playmode: 2,
-          song: {
+      let queue: PlayQueue[] = this.list.map((item): PlayQueue => ({
+        playmode: 2,
+        song: {
           id: item.id,
           artists: item.ar,
           name: item.name,
@@ -93,21 +91,14 @@ export struct CloudPage {
           alias: [],
           fee: item.fee
         },
-          fileName: '',
-          picUrl: item.al?.picUrl ?? $r('app.media.ic_public_music')
-        }))
-        await PlayQueueUtils.cleanQueue()
-        await PlayQueueUtils.queueAdd_array(queue)
-      }
+        fileName: '',
+        picUrl: item.al?.picUrl ?? $r('app.media.ic_public_music')
+      }))
+      await PlayQueueUtils.cleanQueue()
+      await PlayQueueUtils.queueAdd_array(queue)
       playQueue(songIndex)
     } catch (e) {
-    } finally {
-      this.updateFlag = false
     }
-  }
-
-  listUpdate() {
-    this.updateFlag = true
   }
 
   build() {

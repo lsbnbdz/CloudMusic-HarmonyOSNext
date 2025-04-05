@@ -1,6 +1,5 @@
 import { LogUtil, ToastUtil } from "@pura/harmony-utils";
 import { getDjSublist } from "../../../api/djApi";
-import Constants from "../../../common/constants/Constants";
 import { StorageConstants } from "../../../common/constants/StorageConstants";
 import { DjRadio } from "../../../common/entities/dj/DjResult";
 import { DjRadioParam } from "../../../common/entities/local/PageParams";
@@ -12,6 +11,7 @@ export struct UserDjRadioList {
   @StorageProp('bottomRectHeight') bottomRectHeight: number = 0
   @StorageProp(StorageConstants.USER_DJRADIO_LIST) djRadioList: DjRadio[] = []
   @StorageProp(StorageConstants.IS_LOGGED) @Watch('getRadioList') isLogged: boolean = false
+  @StorageProp(StorageConstants.BREAKPOINT) breakpoint: string = 'sm'
   @State isLoading: boolean = false
   @State isRefreshing: boolean = false
   @State lastRefreshTime: number = 0
@@ -64,17 +64,21 @@ export struct UserDjRadioList {
       }
       List() {
         ForEach(this.djRadioList, (item: DjRadio, index) => {
-          DjRadioCard({ djRadio: item })
+          DjRadioCard({
+            breakpoint: this.breakpoint,
+            djRadio: item
+          })
             .onClick(() => {
               const param: DjRadioParam = {
                 djRadio: item
               }
-              this.pageInfos.pushPathByName('DjRadioPage', param)
+              this.pageInfos.pushPathByName('DjRadioPage', param, this.breakpoint === 'lg' && this.pageInfos.size() === 0 ? false : true)
             })
         })
 
         ListItem().height(px2vp(this.bottomRectHeight) + 120)
       }
+      .lanes(this.breakpoint == 'lg' ? 2 : 1)
       .width('100%')
       .height('100%')
     }

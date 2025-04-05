@@ -4,10 +4,8 @@ import { JSON } from "@kit.ArkTS";
 import Constants from "../../common/constants/Constants";
 import { resourceManager } from "@kit.LocalizationKit";
 import { AppConstants } from "../../common/constants/AppConstants";
-import { promptAction } from "@kit.ArkUI";
 import { HttpRequest } from "../../common/utils/request/HttpRequestUtils";
 import { getApiUrl } from "../../common/functions/common/get";
-import RelationalStoreUtils from "../../common/utils/data/RelationalStoreUtils";
 import { ToastUtil } from "@pura/harmony-utils";
 
 @Component

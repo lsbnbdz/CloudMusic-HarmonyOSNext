@@ -23,6 +23,7 @@ export struct Explore {
   @StorageLink(StorageConstants.TOPLISTS) topList: Array<TopListItem> = []
   @StorageLink(StorageConstants.PERSONALIZED_LIST) personalizedList: Array<PersonalListItem> = []
   @StorageLink(StorageConstants.RECOMMENDED_DJ) recommendDjRadioList: Array<RecommendDjRadio> = []
+  @StorageProp(StorageConstants.BREAKPOINT) breakpoint: string = 'sm'
   @State isLoadingTopList: boolean = false
   @State isLoadingPersonalized: boolean = false
   @State isLoadingRecommendDjRadio: boolean = false
@@ -111,7 +112,7 @@ export struct Explore {
               .focusable(false)
               .onClick(() => {
                 this.pageInfos.clear()
-                this.pageInfos.pushPathByName('SearchPage', null, true)
+                this.pageInfos.pushPathByName('SearchPage', null, this.breakpoint === 'lg' && this.pageInfos.size() === 0 ? false : true)
               })
               .layoutWeight(1)
           }
@@ -120,7 +121,7 @@ export struct Explore {
           GridItem() {
             Column({ space: 5 }) {
               this.Intro(this.getGreeting(this.currentHour), () => {})
-              RecommendCards({ isLogged: this.isLogged })
+              RecommendCards({ isLogged: this.isLogged, breakpoint: this.breakpoint })
             }
           }
 
@@ -134,7 +135,7 @@ export struct Explore {
                   ListItem().width(5)
                   ForEach(this.personalizedList, (item: PersonalListItem, index) => {
                     ListItem() {
-                      PersonalizedCard({ item: item }).padding(5)
+                      PersonalizedCard({ item: item, breakpoint: this.breakpoint }).padding(5)
                     }
                   }, (item: PersonalListItem) => item.id.toString())
                   ListItem().width(5)
@@ -173,14 +174,14 @@ export struct Explore {
             GridItem() {
               Column({ space: 15 }) {
                 this.Intro('排行榜', () => {
-                  this.pageInfos.pushPathByName('TopListPage', null)
+                  this.pageInfos.pushPathByName('TopListPage', null, this.breakpoint === 'lg' && this.pageInfos.size() === 0 ? false : true)
                 })
                 // 排行榜
                 List() {
                   ListItem().width(15)
-                  ForEach(this.topList.slice(0, 5), (item: TopListItem) => {
+                  ForEach(this.topList.slice(0, 10), (item: TopListItem) => {
                     ListItem() {
-                      TopListItemCard({ topListItem: item }).padding(5)
+                      TopListItemCard({ topListItem: item, breakpoint: this.breakpoint }).padding(5)
                     }
                   })
                   ListItem() {
@@ -208,7 +209,7 @@ export struct Explore {
                     .width(120)
                     .aspectRatio(1)
                     .clickEffect({ level: ClickEffectLevel.LIGHT, scale: 0.9 })
-                    .onClick(() => { this.pageInfos.pushPathByName('TopListPage', null) })
+                    .onClick(() => { this.pageInfos.pushPathByName('TopListPage', null, this.breakpoint === 'lg' && this.pageInfos.size() === 0 ? false : true) })
                   }.padding(5)
                   ListItem().width(15)
                 }

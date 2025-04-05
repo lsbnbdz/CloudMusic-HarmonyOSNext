@@ -67,7 +67,7 @@ struct Index {
         icon: $r('app.media.ic_public_search_filled'),
         action: () => {
           this.pageInfos.clear()
-          this.pageInfos.pushPathByName('SearchPage', null, true)
+          this.pageInfos.pushPathByName('SearchPage', null, this.breakpoint === 'lg' && this.pageInfos.size() === 0 ? false : true)
         }
       })
     }
@@ -98,7 +98,7 @@ struct Index {
         Tabs({ controller: this.tabController, index: this.tabCurrentIndex }) {
           TabContent() { Explore({ currentHour: this.currentHour }) }
           TabContent() { UserLists({ categoryTabIndex: this.categoryTabIndex }) }
-          TabContent() { Me() }
+          TabContent() { Me({ breakpoint: this.breakpoint }) }
         }
         .height('100%')
         .width('100%')
@@ -119,7 +119,8 @@ struct Index {
     .width('100%')
     .navBarWidth('50%')
     .navBarPosition(NavBarPosition.Start)
-    .mode(this.breakpoint == 'lg' ? NavigationMode.Split : NavigationMode.Stack)
+    .mode((this.breakpoint == 'lg' && this.pageInfos.size() > 0) ? NavigationMode.Split : NavigationMode.Stack)
+    .enableModeChangeAnimation(true)
     .titleMode(NavigationTitleMode.Mini)
     .title(this.index === 1 ? this.CategoryTabBar : this.index === 0 ? '发现' : '我的')
     .menus(this.getMenuItems())
@@ -127,6 +128,7 @@ struct Index {
     .backgroundColor($r('app.color.background'))
     .navDestination(this.PageMap)
     .toolbarConfiguration(this.ToolBar(), { backgroundBlurStyle: BlurStyle.Regular, barStyle: BarStyle.STACK, backgroundColor: Color.Transparent })
+    .animation({ duration: 500, curve: Curve.Smooth })
   }
 
   @Builder PageMap(name: string, param: Object) {

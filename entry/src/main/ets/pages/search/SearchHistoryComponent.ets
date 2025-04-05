@@ -52,7 +52,7 @@ export struct SearchHistoryComponent {
         .textAlign(TextAlign.Start)
       Image($r('app.media.ic_public_cancel'))
         .fillColor(Color.Gray)
-        .width(Constants.FONT_SIZE_TITLE)
+        .width(Constants.FONT_SIZE_COMMON)
         .aspectRatio(1)
         .onClick(() => {
           this.searchHistory.splice(index, 1)

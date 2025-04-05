@@ -9,6 +9,7 @@ const recommendCardHeight: number = recommendCoverHeight + 30
 @Component
 export struct DjRadioCard {
   djRadio: DjRadio = djRadioItem
+  @Prop breakpoint: string = 'sm'
 
   build() {
     Button() {

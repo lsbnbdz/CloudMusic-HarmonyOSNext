@@ -13,6 +13,7 @@ export struct PersonalizedCard {
     playCount: 0,
     trackCount: 0
   }
+  @Prop breakpoint: string = 'sm'
   @Consume('pageInfos') pageInfos: NavPathStack
 
   build() {
@@ -66,7 +67,7 @@ export struct PersonalizedCard {
         useTimestamp: false
       }
       if(this.pageInfos.size() < 2) {
-        this.pageInfos.pushPathByName('PLayListPage', param, true)
+        this.pageInfos.pushPathByName('PLayListPage', param, this.breakpoint === 'lg' && this.pageInfos.size() === 0 ? false : true)
       } else {
         this.pageInfos.replacePathByName('PLayListPage', param, true)
       }

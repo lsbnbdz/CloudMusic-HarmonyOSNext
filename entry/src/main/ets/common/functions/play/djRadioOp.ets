@@ -13,9 +13,9 @@ export async function djRadioToQueue(id: number, count: number, currentIndex: nu
       playQueue(currentIndex)
     } else {
       let limit = 100
-      await putDjRadioInQueue(id, 100, limit, currentIndex < 50 ? 0 : currentIndex - 25, true)
+      await putDjRadioInQueue(id, limit, limit, currentIndex < 50 ? 0 : currentIndex - 25, true)
       playQueue(currentIndex < 50 ? currentIndex : 25)
-      // await putDjRadioInQueue(id, count, 200, limit, false)
+      await putDjRadioInQueue(id, count, 400, limit, false)
     }
   } catch (e) {
     LogUtil.error(TAG + '' + e.message)

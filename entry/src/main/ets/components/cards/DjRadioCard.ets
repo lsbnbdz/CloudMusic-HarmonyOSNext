@@ -10,6 +10,7 @@ const recommendCardHeight: number = recommendCoverHeight + 30
 export struct DjRadioCard {
   djRadio: DjRadio = djRadioItem
   @Prop breakpoint: string = 'sm'
+  @Consume('pageInfos') pageInfos: NavPathStack
 
   build() {
     Button() {
@@ -37,6 +38,12 @@ export struct DjRadioCard {
     .width('100%')
     .height(60)
     .padding({ left: 20, right: 20 })
+    .onClick(() => {
+      let param: DjRadioParam = {
+        djRadio: this.djRadio
+      }
+      this.pageInfos.pushPathByName('DjRadioPage', param)
+    })
   }
 }
 

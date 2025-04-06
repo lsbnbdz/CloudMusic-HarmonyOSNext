@@ -4,8 +4,10 @@ import { StorageConstants } from "../../common/constants/StorageConstants"
 import { Song, SongItem } from "../../common/entities/song/SongsResult"
 import { changeDuration } from "../../common/functions/common/convert"
 import { likeThisSong } from "../../common/functions/play/songLike"
+import OrientationUtils from "../../common/utils/system/OrientationUtils"
 import { DownloadDialog } from "../dialog/DownloadDialog"
 import { SetPlayQuality } from "../settings/SetPlayQuality"
+import { window } from "@kit.ArkUI"
 
 @Component
 export struct PlayerActionSheet {
@@ -13,12 +15,14 @@ export struct PlayerActionSheet {
   @Link isShowTimer: boolean
   @Link isShowAddSheet: boolean
   @Link isShowArtists: boolean
+  @Link isShowSettings: boolean
   @StorageProp(StorageConstants.PLAY_SONG) song: Song = SongItem
   @StorageProp(StorageConstants.PLAY_ARTISTS) artists: string = ''
   @StorageProp(StorageConstants.PIC_URL) picUrl: string = ''
   @StorageProp(StorageConstants.PLAY_MODE) playmode: number = 1
   @StorageProp(StorageConstants.ISLIKED) isLiked: boolean = false
   @StorageProp('bottomRectHeight') bottomRectHeight: number = 0
+  showOrientation: boolean = false
   private dialogController: CustomDialogController = new CustomDialogController({
     builder: DownloadDialog({
       song: this.song,
@@ -28,23 +32,48 @@ export struct PlayerActionSheet {
     }),
   })
 
+  private setOrientation() {
+    OrientationUtils.setOrientation(OrientationUtils.getOrientation() === window.Orientation.UNSPECIFIED ?
+    window.Orientation.AUTO_ROTATION_LANDSCAPE_RESTRICTED :
+    window.Orientation.UNSPECIFIED)
+  }
+
   build() {
     Column() {
-      Text(this.song.name)
-        .maxLines(1)
-        .textOverflow({ overflow: TextOverflow.Ellipsis })
-        .fontWeight(FontWeight.Bold)
-        .fontSize(Constants.FONT_SIZE_TITLE)
-        .width('70%')
-        .textAlign(TextAlign.Start)
-        .alignSelf(ItemAlign.Start)
-        .fontColor($r('app.color.app_red'))
-        .padding({ left: 10 })
+      Row({ space: 10 }) {
+        Text(this.song.name)
+          .maxLines(1)
+          .textOverflow({ overflow: TextOverflow.Ellipsis })
+          .fontWeight(FontWeight.Bold)
+          .fontSize(Constants.FONT_SIZE_TITLE)
+          .layoutWeight(1)
+          .textAlign(TextAlign.Start)
+          .alignSelf(ItemAlign.Start)
+          .fontColor($r('app.color.app_red'))
+          .padding({ left: 10 })
 
-      SetPlayQuality().padding(10)
-      Divider()
+        if(this.showOrientation) {
+          Image($r('app.media.ic_public_rotate'))
+            .fillColor($r('app.color.reverse'))
+            .width(Constants.SIZE_ICON_BUTTON_BAR)
+            .onClick(() => {
+              this.isShow = false
+              setTimeout(() => {
+                this.setOrientation()
+              }, 600)
+            })
+        }
+      }
+      .width('100%')
+
       Scroll() {
         Column({ space: 10 }) {
+          this.Item($r('app.media.ic_public_settings'), '播放设置', () => {
+            this.isShow = false
+            setTimeout(() => {
+              this.isShowSettings = true
+            }, 300)
+          }, 24)
           if (this.song.id !== 0 && this.playmode !== 3) {
             this.Item(this.isLiked ? $r('app.media.ic_public_favor') : $r('app.media.ic_public_favor_filled'),
               this.isLiked ? '取消喜欢当前歌曲' : '喜欢当前歌曲', () => {

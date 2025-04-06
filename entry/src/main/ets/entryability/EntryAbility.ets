@@ -5,6 +5,8 @@ import PreferencesUtils from '../common/utils/data/PreferencesUtils';
 import { AppUtil, CrashUtil, LogUtil } from '@pura/harmony-utils';
 import { appInit } from '../common/functions/app/appInit';
 import { StorageConstants } from '../common/constants/StorageConstants';
+import { BusinessError } from '@kit.BasicServicesKit';
+import OrientationUtils from '../common/utils/system/OrientationUtils';
 
 
 export default class EntryAbility extends UIAbility {
@@ -31,6 +33,13 @@ export default class EntryAbility extends UIAbility {
 
   onWindowStageCreate(windowStage: window.WindowStage): void {
     AppUtil.init(this.context)
+    windowStage.getMainWindow((err: BusinessError, data) => {
+      const errCode: number = err.code
+      if(errCode) {
+        return
+      }
+      OrientationUtils.init(data)
+    })
     windowStage.loadContent('pages/Index', async (err, data) => {
       if (err.code) {
         return

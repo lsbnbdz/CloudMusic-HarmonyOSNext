@@ -16,7 +16,9 @@ import { likeThisSong } from "../../common/functions/play/songLike"
 import { resourceManager } from "@kit.LocalizationKit"
 import { PlayConstants } from "../../common/constants/PlayConstants"
 import { ArtistsSheet } from "./ArtistsSheet"
-import { display } from "@kit.ArkUI"
+import { display, window } from "@kit.ArkUI"
+import OrientationUtils from "../../common/utils/system/OrientationUtils"
+import { PlaySettingsPage } from "../../pages/settings/PlaySettingsPage"
 
 @Component
 export struct PlayingCover {
@@ -44,6 +46,7 @@ export struct PlayingCover {
   @State isShowTimer: boolean = false
   @State isShowAddSheet: boolean = false
   @State isShowArtists: boolean = false
+  @State isShowSettings: boolean = false
   @State isLikeProcessing: boolean = false
   @State totalOpacity: number = 0
   @State isNormalPhone: boolean = true
@@ -62,7 +65,11 @@ export struct PlayingCover {
       animateTo({ duration: 300, curve: Curve.EaseInOut }, () => {
         this.totalOpacity = 0.7
       })
-    }, 700)
+    }, 500)
+  }
+
+  aboutToDisappear(): void {
+    OrientationUtils.setOrientation(window.Orientation.UNSPECIFIED)
   }
 
   build() {
@@ -102,8 +109,18 @@ export struct PlayingCover {
      this.Head()
 
    }
-   .height('100%')
-   .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
+    .height('100%')
+    .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
+    .bindSheet(this.isShowSettings, this.SettingsSheet(), {
+      backgroundColor: Color.Transparent,
+      showClose: true,
+      height: SheetSize.LARGE,
+      dragBar: false,
+      blurStyle: BlurStyle.Regular,
+      preferType: SheetType.CENTER,
+      onDisappear: () => {
+        this.isShowSettings = false
+      }})
   }
 
   /**
@@ -178,8 +195,8 @@ export struct PlayingCover {
         .clickEffect({ level: ClickEffectLevel.LIGHT, scale: 0.7 })
         .bindSheet(this.isShowMenu, this.MenuSheet(), {
           backgroundColor: Color.Transparent,
-          showClose: true,
-          height: SheetSize.MEDIUM,
+          showClose: false,
+          height: (this.isNormalPhone && this.breakpoint === 'md') ? SheetSize.LARGE : SheetSize.MEDIUM,
           dragBar: false,
           blurStyle: BlurStyle.Regular,
           preferType: SheetType.CENTER,
@@ -269,6 +286,7 @@ export struct PlayingCover {
           })
         })
     }
+    .width(isPhoneLarge ? '90%' : '100%')
   }
 
   /**
@@ -330,7 +348,7 @@ export struct PlayingCover {
     .position({ top: 0 })
     .width('100%')
     .justifyContent(FlexAlign.SpaceBetween)
-    .padding({ top: px2vp(this.topRectHeight), left: 10, right: 10, bottom: 5 })
+    .padding({ top: px2vp(this.topRectHeight) + 5 , left: 10, right: 10, bottom: 5 })
     .opacity(this.totalOpacity)
   }
 
@@ -345,7 +363,6 @@ export struct PlayingCover {
 
         // 歌曲封面图片
         Stack() {
-          LoadingProgress().width(40)
           Image(this.playmode === 0 ? this.picUrl : this.picUrl + '?param=512y512')
             .height(this.song.id == 0 ? '70%' : '100%')
             .borderRadius(5)
@@ -398,10 +415,9 @@ export struct PlayingCover {
 
   @Builder PhoneLargeSongInfo() {
     Column({ space: 5 }) {
-      Column() {
+      Column({ space: 5 }) {
         // 歌曲封面图片
-        Stack() {
-          LoadingProgress().width(30)
+        Stack({ alignContent: Alignment.Bottom }) {
           Image(this.playmode === 0 ? this.picUrl : this.picUrl + '?param=512y512')
             .height(this.song.id == 0 ? '70%' : '100%')
             .borderRadius(5)
@@ -418,9 +434,8 @@ export struct PlayingCover {
       Row() {
         this.PersonalFmButton()
         Text(this.song.name + ' - ' + this.artists)
-          .textStyle(Constants.FONT_SIZE_TITLE)
-          .fontWeight(FontWeight.Bold)
-          .layoutWeight(1)
+          .textStyle(18)
+          .fontWeight(Constants.FONT_WEIGHT_BOLD)
           .onClick(() => {
             if(this.song.id !== 0 && this.playmode !== 3) {
               this.isShowArtists = true
@@ -559,7 +574,6 @@ export struct PlayingCover {
         Column({ space: 5 }) {
           this.SliderContent(true)
           this.ToolBar(20, '90%')
-          // controll button
           Row() {
             LoopModeButton({ imgWidth: 25, btnWidth: 25, imgColor: Color.White }).opacity(0.8)
             this.PlayButton(35)
@@ -584,7 +598,7 @@ export struct PlayingCover {
   }
 
   @Builder PersonalFmButton() {
-    Button(`私人FM - ${PlayConstants.PERSONAL_FM_MODE_NAME[this.personalFmMode]}`)
+    Button(PlayConstants.PERSONAL_FM_MODE_NAME[this.personalFmMode])
       .fontColor(Color.White)
       .fontSize(Constants.FONT_SIZE_COMMON)
       .backgroundColor(Color.Transparent)
@@ -592,6 +606,7 @@ export struct PlayingCover {
       .clickEffect({ level: ClickEffectLevel.LIGHT, scale: 0.8 })
       .borderRadius(1)
       .shadow({ radius: 10 })
+      .scale(this.isNormalPhone && this.breakpoint === 'sm' ? { centerX: 0.8, centerY: 0.8 } : { centerX: 1, centerY: 1 })
       .visibility(this.isPersonalFm && this.playmode === 1 ? Visibility.Visible : Visibility.None)
       .bindMenu(this.PersonalFmMenu())
   }
@@ -601,12 +616,18 @@ export struct PlayingCover {
       isShow: this.isShowMenu,
       isShowTimer: this.isShowTimer,
       isShowAddSheet: this.isShowAddSheet,
-      isShowArtists: this.isShowArtists
+      isShowArtists: this.isShowArtists,
+      isShowSettings: this.isShowSettings,
+      showOrientation: this.isNormalPhone
     })
   }
 
   @Builder ArtistsSheet() {
     ArtistsSheet({ artists: this.song.artists, isShow: this.isShowArtists, isShowCover: this.isShow })
+  }
+
+  @Builder SettingsSheet() {
+    PlaySettingsPage()
   }
 
   @Builder PersonalFmMenu() {
@@ -633,7 +654,7 @@ export struct PlayingCover {
   .fontSize(size)
   .fontColor(Color.White)
   .maxLines(1)
-  .padding({ left:20, right:20 })
+  .padding({ left: 5, right: 5 })
   .textAlign(TextAlign.Center)
   .textOverflow({ overflow: TextOverflow.MARQUEE })
 }

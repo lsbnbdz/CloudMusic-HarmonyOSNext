@@ -25,7 +25,7 @@ export interface PlayListResult {
   playlist:PlayList[]
 }
 
-export const playListItem: PlayList = {
+export const PlayListItem: PlayList = {
   coverImgUrl: '',
   name: '',
   id: 0,

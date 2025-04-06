@@ -59,23 +59,24 @@ export struct UserDjRadioList {
 
   build() {
     Refresh({ refreshing: this.isRefreshing}) {
-      if(this.isLoading) {
-        this.Loading()
-      }
       List() {
-        ForEach(this.djRadioList, (item: DjRadio, index) => {
-          DjRadioCard({
-            breakpoint: this.breakpoint,
-            djRadio: item
-          })
-            .onClick(() => {
-              const param: DjRadioParam = {
-                djRadio: item
-              }
-              this.pageInfos.pushPathByName('DjRadioPage', param, this.breakpoint === 'lg' && this.pageInfos.size() === 0 ? false : true)
+        if(this.isLoading) {
+          this.Loading()
+        }
+        else {
+          ForEach(this.djRadioList, (item: DjRadio, index) => {
+            DjRadioCard({
+              breakpoint: this.breakpoint,
+              djRadio: item
             })
-        })
-
+              .onClick(() => {
+                const param: DjRadioParam = {
+                  djRadio: item
+                }
+                this.pageInfos.pushPathByName('DjRadioPage', param, this.breakpoint === 'lg' && this.pageInfos.size() === 0 ? false : true)
+              })
+          })
+        }
         ListItem().height(px2vp(this.bottomRectHeight) + 120)
       }
       .lanes(this.breakpoint == 'lg' ? 2 : 1)

@@ -109,9 +109,9 @@ class AVSessionUtils {
    * 停用
    */
   async deactive() {
-    if (this.isActivating) return; // 等待激活完成
+    if (this.isActivating) return // 等待激活完成
     try {
-      await (await this.session).deactivate()
+      (await this.session).deactivate()
     } catch (e) {
       LogUtil.error(TAG + '停用失败: ' + e)
     }

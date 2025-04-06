@@ -1,5 +1,5 @@
 import { SongCard } from '../../components/cards/SongCard'
-import { PlayList, playListItem } from '../../common/entities/playlist/PlayList'
+import { PlayList, PlayListItem } from '../../common/entities/playlist/PlayList'
 import { DialogUtil, EmitterUtil, LogUtil, PasteboardUtil, ToastUtil } from '@pura/harmony-utils'
 import { deletePlayList, getPlayListSongs, subscribePlayList } from '../../api/playListApi'
 import { BottomBarComponent } from '../../components/play/BottomBarComponent'
@@ -27,7 +27,7 @@ const TAG = '[PlayListPage] '
 @Component
 export struct PlayListPage {
   @State param: PlayListPageParam = {
-    playList: playListItem,
+    playList: PlayListItem,
     isShowHeart: false,
     useTimestamp: true
   }
@@ -54,13 +54,8 @@ export struct PlayListPage {
   @State showTitleBar: boolean = false
   @State isPageActive: boolean = false
   @State menuItem: NavigationMenuItem[] = [
-    {
-      value: 'help',
-      icon: $r('app.media.ic_public_help'),
-      action: this.helpButtonAction
-    },
     // {
-    //   value: 'select',
+    //   value: 'help',
     //   icon: $r('app.media.ic_public_select_all'),
     //   action: () => {
     //     this.selectButtonAction()
@@ -80,13 +75,17 @@ export struct PlayListPage {
       this.listDataSource.notifyDataReload()
       cleanLastPlayInfo()
     }))
-    EmitterUtil.unSubscribe(EmitterConstants.PLAY_PLAYLIST_SONGS)
+    await this.loadSongs(200, 0)
     EmitterUtil.onSubscribe(EmitterConstants.PLAY_PLAYLIST_SONGS, ((index: number) => {
       this.playSong(index)
     }))
-
-    await this.loadSongs(200, 0)
     await this.loadSongs(this.param.playList.trackCount - 200, 150)
+  }
+
+  aboutToDisappear(): void {
+    this.isPageActive = false
+    EmitterUtil.unSubscribe(EmitterConstants.EMITTER_DELETE_FROM_PLAYLIST)
+    EmitterUtil.unSubscribe(EmitterConstants.PLAY_PLAYLIST_SONGS)
   }
 
   private async playSong(songIndex: number) {
@@ -114,11 +113,6 @@ export struct PlayListPage {
     }
   }
 
-  aboutToDisappear(): void {
-    this.isPageActive = false
-    EmitterUtil.unSubscribe(EmitterConstants.EMITTER_DELETE_FROM_PLAYLIST)
-  }
-
   build() {
     NavDestination() {
       Stack({ alignContent: Alignment.Bottom }) {
@@ -144,7 +138,7 @@ export struct PlayListPage {
                           .fontSize(Constants.FONT_SIZE_COMMON)
                         LoadingProgress()
                           .width(Constants.FONT_SIZE_TITLE)
-                          .visibility(this.isLoading || this.list.length !== this.param.playList.trackCount ? Visibility.Visible : Visibility.None)
+                          .visibility(this.isLoading || this.list.length > this.param.playList.trackCount ? Visibility.Visible : Visibility.None)
                       }
                     }
                   }
@@ -181,7 +175,7 @@ export struct PlayListPage {
               }
 
               // 添加加载更多
-              if (this.list.length !== this.param.playList.trackCount) {
+              if (this.list.length > this.param.playList.trackCount) {
                 ListItem() {
                   LoadingMoreButton()
                 }
@@ -237,7 +231,7 @@ export struct PlayListPage {
       .height('100%')
       .backgroundColor($r('app.color.background'))
     }
-    .title(this.showTitleBar || this.searchKeyword !== '' ? this.ToolBar : '',
+    .title(this.showTitleBar || (this.searchKeyword !== '' || this.isSelecting) ? this.ToolBar : '',
       {
         backgroundColor: Color.Transparent,
         barStyle: BarStyle.STACK,
@@ -252,6 +246,7 @@ export struct PlayListPage {
         ListItem() {
           Row() {
             SongCard({
+              playmode: 2,
               song: {
                 id: item.id,
                 artists: item.ar,
@@ -282,48 +277,48 @@ export struct PlayListPage {
   }
 
   @Builder ToolBar() {
-    Row({ space: 5 }) {
-      Search({
-        placeholder: '搜索',
-        icon: '/resources/base/media/ic_public_search_filled.svg',
-        value: this.searchKeyword
-      })
-        .backgroundBlurStyle(BlurStyle.Thin)
-        .height(Constants.HEIGHT_SEARCH)
-        .layoutWeight(1)
-        .searchButton('搜索')
-        .onChange((value) => {
-          if(value == '') {
-            this.filteredList = []
-            this.searchKeyword = ''
-          }
-        })
-        .onSubmit((value) => {
-          this.searchKeyword = value
-          this.handelSearch()
-        })
-
+    Column() {
       if(this.isSelecting) {
         Row({ space: 5 }) {
-          Image($r('app.media.ic_public_folder'))
-            .width(Constants.SIZE_ICON_BUTTON_BAR)
-            .aspectRatio(1)
-            .fillColor(Color.Gray)
-            .clickEffect({ level: ClickEffectLevel.LIGHT, scale: 0.8 })
+          // Image($r('app.media.ic_public_folder'))
+          //   .width(Constants.SIZE_ICON_BUTTON_BAR)
+          //   .aspectRatio(1)
+          //   .fillColor(Color.Gray)
+          //   .clickEffect({ level: ClickEffectLevel.LIGHT, scale: 0.8 })
 
           CheckboxGroup({ group: 'playListSongs' })
             .width(Constants.SIZE_ICON_BUTTON_BAR_SMALL)
             .aspectRatio(1)
         }
-        .backgroundColor(Color.Transparent)
-        .backgroundBlurStyle(BlurStyle.Thin)
         .height(Constants.HEIGHT_SEARCH)
-        .borderRadius(Constants.RADIUS_CARD)
-        .padding(5)
+        .width('100%')
+        .layoutWeight(1)
+        .justifyContent(FlexAlign.End)
+      } else {
+        Search({
+          placeholder: '搜索',
+          icon: '/resources/base/media/ic_public_search_filled.svg',
+          value: this.searchKeyword
+        })
+          .backgroundBlurStyle(BlurStyle.Thin)
+          .height(Constants.HEIGHT_SEARCH)
+          .layoutWeight(1)
+          .searchButton('搜索')
+          .onChange((value) => {
+            if(value == '') {
+              this.filteredList = []
+              this.searchKeyword = ''
+            }
+          })
+          .onSubmit((value) => {
+            this.searchKeyword = value
+            this.handelSearch()
+          })
       }
     }
     .padding({ left: 20, right: 20 })
     .justifyContent(FlexAlign.Center)
+    .layoutWeight(1)
   }
 
   @Builder PlayListInfo() {

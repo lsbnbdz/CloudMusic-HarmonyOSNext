@@ -1,8 +1,8 @@
 import { Song, SongItem } from "../../common/entities/song/SongsResult"
 import { getArtists } from "../../common/functions/common/convert"
-import { PlayList, playListItem } from "../../common/entities/playlist/PlayList"
+import { PlayList, PlayListItem } from "../../common/entities/playlist/PlayList"
 import Constants from "../../common/constants/Constants"
-import { cleanLastPlayInfo, playListToQueue } from "../../common/functions/play/playListOp"
+import { cleanLastPlayInfo } from "../../common/functions/play/playListOp"
 import { EmitterUtil, ToastUtil } from "@pura/harmony-utils"
 import { StorageConstants } from "../../common/constants/StorageConstants"
 import VibratorUtils from "../../common/utils/system/VibratorUtils"
@@ -25,8 +25,8 @@ export struct SongCard {
   @State isShowSheet: boolean = false
   @State isShowAddSheet: boolean = false
   @State isShowArtistSheet: boolean = false
-  playmode: number = 1 // 0-本地歌曲   1-单曲   2-歌单歌曲   3-电台歌曲
-  playlist: PlayList = playListItem
+  @State playmode: number = 1 // 0-本地歌曲   1-单曲   2-歌单歌曲   3-电台歌曲
+  playlist: PlayList = PlayListItem
   djRadio: DjRadio = djRadioItem
   song: Song = SongItem
   artists: string = ''
@@ -46,13 +46,13 @@ export struct SongCard {
 
 
   private handleClick() {
-    if(this.song.id == this.playSong.id) {
+    if(this.song.id == this.playSong.id) { // 当前正在播放
       return
     } else if(this.clickAction == 0) {
       this.isShowSheet = true
     } else if(this.clickAction == 1) {
       this.playSingleSong()
-    } else if((this.playlist.id > 0 || this.djRadio.id > 0) && this.clickAction === 2) {
+    } else if(this.playmode === 2 || this.playmode === 3) {
       this.playWithPlayList()
     } else {
       this.playSingleSong()
@@ -62,8 +62,8 @@ export struct SongCard {
   private playSingleSong() {
     if(!this.isPlayerLoading) {
       cleanLastPlayInfo()
-      AppStorage.setOrCreate('isPlayerLoading', true)
-      PlayQueueUtils.queueAdd(this.playmode, this.song, this.artists, '')
+      AppStorage.setOrCreate(StorageConstants.IS_PLAYER_LOADING, true)
+      PlayQueueUtils.queueAdd(this.playmode, this.song, this.artists, '', this.picUrl ?? '')
       PlayQueueUtils.setIndex(PlayQueueUtils.currentQueueIndex + 1)
       playQueue(PlayQueueUtils.currentQueueIndex)
       setTimeout(() => {

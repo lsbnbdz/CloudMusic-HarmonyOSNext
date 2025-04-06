@@ -7,7 +7,7 @@ import { ClickToLoadButton, LoadingMoreButton, NoMoreButton } from '../../compon
 import { StorageConstants } from '../../common/constants/StorageConstants'
 import { PlayListSong } from '../../common/entities/playlist/PlayListSongs'
 import { LazyData } from '@pie/lazy-data'
-import { PlayList, playListItem } from '../../common/entities/playlist/PlayList'
+import { PlayList, PlayListItem } from '../../common/entities/playlist/PlayList'
 import { EmitterConstants } from '../../common/constants/EmitterConstants'
 import { PlayQueue } from '../../common/entities/local/PlayQueue'
 import PlayQueueUtils from '../../common/utils/play/PlayQueueUtils'
@@ -43,17 +43,18 @@ export struct CloudPage {
       }
     }
   ]
-  playListItem: PlayList = playListItem
 
   async aboutToAppear() {
-    this.playListItem.id = 2
-    EmitterUtil.unSubscribe(EmitterConstants.PLAY_PLAYLIST_SONGS)
-    EmitterUtil.onSubscribe(EmitterConstants.PLAY_PLAYLIST_SONGS, ((index: number) => {
-      this.playSong(index)
-    }))
     if (!this.hasLoaded) {
       await this.loadSongs(50, 0)
+      EmitterUtil.onSubscribe(EmitterConstants.PLAY_PLAYLIST_SONGS, ((index: number) => {
+        this.playSong(index)
+      }))
     }
+  }
+
+  aboutToDisappear(): void {
+    EmitterUtil.unSubscribe(EmitterConstants.PLAY_PLAYLIST_SONGS)
   }
 
   async loadSongs(limit: number, offset: number): Promise<void> {
@@ -114,6 +115,7 @@ export struct CloudPage {
               LazyForEach(this.dataSource, (item: PlayListSong, index) => {
                 ListItem() {
                   SongCard({
+                    playmode: 2,
                     song: {
                       id: item.id,
                       artists: item.ar,

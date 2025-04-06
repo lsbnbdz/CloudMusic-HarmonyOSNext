@@ -184,7 +184,10 @@ export async function playNext() {
     }
   } else {
     if(cycleMode == 2) { playQueue(0) }
-    else { ToastUtil.showToast('没有下一首了~') }
+    else {
+      AVPlayerUtils.stop()
+      ToastUtil.showToast('没有下一首了~')
+    }
   }
 }
 

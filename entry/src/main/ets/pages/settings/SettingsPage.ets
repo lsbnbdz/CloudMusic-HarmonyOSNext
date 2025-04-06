@@ -129,7 +129,7 @@ export struct SettingsPage {
     }
     ListItem() {
       CommonSettingsCard({
-        title: '应用缓存',
+        title: '应用数据与缓存',
         action: () => {
           this.settingsPageInfos.pushPathByName('CacheManagePage', null)
         }

@@ -91,8 +91,10 @@ class AVPlayerUtils {
 
   async stop() {
     const avPlayer = await this.init()
+    AVSessionUtils.pauseState(avPlayer.currentTime)
     this.clearInterval()
-    await avPlayer.stop()
+    avPlayer.stop()
+    AVSessionUtils.deactive()
     ContinuousTask.stopTask()
   }
 

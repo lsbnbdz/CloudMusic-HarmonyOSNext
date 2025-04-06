@@ -47,20 +47,20 @@ export struct LocalSongPage {
       value: 'Upload',
       icon: $r('app.media.ic_public_upload_filled'),
       action: () => {
-        this.handleUpload()
-      }
-    },
-    {
-      value: 'Helper',
-      icon: $r('app.media.ic_public_help'),
-      action: () => {
-        DialogUtil.showConfirmDialog({
+        DialogUtil.showPrimaryDialog({
           title: '上传文件',
           message: '支持上传本机音频文件至缓存目录\n' +
             '支持格式为.mp3 .flac\n\n' +
             '* 文件名格式：歌手 - 歌名.flac* \n\n' +
             '文件名格式不正确会导致无法识别\n' +
-            '在线播放时，将自动匹配文件名调取本地文件进行播放'
+            '在线播放时，将自动匹配文件名调取本地文件进行播放',
+          primaryButton: "取消",
+          secondaryButton: {
+            value: '上传',
+            action: () => {
+              this.handleUpload()
+            }
+          }
         })
       }
     }

@@ -34,11 +34,14 @@ export struct DjRadioPage {
   async aboutToAppear(): Promise<void> {
     this.isLoading = true
     await this.loadSongs(0)
-    this.isLoading = false
-    EmitterUtil.unSubscribe(EmitterConstants.PLAY_PLAYLIST_SONGS)
-    EmitterUtil.onSubscribe(EmitterConstants.PLAY_PLAYLIST_SONGS, (index: number) => {
+    EmitterUtil.onSubscribe(EmitterConstants.PLAY_PLAYLIST_SONGS, ((index: number) => {
       this.playSong(index)
-    })
+    }))
+    this.isLoading = false
+  }
+
+  aboutToDisappear(): void {
+    EmitterUtil.unSubscribe(EmitterConstants.PLAY_PLAYLIST_SONGS)
   }
 
   async loadSongs(offset: number) {

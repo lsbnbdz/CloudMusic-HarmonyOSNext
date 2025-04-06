@@ -101,6 +101,7 @@ export struct ArtistPage {
           }
           LazyForEach(this.dataSource, (item: PlayListSong) => {
             SongCard({
+              playmode: 1,
               song: {
                 id: item.id,
                 artists: item.ar,

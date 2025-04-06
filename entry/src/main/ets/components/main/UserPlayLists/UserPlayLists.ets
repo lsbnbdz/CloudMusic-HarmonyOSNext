@@ -68,22 +68,31 @@ export struct UserPlayLists {
     Column() {
       this.PlayListTabBar()
       Refresh({ refreshing: this.isRefreshing}) {
-        Tabs({ controller: this.playListTabController }) {
-          TabContent() {
-            this.PlayListsContent(0)
+        if(this.isLoading) {
+          List() {
+            this.Loading()
           }
-          TabContent() {
-            this.PlayListsContent(1)
+          .height('100%')
+        } else {
+          Tabs({ controller: this.playListTabController }) {
+            TabContent() {
+              this.PlayListsContent(0)
+            }
+            TabContent() {
+              this.PlayListsContent(1)
+            }
+            TabContent() {
+              this.PlayListsContent(2)
+            }
           }
-          TabContent() {
-            this.PlayListsContent(2)
-          }
+
+          .barHeight(0)
+          .onAnimationStart((from, target) => {
+            this.playListTabIndex = target
+          })
         }
-        .barHeight(0)
-        .onAnimationStart((from, target) => {
-          this.playListTabIndex = target
-        })
       }
+      .height('100%')
       .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
       .onRefreshing(async () => {
         await this.refreshContent()

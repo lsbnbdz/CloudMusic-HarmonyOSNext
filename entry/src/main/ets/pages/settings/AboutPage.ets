@@ -1,4 +1,4 @@
-import { DialogUtil, LogUtil, PasteboardUtil, ToastUtil } from "@pura/harmony-utils"
+import { CrashUtil, DialogUtil, LogUtil, PasteboardUtil, ToastUtil } from "@pura/harmony-utils"
 import { AppConstants } from "../../common/constants/AppConstants"
 import Constants from "../../common/constants/Constants"
 import { StorageConstants } from "../../common/constants/StorageConstants"
@@ -112,6 +112,17 @@ export struct AboutPage {
               title: 'QQ交流群',
               action: () => {
                 PasteboardUtil.setDataText('1019225012').then(() => { ToastUtil.showToast('已复制群号至剪贴板: 1019225012')})
+              }
+            })
+          }
+          ListItem() {
+            CommonSettingsCard({
+              title: '导出日志',
+              action: () => {
+                ToastUtil.showToast("导出日志: 我的手机/Download/云音汇");
+                setTimeout(() => {
+                  CrashUtil.onExportErrorLog()
+                }, 100)
               }
             })
           }

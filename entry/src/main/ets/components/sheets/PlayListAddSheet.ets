@@ -65,7 +65,7 @@ export struct PlayListAddSheet {
                       Column({ space: 8 }) {
                         Text(item.name)
                           .fontSize(Constants.FONT_SIZE_COMMON)
-                          .fontWeight(FontWeight.Bold)
+                          .fontWeight(Constants.FONT_WEIGHT_BOLD)
                           .textAlign(TextAlign.Start)
                           .width('100%')
                         Text(`${item.trackCount} 首歌曲`)

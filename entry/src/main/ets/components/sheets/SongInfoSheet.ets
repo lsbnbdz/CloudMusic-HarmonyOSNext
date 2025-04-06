@@ -3,7 +3,7 @@ import { PlayListOperation } from "../../api/playListApi"
 import Constants from "../../common/constants/Constants"
 import { EmitterConstants } from "../../common/constants/EmitterConstants"
 import { StorageConstants } from "../../common/constants/StorageConstants"
-import { PlayList, playListItem } from "../../common/entities/playlist/PlayList"
+import { PlayList, PlayListItem } from "../../common/entities/playlist/PlayList"
 import { Song, SongItem } from "../../common/entities/song/SongsResult"
 import { User, UserItem } from "../../common/entities/user/User"
 import { changeDuration } from "../../common/functions/common/convert"
@@ -17,7 +17,7 @@ export struct SongInfoSheet {
   song: Song = SongItem
   artists: string = ''
   picUrl: string | ResourceStr = ''
-  playlist: PlayList = playListItem
+  playlist: PlayList = PlayListItem
   index: number = 0
   allowToArtist: boolean = true
   playmode: number = 1

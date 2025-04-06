@@ -35,16 +35,14 @@ export struct SearchPage {
           if(this.searchKeyword != '') {
             Column({ space: 10 }) {
               this.TabBar()
-              Tabs({ controller: this.tabsController }) {
+              Tabs({ index: this.tabPageIndex }) {
                 TabContent() { SearchSongsList({ searchKeyword: this.searchKeyword }) }.expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.BOTTOM])
                 TabContent() { SearchPlayListsList({ searchKeyword: this.searchKeyword }) }.expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.BOTTOM])
                 TabContent() { SearchArtistsList({ searchKeyword: this.keyword })}.expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.BOTTOM])
                 TabContent() { SearchDjRadioList({ searchKeyword: this.keyword })}.expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.BOTTOM])
               }
+              .scrollable(false)
               .layoutWeight(1)
-              .onAnimationStart((index, target) => {
-                this.tabPageIndex = target
-              })
               .onChange((index) => {
                 this.tabPageIndex = index
               })
@@ -98,7 +96,7 @@ export struct SearchPage {
     .backgroundColor(Color.Transparent)
     .animation({ duration: 200 })
     .onClick(() => {
-       this.tabsController.changeIndex(toIndex)
+      this.tabPageIndex = toIndex
     })
   }
 

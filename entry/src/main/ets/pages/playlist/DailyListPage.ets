@@ -1,6 +1,6 @@
 import { SongCard } from '../../components/cards/SongCard'
 import { EmitterUtil, LogUtil } from '@pura/harmony-utils'
-import { DailySongRes, PlayDailySongs } from '../../api/playListApi'
+import { DailySongRes } from '../../api/playListApi'
 import { BottomBarComponent } from '../../components/play/BottomBarComponent'
 import { getDailySongs } from '../../api/songApi'
 import Constants from '../../common/constants/Constants'
@@ -9,7 +9,6 @@ import { PlayQueue } from '../../common/entities/local/PlayQueue'
 import PlayQueueUtils from '../../common/utils/play/PlayQueueUtils'
 import { playQueue } from '../../common/functions/play/playControl'
 import { EmitterConstants } from '../../common/constants/EmitterConstants'
-import { PlayList, playListItem } from '../../common/entities/playlist/PlayList'
 
 /**
  * 每日推荐歌单页面
@@ -27,21 +26,24 @@ export struct DailyListPage {
   @State isLoading: boolean = true
   @State pageOpacity: number = 1
   @State totayDate: string = ''
-  playListItem: PlayList = playListItem
 
   async aboutToAppear() {
     if(!this.hasLoaded) {
       await this.loadSongs()
       this.hasLoaded = true
+      setTimeout(() => {
+        EmitterUtil.onSubscribe(EmitterConstants.PLAY_PLAYLIST_SONGS, ((index: number) => {
+          this.playSong(index)
+        }))
+      }, 500)
     }
 
-    EmitterUtil.unSubscribe(EmitterConstants.PLAY_PLAYLIST_SONGS)
-    EmitterUtil.onSubscribe(EmitterConstants.PLAY_PLAYLIST_SONGS, ((index: number) => {
-      this.playSong(index)
-    }))
     let date = new Date()
     this.totayDate = `${date.toDateString()}`
-    this.playListItem.id = 1
+  }
+
+  aboutToDisappear(): void {
+    EmitterUtil.unSubscribe(EmitterConstants.PLAY_PLAYLIST_SONGS)
   }
 
   async loadSongs(): Promise<void> {
@@ -119,7 +121,6 @@ export struct DailyListPage {
                       sid: index,
                       index: index,
                       reason: item.reason,
-                      playlist: this.playListItem,
                       picUrl: item.picUrl ?? $r('app.media.ic_public_music')
                     })
                   }
@@ -129,6 +130,7 @@ export struct DailyListPage {
                     curve: Curve.LinearOutSlowIn
                   })
                   .translate({ y: 0 })
+                  .key(item.song.id.toString())
                 })
 
                 ListItem().height(px2vp(this.bottomRectHeight) + Constants.HEIGHT_MINI)

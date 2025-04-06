@@ -2,7 +2,7 @@ import { AbilityConstant, UIAbility, Want } from '@kit.AbilityKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { window } from '@kit.ArkUI';
 import PreferencesUtils from '../common/utils/data/PreferencesUtils';
-import { AppUtil, LogUtil } from '@pura/harmony-utils';
+import { AppUtil, CrashUtil, LogUtil } from '@pura/harmony-utils';
 import { appInit } from '../common/functions/app/appInit';
 import { StorageConstants } from '../common/constants/StorageConstants';
 
@@ -10,6 +10,8 @@ import { StorageConstants } from '../common/constants/StorageConstants';
 export default class EntryAbility extends UIAbility {
   async onCreate(want: Want, launchParam: AbilityConstant.LaunchParam): Promise<void> {
     hilog.info(0x0000, 'testTag', '%{public}s', 'Ability onCreate');
+
+    CrashUtil.onError()
 
     // 初始化 Log
     LogUtil.init(0x1010, 'Cloud Music', true)

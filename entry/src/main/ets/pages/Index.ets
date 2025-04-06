@@ -55,7 +55,6 @@ struct Index {
   }
 
   onPageShow(): void {
-    App.setImageRawDataCacheSize(Constants.CACHE_DISK_MAX_SIZE)
     this.currentHour = new Date().getHours()
   }
 

@@ -58,7 +58,7 @@ export struct AddToPlayListCircleButton {
       })
       .bindSheet(this.isShowAddSheet, this.Sheet(), {
         preferType: SheetType.CENTER,
-        height: '70%',
+        height: SheetSize.LARGE,
         dragBar: false,
         showClose: false,
         backgroundColor: Color.Transparent,

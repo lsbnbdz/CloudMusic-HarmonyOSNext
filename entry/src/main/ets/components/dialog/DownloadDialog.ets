@@ -53,77 +53,81 @@ export struct DownloadDialog {
   }
 
   build() {
-    Column({ space: 10 }) {
-      Select([{ value: '标准' }, { value: '高' }, { value: '极高' }, { value: '无损' }])
-        .selected(this.quality)
-        .value(this.quality ? PlayConstants.QUALITY_NAME[this.quality] : '标准')
-        .onSelect((index) => {
-          if(index != this.quality) {
-            this.quality = index
-            this.handleInfo()
-          }
-        })
-      Divider()
-      if(this.succ) {
-        Stack() {
-          if (this.isLoading) {
-            LoadingProgress().width(Constants.SIZE_LOADING_PROGRESS_CARD)
-          }
-          Column({ space: 10 }) {
-            Stack() {
-              LoadingProgress().width(40)
-              Image(this.picUrl + '?param=512y512')
-                .width(128)
-                .borderRadius(Constants.RADIUS_IMG)
-                .aspectRatio(1)
+    Scroll() {
+      Column({ space: 10 }) {
+        Select([{ value: '标准' }, { value: '高' }, { value: '极高' }, { value: '无损' }])
+          .selected(this.quality)
+          .value(this.quality ? PlayConstants.QUALITY_NAME[this.quality] : '标准')
+          .onSelect((index) => {
+            if(index != this.quality) {
+              this.quality = index
+              this.handleInfo()
             }
-            .width(128)
-            .aspectRatio(1)
+          })
+        Divider()
+        if(this.succ) {
+          Stack() {
+            if (this.isLoading) {
+              LoadingProgress().width(Constants.SIZE_LOADING_PROGRESS_CARD)
+            }
+            Column({ space: 10 }) {
+              Stack() {
+                LoadingProgress().width(40)
+                Image(this.picUrl + '?param=512y512')
+                  .width(128)
+                  .borderRadius(Constants.RADIUS_IMG)
+                  .aspectRatio(1)
+              }
+              .width(128)
+              .aspectRatio(1)
 
-            Text(this.song.name).textStyle(18).fontWeight(FontWeight.Medium)
-            Text(this.artists).textStyle(14).fontColor(Color.Gray)
-            Divider()
-            if(this.song.fee == 1) {
-              Text(' VIP 歌曲 ')
-                .fontColor('#ffff3232')
-                .fontSize(10)
-                .padding(2)
-                .backgroundColor('#ffffd2d2')
-                .borderRadius(5)
+              Text(this.song.name).textStyle(18).fontWeight(FontWeight.Medium)
+              Text(this.artists).textStyle(14).fontColor(Color.Gray)
+              Divider()
+              if(this.song.fee == 1) {
+                Text(' VIP 歌曲 ')
+                  .fontColor('#ffff3232')
+                  .fontSize(10)
+                  .padding(2)
+                  .backgroundColor('#ffffd2d2')
+                  .borderRadius(5)
+              }
+              Text(`音质: ${this.songDownload.data[0].level}     格式: ${this.songDownload.data[0].type}     大小: ${this.fileSize}MB`)
+                .textStyle(12)
+              Button('获取文件地址').ButtonStyle()
+                .onClick(() => {
+                  copyDownloadUrl(this.songDownload.data[0].url)
+                })
+              Button('下载到本地曲库').ButtonStyle()
+                .onClick(async () => {
+                  this.controller.close()
+                  FileDownloadUtils.download(this.picUrl + '?param=512y512', `${this.song.id}.jpg`, 'pic')
+                  let lyricString = await getLyricString(this.song.id)
+                  LyricUtils.saveLyricToFile(lyricString, `${this.song.id}.lrc`)
+                  FileDownloadUtils.downloadSong(this.songDownload, this.song, this.artists)
+                })
+              if (!this.isLogged) {
+                Text('你尚未登录，将无法完整获取部分会员歌曲')
+              }
             }
-            Text(`音质: ${this.songDownload.data[0].level}     格式: ${this.songDownload.data[0].type}     大小: ${this.fileSize}MB`)
-              .textStyle(12)
-            Button('获取文件地址').ButtonStyle()
-              .onClick(() => {
-                copyDownloadUrl(this.songDownload.data[0].url)
-              })
-            Button('下载到本地曲库').ButtonStyle()
-              .onClick(async () => {
-                this.controller.close()
-                FileDownloadUtils.download(this.picUrl + '?param=512y512', `${this.song.id}.jpg`, 'pic')
-                let lyricString = await getLyricString(this.song.id)
-                LyricUtils.saveLyricToFile(lyricString, `${this.song.id}.lrc`)
-                FileDownloadUtils.downloadSong(this.songDownload, this.song, this.artists)
-              })
-            if (!this.isLogged) {
-              Text('你尚未登录，将无法完整获取部分会员歌曲')
-            }
+            .opacity(this.isLoading ? 0 : 1)
           }
-          .opacity(this.isLoading ? 0 : 1)
+        } else {
+          Text('获取歌曲内容失败, 原因可能如下：').textStyle(Constants.FONT_SIZE_COMMON)
+          Text('- 此歌曲需要单曲付费或为数字专辑曲目\n' +
+            '- 当前未登录账号\n' +
+            '- 当前登录账号未拥有会员')
+            .textStyle(Constants.FONT_SIZE_COMMON - 1)
+            .textAlign(TextAlign.Start)
         }
-      } else {
-        Text('获取歌曲内容失败, 原因可能如下：').textStyle(Constants.FONT_SIZE_COMMON)
-        Text('- 此歌曲需要单曲付费或为数字专辑曲目\n' +
-          '- 当前未登录账号\n' +
-          '- 当前登录账号未拥有会员')
-          .textStyle(Constants.FONT_SIZE_COMMON - 1)
-          .textAlign(TextAlign.Start)
       }
+      .backgroundColor(Color.Transparent)
+      .backdropBlur(BlurStyle.Regular)
+      .margin({ left:10, right:10, top:20, bottom:20})
+      .borderRadius(5)
     }
-    .backgroundColor(Color.Transparent)
-    .backdropBlur(BlurStyle.Regular)
-    .margin({ left:10, right:10, top:20, bottom:20})
-    .borderRadius(5)
+    .height('100%')
+    .scrollBar(BarState.Off)
   }
 }
 

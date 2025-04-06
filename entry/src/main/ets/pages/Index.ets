@@ -21,7 +21,6 @@ import { DebugPage } from './local/DebugPage';
 import BreakpointUtils from '../common/utils/system/BreakpointUtils';
 import { ArtistPage } from './artist/ArtistPage';
 import { DjRadioPage } from './playlist/DjRadioPage';
-import App from '@system.app';
 
 @Entry
 @Component
@@ -40,7 +39,6 @@ struct Index {
 
   async aboutToAppear(): Promise<void> {
     this.currentHour = new Date().getHours()
-    BreakpointUtils.register()
     setTimeout(() => {
       this.tabCurrentIndex = this.index
     }, 1)
@@ -66,7 +64,7 @@ struct Index {
         icon: $r('app.media.ic_public_search_filled'),
         action: () => {
           this.pageInfos.clear()
-          this.pageInfos.pushPathByName('SearchPage', null, this.breakpoint === 'lg' && this.pageInfos.size() === 0 ? false : true)
+          this.pageInfos.pushPathByName('SearchPage', null, (this.breakpoint === 'lg') && this.pageInfos.size() === 0 ? false : true)
         }
       })
     }

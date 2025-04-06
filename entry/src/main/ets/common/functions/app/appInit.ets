@@ -17,6 +17,7 @@ import App from "@system.app"
 import Constants from "../../constants/Constants"
 import AudioCacheUtils from "../../utils/play/AudioCacheUtils"
 import { DjRadio } from "../../entities/dj/DjResult"
+import BreakpointUtils from "../../utils/system/BreakpointUtils"
 
 /**
  * App初始化
@@ -39,6 +40,7 @@ export async function appInit() {
 function initApp() {
   App.setImageCacheCount(Constants.CACHE_DISK_MAX_SIZE)
   App.setImageRawDataCacheSize(Constants.CACHE_DISK_MAX_SIZE)
+  BreakpointUtils.register()
   AudioCacheUtils.init()
 }
 

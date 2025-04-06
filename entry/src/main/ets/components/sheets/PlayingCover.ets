@@ -16,6 +16,7 @@ import { likeThisSong } from "../../common/functions/play/songLike"
 import { resourceManager } from "@kit.LocalizationKit"
 import { PlayConstants } from "../../common/constants/PlayConstants"
 import { ArtistsSheet } from "./ArtistsSheet"
+import { display } from "@kit.ArkUI"
 
 @Component
 export struct PlayingCover {
@@ -45,6 +46,7 @@ export struct PlayingCover {
   @State isShowArtists: boolean = false
   @State isLikeProcessing: boolean = false
   @State totalOpacity: number = 0
+  @State isNormalPhone: boolean = true
   private dialogController: CustomDialogController = new CustomDialogController({
     builder: DownloadDialog({
       song: this.song,
@@ -55,6 +57,7 @@ export struct PlayingCover {
   })
 
   aboutToAppear(): void {
+    if(display.isFoldable() || this.deviceType === resourceManager.DeviceType.DEVICE_TYPE_TABLET) this.isNormalPhone = false
     setTimeout(() => {
       animateTo({ duration: 300, curve: Curve.EaseInOut }, () => {
         this.totalOpacity = 0.7
@@ -87,6 +90,8 @@ export struct PlayingCover {
      if(this.breakpoint == 'sm' ||
        (this.breakpoint == 'md' && this.deviceType == resourceManager.DeviceType.DEVICE_TYPE_TABLET)) {
        this.PhoneUI()
+     } else if(this.isNormalPhone) {
+       this.PhoneLargeUI()
      } else {
        this.LargeUI()
      }
@@ -105,7 +110,7 @@ export struct PlayingCover {
    * 功能栏
    */
   @Builder
-  ToolBar() {
+  ToolBar(size: number = 25, width: number | string = '100%') {
     Row() {
       /**
        * Clock-Timer
@@ -118,7 +123,7 @@ export struct PlayingCover {
          */
         Image($r('app.media.ic_arrow_down_o_icon'))
           .fillColor(Color.White)
-          .height(25)
+          .height(size)
           .aspectRatio(1)
           .draggable(false)
           .backgroundColor(Color.Transparent)
@@ -133,7 +138,7 @@ export struct PlayingCover {
         AddToPlayListCircleButton({
           song: this.song,
           imgColor: Color.White,
-          imgHeight: 29,
+          imgHeight: size + 4,
           isShowAddSheet: this.isShowAddSheet,
         })
           .clickEffect({ level: ClickEffectLevel.LIGHT, scale: 0.7 })
@@ -144,7 +149,7 @@ export struct PlayingCover {
          */
         Image(this.isLiked ? $r('app.media.ic_public_favor_filled') : $r('app.media.ic_public_favor'))
           .fillColor(Color.White)
-          .height(25)
+          .height(size)
           .aspectRatio(1)
           .draggable(false)
           .backgroundColor(Color.Transparent)
@@ -166,7 +171,7 @@ export struct PlayingCover {
        */
       Image($r('app.media.ic_more_vertical_o_icon'))
         .fillColor(Color.White)
-        .height(23)
+        .height(size - 2)
         .aspectRatio(1)
         .draggable(false)
         .backgroundColor(Color.Transparent)
@@ -187,8 +192,8 @@ export struct PlayingCover {
         })
     }
     .justifyContent(FlexAlign.SpaceEvenly)
-    .width('100%')
-    .height(30)
+    .width(width)
+    .height(size + 5)
     .opacity(0.6)
     .animation({ duration: 300, curve:Curve.Ease })
     .visibility(this.tabPageIndex == 0 ? Visibility.Visible : Visibility.None)
@@ -198,12 +203,12 @@ export struct PlayingCover {
    * 进度条组件
    */
   @Builder
-  SliderContent() {
-    Column({ space: 5 }) {
+  SliderContent(isPhoneLarge: boolean = false) {
+    Column({ space: isPhoneLarge ? 0 : 5 }) {
       Row() {
         // 当前时间
         Text(`${changeDuration(this.time)}`)
-          .fontSize(Constants.FONT_SIZE_COMMON)
+          .fontSize(isPhoneLarge ? 12 : Constants.FONT_SIZE_COMMON)
           .layoutWeight(1)
           .textAlign(TextAlign.Start)
           .fontColor(Color.White)
@@ -212,10 +217,10 @@ export struct PlayingCover {
 
         // 拖动进度条时，显示即将跳转的时间
         Text(`${changeDuration(this.sliderMovingTime)}`)
+          .fontSize(isPhoneLarge ? 12 : Constants.FONT_SIZE_COMMON)
           .fontColor(Color.White)
           .backgroundColor(Color.Gray)
           .borderRadius(15)
-          .fontSize(Constants.FONT_SIZE_COMMON)
           .textAlign(TextAlign.Center)
           .padding({ left: 10, right: 10 })
           .alignSelf(ItemAlign.Center)
@@ -223,7 +228,7 @@ export struct PlayingCover {
 
         // 总时间
         Text(`${changeDuration(this.song.duration)}`)
-          .fontSize(Constants.FONT_SIZE_COMMON)
+          .fontSize(isPhoneLarge ? 12 : Constants.FONT_SIZE_COMMON)
           .layoutWeight(1)
           .textAlign(TextAlign.End)
           .fontColor(Color.White)
@@ -271,9 +276,9 @@ export struct PlayingCover {
    * 控制上一首、下一首、播放和暂停
    */
   @Builder
-  PlayButton() {
+  PlayButton(size: number) {
     // 上一首
-    Image($r('app.media.ic_public_play_last')).buttonImgStyle()
+    Image($r('app.media.ic_public_play_last')).buttonImgStyle(size)
     .onClick(() => {
       ClickUtil.throttle(() => {
         playPre()
@@ -281,7 +286,7 @@ export struct PlayingCover {
     })
 
     // 暂停、继续
-    Image(!this.isPaused ? $r('app.media.ic_public_pause') : $r('app.media.ic_play_fill')).buttonImgStyle()
+    Image(!this.isPaused ? $r('app.media.ic_public_pause') : $r('app.media.ic_play_fill')).buttonImgStyle(size)
       .onClick(() => {
         if(this.isPaused) {
           resumeMusic()
@@ -291,7 +296,7 @@ export struct PlayingCover {
       })
 
     // 下一首
-    Image($r('app.media.ic_public_play_next')).buttonImgStyle()
+    Image($r('app.media.ic_public_play_next')).buttonImgStyle(size)
     .onClick(() => {
       ClickUtil.throttle(() => {
         playNext()
@@ -336,17 +341,7 @@ export struct PlayingCover {
   SongInfo() {
     Column({ space: 20 }) {
       Column({ space: 10 }) {
-        Button(`私人FM - ${PlayConstants.PERSONAL_FM_MODE_NAME[this.personalFmMode]}`)
-          .fontColor(Color.White)
-          .fontSize(Constants.FONT_SIZE_COMMON)
-          .backgroundColor(Color.Transparent)
-          .backdropBlur(BlurStyle.Regular)
-          .clickEffect({ level: ClickEffectLevel.LIGHT, scale: 0.8 })
-          .borderRadius(1)
-          .padding({ left: 10, right: 10 })
-          .shadow({ radius: 10 })
-          .visibility(this.isPersonalFm && this.playmode === 1 ? Visibility.Visible : Visibility.None)
-          .bindMenu(this.PersonalFmMenu())
+        this.PersonalFmButton()
 
         // 歌曲封面图片
         Stack() {
@@ -401,6 +396,74 @@ export struct PlayingCover {
     )
   }
 
+  @Builder PhoneLargeSongInfo() {
+    Column({ space: 5 }) {
+      Column() {
+        // 歌曲封面图片
+        Stack() {
+          LoadingProgress().width(30)
+          Image(this.playmode === 0 ? this.picUrl : this.picUrl + '?param=512y512')
+            .height(this.song.id == 0 ? '70%' : '100%')
+            .borderRadius(5)
+            .aspectRatio(1)
+            .shadow({ radius: 30, type: ShadowType.BLUR, offsetX: 20, offsetY: 20 })
+            .geometryTransition('coverImg')
+        }
+        .height('80%')
+        .padding({ bottom: 10 })
+      }
+      .width('100%')
+
+      // 歌曲名称&艺术家
+      Row() {
+        this.PersonalFmButton()
+        Text(this.song.name + ' - ' + this.artists)
+          .textStyle(Constants.FONT_SIZE_TITLE)
+          .fontWeight(FontWeight.Bold)
+          .layoutWeight(1)
+          .onClick(() => {
+            if(this.song.id !== 0 && this.playmode !== 3) {
+              this.isShowArtists = true
+            }
+          })
+          .bindSheet(this.isShowArtists, this.ArtistsSheet(), {
+            preferType: SheetType.CENTER,
+            height: SheetSize.FIT_CONTENT,
+            dragBar: false,
+            showClose: false,
+            backgroundColor: Color.Transparent,
+            blurStyle: BlurStyle.Regular,
+            onDisappear: () => { this.isShowArtists = false }
+          })
+      }
+      .width('90%')
+      .justifyContent(FlexAlign.Center)
+    }
+    .layoutWeight(1)
+    .width('100%')
+    .padding(10)
+    .height('100%')
+    .justifyContent(FlexAlign.Center)
+    .gesture(
+      SwipeGesture({
+        fingers: 1,
+        direction: SwipeDirection.Vertical
+      }).onAction(() => { this.isShow = false })
+    )
+  }
+
+  @Builder ControllButtons() {
+    Row() {
+      LoopModeButton({ imgWidth: 30, btnWidth: 30, imgColor: Color.White }).opacity(0.8)
+      this.PlayButton(45)
+      PlayQueueButton({ imgWidth: 30, imgColor: Color.White }).opacity(0.8)
+    }
+    .opacity(this.tabPageIndex == 0 ? 0.8 : 0.2)
+    .padding({ top: Constants.PADDING_EDGE_DEFAULT, bottom: Constants.PADDING_EDGE_DEFAULT })
+    .justifyContent(FlexAlign.SpaceEvenly)
+    .width('90%')
+  }
+
   @Builder PhoneUI() {
     Column() {
       Swiper() {
@@ -427,15 +490,7 @@ export struct PlayingCover {
       Column({ space: 10 }) {
         this.SliderContent()
         this.ToolBar()
-        Row() {
-          LoopModeButton({ imgColor: Color.White }).opacity(0.8)
-          this.PlayButton()
-          PlayQueueButton({ imgColor: Color.White }).opacity(0.8)
-        }
-        .opacity(this.tabPageIndex == 0 ? 0.8 : 0.2)
-        .padding({ top: 20, bottom: 15 })
-        .justifyContent(FlexAlign.SpaceEvenly)
-        .width('90%')
+        this.ControllButtons()
 
         if(this.tabPageIndex == 0) {
           Row({ space: 15 }) {
@@ -444,7 +499,7 @@ export struct PlayingCover {
           }
           .justifyContent(FlexAlign.Center)
           .width('100%')
-          .height(30)
+          .height(20)
           .backgroundColor(Color.Transparent)
         }
       }
@@ -465,22 +520,14 @@ export struct PlayingCover {
         Column({ space: 10 }) {
           this.SliderContent()
           this.ToolBar()
-          Row() {
-            LoopModeButton({ imgColor: Color.White }).opacity(0.8)
-            this.PlayButton()
-            PlayQueueButton({ imgColor: Color.White }).opacity(0.8)
-          }
-          .opacity(this.tabPageIndex == 0 ? 0.8 : 0.2)
-          .padding({ top: 20, bottom: 15 })
-          .justifyContent(FlexAlign.SpaceEvenly)
-          .width('90%')
+          this.ControllButtons()
           Row({ space: 15 }) {
             if(this.isLocalFile || this.playmode == 0) { Text('本地文件播放中').fontSize(10).fontColor(Color.Gray) }
             if(this.isTimerWorking) { Text('已设置定时关闭').fontSize(10).fontColor(Color.Gray) }
           }
           .justifyContent(FlexAlign.Center)
           .width('100%')
-          .height(30)
+          .height(10)
           .backgroundColor(Color.Transparent)
         }
         .width(this.deviceType === resourceManager.DeviceType.DEVICE_TYPE_TABLET ? '70%' : '90%')
@@ -494,6 +541,59 @@ export struct PlayingCover {
     .width('100%')
     .height('100%')
     .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
+  }
+
+  @Builder PhoneLargeUI() {
+    Row() {
+      Column() {
+        Row({ space: 15 }) {
+          if(this.isLocalFile || this.playmode == 0) { Text('本地文件播放中').fontSize(10).fontColor(Color.Gray) }
+          if(this.isTimerWorking) { Text('已设置定时关闭').fontSize(10).fontColor(Color.Gray) }
+        }
+        .padding({ top: 5 })
+        .justifyContent(FlexAlign.Center)
+        .width('100%')
+        .height(10)
+        .backgroundColor(Color.Transparent)
+        this.PhoneLargeSongInfo()
+        Column({ space: 5 }) {
+          this.SliderContent(true)
+          this.ToolBar(20, '90%')
+          // controll button
+          Row() {
+            LoopModeButton({ imgWidth: 25, btnWidth: 25, imgColor: Color.White }).opacity(0.8)
+            this.PlayButton(35)
+            PlayQueueButton({ imgWidth: 25, imgColor: Color.White }).opacity(0.8)
+          }
+          .opacity(this.tabPageIndex == 0 ? 0.8 : 0.2)
+          .justifyContent(FlexAlign.SpaceEvenly)
+          .width('80%')
+          .padding({ top: 5 })
+        }
+        .width(this.deviceType === resourceManager.DeviceType.DEVICE_TYPE_TABLET ? '70%' : '90%')
+      }
+      .layoutWeight(1)
+
+      LyricComponent()
+        .width('100%')
+        .layoutWeight(1)
+    }
+    .width('100%')
+    .height('100%')
+    .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
+  }
+
+  @Builder PersonalFmButton() {
+    Button(`私人FM - ${PlayConstants.PERSONAL_FM_MODE_NAME[this.personalFmMode]}`)
+      .fontColor(Color.White)
+      .fontSize(Constants.FONT_SIZE_COMMON)
+      .backgroundColor(Color.Transparent)
+      .backdropBlur(BlurStyle.Regular)
+      .clickEffect({ level: ClickEffectLevel.LIGHT, scale: 0.8 })
+      .borderRadius(1)
+      .shadow({ radius: 10 })
+      .visibility(this.isPersonalFm && this.playmode === 1 ? Visibility.Visible : Visibility.None)
+      .bindMenu(this.PersonalFmMenu())
   }
 
   @Builder MenuSheet() {
@@ -534,12 +634,13 @@ export struct PlayingCover {
   .fontColor(Color.White)
   .maxLines(1)
   .padding({ left:20, right:20 })
+  .textAlign(TextAlign.Center)
   .textOverflow({ overflow: TextOverflow.MARQUEE })
 }
 
-@Extend(Image) function buttonImgStyle() {
+@Extend(Image) function buttonImgStyle(size: number = 50) {
   .clickEffect({ level: ClickEffectLevel.LIGHT, scale: 0.8 })
-  .width(50)
+  .width(size)
   .fillColor(Color.White)
   .draggable(false)
 }

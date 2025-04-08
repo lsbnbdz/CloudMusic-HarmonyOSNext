@@ -1,8 +1,9 @@
-import { Artist, Song } from "../../entities/song/SongsResult"
+import { Artist, Song } from "../../entities/song/Song"
 import { util } from "@kit.ArkTS"
 import { media } from "@kit.MediaKit"
 import { fileIo } from "@kit.CoreFileKit"
 import { LogUtil } from "@pura/harmony-utils"
+import { PlayListSong } from "../../entities/playlist/PlayListSongs"
 
 /**
  * 获取metadata
@@ -38,6 +39,11 @@ export async function fetchSongInfo(fileName: string): Promise<Song> {
         id: 0,
         name: '未知'
       }],
+      album: {
+        id: 0,
+        name: '',
+        picUrl: ''
+      },
       duration: -1,
       alias: [],
       fee: 0
@@ -56,6 +62,11 @@ export async function fetchSongInfo(fileName: string): Promise<Song> {
     id: 0,
     name: songName,
     artists: artists,
+    album: {
+      id: 0,
+      name: '',
+      picUrl: ''
+    },
     duration: -1,
     alias: [],
     fee: 0

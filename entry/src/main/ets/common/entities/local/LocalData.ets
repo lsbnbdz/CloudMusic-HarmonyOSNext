@@ -1,4 +1,4 @@
-import { Artist } from "../song/SongsResult"
+import { Artist } from "../song/Song"
 
 export interface LocalSong {
   id: number

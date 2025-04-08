@@ -111,6 +111,7 @@ class AVPlayerUtils {
     this.updateFlag = true
     AppStorage.setOrCreate(StorageConstants.PLAY_TIME, time)
     avPlayer.seek(time)
+    this.play()
   }
 
   private clearInterval() {
@@ -121,6 +122,7 @@ class AVPlayerUtils {
   private setCallback(avPlayer: media.AVPlayer) {
     avPlayer.on('error', (err: BusinessError) => {
       LogUtil.error(TAG + `Invoke avPlayer failed, code is ${err.code}, message is ${err.message}`)
+      if(avPlayer.state === 'paused' || avPlayer.state === 'stopped') return
       setTimeout(() => {
         if(this.errorFlag) return
         playQueue(PlayQueueUtils.currentQueueIndex)

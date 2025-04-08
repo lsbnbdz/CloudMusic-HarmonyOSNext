@@ -7,7 +7,7 @@ import { PlayQueue } from "../common/entities/local/PlayQueue"
 import { SongDetail } from "../common/entities/song/SongDetail"
 import { QualityType } from "../common/entities/song/SongDownload"
 import { SongPlay } from "../common/entities/song/SongPlay"
-import { Song, SongItem, SongsData } from "../common/entities/song/SongsResult"
+import { Album, Song, SongItem, SongsData } from "../common/entities/song/Song"
 import { User } from "../common/entities/user/User"
 import { getArtists } from "../common/functions/common/convert"
 import { getApiUrl } from "../common/functions/common/get"
@@ -121,6 +121,7 @@ export async function getDailySongs(useCookie: boolean = true): Promise<Array<Da
             id: song.id,
             name: song.name,
             artists: song.ar,
+            album: song.al as Album,
             duration: song.dt,
             alias: [],
             fee: song.fee
@@ -187,11 +188,11 @@ export async function setHeartMode(id: number, pid: number): Promise<void> {
   let data = await request.RequestInStream()
   let dataGot = data.result as HeartMode
   for(let item of dataGot.data) {
-    let artists = await getArtists(item.songInfo.ar)
     tempSong = {
       id: item.songInfo.id,
       name: item.songInfo.name,
       artists: item.songInfo.ar,
+      album: item.songInfo.al as Album,
       duration: item.songInfo.dt,
       alias: [],
       fee: item.songInfo.fee

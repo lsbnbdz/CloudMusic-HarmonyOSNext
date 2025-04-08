@@ -151,11 +151,10 @@ export struct DjRadioPage {
           .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
         }
 
-        if(this.breakpoint !== 'lg') {
-          BottomBarComponent()
-            .padding(Constants.PADDING_EDGE_DEFAULT)
-            .backgroundColor(Color.Transparent)
-        }
+        BottomBarComponent()
+          .padding(Constants.PADDING_EDGE_DEFAULT)
+          .backgroundColor(Color.Transparent)
+          .visibility(this.breakpoint === 'lg' ? Visibility.None : Visibility.Visible)
       }
     }
     .title(this.param.djRadio.name, { barStyle: BarStyle.STACK, backgroundColor: Color.Transparent, backgroundBlurStyle: BlurStyle.Regular })

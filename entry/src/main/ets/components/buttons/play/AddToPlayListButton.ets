@@ -1,6 +1,6 @@
 import Constants from "../../../common/constants/Constants"
 import { StorageConstants } from "../../../common/constants/StorageConstants"
-import { Song, SongItem } from "../../../common/entities/song/SongsResult"
+import { Song, SongItem } from "../../../common/entities/song/Song"
 import { PlayListAddSheet } from "../../sheets/PlayListAddSheet"
 
 @Component
@@ -45,6 +45,7 @@ export struct AddToPlayListCircleButton {
   @Link song: Song
   @State imgColor: Color | ResourceStr = $r('app.color.reverse')
   @State imgHeight: number | string = Constants.SIZE_ICON_BUTTON_BAR
+  isLarge: boolean = false
 
   build() {
     Image($r('app.media.ic_playlist_add_icon'))
@@ -58,7 +59,7 @@ export struct AddToPlayListCircleButton {
       })
       .bindSheet(this.isShowAddSheet, this.Sheet(), {
         preferType: SheetType.CENTER,
-        height: SheetSize.LARGE,
+        height: this.isLarge ? SheetSize.LARGE : '60%',
         dragBar: false,
         showClose: false,
         backgroundColor: Color.Transparent,

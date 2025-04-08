@@ -8,6 +8,7 @@ import { ArtistParam } from "../../common/entities/local/PageParams"
 import { PlayListSong } from "../../common/entities/playlist/PlayListSongs"
 import { SongCard } from "../../components/cards/SongCard"
 import { BottomBarComponent } from "../../components/play/BottomBarComponent"
+import { Album } from "../../common/entities/song/Song"
 
 @Component
 export struct ArtistPage {
@@ -105,6 +106,7 @@ export struct ArtistPage {
               song: {
                 id: item.id,
                 artists: item.ar,
+                album: item.al as Album,
                 name: item.name,
                 duration: item.dt,
                 alias: [],
@@ -142,11 +144,10 @@ export struct ArtistPage {
         .height('100%')
         .visibility(this.isLoading ? Visibility.Visible : Visibility.Hidden)
 
-        if(this.breakpoint !== 'lg') {
-          BottomBarComponent()
-            .padding(Constants.PADDING_EDGE_DEFAULT)
-            .backgroundColor(Color.Transparent)
-        }
+        BottomBarComponent()
+          .padding(Constants.PADDING_EDGE_DEFAULT)
+          .backgroundColor(Color.Transparent)
+          .visibility(this.breakpoint === 'lg' ? Visibility.None : Visibility.Visible)
       }
       .width('100%')
       .height('100%')

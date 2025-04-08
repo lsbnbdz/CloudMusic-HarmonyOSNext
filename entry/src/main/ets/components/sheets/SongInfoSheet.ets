@@ -3,12 +3,13 @@ import { PlayListOperation } from "../../api/playListApi"
 import Constants from "../../common/constants/Constants"
 import { EmitterConstants } from "../../common/constants/EmitterConstants"
 import { StorageConstants } from "../../common/constants/StorageConstants"
+import { AlbumParam, CommentParam, CommonParam } from "../../common/entities/local/PageParams"
 import { PlayList, PlayListItem } from "../../common/entities/playlist/PlayList"
-import { Song, SongItem } from "../../common/entities/song/SongsResult"
+import { Song, SongItem } from "../../common/entities/song/Song"
 import { User, UserItem } from "../../common/entities/user/User"
 import { changeDuration } from "../../common/functions/common/convert"
 import { playQueue } from "../../common/functions/play/playControl"
-import { cleanLastPlayInfo, playListToQueue } from "../../common/functions/play/playListOp"
+import { cleanLastPlayInfo } from "../../common/functions/play/playListOp"
 import PlayQueueUtils from "../../common/utils/play/PlayQueueUtils"
 import { DownloadDialog } from "../dialog/DownloadDialog"
 
@@ -45,12 +46,12 @@ export struct SongInfoSheet {
   private playSingleSong() {
     if(!this.isPlayerLoading) {
       cleanLastPlayInfo()
-      AppStorage.setOrCreate('isPlayerLoading', true)
+      AppStorage.setOrCreate(StorageConstants.IS_PLAYER_LOADING, true)
       PlayQueueUtils.queueAdd(1, this.song, this.artists, '')
       PlayQueueUtils.setIndex(PlayQueueUtils.currentQueueIndex + 1)
       playQueue(PlayQueueUtils.currentQueueIndex)
       setTimeout(() => {
-        AppStorage.setOrCreate('isPlayerLoading', false)
+        AppStorage.setOrCreate(StorageConstants.IS_PLAYER_LOADING, false)
       }, 500)
     } else {
       ToastUtil.showToast('当前有正在加载的播放任务，请稍后再试')
@@ -60,7 +61,6 @@ export struct SongInfoSheet {
   private async playWithPlayList() {
     if(!this.isPlayerLoading) {
       this.isPlayerLoading = true
-      // await playListToQueue(this.playlist.id, this.playlist.trackCount, this.index)
       EmitterUtil.post(EmitterConstants.PLAY_PLAYLIST_SONGS, this.index)
       this.isPlayerLoading = false
     } else {
@@ -93,7 +93,12 @@ export struct SongInfoSheet {
   build() {
     List() {
       ListItem() {
-        Text(this.song.name)
+        Text() {
+          Span(this.song.name)
+          Span(` (${this.song.alias[0]})`)
+            .fontColor(Color.Gray)
+            .visibility(this.song.alias.length > 0 ? Visibility.Visible : Visibility.None)
+        }
           .maxLines(1)
           .textOverflow({ overflow: TextOverflow.MARQUEE })
           .fontSize(Constants.FONT_SIZE_TITLE)
@@ -111,7 +116,7 @@ export struct SongInfoSheet {
         this.Item($r('app.media.ic_public_add_filled'), '下一首播放', () => { this.addToQueue() })
       }
       ListItem() {
-        this.Item($r('app.media.ic_public_play_norm'), '立即播放', () => { this.playSingleSong() })
+        this.Item($r('app.media.ic_public_play_norm'), '单曲播放', () => { this.playSingleSong() })
       }
       if(this.playmode !== 3) {
         if(this.playlist.id !== 0) {
@@ -119,9 +124,32 @@ export struct SongInfoSheet {
             this.Item($r('app.media.ic_play_fill'), '随歌单播放', () => { this.playWithPlayList() })
           }
         }
+        if(this.song.id !== 0) {
+          this.Item($r('app.media.ic_public_message'), '歌曲评论', () => {
+            let param: CommonParam<CommentParam> = { pageName: 'CommentPage', param: {
+              songId: this.song.id,
+              songName: this.song.name
+            }, remove: true }
+            EmitterUtil.post(EmitterConstants.PUSH_PAGE, param)
+          })
+        }
         if(this.allowToArtist) {
           ListItem() {
             this.Item($r('app.media.ic_user_portrait'), '查看歌手', () => { this.isShowArtistsSheet = true })
+          }
+        }
+        if(this.song.album?.id !== 0) {
+          ListItem() {
+            this.Item($r('app.media.ic_music_fill'), `查看专辑: ${this.song.album.name}`, () => {
+              let param: CommonParam<AlbumParam> = {
+                pageName: 'AlbumPage',
+                param: {
+                  album: this.song.album
+                },
+                remove: true
+              }
+              EmitterUtil.post(EmitterConstants.PUSH_PAGE, param)
+            })
           }
         }
         if(this.song.artists[0].id !== 0) {

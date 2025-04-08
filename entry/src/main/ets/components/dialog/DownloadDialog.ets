@@ -1,6 +1,6 @@
 import { getDownloadInfo } from "../../api/getDownloadInfo"
 import { SongDownload, SongDownloadClass } from "../../common/entities/song/SongDownload"
-import { Song, SongItem } from "../../common/entities/song/SongsResult"
+import { Song, SongItem } from "../../common/entities/song/Song"
 import { pasteboard } from "@kit.BasicServicesKit"
 import { promptAction } from "@kit.ArkUI"
 import FileDownloadUtils from "../../common/utils/file/FileDownloadUtils"
@@ -126,7 +126,6 @@ export struct DownloadDialog {
       .margin({ left:10, right:10, top:20, bottom:20})
       .borderRadius(5)
     }
-    .height('100%')
     .scrollBar(BarState.Off)
   }
 }

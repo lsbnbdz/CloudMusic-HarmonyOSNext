@@ -17,11 +17,11 @@ export class MsgConstants {
    */
   static readonly DEVELOPING: string = '该功能正在开发中，敬请期待。'
   /**
-   * 正在缓存提示
+   * 正在下载提示
    */
-  static readonly DOWNLOADING: string = '正在缓存'
+  static readonly DOWNLOADING: string = '正在下载'
   /**
    * 缓存完成提示
    */
-  static readonly DOWNLOAD_COMPLETE: string = '缓存完成'
+  static readonly DOWNLOAD_COMPLETE: string = '下载完成'
 }

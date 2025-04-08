@@ -1,4 +1,4 @@
-import { Song, SongItem } from "../song/SongsResult"
+import { Song, SongItem } from "../song/Song"
 import { Dj, DjRadio, djRadioItem } from "./DjResult"
 
 export interface DjRadioProgram {

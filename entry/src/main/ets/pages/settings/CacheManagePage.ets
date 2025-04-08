@@ -2,7 +2,7 @@ import { DialogUtil, ToastUtil } from "@pura/harmony-utils"
 import Constants from "../../common/constants/Constants"
 import { StorageConstants } from "../../common/constants/StorageConstants"
 import { CacheSet, CacheSetItem } from "../../common/entities/local/Settings"
-import { Song } from "../../common/entities/song/SongsResult"
+import { Song } from "../../common/entities/song/Song"
 import { changeSettings } from "../../common/functions/app/settings"
 import PreferencesUtils from "../../common/utils/data/PreferencesUtils"
 import FileUtils from "../../common/utils/file/FileUtils"
@@ -142,6 +142,9 @@ export struct CacheManagePage {
       id: 0,
       name: "暂无播放",
       artists: [],
+      album: {
+        id: 0, name: '', picUrl: ''
+      },
       duration: 0,
       alias: [],
       fee: 0

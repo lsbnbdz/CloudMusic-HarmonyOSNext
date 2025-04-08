@@ -1,4 +1,4 @@
-import { Song, SongItem } from "../../common/entities/song/SongsResult"
+import { Song, SongItem } from "../../common/entities/song/Song"
 import { pauseMusic, playNext, playPre, playQueue, resumeMusic } from "../../common/functions/play/playControl"
 import playQueueUtils from "../../common/utils/play/PlayQueueUtils"
 import { PlayQueueButton } from "../buttons/play/PlayQueueButton"

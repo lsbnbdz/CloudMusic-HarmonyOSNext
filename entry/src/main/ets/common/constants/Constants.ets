@@ -63,6 +63,10 @@ export default class Constants {
    */
   static readonly SIZE_IMG_CARD: number = 50
   /**
+   * 头像尺寸
+   */
+  static readonly SIZE_IMG_AVATAR: number = 30
+  /**
    * 卡片边框弧度
    */
   static readonly RADIUS_CARD: number = 15
@@ -74,6 +78,10 @@ export default class Constants {
    * Image 默认弧度
    */
   static readonly RADIUS_IMG: number = 10
+  /**
+   * 圆形
+   */
+  static readonly RADIUS_FULL: number = 50
   /**
    * 标题栏字体尺寸
    */

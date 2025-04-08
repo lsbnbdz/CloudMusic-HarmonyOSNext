@@ -1,13 +1,13 @@
-import { PasteboardUtil, ToastUtil } from "@pura/harmony-utils"
 import Constants from "../../common/constants/Constants"
 import { StorageConstants } from "../../common/constants/StorageConstants"
-import { Song, SongItem } from "../../common/entities/song/SongsResult"
+import { Song, SongItem } from "../../common/entities/song/Song"
 import { changeDuration } from "../../common/functions/common/convert"
-import { likeThisSong } from "../../common/functions/play/songLike"
 import OrientationUtils from "../../common/utils/system/OrientationUtils"
 import { DownloadDialog } from "../dialog/DownloadDialog"
-import { SetPlayQuality } from "../settings/SetPlayQuality"
 import { window } from "@kit.ArkUI"
+import { AlbumParam, CommentParam, CommonParam } from "../../common/entities/local/PageParams"
+import { EmitterUtil } from "@pura/harmony-utils"
+import { EmitterConstants } from "../../common/constants/EmitterConstants"
 
 @Component
 export struct PlayerActionSheet {
@@ -20,7 +20,6 @@ export struct PlayerActionSheet {
   @StorageProp(StorageConstants.PLAY_ARTISTS) artists: string = ''
   @StorageProp(StorageConstants.PIC_URL) picUrl: string = ''
   @StorageProp(StorageConstants.PLAY_MODE) playmode: number = 1
-  @StorageProp(StorageConstants.ISLIKED) isLiked: boolean = false
   @StorageProp('bottomRectHeight') bottomRectHeight: number = 0
   showOrientation: boolean = false
   private dialogController: CustomDialogController = new CustomDialogController({
@@ -75,11 +74,6 @@ export struct PlayerActionSheet {
             }, 300)
           }, 24)
           if (this.song.id !== 0 && this.playmode !== 3) {
-            this.Item(this.isLiked ? $r('app.media.ic_public_favor') : $r('app.media.ic_public_favor_filled'),
-              this.isLiked ? '取消喜欢当前歌曲' : '喜欢当前歌曲', () => {
-                this.isShow = false
-                likeThisSong()
-              })
             this.Item($r('app.media.ic_playlist_add_icon'), '添加到歌单', () => {
               this.isShow = false
               setTimeout(() => {
@@ -94,25 +88,47 @@ export struct PlayerActionSheet {
               this.dialogController.open()
             }, 21)
           }
+
           this.Item($r('app.media.ic_timer_icon'), '定时关闭', () => {
             this.isShow = false
             setTimeout(() => {
               this.isShowTimer = true
             }, 300)
           }, 24)
-          this.Item($r('app.media.ic_music_fill'), `复制歌曲名: ${this.song.name}`, () => {
-            this.isShow = false
-            setTimeout(() => {
-              PasteboardUtil.setDataText(this.song.name)
-              ToastUtil.showToast('已复制歌曲名至剪贴板')
-            }, 300)
-          })
+
+          if(this.song.id !== 0) {
+            this.Item($r('app.media.ic_public_message'), '歌曲评论', () => {
+              this.isShow = false
+              let param: CommonParam<CommentParam> = { pageName: 'CommentPage', param: {
+                songId: this.song.id,
+                songName: this.song.name
+              }, remove: true }
+              EmitterUtil.post(EmitterConstants.PUSH_PAGE, param)
+              EmitterUtil.post(EmitterConstants.PLAYING_COVER_TOGGLE, false)
+            }, 24)
+          }
+
           if(this.playmode !== 3) {
-            this.Item($r('app.media.ic_user_portrait'), `歌手: ${this.artists}`, () => {
+            this.Item($r('app.media.ic_user_portrait'), `查看歌手: ${this.artists}`, () => {
               this.isShow = false
               setTimeout(() => {
                 this.isShowArtists = true
               }, 300)
+            })
+          }
+
+          if(this.song?.album?.id !== 0) {
+            this.Item($r('app.media.ic_music_fill'), `查看专辑: ${this.song?.album?.name}`, () => {
+              this.isShow = false
+              let param: CommonParam<AlbumParam> = {
+                pageName: 'AlbumPage',
+                param: {
+                  album: this.song.album
+                },
+                remove: true
+              }
+              EmitterUtil.post(EmitterConstants.PUSH_PAGE, param)
+              EmitterUtil.post(EmitterConstants.PLAYING_COVER_TOGGLE, false)
             })
           }
           // this.Item($r('app.media.ic_public_share_filled'), `分享`, () => {

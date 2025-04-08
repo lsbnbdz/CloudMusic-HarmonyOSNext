@@ -3,7 +3,7 @@ import { PlayListOperation } from "../../../api/playListApi"
 import { getLikeList, likeMusic } from "../../../api/songApi"
 import { StorageConstants } from "../../constants/StorageConstants"
 import { PlayList } from "../../entities/playlist/PlayList"
-import { Song } from "../../entities/song/SongsResult"
+import { Song } from "../../entities/song/Song"
 
 const TAG = '[songLike] '
 

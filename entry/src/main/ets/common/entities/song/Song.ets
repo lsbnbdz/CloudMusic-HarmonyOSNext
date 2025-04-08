@@ -7,10 +7,17 @@ export interface Artist {
   name: string
 }
 
+export interface Album {
+  id: number
+  name: string
+  picUrl: string
+}
+
 export interface Song {
   id: number
   name: string
   artists: Artist[]
+  album: Album
   duration: number
   alias: string[]
   fee: number
@@ -35,6 +42,11 @@ export const SongItem: Song = {
       name: '',
     }
   ],
+  album: {
+    id: 0,
+    name: '',
+    picUrl: ''
+  },
   duration: 0,
   alias: [],
   fee: 0

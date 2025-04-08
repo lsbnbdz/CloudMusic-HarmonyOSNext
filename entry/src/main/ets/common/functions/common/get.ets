@@ -3,7 +3,7 @@ import Constants from "../../constants/Constants";
 import { StorageConstants } from "../../constants/StorageConstants";
 import { LocalSong } from "../../entities/local/LocalData";
 import { CacheSet, CacheSetItem } from "../../entities/local/Settings";
-import { Artist } from "../../entities/song/SongsResult";
+import { Artist } from "../../entities/song/Song";
 import { HttpRequest } from "../../utils/request/HttpRequestUtils";
 import { getArtists } from "./convert";
 

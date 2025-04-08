@@ -1,5 +1,9 @@
 export class EmitterConstants {
   /**
+   * 播放界面显示事件
+   */
+  static readonly PLAYING_COVER_TOGGLE: string = 'PLAYING_COVER_TOGGLE'
+  /**
    * Emitter
    * 更新歌词
    */
@@ -22,4 +26,8 @@ export class EmitterConstants {
    * 播放歌单
    */
   static readonly PLAY_PLAYLIST_SONGS: string = 'PLAY_PLAYLIST_SONGS'
+  /**
+   * Push页面
+   */
+  static readonly PUSH_PAGE: string = 'PUSH_PAGE'
 }

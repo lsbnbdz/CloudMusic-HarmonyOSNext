@@ -1,6 +1,6 @@
 import { AppUtil, LogUtil, ToastUtil } from "@pura/harmony-utils"
 import { getAppInfo } from "../../../api/chenlvinApi"
-import { Song, SongItem } from "../../entities/song/SongsResult"
+import { Song, SongItem } from "../../entities/song/Song"
 import PlayQueueUtils from "../../utils/play/PlayQueueUtils"
 import PreferencesUtils from "../../utils/data/PreferencesUtils"
 import { StorageConstants } from "../../constants/StorageConstants"
@@ -106,6 +106,9 @@ async function loadSavedSong() {
     id: 0,
     name: "暂无播放",
     artists: [],
+    album: {
+      id: 0, name: '', picUrl: ''
+    },
     duration: 0,
     alias: [],
     fee: 0

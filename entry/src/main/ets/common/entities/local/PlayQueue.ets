@@ -1,4 +1,4 @@
-import { Song } from "../song/SongsResult"
+import { Song } from "../song/Song"
 
 export interface PlayQueue {
   playmode: number // 0-本地文件Song   1-在线单曲Song   2-在线歌单歌曲PlayListSongItem

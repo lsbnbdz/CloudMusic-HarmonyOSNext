@@ -1,7 +1,7 @@
 import { common } from '@kit.AbilityKit'
 import { BusinessError, request } from '@kit.BasicServicesKit'
 import { SongDownload } from '../../entities/song/SongDownload'
-import { Song } from '../../entities/song/SongsResult'
+import { Song } from '../../entities/song/Song'
 import { DialogUtil, FileUtil, LogUtil, ToastUtil } from '@pura/harmony-utils'
 import { promptAction } from '@kit.ArkUI'
 import { changeb2Mb, sanitizeFileName } from '../../functions/common/convert'
@@ -40,7 +40,7 @@ class FileDownloadUtils {
     }
     else {
       try {
-        ToastUtil.showToast(`开始缓存：${song.name}.${songDownload.data[0].type}`)
+        ToastUtil.showToast(`开始下载：${song.name}.${songDownload.data[0].type}`)
         request.downloadFile(this.context, {
           url: songDownload.data[0].url,
           filePath: cachePath

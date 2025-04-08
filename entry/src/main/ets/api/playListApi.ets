@@ -2,7 +2,7 @@ import { LogUtil, ToastUtil } from "@pura/harmony-utils"
 import { PlayList, PlayListOperationRes, PlayListSearchResult } from "../common/entities/playlist/PlayList"
 import { CloudSongs, DailyListSongs, PlayListSong, PlayListSongs } from "../common/entities/playlist/PlayListSongs"
 import { PlayQueue } from "../common/entities/local/PlayQueue"
-import { Artist, Song } from "../common/entities/song/SongsResult"
+import { Album, Artist, Song } from "../common/entities/song/Song"
 import { User, UserItem } from "../common/entities/user/User"
 import { getArtists } from "../common/functions/common/convert"
 import { HttpRequest } from "../common/utils/request/HttpRequestUtils"
@@ -101,6 +101,7 @@ export async function putPlayListInQueue(listId: number, trackCount: number, lim
         name: item.name,
         artists: item.ar,
         duration: item.dt,
+        album: item.al as Album,
         fee: item.fee,
         alias: []
       },
@@ -132,6 +133,7 @@ export async function PlayDailySongs(): Promise<void> {
         id: item.id,
         name: item.name,
         artists: item.ar,
+        album: item.al as Album,
         duration: item.dt,
         alias: [],
         fee: item.fee
@@ -193,7 +195,7 @@ export interface DailySongRes {
 export async function getCloudList(offset: number): Promise<Array<PlayListSong>> {
   let list:Array<PlayListSong> = new Array()
   const rootUrl = await getApiUrl()
-  const url:string = `${rootUrl}/user/cloud?limit=50&offset=${offset}`
+  const url:string = `${rootUrl}/user/cloud?limit=100&offset=${offset}`
   const request = new HttpRequest(url)
   await request.RequestInStream().then((data) => {
     const dataGot:CloudSongs = data.result as CloudSongs

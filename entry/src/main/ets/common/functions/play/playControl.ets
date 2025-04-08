@@ -1,5 +1,5 @@
 import { EmitterUtil, FileUtil, LogUtil, RandomUtil, ToastUtil } from "@pura/harmony-utils";
-import { Song, SongItem } from "../../entities/song/SongsResult";
+import { Song, SongItem } from "../../entities/song/Song";
 import FileUtils from "../../utils/file/FileUtils";
 import { getPersonalFmSong, getSongPicUrl, getSongUrl } from "../../../api/songApi";
 import { fetchMetadata, getArtists, sanitizeFileName } from "../common/convert";

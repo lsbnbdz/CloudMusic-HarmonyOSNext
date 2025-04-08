@@ -17,6 +17,7 @@ import { EmitterConstants } from '../../common/constants/EmitterConstants'
 import PlayQueueUtils from '../../common/utils/play/PlayQueueUtils'
 import { PlayQueue } from '../../common/entities/local/PlayQueue'
 import { playQueue } from '../../common/functions/play/playControl'
+import { Album } from '../../common/entities/song/Song'
 
 /**
  * 歌单二级页面
@@ -97,6 +98,7 @@ export struct PlayListPage {
           id: item.id,
           name: item.name,
           artists: item.ar,
+          album: item.al as Album,
           duration: item.dt,
           fee: item.fee,
           alias: []
@@ -138,11 +140,12 @@ export struct PlayListPage {
                           .fontSize(Constants.FONT_SIZE_COMMON)
                         LoadingProgress()
                           .width(Constants.FONT_SIZE_TITLE)
-                          .visibility(this.isLoading || this.list.length > this.param.playList.trackCount ? Visibility.Visible : Visibility.None)
+                          .visibility(this.hasMore ? Visibility.Visible : Visibility.None)
                       }
                     }
                   }
                   .height(Constants.HEIGHT_TEXT_BUTTON)
+                  .padding({ left: 5, right: 5 })
                 }
                 .type(ButtonType.Normal)
                 .backgroundColor(Color.Transparent)
@@ -175,7 +178,7 @@ export struct PlayListPage {
               }
 
               // 添加加载更多
-              if (this.list.length > this.param.playList.trackCount) {
+              if (this.hasMore) {
                 ListItem() {
                   LoadingMoreButton()
                 }
@@ -221,11 +224,10 @@ export struct PlayListPage {
         }
         .height('100%')
 
-        if(this.breakpoint !== 'lg') {
-          BottomBarComponent()
-            .padding(Constants.PADDING_EDGE_DEFAULT)
-            .backgroundColor(Color.Transparent)
-        }
+        BottomBarComponent()
+          .padding(Constants.PADDING_EDGE_DEFAULT)
+          .backgroundColor(Color.Transparent)
+          .visibility(this.breakpoint === 'lg' ? Visibility.None : Visibility.Visible)
       }
       .width('100%')
       .height('100%')
@@ -250,6 +252,7 @@ export struct PlayListPage {
               song: {
                 id: item.id,
                 artists: item.ar,
+                album: item.al as Album,
                 name: item.name,
                 duration: item.dt,
                 alias: [],

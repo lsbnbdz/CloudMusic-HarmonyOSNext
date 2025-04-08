@@ -80,7 +80,8 @@ export struct ApiSetPage {
         Row({ space: 5 }) {
           Text('手动设置Cookie').LeftText()
           ExplainButton({ title: '手动设置Cookie',
-            msg: '设置后每次API请求都将使用该Cookie, 包括登录、用户信息等获取, 重启后生效\n\n' +
+            msg: '注意: 若您使用应用内登录，请勿开启此选项\n\n' +
+              '设置后每次API请求都将使用该Cookie, 包括登录、用户信息等获取, 重启后生效\n\n' +
               'Cookie只需要其中key为MUSIC_U的数据即可\n' +
               '例如: MUSIC_U=XXXXX'
           })

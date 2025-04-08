@@ -149,11 +149,10 @@ export struct DailyListPage {
         }
         .height('100%')
 
-        if(this.breakpoint !== 'lg') {
-          BottomBarComponent()
-            .padding(Constants.PADDING_EDGE_DEFAULT)
-            .backgroundColor(Color.Transparent)
-        }
+        BottomBarComponent()
+          .padding(Constants.PADDING_EDGE_DEFAULT)
+          .backgroundColor(Color.Transparent)
+          .visibility(this.breakpoint === 'lg' ? Visibility.None : Visibility.Visible)
       }
       .opacity(this.pageOpacity)
       .width('100%')

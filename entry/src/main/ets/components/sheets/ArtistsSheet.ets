@@ -1,6 +1,6 @@
 import Constants from "../../common/constants/Constants"
 import { ArtistParam } from "../../common/entities/local/PageParams"
-import { Artist } from "../../common/entities/song/SongsResult"
+import { Artist } from "../../common/entities/song/Song"
 
 @Component
 export struct ArtistsSheet {
@@ -37,7 +37,7 @@ export struct ArtistsSheet {
   @Builder ArtistCard(artist: Artist) {
     Button() {
       Row({ space: 15}) {
-        Image($r('app.media.ic_public_music'))
+        Image($r('app.media.ic_user_portrait'))
           .width(Constants.FONT_SIZE_TITLE)
           .fillColor($r('app.color.reverse'))
           .aspectRatio(1)

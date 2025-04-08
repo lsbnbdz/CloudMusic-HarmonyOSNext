@@ -1,7 +1,7 @@
 import { DialogUtil, EmitterUtil, LogUtil, PasteboardUtil, ToastUtil } from "@pura/harmony-utils"
 import Constants from "../../common/constants/Constants"
 import { LocalSong, LocalSongClass } from "../../common/entities/local/LocalData"
-import { Song } from "../../common/entities/song/SongsResult"
+import { Song } from "../../common/entities/song/Song"
 import { fetchMetadata } from "../../common/functions/common/convert"
 import { playQueue } from "../../common/functions/play/playControl"
 import FileUtils from "../../common/utils/file/FileUtils"
@@ -78,6 +78,9 @@ export struct FileCard {
               id: this.localSong.songId,
               name: this.localSong.name,
               artists: artists,
+              album: {
+                id: 0, name: '', picUrl: ''
+              },
               duration: metadata ? ((metadata.duration) ? parseInt(metadata.duration) : 0) : 0,
               alias: [],
               fee: 0

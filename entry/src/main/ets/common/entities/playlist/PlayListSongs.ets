@@ -1,14 +1,9 @@
-import { Artist } from "../song/SongsResult"
+import { Album, Artist } from "../song/Song"
 import { PlayList } from "./PlayList"
 
 /**
  * 歌单内歌曲
  */
-interface Album {
-  id: number
-  picUrl: string
-}
-
 export interface PlayListSong {
   name: string
   id: number
@@ -60,6 +55,7 @@ export const PlayListSongItem: PlayListSong = {
   dt: 0,
   al: {
     id: 0,
+    name: '',
     picUrl: ''
   },
   ar: [],

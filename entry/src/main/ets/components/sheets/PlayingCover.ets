@@ -1,4 +1,4 @@
-import { Song, SongItem } from "../../common/entities/song/SongsResult"
+import { Song, SongItem } from "../../common/entities/song/Song"
 import { changeDuration } from "../../common/functions/common/convert"
 import { pauseMusic, playNext, playPre, resumeMusic, seekMusic } from "../../common/functions/play/playControl"
 import { AddToPlayListCircleButton } from "../buttons/play/AddToPlayListButton"
@@ -10,7 +10,7 @@ import { AVCastPicker } from "@kit.AVSessionKit"
 import { TimerButton } from "../buttons/play/TimerButton"
 import { StorageConstants } from "../../common/constants/StorageConstants"
 import Constants from "../../common/constants/Constants"
-import { ClickUtil, PasteboardUtil, ToastUtil } from "@pura/harmony-utils"
+import { ClickUtil, EmitterUtil, PasteboardUtil, ToastUtil } from "@pura/harmony-utils"
 import { PlayerActionSheet } from "./PlayerActionSheet"
 import { likeThisSong } from "../../common/functions/play/songLike"
 import { resourceManager } from "@kit.LocalizationKit"
@@ -19,6 +19,7 @@ import { ArtistsSheet } from "./ArtistsSheet"
 import { display, window } from "@kit.ArkUI"
 import OrientationUtils from "../../common/utils/system/OrientationUtils"
 import { PlaySettingsPage } from "../../pages/settings/PlaySettingsPage"
+import { EmitterConstants } from "../../common/constants/EmitterConstants"
 
 @Component
 export struct PlayingCover {
@@ -49,7 +50,7 @@ export struct PlayingCover {
   @State isShowSettings: boolean = false
   @State isLikeProcessing: boolean = false
   @State totalOpacity: number = 0
-  @State isNormalPhone: boolean = true
+  @State isNormalPhone: boolean = !(display.isFoldable() || this.deviceType === resourceManager.DeviceType.DEVICE_TYPE_TABLET)
   private dialogController: CustomDialogController = new CustomDialogController({
     builder: DownloadDialog({
       song: this.song,
@@ -60,16 +61,19 @@ export struct PlayingCover {
   })
 
   aboutToAppear(): void {
-    if(display.isFoldable() || this.deviceType === resourceManager.DeviceType.DEVICE_TYPE_TABLET) this.isNormalPhone = false
     setTimeout(() => {
       animateTo({ duration: 300, curve: Curve.EaseInOut }, () => {
         this.totalOpacity = 0.7
+      })
+      EmitterUtil.onSubscribe(EmitterConstants.PLAYING_COVER_TOGGLE, (toggle: boolean) => {
+        this.isShow = toggle
       })
     }, 500)
   }
 
   aboutToDisappear(): void {
     OrientationUtils.setOrientation(window.Orientation.UNSPECIFIED)
+    EmitterUtil.unSubscribe(EmitterConstants.PLAYING_COVER_TOGGLE)
   }
 
   build() {
@@ -157,6 +161,7 @@ export struct PlayingCover {
           imgColor: Color.White,
           imgHeight: size + 4,
           isShowAddSheet: this.isShowAddSheet,
+          isLarge: (this.isNormalPhone && this.breakpoint === 'md')
         })
           .clickEffect({ level: ClickEffectLevel.LIGHT, scale: 0.7 })
           .visibility(this.playmode !== 3 ? Visibility.Visible : Visibility.None)
@@ -367,7 +372,7 @@ export struct PlayingCover {
             .height(this.song.id == 0 ? '70%' : '100%')
             .borderRadius(5)
             .aspectRatio(1)
-            .shadow({ radius: 30, type: ShadowType.BLUR, offsetX: 20, offsetY: 20 })
+            // .shadow({ radius: 30, type: ShadowType.BLUR, offsetX: 20, offsetY: 20 })
             .geometryTransition('coverImg')
         }
         .height('60%')
@@ -422,7 +427,7 @@ export struct PlayingCover {
             .height(this.song.id == 0 ? '70%' : '100%')
             .borderRadius(5)
             .aspectRatio(1)
-            .shadow({ radius: 30, type: ShadowType.BLUR, offsetX: 20, offsetY: 20 })
+            // .shadow({ radius: 30, type: ShadowType.BLUR, offsetX: 20, offsetY: 20 })
             .geometryTransition('coverImg')
         }
         .height('80%')
@@ -435,6 +440,8 @@ export struct PlayingCover {
         this.PersonalFmButton()
         Text(this.song.name + ' - ' + this.artists)
           .textStyle(18)
+          .layoutWeight(1)
+          .textAlign(this.isPersonalFm ? TextAlign.Start : TextAlign.Center )
           .fontWeight(Constants.FONT_WEIGHT_BOLD)
           .onClick(() => {
             if(this.song.id !== 0 && this.playmode !== 3) {
@@ -451,12 +458,14 @@ export struct PlayingCover {
             onDisappear: () => { this.isShowArtists = false }
           })
       }
-      .width('90%')
+      .width('100%')
+      .layoutWeight(1)
+      .padding({ left: Constants.PADDING_EDGE_DEFAULT, right: Constants.PADDING_EDGE_DEFAULT })
       .justifyContent(FlexAlign.Center)
     }
     .layoutWeight(1)
-    .width('100%')
     .padding(10)
+    .width('100%')
     .height('100%')
     .justifyContent(FlexAlign.Center)
     .gesture(
@@ -584,8 +593,10 @@ export struct PlayingCover {
           .width('80%')
           .padding({ top: 5 })
         }
-        .width(this.deviceType === resourceManager.DeviceType.DEVICE_TYPE_TABLET ? '70%' : '90%')
+        .width('90%')
       }
+      .height('100%')
+      .width('100%')
       .layoutWeight(1)
 
       LyricComponent()
@@ -594,6 +605,7 @@ export struct PlayingCover {
     }
     .width('100%')
     .height('100%')
+    .padding({ left: Constants.PADDING_EDGE_TEXT, right: Constants.PADDING_EDGE_TEXT })
     .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
   }
 

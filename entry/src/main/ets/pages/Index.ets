@@ -1,26 +1,19 @@
 import { Explore } from '../components/main/Explore/Explore'
 import { BottomBarComponent } from '../components/play/BottomBarComponent';
 import Constants from '../common/constants/Constants';
-import { SettingsPage } from './settings/SettingsPage';
-import { LocalSongPage } from './local/LocalSongPage';
-import { CloudPage } from './playlist/CloudPage';
-import { DailyListPage } from './playlist/DailyListPage';
-import { SearchPage } from './search/SearchPage';
-import { PlayListPage } from './playlist/PlayListPage';
-import { ArtistParam, DjRadioParam, PlayListPageParam, WebPageParam } from '../common/entities/local/PageParams';
-import { LoginPage } from './login/LoginPage';
-import { QrCodeLogin } from './login/QrCodeLogin';
-import { WebLogin } from './login/WebLogin';
-import { WebPage } from './web/WebPage';
+import {
+  AlbumParam,
+  ArtistParam,
+  CommonParam,
+  PlayListPageParam } from '../common/entities/local/PageParams';
 import { UserLists } from '../components/main/UserPlayLists/UserLists';
 import { Me } from '../components/main/Me/Me';
 import { StorageConstants } from '../common/constants/StorageConstants';
-import { TopListPage } from './list/TopListPage';
 import PreferencesUtils from '../common/utils/data/PreferencesUtils';
-import { DebugPage } from './local/DebugPage';
 import BreakpointUtils from '../common/utils/system/BreakpointUtils';
-import { ArtistPage } from './artist/ArtistPage';
-import { DjRadioPage } from './playlist/DjRadioPage';
+import { EmitterUtil } from '@pura/harmony-utils';
+import { EmitterConstants } from '../common/constants/EmitterConstants';
+import { PageMap } from '../common/model/PageMap';
 
 @Entry
 @Component
@@ -46,6 +39,13 @@ struct Index {
     if(isFirstLaunch) {
       PreferencesUtils.putPreferenceValue(StorageConstants.USER_PREF, 'isFirstLaunch', false)
     }
+    EmitterUtil.onSubscribe(EmitterConstants.PUSH_PAGE, <T extends
+    PlayListPageParam | ArtistParam | AlbumParam>(param: CommonParam<T>) => {
+      if(param.remove) {
+        this.pageInfos.removeByName(param.pageName)
+      }
+      this.pageInfos.pushPathByName(param.pageName, param.param)
+    })
   }
 
   aboutToDisappear(): void {
@@ -123,54 +123,9 @@ struct Index {
     .menus(this.getMenuItems())
     .hideBackButton(true)
     .backgroundColor($r('app.color.background'))
-    .navDestination(this.PageMap)
+    .navDestination(PageMap)
     .toolbarConfiguration(this.ToolBar(), { backgroundBlurStyle: BlurStyle.Regular, barStyle: BarStyle.STACK, backgroundColor: Color.Transparent })
     .animation({ duration: 500, curve: Curve.Smooth })
-  }
-
-  @Builder PageMap(name: string, param: Object) {
-    if(name === 'SettingsPage') {
-      SettingsPage()
-    }
-    else if(name === 'LocalSongPage') {
-      LocalSongPage()
-    }
-    else if(name === 'CloudPage') {
-      CloudPage()
-    }
-    else if(name === 'DailyListPage') {
-      DailyListPage()
-    }
-    else if(name === 'SearchPage') {
-      SearchPage()
-    }
-    else if(name === 'PLayListPage') {
-      PlayListPage({ param: param as PlayListPageParam })
-    }
-    else if(name === 'ArtistPage') {
-      ArtistPage({ param: param as ArtistParam })
-    }
-    else if(name === 'DjRadioPage') {
-      DjRadioPage({ param: param as DjRadioParam})
-    }
-    else if(name === 'LoginPage') {
-      LoginPage()
-    }
-    else if(name === 'QrCodeLogin') {
-      QrCodeLogin()
-    }
-    else if(name === 'WebLogin') {
-      WebLogin()
-    }
-    else if(name === 'WebPage') {
-      WebPage({ param: param as WebPageParam })
-    }
-    else if(name == 'TopListPage') {
-      TopListPage()
-    }
-    else if(name == 'DebugPage') {
-      DebugPage()
-    }
   }
 
   @Builder ToolBar() {

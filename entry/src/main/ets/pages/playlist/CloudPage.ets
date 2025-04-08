@@ -12,6 +12,7 @@ import { EmitterConstants } from '../../common/constants/EmitterConstants'
 import { PlayQueue } from '../../common/entities/local/PlayQueue'
 import PlayQueueUtils from '../../common/utils/play/PlayQueueUtils'
 import { playQueue } from '../../common/functions/play/playControl'
+import { Album } from '../../common/entities/song/Song'
 
 /**
  * 云盘
@@ -46,7 +47,7 @@ export struct CloudPage {
 
   async aboutToAppear() {
     if (!this.hasLoaded) {
-      await this.loadSongs(50, 0)
+      await this.loadSongs(100, 0)
       EmitterUtil.onSubscribe(EmitterConstants.PLAY_PLAYLIST_SONGS, ((index: number) => {
         this.playSong(index)
       }))
@@ -87,6 +88,7 @@ export struct CloudPage {
         song: {
           id: item.id,
           artists: item.ar,
+          album: item.al as Album,
           name: item.name,
           duration: item.dt,
           alias: [],
@@ -119,6 +121,7 @@ export struct CloudPage {
                     song: {
                       id: item.id,
                       artists: item.ar,
+                      album: item.al as Album,
                       name: item.name,
                       duration: item.dt,
                       alias: [],
@@ -139,7 +142,7 @@ export struct CloudPage {
                 ListItem() {
                   ClickToLoadButton()
                     .onClick(() => {
-                      this.loadSongs(30, this.currentOffset)
+                      this.loadSongs(100, this.currentOffset)
                     })
                 }
               } else if (!this.hasMore) {
@@ -159,11 +162,10 @@ export struct CloudPage {
         }
         .height('100%')
 
-        if(this.breakpoint !== 'lg') {
-          BottomBarComponent()
-            .padding(Constants.PADDING_EDGE_DEFAULT)
-            .backgroundColor(Color.Transparent)
-        }
+        BottomBarComponent()
+          .padding(Constants.PADDING_EDGE_DEFAULT)
+          .backgroundColor(Color.Transparent)
+          .visibility(this.breakpoint === 'lg' ? Visibility.None : Visibility.Visible)
       }
       .translate({ y: -40 })
       .animation({

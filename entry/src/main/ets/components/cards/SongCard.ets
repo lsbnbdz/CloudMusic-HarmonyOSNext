@@ -1,4 +1,4 @@
-import { Song, SongItem } from "../../common/entities/song/SongsResult"
+import { Song, SongItem } from "../../common/entities/song/Song"
 import { getArtists } from "../../common/functions/common/convert"
 import { PlayList, PlayListItem } from "../../common/entities/playlist/PlayList"
 import Constants from "../../common/constants/Constants"

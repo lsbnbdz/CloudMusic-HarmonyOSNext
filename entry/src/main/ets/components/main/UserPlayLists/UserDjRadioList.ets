@@ -73,13 +73,17 @@ export struct UserDjRadioList {
                 const param: DjRadioParam = {
                   djRadio: item
                 }
-                this.pageInfos.pushPathByName('DjRadioPage', param, this.breakpoint === 'lg' && this.pageInfos.size() === 0 ? false : true)
+                if(!this.pageInfos.getAllPathName().includes('DjRadioPage')) {
+                  this.pageInfos.pushPathByName('DjRadioPage', param, this.pageInfos.size() === 0 && this.breakpoint === 'lg' ? false : true)
+                } else {
+                  this.pageInfos.replacePath({ name: 'DjRadioPage', param: param }, { launchMode: LaunchMode.MOVE_TO_TOP_SINGLETON })
+                }
               })
           })
         }
         ListItem().height(px2vp(this.bottomRectHeight) + 120)
       }
-      .lanes(this.breakpoint == 'lg' ? 2 : 1)
+      .lanes(this.breakpoint == 'lg' || this.breakpoint === 'md' ? 2 : 1)
       .width('100%')
       .height('100%')
     }

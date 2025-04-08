@@ -5,6 +5,8 @@ const TAG = '[OrientationUtils] '
 
 class OrientationUtils {
   windowClass: window.Window | undefined = undefined
+  flag: number = 0
+
   init(data: window.Window) {
     this.windowClass = data
   }
@@ -12,6 +14,8 @@ class OrientationUtils {
   setOrientation(target: window.Orientation) {
     try {
       let orientation = target
+      if(target === window.Orientation.AUTO_ROTATION_LANDSCAPE_RESTRICTED) this.flag = 1
+      else this.flag = 0
       if(this.windowClass) {
         this.windowClass.setPreferredOrientation(orientation)
       }

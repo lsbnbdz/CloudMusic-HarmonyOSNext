@@ -73,11 +73,7 @@ export struct Me {
 
       Column() {
         this.ItemCard($r('app.media.ic_public_folder_filled'), '本地曲库', () => {
-          if(this.pageInfos.size() == 0) {
-            this.pageInfos.pushPathByName('LocalSongPage', null, this.breakpoint === 'lg' ? false : true)
-          } else {
-            this.pageInfos.replacePathByName('LocalSongPage', null)
-          }
+          this.pageInfos.pushPath({ name: 'LocalSongPage', param: null }, { launchMode: LaunchMode.MOVE_TO_TOP_SINGLETON })
         })
       }
       .itemColumnStyle()

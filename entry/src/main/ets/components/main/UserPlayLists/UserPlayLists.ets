@@ -140,7 +140,7 @@ export struct UserPlayLists {
     .height('100%')
     .width('100%')
     .scrollBar(BarState.Off)
-    .lanes(this.breakpoint == 'lg' ? 2 : 1)
+    .lanes(this.breakpoint === 'lg' || this.breakpoint === 'md' ? 2 : 1)
     .backToTop(true)
     .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
   }

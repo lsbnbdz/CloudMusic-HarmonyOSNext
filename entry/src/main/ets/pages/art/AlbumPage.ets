@@ -45,40 +45,44 @@ export struct AlbumPage {
           .justifyContent(FlexAlign.Center)
         } else {
           // Main List Content
-          List() {
+          Column({ space: Constants.PADDING_EDGE_DEFAULT }) {
             this.AlbumInfo()
-            ListItem() {
-              this.PlayAllButton()
-            }
-            .padding({ left: Constants.PADDING_EDGE_DEFAULT })
-            ForEach(this.songs, (item: PlayListSong, index) => {
-              SongCard({
-                playmode: 1,
-                song: {
-                  id: item.id,
-                  artists: item.ar,
-                  album: item.al,
-                  name: item.name,
-                  duration: item.dt,
-                  alias: [],
-                  fee: item.fee
-                },
-                index: index,
-                sid: index,
-                isShowArtistSheet: false
+            List() {
+              ListItem() {
+                this.PlayAllButton()
+              }
+              ListItem()
+                .padding({ left: Constants.PADDING_EDGE_DEFAULT })
+              ForEach(this.songs, (item: PlayListSong, index) => {
+                SongCard({
+                  playmode: 1,
+                  song: {
+                    id: item.id,
+                    artists: item.ar,
+                    album: item.al,
+                    name: item.name,
+                    duration: item.dt,
+                    alias: [],
+                    fee: item.fee
+                  },
+                  index: index,
+                  sid: index,
+                  isShowArtistSheet: false
+                })
               })
-            })
-            ListItem().height(px2vp(this.bottomRectHeight) + Constants.HEIGHT_MINI)
+              ListItem().height(px2vp(this.bottomRectHeight) + Constants.HEIGHT_MINI)
+            }
+            .height('100%')
+            .width('100%')
+            .layoutWeight(1)
+            .lanes(this.breakpoint === 'sm' ? 1 : 2)
+            .scrollBar(BarState.Auto)
+            .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
+            .cachedCount(10)
+            .visibility(this.isLoading ? Visibility.None : Visibility.Visible)
+            .edgeEffect(EdgeEffect.Spring)
+            .backToTop(true)
           }
-          .height('100%')
-          .width('100%')
-          .lanes(this.breakpoint === 'sm' ? 1 : 2)
-          .scrollBar(BarState.Auto)
-          .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
-          .cachedCount(10)
-          .visibility(this.isLoading ? Visibility.None : Visibility.Visible)
-          .edgeEffect(EdgeEffect.Spring)
-          .backToTop(true)
         }
 
         BottomBarComponent()
@@ -112,7 +116,7 @@ export struct AlbumPage {
               .fontSize(Constants.FONT_SIZE_COMMON)
           }
         }
-        .padding({ left: 5, right: 5 })
+        .padding({ left: 20, right: 20 })
       }
       .height(Constants.HEIGHT_TEXT_BUTTON)
       .backgroundColor(Color.Transparent)
@@ -131,13 +135,14 @@ export struct AlbumPage {
       Image(this.albumInfo.album.picUrl + '?param=512y512')
         .width(120)
         .aspectRatio(1)
-        .borderRadius(Constants.RADIUS_IMG)
+        .borderRadius(Constants.RADIUS_CARD)
       Column({ space: Constants.PADDING_EDGE_DEFAULT }) {
         Text(this.albumInfo.album.name)
           .textStyle(Constants.FONT_SIZE_TITLE, Constants.FONT_WEIGHT_BOLD)
           .fontColor($r('app.color.reverse'))
         Text(`发行商: ${this.albumInfo.album.company}`)
-          .textStyle()
+          .textStyle(12)
+          .fontWeight(Constants.FONT_WEIGHT_BOLD)
           .visibility(this.albumInfo.album.company ? Visibility.Visible : Visibility.None)
         Text(this.albumInfo.album.description)
           .textStyle(12)

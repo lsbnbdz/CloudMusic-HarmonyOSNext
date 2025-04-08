@@ -25,7 +25,7 @@
         "backgroundModes": [
           "audioPlayback"
         ],
-        "orientation": "unspecified",
+        "orientation": "auto_rotation_unspecified",
         "skills": [
           {
             "entities": [

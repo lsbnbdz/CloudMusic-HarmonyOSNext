@@ -10,7 +10,7 @@ const TAG = '[commentApi] '
  */
 export async function getComment(id: number): Promise<CommentResult> {
   const rootUrl = await getApiUrl()
-  const url = `${rootUrl}/comment/music?id=${id}&limit=20`
+  const url = `${rootUrl}/comment/music?id=${id}&limit=30`
   const request = new HttpRequest(url)
   const response = await request.RequestInStream(false)
   const dataGot = response.result as CommentResult

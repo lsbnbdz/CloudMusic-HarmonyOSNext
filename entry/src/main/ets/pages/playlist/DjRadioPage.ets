@@ -1,8 +1,7 @@
 import { LazyData } from "@pie/lazy-data"
-import { EmitterUtil, ToastUtil } from "@pura/harmony-utils"
+import { ToastUtil } from "@pura/harmony-utils"
 import { getDjPrograms } from "../../api/djApi"
 import Constants from "../../common/constants/Constants"
-import { EmitterConstants } from "../../common/constants/EmitterConstants"
 import { StorageConstants } from "../../common/constants/StorageConstants"
 import { DjRadioProgram } from "../../common/entities/dj/DjProgramResult"
 import { djRadioItem } from "../../common/entities/dj/DjResult"
@@ -10,6 +9,7 @@ import { DjRadioParam } from "../../common/entities/local/PageParams"
 import { PlayQueue } from "../../common/entities/local/PlayQueue"
 import { djRadioToQueue } from "../../common/functions/play/djRadioOp"
 import { playQueue } from "../../common/functions/play/playControl"
+import { PLAYMODE } from "../../common/model/enum"
 import PlayQueueUtils from "../../common/utils/play/PlayQueueUtils"
 import { ClickToLoadButton, LoadingMoreButton, NoMoreButton } from "../../components/buttons/LoadMoreButtons"
 import { SongCard } from "../../components/cards/SongCard"
@@ -29,19 +29,11 @@ export struct DjRadioPage {
   @State isLoading: boolean = false
   @State isLoadingMore: boolean = false
   @State hasMore: boolean = false
-  @Provide('playmode') playmode: number = 3
 
   async aboutToAppear(): Promise<void> {
     this.isLoading = true
     await this.loadSongs(0)
-    EmitterUtil.onSubscribe(EmitterConstants.PLAY_PLAYLIST_SONGS, ((index: number) => {
-      this.playSong(index)
-    }))
     this.isLoading = false
-  }
-
-  aboutToDisappear(): void {
-    EmitterUtil.unSubscribe(EmitterConstants.PLAY_PLAYLIST_SONGS)
   }
 
   async loadSongs(offset: number) {
@@ -57,7 +49,7 @@ export struct DjRadioPage {
     try {
       if(this.programs.length === 0) return
       let queue: PlayQueue[] = this.programs.map((item): PlayQueue => ({
-        playmode: 3,
+        playmode: PLAYMODE.DJRADIO,
         song: item.mainSong,
         fileName: '',
         picUrl: item.coverUrl
@@ -114,10 +106,11 @@ export struct DjRadioPage {
               SongCard({
                 song: item.mainSong,
                 picUrl: item.coverUrl,
-                playmode: 3,
+                playmode: PLAYMODE.DJRADIO,
                 sid: index,
                 index: index,
-                djRadio: item.radio
+                djRadio: item.radio,
+                listPlayAction: async () => { await this.playSong(index) }
               })
                 .translate({ y: this.translateY })
                 .animation({

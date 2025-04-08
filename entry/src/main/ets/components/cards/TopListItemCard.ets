@@ -51,10 +51,10 @@ export struct TopListItemCard {
         isShowHeart: false,
         useTimestamp: false
       }
-      if(this.pageInfos.size() < 2) {
-        this.pageInfos.pushPathByName('PLayListPage', param, this.breakpoint === 'lg' && this.pageInfos.size() === 0 ? false : true)
+      if(!this.pageInfos.getAllPathName().includes('PlayListPage')) {
+        this.pageInfos.pushPathByName('PlayListPage', param, this.pageInfos.size() === 0 && this.breakpoint === 'lg' ? false : true)
       } else {
-        this.pageInfos.replacePathByName('PLayListPage', param, true)
+        this.pageInfos.replacePath({ name: 'PlayListPage', param: param }, { launchMode: LaunchMode.MOVE_TO_TOP_SINGLETON })
       }
     })
   }

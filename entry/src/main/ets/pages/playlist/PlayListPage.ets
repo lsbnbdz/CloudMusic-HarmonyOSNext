@@ -18,6 +18,7 @@ import PlayQueueUtils from '../../common/utils/play/PlayQueueUtils'
 import { PlayQueue } from '../../common/entities/local/PlayQueue'
 import { playQueue } from '../../common/functions/play/playControl'
 import { Album } from '../../common/entities/song/Song'
+import { PLAYMODE } from '../../common/model/enum'
 
 /**
  * 歌单二级页面
@@ -77,23 +78,19 @@ export struct PlayListPage {
       cleanLastPlayInfo()
     }))
     await this.loadSongs(200, 0)
-    EmitterUtil.onSubscribe(EmitterConstants.PLAY_PLAYLIST_SONGS, ((index: number) => {
-      this.playSong(index)
-    }))
     await this.loadSongs(this.param.playList.trackCount - 200, 150)
   }
 
   aboutToDisappear(): void {
     this.isPageActive = false
     EmitterUtil.unSubscribe(EmitterConstants.EMITTER_DELETE_FROM_PLAYLIST)
-    EmitterUtil.unSubscribe(EmitterConstants.PLAY_PLAYLIST_SONGS)
   }
 
   private async playSong(songIndex: number) {
     try {
       if(this.list.length === 0) return
       let queue: PlayQueue[] = this.list.map((item): PlayQueue => ({
-        playmode: 1,
+        playmode: PLAYMODE.PLAYLIST,
         song: {
           id: item.id,
           name: item.name,
@@ -248,7 +245,7 @@ export struct PlayListPage {
         ListItem() {
           Row() {
             SongCard({
-              playmode: 2,
+              playmode: PLAYMODE.PLAYLIST,
               song: {
                 id: item.id,
                 artists: item.ar,
@@ -261,7 +258,8 @@ export struct PlayListPage {
               sid: this.list.indexOf(item),
               playlist: this.param.playList,
               picUrl: item.al?.picUrl ?? $r('app.media.ic_public_music'),
-              index: this.list.indexOf(item)
+              index: this.list.indexOf(item),
+              listPlayAction: async () => { await this.playSong(index) }
             })
               .layoutWeight(1)
             if(this.isSelecting) {

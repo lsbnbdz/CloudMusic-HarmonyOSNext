@@ -39,7 +39,7 @@ export function PageMap(name: string, param: Object) {
   else if(name === 'SearchPage') {
     SearchPage()
   }
-  else if(name === 'PLayListPage') {
+  else if(name === 'PlayListPage') {
     PlayListPage({ param: param as PlayListPageParam })
   }
   else if(name === 'ArtistPage') {

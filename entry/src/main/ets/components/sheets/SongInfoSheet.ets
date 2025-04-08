@@ -22,6 +22,7 @@ export struct SongInfoSheet {
   index: number = 0
   allowToArtist: boolean = true
   playmode: number = 1
+  listAction: () => void = () => {}
   @StorageProp('bottomRectHeight') bottomRectHeight: number = 0
   @StorageProp(StorageConstants.IS_PLAYER_LOADING) isPlayerLoading: boolean = false
   @StorageProp(StorageConstants.USER) user: User = UserItem
@@ -61,7 +62,7 @@ export struct SongInfoSheet {
   private async playWithPlayList() {
     if(!this.isPlayerLoading) {
       this.isPlayerLoading = true
-      EmitterUtil.post(EmitterConstants.PLAY_PLAYLIST_SONGS, this.index)
+      this.listAction()
       this.isPlayerLoading = false
     } else {
       ToastUtil.showToast('当前有正在加载的播放任务，请稍后再试')
@@ -95,9 +96,10 @@ export struct SongInfoSheet {
       ListItem() {
         Text() {
           Span(this.song.name)
-          Span(` (${this.song.alias[0]})`)
-            .fontColor(Color.Gray)
-            .visibility(this.song.alias.length > 0 ? Visibility.Visible : Visibility.None)
+          if(this.song.alias[0] !== undefined) {
+            Span(` (${this.song.alias[0]})`)
+              .fontColor(Color.Gray)
+          }
         }
           .maxLines(1)
           .textOverflow({ overflow: TextOverflow.MARQUEE })

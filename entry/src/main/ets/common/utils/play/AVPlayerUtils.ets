@@ -111,7 +111,7 @@ class AVPlayerUtils {
     this.updateFlag = true
     AppStorage.setOrCreate(StorageConstants.PLAY_TIME, time)
     avPlayer.seek(time)
-    this.play()
+    avPlayer.play()
   }
 
   private clearInterval() {
@@ -189,6 +189,8 @@ class AVPlayerUtils {
           break
         case 'completed':
           this.clearInterval()
+          AVSessionUtils.pauseState(avPlayer.currentTime)
+          avPlayer.reset()
           AppStorage.setOrCreate(StorageConstants.IS_PAUSED, true)
           ContinuousTask.stopTask()
           completeDo()

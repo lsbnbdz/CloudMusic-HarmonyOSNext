@@ -20,7 +20,7 @@ export struct SetPlayQuality {
       Text('在线播放音质')
         .fontSize(Constants.FONT_SIZE_COMMON)
         .fontWeight(FontWeight.Bold)
-      Select([{ value: '标准' }, { value: '高' }, { value: '极高' }, { value: '无损' }])
+      Select([{ value: '标准' }, { value: '高' }, { value: '极高' }, { value: '无损/Hi-Res' }])
         .selectedOptionFontColor($r('app.color.app_red'))
         .selected(this.selected)
         .value(this.selected ? PlayConstants.QUALITY_NAME[this.selected] : '标准')

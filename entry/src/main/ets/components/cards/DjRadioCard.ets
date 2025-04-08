@@ -1,4 +1,5 @@
 import Constants from "../../common/constants/Constants"
+import { StorageConstants } from "../../common/constants/StorageConstants"
 import { RecommendDjRadio, RecommendDjRadioItem } from "../../common/entities/dj/DjRecommend"
 import { DjRadio, djRadioItem } from "../../common/entities/dj/DjResult"
 import { DjRadioParam } from "../../common/entities/local/PageParams"
@@ -42,7 +43,11 @@ export struct DjRadioCard {
       let param: DjRadioParam = {
         djRadio: this.djRadio
       }
-      this.pageInfos.pushPathByName('DjRadioPage', param)
+      if(!this.pageInfos.getAllPathName().includes('DjRadioPage')) {
+        this.pageInfos.pushPathByName('DjRadioPage', param, this.pageInfos.size() === 0 && this.breakpoint === 'lg' ? false : true)
+      } else {
+        this.pageInfos.replacePath({ name: 'DjRadioPage', param: param }, { launchMode: LaunchMode.MOVE_TO_TOP_SINGLETON })
+      }
     })
   }
 }
@@ -51,6 +56,7 @@ export struct DjRadioCard {
 export struct DjRadioRecommendCard {
   djRadio: RecommendDjRadio = RecommendDjRadioItem
   @Consume('pageInfos') pageInfos: NavPathStack
+  @StorageProp(StorageConstants.BREAKPOINT) breakpoint: string = 'sm'
 
   build() {
     Column({ space: 5 }) {
@@ -90,7 +96,11 @@ export struct DjRadioRecommendCard {
           id: this.djRadio.id
         }
       }
-      this.pageInfos.pushPathByName('DjRadioPage', param)
+      if(!this.pageInfos.getAllPathName().includes('DjRadioPage')) {
+        this.pageInfos.pushPathByName('DjRadioPage', param, this.pageInfos.size() === 0 && this.breakpoint === 'lg' ? false : true)
+      } else {
+        this.pageInfos.replacePath({ name: 'DjRadioPage', param: param }, { launchMode: LaunchMode.MOVE_TO_TOP_SINGLETON })
+      }
     })
   }
 }

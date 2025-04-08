@@ -3,7 +3,7 @@ import { getArtists } from "../../common/functions/common/convert"
 import { PlayList, PlayListItem } from "../../common/entities/playlist/PlayList"
 import Constants from "../../common/constants/Constants"
 import { cleanLastPlayInfo } from "../../common/functions/play/playListOp"
-import { EmitterUtil, ToastUtil } from "@pura/harmony-utils"
+import { ToastUtil } from "@pura/harmony-utils"
 import { StorageConstants } from "../../common/constants/StorageConstants"
 import VibratorUtils from "../../common/utils/system/VibratorUtils"
 import { ArtistsSheet } from "../sheets/ArtistsSheet"
@@ -11,9 +11,8 @@ import PlayQueueUtils from "../../common/utils/play/PlayQueueUtils"
 import { playQueue } from "../../common/functions/play/playControl"
 import { SongInfoSheet } from "../sheets/SongInfoSheet"
 import { PlayListAddSheet } from "../sheets/PlayListAddSheet"
-import { djRadioToQueue } from "../../common/functions/play/djRadioOp"
 import { DjRadio, djRadioItem } from "../../common/entities/dj/DjResult"
-import { EmitterConstants } from "../../common/constants/EmitterConstants"
+import { PLAYMODE } from "../../common/model/enum"
 
 @Component
 export struct SongCard {
@@ -25,7 +24,7 @@ export struct SongCard {
   @State isShowSheet: boolean = false
   @State isShowAddSheet: boolean = false
   @State isShowArtistSheet: boolean = false
-  @State playmode: number = 1 // 0-本地歌曲   1-单曲   2-歌单歌曲   3-电台歌曲
+  @State playmode: PLAYMODE = PLAYMODE.SINGLE
   playlist: PlayList = PlayListItem
   djRadio: DjRadio = djRadioItem
   song: Song = SongItem
@@ -34,6 +33,7 @@ export struct SongCard {
   reason: string = ''
   allowToArtist: boolean = true
   moreVisible: boolean = true
+  listPlayAction: () => void = () => {}
 
 
   async aboutToAppear(): Promise<void> {
@@ -52,8 +52,9 @@ export struct SongCard {
       this.isShowSheet = true
     } else if(this.clickAction == 1) {
       this.playSingleSong()
-    } else if(this.playmode === 2 || this.playmode === 3) {
-      this.playWithPlayList()
+    } else if(this.playmode !== PLAYMODE.LOCAL && this.playmode !== PLAYMODE.SINGLE) {
+      // this.playWithList()
+      this.listPlayAction()
     } else {
       this.playSingleSong()
     }
@@ -69,27 +70,6 @@ export struct SongCard {
       setTimeout(() => {
         AppStorage.setOrCreate('isPlayerLoading', false)
       }, 500)
-    } else {
-      ToastUtil.showToast('当前有正在加载的播放任务，请稍后再试')
-    }
-  }
-
-  private playWithPlayList() {
-    if(!this.isPlayerLoading) {
-      this.isPlayerLoading = true
-      // await playListToQueue(this.playlist.id, this.playlist.trackCount, this.index)
-      EmitterUtil.post(EmitterConstants.PLAY_PLAYLIST_SONGS, this.index)
-      this.isPlayerLoading = false
-    } else {
-      ToastUtil.showToast('当前有正在加载的播放任务，请稍后再试')
-    }
-  }
-
-  private async playWithDjRadio() {
-    if(!this.isPlayerLoading) {
-      this.isPlayerLoading = true
-      await djRadioToQueue(this.djRadio.id, this.djRadio.programCount, this.index)
-      this.isPlayerLoading = false
     } else {
       ToastUtil.showToast('当前有正在加载的播放任务，请稍后再试')
     }
@@ -220,7 +200,8 @@ export struct SongCard {
       isShowArtistsSheet: this.isShowArtistSheet,
       isShowAddSheet: this.isShowAddSheet,
       allowToArtist: this.allowToArtist,
-      playmode: this.playmode
+      playmode: this.playmode,
+      listAction: this.listPlayAction
     })
   }
 

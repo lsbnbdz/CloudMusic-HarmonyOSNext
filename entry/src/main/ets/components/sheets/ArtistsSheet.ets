@@ -67,11 +67,6 @@ export struct ArtistsSheet {
         const param: ArtistParam = {
           artist: artist
         }
-        // if(this.pageInfos.size() < 3) {
-        //   this.pageInfos.pushPathByName('ArtistPage', param, true)
-        // } else {
-        //   this.pageInfos.replacePathByName('ArtistPage', param, true)
-        // }
         this.pageInfos.removeByName('ArtistPage')
         this.pageInfos.pushPathByName('ArtistPage', param, true)
         this.isShow = false

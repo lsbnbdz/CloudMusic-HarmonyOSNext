@@ -111,10 +111,10 @@ export struct RecommendCards {
         ListItem() {
           ContentButton(`音乐云盘`,`享受云端曲目`,$r('app.media.bg_cloud'),() => {
             if(this.isLogged) {
-              if(this.pageInfos.size() === 0) {
-                this.pageInfos.pushPathByName('CloudPage', null, this.breakpoint === 'lg' ? false : true)
+              if(!this.pageInfos.getAllPathName().includes('CloudPage')) {
+                this.pageInfos.pushPathByName('CloudPage', null, this.pageInfos.size() === 0 && this.breakpoint === 'lg' ? false : true)
               } else {
-                this.pageInfos.replacePathByName('CloudPage', null)
+                this.pageInfos.replacePath({ name: 'CloudPage', param: null }, { launchMode: LaunchMode.MOVE_TO_TOP_SINGLETON })
               }
             } else {
               ToastUtil.showToast('请登录后再试')

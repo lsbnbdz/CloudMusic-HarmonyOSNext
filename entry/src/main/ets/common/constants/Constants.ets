@@ -3,7 +3,7 @@
  */
 export default class Constants {
   /**
-   * 一般API地址
+   * 基础服务API地址
    */
   static readonly API_URL: string = 'https://api.chenlvin.cc'
   /**
@@ -121,5 +121,5 @@ export default class Constants {
   /**
    * 允许缓存占用总大小
    */
-  static readonly CACHE_DISK_MAX_SIZE: number = 2147482648
+  static readonly CACHE_DISK_MAX_SIZE: number = 2048 * 1024 * 1024
 }

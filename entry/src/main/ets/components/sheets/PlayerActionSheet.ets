@@ -21,6 +21,7 @@ export struct PlayerActionSheet {
   @StorageProp(StorageConstants.PIC_URL) picUrl: string = ''
   @StorageProp(StorageConstants.PLAY_MODE) playmode: number = 1
   @StorageProp('bottomRectHeight') bottomRectHeight: number = 0
+  @State orientationFlag: number = OrientationUtils.flag
   showOrientation: boolean = false
   private dialogController: CustomDialogController = new CustomDialogController({
     builder: DownloadDialog({
@@ -32,9 +33,10 @@ export struct PlayerActionSheet {
   })
 
   private setOrientation() {
-    OrientationUtils.setOrientation(OrientationUtils.getOrientation() === window.Orientation.UNSPECIFIED ?
+    OrientationUtils.setOrientation(OrientationUtils.flag === 0 ?
     window.Orientation.AUTO_ROTATION_LANDSCAPE_RESTRICTED :
-    window.Orientation.UNSPECIFIED)
+    window.Orientation.AUTO_ROTATION_UNSPECIFIED)
+    this.orientationFlag = OrientationUtils.flag
   }
 
   build() {
@@ -53,7 +55,7 @@ export struct PlayerActionSheet {
 
         if(this.showOrientation) {
           Image($r('app.media.ic_public_rotate'))
-            .fillColor($r('app.color.reverse'))
+            .fillColor(this.orientationFlag === 0 ? $r('app.color.reverse') : $r('app.color.app_red'))
             .width(Constants.SIZE_ICON_BUTTON_BAR)
             .onClick(() => {
               this.isShow = false

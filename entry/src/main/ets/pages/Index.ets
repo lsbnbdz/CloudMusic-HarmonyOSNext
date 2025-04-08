@@ -4,12 +4,10 @@ import Constants from '../common/constants/Constants';
 import {
   AlbumParam,
   ArtistParam,
-  CommonParam,
-  PlayListPageParam } from '../common/entities/local/PageParams';
+  CommonParam } from '../common/entities/local/PageParams';
 import { UserLists } from '../components/main/UserPlayLists/UserLists';
 import { Me } from '../components/main/Me/Me';
 import { StorageConstants } from '../common/constants/StorageConstants';
-import PreferencesUtils from '../common/utils/data/PreferencesUtils';
 import BreakpointUtils from '../common/utils/system/BreakpointUtils';
 import { EmitterUtil } from '@pura/harmony-utils';
 import { EmitterConstants } from '../common/constants/EmitterConstants';
@@ -29,18 +27,18 @@ struct Index {
   @State currentHour: number = 0
   @State tabCurrentIndex: number = 0
   @State categoryTabIndex: number = 0
+  @State toolBarHeight: number = 0
 
   async aboutToAppear(): Promise<void> {
-    this.currentHour = new Date().getHours()
+    BreakpointUtils.register()
     setTimeout(() => {
       this.tabCurrentIndex = this.index
     }, 1)
-    const isFirstLaunch = await PreferencesUtils.getPreferenceValue<boolean>(StorageConstants.USER_PREF, 'isFirstLaunch', true)
-    if(isFirstLaunch) {
-      PreferencesUtils.putPreferenceValue(StorageConstants.USER_PREF, 'isFirstLaunch', false)
-    }
-    EmitterUtil.onSubscribe(EmitterConstants.PUSH_PAGE, <T extends
-    PlayListPageParam | ArtistParam | AlbumParam>(param: CommonParam<T>) => {
+    // const isFirstLaunch = await PreferencesUtils.getPreferenceValue<boolean>(StorageConstants.USER_PREF, 'isFirstLaunch', true)
+    // if(isFirstLaunch) {
+    //   PreferencesUtils.putPreferenceValue(StorageConstants.USER_PREF, 'isFirstLaunch', false)
+    // }
+    EmitterUtil.onSubscribe(EmitterConstants.PUSH_PAGE, <T extends ArtistParam | AlbumParam>(param: CommonParam<T>) => {
       if(param.remove) {
         this.pageInfos.removeByName(param.pageName)
       }
@@ -108,7 +106,7 @@ struct Index {
         .onChange((index) => { this.index = index })
 
         BottomBarComponent()
-          .padding({ left: Constants.PADDING_EDGE_DEFAULT, right: Constants.PADDING_EDGE_DEFAULT, bottom: px2vp(this.bottomRectHeight) + 35 })
+          .padding({ left: Constants.PADDING_EDGE_DEFAULT, right: Constants.PADDING_EDGE_DEFAULT, bottom: px2vp(this.bottomRectHeight) + this.toolBarHeight })
           .backgroundColor(Color.Transparent)
       }
     }
@@ -137,6 +135,9 @@ struct Index {
     .backgroundColor(Color.Transparent)
     .justifyContent(FlexAlign.SpaceEvenly)
     .width('100%')
+    .onAreaChange((oldArea, newArea) => {
+      this.toolBarHeight = newArea.height as number
+    })
   }
 
   @Builder ToolBarItem(index: number, icon: ResourceStr, activeIcon: ResourceStr, text: string) {

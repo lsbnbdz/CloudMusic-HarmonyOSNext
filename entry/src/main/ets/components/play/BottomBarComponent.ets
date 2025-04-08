@@ -53,8 +53,10 @@ export struct BottomBarComponent {
       minWidth: 100,
       maxWidth: 500
     })
+    .backdropBlur(BlurStyle.Regular)
     .borderRadius(Constants.RADIUS_IMG)
     .backgroundColor($r('app.color.main'))
+    .opacity(0.9)
     .height(Constants.HEIGHT_MINI)
     .clickEffect({ level: ClickEffectLevel.LIGHT, scale: 0.9 })
     .onClick(async () => {

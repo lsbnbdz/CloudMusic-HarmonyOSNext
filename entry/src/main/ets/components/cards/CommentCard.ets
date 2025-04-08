@@ -22,7 +22,7 @@ export struct CommentCard {
         Text(`${this.comment.likedCount} 赞`)
           .fontColor(Color.Gray)
           .fontWeight(FontWeight.Medium)
-          .fontSize(Constants.FONT_SIZE_COMMON)
+          .fontSize(Constants.FONT_SIZE_BAR)
       }
 
       // Content
@@ -38,6 +38,8 @@ export struct CommentCard {
         .fontSize(Constants.FONT_SIZE_BAR)
         .width('100%')
     }
-    .padding({ left: Constants.PADDING_EDGE_DEFAULT, right: Constants.PADDING_EDGE_DEFAULT })
+    .padding(Constants.PADDING_EDGE_DEFAULT)
+    .backgroundColor($r('app.color.main'))
+    .borderRadius(Constants.RADIUS_CARD)
   }
 }

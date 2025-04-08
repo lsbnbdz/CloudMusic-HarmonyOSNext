@@ -13,6 +13,7 @@ import { PlayQueue } from '../../common/entities/local/PlayQueue'
 import PlayQueueUtils from '../../common/utils/play/PlayQueueUtils'
 import { playQueue } from '../../common/functions/play/playControl'
 import { Album } from '../../common/entities/song/Song'
+import { PLAYMODE } from '../../common/model/enum'
 
 /**
  * 云盘
@@ -47,15 +48,8 @@ export struct CloudPage {
 
   async aboutToAppear() {
     if (!this.hasLoaded) {
-      await this.loadSongs(100, 0)
-      EmitterUtil.onSubscribe(EmitterConstants.PLAY_PLAYLIST_SONGS, ((index: number) => {
-        this.playSong(index)
-      }))
+      await this.loadSongs(200, 0)
     }
-  }
-
-  aboutToDisappear(): void {
-    EmitterUtil.unSubscribe(EmitterConstants.PLAY_PLAYLIST_SONGS)
   }
 
   async loadSongs(limit: number, offset: number): Promise<void> {
@@ -68,7 +62,12 @@ export struct CloudPage {
 
     try {
       const result = await getCloudList(offset)
-      this.list = [...this.list, ...result]
+      this.hasMore = result.hasMore
+      let templist: PlayListSong[] = []
+      for(let item of result.data) {
+        templist.push(item.simpleSong)
+      }
+      this.list = [...this.list, ...templist]
       this.dataSource.setData(this.list)
       this.dataSource.notifyDataReload()
       this.currentOffset += limit
@@ -117,7 +116,7 @@ export struct CloudPage {
               LazyForEach(this.dataSource, (item: PlayListSong, index) => {
                 ListItem() {
                   SongCard({
-                    playmode: 2,
+                    playmode: PLAYMODE.CLOUD,
                     song: {
                       id: item.id,
                       artists: item.ar,
@@ -129,7 +128,8 @@ export struct CloudPage {
                     },
                     sid: this.list.indexOf(item),
                     index: index,
-                    picUrl: item.al?.picUrl ?? $r('app.media.ic_public_music')
+                    picUrl: item.al?.picUrl ?? $r('app.media.ic_public_music'),
+                    listPlayAction: () => { this.playSong(index) }
                   })
                 }
 

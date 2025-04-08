@@ -26,7 +26,7 @@ export struct QrCodeLogin {
       Stack() {
         Column({ space: 20 }) {
           Column({ space: 30 }) {
-            Text('使用网易云音乐App扫描下方二维码\n扫码成功后点击下方按钮获取登录信息')
+            Text('请使用APP内扫码扫描下方二维码\n扫码成功后点击下方按钮获取登录信息')
               .textAlign(TextAlign.Center)
             // QR Code
             if(!this.qrCode) { Text('获取二维码出错').fontColor(Color.Red) }

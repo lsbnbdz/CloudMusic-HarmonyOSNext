@@ -1,10 +1,8 @@
-import { LazyData } from "@pie/lazy-data"
 import { getComment } from "../../api/commentApi"
 import Constants from "../../common/constants/Constants"
 import { StorageConstants } from "../../common/constants/StorageConstants"
 import { CommentParam } from "../../common/entities/local/PageParams"
 import { Comment } from "../../common/entities/song/Comment"
-import { SongItem } from "../../common/entities/song/Song"
 import { CommentCard } from "../../components/cards/CommentCard"
 import { BottomBarComponent } from "../../components/play/BottomBarComponent"
 
@@ -14,7 +12,6 @@ export struct CommentPage {
   @StorageProp('bottomRectHeight') bottomRectHeight: number = 0
   @State param: CommentParam = { songId: 0, songName: '' }
   @State comments: Comment[] = []
-  @State dataSource: LazyData<Comment> = new LazyData()
   @State isLoading: boolean = false
 
   async aboutToAppear(): Promise<void> {
@@ -22,8 +19,6 @@ export struct CommentPage {
       if(this.param.songId !== 0) {
         this.isLoading = true
         this.comments = (await getComment(this.param.songId)).hotComments
-        this.dataSource.setData(this.comments)
-        this.dataSource.notifyDataReload()
       }
     } catch (e) {
       throw new Error(e.stack)
@@ -45,8 +40,9 @@ export struct CommentPage {
           .justifyContent(FlexAlign.Center)
         } else {
           List({ space: Constants.PADDING_EDGE_TEXT }) {
-            LazyForEach(this.dataSource, (item: Comment) => {
+            ForEach(this.comments, (item: Comment) => {
               CommentCard({ comment: item })
+                .padding({ left: 20, right: 20 })
             })
 
             ListItem().height(px2vp(this.bottomRectHeight) + Constants.HEIGHT_MINI)

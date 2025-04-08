@@ -15,7 +15,8 @@ interface Announcement {
 interface Data {
   Version: Version
   Announcement: Announcement
-  Sponser: string[]
+  Sponsor: string[]
+  SponsorCode: string
 }
 
 export interface AppInfo {
@@ -34,6 +35,7 @@ export const AppInfoClass: AppInfo = {
       title: '',
       message: ''
     },
-    Sponser: []
+    Sponsor: [],
+    SponsorCode: ''
   }
 }

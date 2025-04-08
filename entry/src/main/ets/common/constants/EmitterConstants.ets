@@ -23,7 +23,7 @@ export class EmitterConstants {
    */
   static readonly EMITTER_DELETE_FROM_PLAYLIST: string = 'DELETE_FROM_PLAYLIST'
   /**
-   * 播放歌单
+   * 播放
    */
   static readonly PLAY_PLAYLIST_SONGS: string = 'PLAY_PLAYLIST_SONGS'
   /**

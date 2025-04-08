@@ -9,7 +9,7 @@ import { getArtists } from "./convert";
 
 const TAG = '[get function] '
 /**
- * 获取网易云API Url
+ * 获取API Url
  * （根据用户设置）
  * @returns string - ApiUrl
  */

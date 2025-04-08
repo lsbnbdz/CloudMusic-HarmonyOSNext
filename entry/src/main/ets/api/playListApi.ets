@@ -1,6 +1,8 @@
 import { LogUtil, ToastUtil } from "@pura/harmony-utils"
 import { PlayList, PlayListOperationRes, PlayListSearchResult } from "../common/entities/playlist/PlayList"
-import { CloudSongs, DailyListSongs, PlayListSong, PlayListSongs } from "../common/entities/playlist/PlayListSongs"
+import { CloudResult,
+  CloudResultItem,
+  DailyListSongs, PlayListSong, PlayListSongs } from "../common/entities/playlist/PlayListSongs"
 import { PlayQueue } from "../common/entities/local/PlayQueue"
 import { Album, Artist, Song } from "../common/entities/song/Song"
 import { User, UserItem } from "../common/entities/user/User"
@@ -192,18 +194,13 @@ export interface DailySongRes {
  * @param offset 偏移
  * @returns list 歌曲列表
  */
-export async function getCloudList(offset: number): Promise<Array<PlayListSong>> {
-  let list:Array<PlayListSong> = new Array()
+export async function getCloudList(offset: number): Promise<CloudResult> {
   const rootUrl = await getApiUrl()
-  const url:string = `${rootUrl}/user/cloud?limit=100&offset=${offset}`
+  const url:string = `${rootUrl}/user/cloud?limit=200&offset=${offset}`
   const request = new HttpRequest(url)
-  await request.RequestInStream().then((data) => {
-    const dataGot:CloudSongs = data.result as CloudSongs
-    for(let item of dataGot.data) {
-      list.push(item.simpleSong)
-    }
-  })
-  return list
+  const response = await request.RequestInStream()
+  const dataGot:CloudResult = response.result as CloudResult
+  return dataGot ?? CloudResultItem
 }
 
 /**

@@ -10,16 +10,16 @@ export struct DonatePage {
     NavDestination() {
       Scroll() {
         Column({ space: 30 }) {
-          Image($r("app.media.donate"))
+          Image(this.appInfo.data.SponsorCode)
             .width('80%')
             .borderRadius(Constants.RADIUS_IMG)
             .constraintSize({
-              maxWidth: 350,
+              maxWidth: 250,
               minWidth: 200
             })
 
           Column({ space: 20 }) {
-            if(this.appInfo.data?.Sponser.length > 0) {
+            if(this.appInfo.data?.Sponsor.length > 0) {
               Text('特别鸣谢')
                 .fontSize(Constants.FONT_SIZE_TITLE)
                 .fontWeight(Constants.FONT_WEIGHT_BOLD)
@@ -28,7 +28,7 @@ export struct DonatePage {
                 wrap: FlexWrap.Wrap,
                 justifyContent: FlexAlign.Center
               }) {
-                ForEach(this.appInfo.data.Sponser, (item: string) => {
+                ForEach(this.appInfo.data.Sponsor, (item: string) => {
                   Column() {
                     Text(item)
                       .fontWeight(FontWeight.Medium)

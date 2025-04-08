@@ -199,7 +199,7 @@ export async function completeDo() {
   if(isPersonalFm && !(PlayQueueUtils.currentQueueIndex < PlayQueueUtils.queue.length - 1)) {
     const personalFmMode = AppStorage.get(StorageConstants.PERSONAL_FM_MODE) as number
     let nextSong = await getPersonalFmSong(personalFmMode)
-    let artists = await getArtists(nextSong.artists)
+    let artists = getArtists(nextSong.artists)
     PlayQueueUtils.queueAdd(1, nextSong, artists, '')
     playQueue(PlayQueueUtils.currentQueueIndex + 1)
     return

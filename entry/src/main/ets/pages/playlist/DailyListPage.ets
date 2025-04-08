@@ -9,6 +9,7 @@ import { PlayQueue } from '../../common/entities/local/PlayQueue'
 import PlayQueueUtils from '../../common/utils/play/PlayQueueUtils'
 import { playQueue } from '../../common/functions/play/playControl'
 import { EmitterConstants } from '../../common/constants/EmitterConstants'
+import { PLAYMODE } from '../../common/model/enum'
 
 /**
  * 每日推荐歌单页面
@@ -31,19 +32,10 @@ export struct DailyListPage {
     if(!this.hasLoaded) {
       await this.loadSongs()
       this.hasLoaded = true
-      setTimeout(() => {
-        EmitterUtil.onSubscribe(EmitterConstants.PLAY_PLAYLIST_SONGS, ((index: number) => {
-          this.playSong(index)
-        }))
-      }, 500)
     }
 
     let date = new Date()
     this.totayDate = `${date.toDateString()}`
-  }
-
-  aboutToDisappear(): void {
-    EmitterUtil.unSubscribe(EmitterConstants.PLAY_PLAYLIST_SONGS)
   }
 
   async loadSongs(): Promise<void> {
@@ -116,12 +108,13 @@ export struct DailyListPage {
                 ForEach(this.list, (item: DailySongRes, index) => {
                   ListItem() {
                     SongCard({
-                      playmode: 2,
+                      playmode: PLAYMODE.DAILY,
                       song: item.song,
                       sid: index,
                       index: index,
                       reason: item.reason,
-                      picUrl: item.picUrl ?? $r('app.media.ic_public_music')
+                      picUrl: item.picUrl ?? $r('app.media.ic_public_music'),
+                      listPlayAction: () => { this.playSong(index) }
                     })
                   }
                   .translate({ y: -40 })

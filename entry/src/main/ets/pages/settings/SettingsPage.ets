@@ -59,6 +59,7 @@ export struct SettingsPage {
         }
         .width('100%')
         .height('100%')
+        .scrollBar(BarState.Off)
         .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
       }
       .width('100%')

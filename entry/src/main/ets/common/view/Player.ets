@@ -1,31 +1,33 @@
-import { Song, SongItem } from "../../common/entities/song/Song"
-import { changeDuration } from "../../common/functions/common/convert"
-import { pauseMusic, playNext, playPre, resumeMusic, seekMusic } from "../../common/functions/play/playControl"
-import { AddToPlayListCircleButton } from "../buttons/play/AddToPlayListButton"
-import { LoopModeButton } from "../buttons/play/LoopModeButton"
-import { PlayQueueButton } from "../buttons/play/PlayQueueButton"
-import { DownloadDialog } from "../dialog/DownloadDialog"
-import { LyricComponent } from "../play/LyricComponent"
+import { Song, SongItem } from "../entities/song/Song"
+import { changeDuration } from "../functions/common/convert"
+import { pauseMusic, playNext, playPre, resumeMusic, seekMusic } from "../functions/play/playControl"
+import { AddToPlayListCircleButton } from "../../components/buttons/play/AddToPlayListButton"
+import { LoopModeButton } from "../../components/buttons/play/LoopModeButton"
+import { PlayQueueButton } from "../../components/buttons/play/PlayQueueButton"
+import { DownloadDialog } from "../../components/dialog/DownloadDialog"
+import { LyricComponent } from "../../components/play/LyricComponent"
 import { AVCastPicker } from "@kit.AVSessionKit"
-import { TimerButton } from "../buttons/play/TimerButton"
-import { StorageConstants } from "../../common/constants/StorageConstants"
-import Constants from "../../common/constants/Constants"
+import { TimerButton } from "../../components/buttons/play/TimerButton"
+import { StorageConstants } from "../constants/StorageConstants"
+import Constants from "../constants/Constants"
 import { ClickUtil, EmitterUtil, PasteboardUtil, ToastUtil } from "@pura/harmony-utils"
-import { PlayerActionSheet } from "./PlayerActionSheet"
-import { likeThisSong } from "../../common/functions/play/songLike"
+import { PlayerActionSheet } from "../../components/sheets/PlayerActionSheet"
+import { likeThisSong } from "../functions/play/songLike"
 import { resourceManager } from "@kit.LocalizationKit"
-import { PlayConstants } from "../../common/constants/PlayConstants"
-import { ArtistsSheet } from "./ArtistsSheet"
-import { display, window } from "@kit.ArkUI"
-import OrientationUtils from "../../common/utils/system/OrientationUtils"
+import { PlayConstants } from "../constants/PlayConstants"
+import { ArtistsSheet } from "../../components/sheets/ArtistsSheet"
+import { window } from "@kit.ArkUI"
+import OrientationUtils from "../utils/system/WindowUtils"
 import { PlaySettingsPage } from "../../pages/settings/PlaySettingsPage"
-import { EmitterConstants } from "../../common/constants/EmitterConstants"
+import { EmitterConstants } from "../constants/EmitterConstants"
+import { PLAYMODE } from "../model/Enum"
+import { PersonalFmMenu } from "../../components/menu/PersonalFmMenu"
+import { BreakpointType } from "../model/Breakpoint"
 
 @Component
-export struct PlayingCover {
+export struct Player {
   @StorageProp('topRectHeight') topRectHeight: number = 0
-  @StorageProp('bottomRectHeight') bottomRectHeight: number = 0
-  @StorageProp(StorageConstants.PLAY_MODE) playmode: number = 1
+  @StorageProp(StorageConstants.PLAY_MODE) playmode: PLAYMODE = PLAYMODE.SINGLE
   @StorageProp(StorageConstants.PLAY_SONG) song: Song = SongItem
   @StorageProp(StorageConstants.PLAY_ARTISTS) artists: string = ''
   @StorageProp(StorageConstants.IS_PAUSED) isPaused: boolean = false
@@ -36,7 +38,8 @@ export struct PlayingCover {
   @StorageProp(StorageConstants.PLAY_IS_LOCALFILE) isLocalFile: boolean = false
   @StorageProp(StorageConstants.IS_PERSONAL_FM) isPersonalFm: boolean = false
   @StorageProp(StorageConstants.PERSONAL_FM_MODE) personalFmMode: number = 0
-  @StorageProp(StorageConstants.BREAKPOINT) breakpoint: string = 'sm'
+  @StorageProp(StorageConstants.BREAKPOINT_WIDTH) widBp: string = 'sm'
+  @StorageProp(StorageConstants.BREAKPOINT_HEIGHT) heightBp: string = 'md'
   @StorageProp(StorageConstants.DEVICE_TYPE) deviceType: resourceManager.DeviceType = resourceManager.DeviceType.DEVICE_TYPE_PHONE
   @Link isShow: boolean
   @State sliderThickness: number = 10
@@ -50,7 +53,6 @@ export struct PlayingCover {
   @State isShowSettings: boolean = false
   @State isLikeProcessing: boolean = false
   @State totalOpacity: number = 0
-  @State isNormalPhone: boolean = !(display.isFoldable() || this.deviceType === resourceManager.DeviceType.DEVICE_TYPE_TABLET)
   private dialogController: CustomDialogController = new CustomDialogController({
     builder: DownloadDialog({
       song: this.song,
@@ -59,6 +61,26 @@ export struct PlayingCover {
       duration: changeDuration(this.song.duration)
     }),
   })
+
+  private settingsSheetOptions: SheetOptions = {
+    backgroundColor: Color.Transparent,
+    showClose: true,
+    height: SheetSize.LARGE,
+    dragBar: false,
+    blurStyle: BlurStyle.Regular,
+    preferType: SheetType.CENTER,
+    onDisappear: () => { this.isShowSettings = false }
+  }
+
+  private artistsSheetOptions: SheetOptions = {
+    preferType: SheetType.CENTER,
+    height: SheetSize.FIT_CONTENT,
+    dragBar: false,
+    showClose: false,
+    backgroundColor: Color.Transparent,
+    blurStyle: BlurStyle.Regular,
+    onDisappear: () => { this.isShowArtists = false }
+  }
 
   aboutToAppear(): void {
     setTimeout(() => {
@@ -72,15 +94,33 @@ export struct PlayingCover {
   }
 
   aboutToDisappear(): void {
-    OrientationUtils.setOrientation(window.Orientation.UNSPECIFIED)
+    OrientationUtils.setOrientation(window.Orientation.AUTO_ROTATION_UNSPECIFIED)
     EmitterUtil.unSubscribe(EmitterConstants.PLAYING_COVER_TOGGLE)
+  }
+
+  // Slider OnChange
+  private handleSliderChange = (value: number, mode: SliderChangeMode) => {
+    animateTo({ duration: 500, curve: Curve.Smooth, }, () => {
+      if (mode == SliderChangeMode.Begin) {
+        this.isMovingSlider = true
+        this.sliderMovingTime = value
+        this.sliderThickness = 15
+      } else if (mode == SliderChangeMode.Moving) {
+        this.sliderMovingTime = value
+      } else if (mode == SliderChangeMode.End) {
+        this.time = value
+        this.sliderThickness = 10
+        this.isMovingSlider = false
+        seekMusic(this.sliderMovingTime)
+      }
+    })
   }
 
   build() {
    Stack() {
      // Background
      Stack() {
-       Image(this.playmode == 1 ? this.picUrl + '?param=512y512' : $r('app.media.bg_default'))
+       Image(this.playmode === PLAYMODE.LOCAL ? $r('app.media.bg_default') : this.picUrl + '?param=512y512')
          .blur(100)
          .width('100%')
          .height('100%')
@@ -98,33 +138,22 @@ export struct PlayingCover {
      /**
       * 主内容
       */
-     if(this.breakpoint == 'sm' ||
-       (this.breakpoint == 'md' && this.deviceType == resourceManager.DeviceType.DEVICE_TYPE_TABLET)) {
-       this.PhoneUI()
-     } else if(this.isNormalPhone) {
+     if(this.widBp === 'lg' || (this.widBp === 'md' && this.heightBp === 'md')) {
+       this.LargeUI()
+     } else if(this.widBp === 'md' && this.heightBp === 'sm') {
        this.PhoneLargeUI()
      } else {
-       this.LargeUI()
+       this.PhoneUI()
      }
 
      /**
       * Head栏
       */
      this.Head()
-
    }
     .height('100%')
     .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
-    .bindSheet(this.isShowSettings, this.SettingsSheet(), {
-      backgroundColor: Color.Transparent,
-      showClose: true,
-      height: SheetSize.LARGE,
-      dragBar: false,
-      blurStyle: BlurStyle.Regular,
-      preferType: SheetType.CENTER,
-      onDisappear: () => {
-        this.isShowSettings = false
-      }})
+    .bindSheet(this.isShowSettings, this.SettingsSheet(), this.settingsSheetOptions)
   }
 
   /**
@@ -161,7 +190,7 @@ export struct PlayingCover {
           imgColor: Color.White,
           imgHeight: size + 4,
           isShowAddSheet: this.isShowAddSheet,
-          isLarge: (this.isNormalPhone && this.breakpoint === 'md')
+          isLarge: (this.widBp === 'md' && this.heightBp === 'sm')
         })
           .clickEffect({ level: ClickEffectLevel.LIGHT, scale: 0.7 })
           .visibility(this.playmode !== 3 ? Visibility.Visible : Visibility.None)
@@ -198,16 +227,14 @@ export struct PlayingCover {
         .draggable(false)
         .backgroundColor(Color.Transparent)
         .clickEffect({ level: ClickEffectLevel.LIGHT, scale: 0.7 })
-        .bindSheet(this.isShowMenu, this.MenuSheet(), {
+        .bindSheet(this.isShowMenu, this.PlayerActionSheet(), {
           backgroundColor: Color.Transparent,
           showClose: false,
-          height: (this.isNormalPhone && this.breakpoint === 'md') ? SheetSize.LARGE : SheetSize.MEDIUM,
+          height: (this.widBp === 'md' && this.heightBp === 'sm') ? SheetSize.LARGE : SheetSize.MEDIUM,
           dragBar: false,
           blurStyle: BlurStyle.Regular,
           preferType: SheetType.CENTER,
-          onDisappear: () => {
-            this.isShowMenu = false
-          }
+          onDisappear: () => { this.isShowMenu = false }
         })
         .onClick(() => {
           this.isShowMenu = true
@@ -231,31 +258,31 @@ export struct PlayingCover {
         // 当前时间
         Text(`${changeDuration(this.time)}`)
           .fontSize(isPhoneLarge ? 12 : Constants.FONT_SIZE_COMMON)
-          .layoutWeight(1)
           .textAlign(TextAlign.Start)
           .fontColor(Color.White)
           .opacity(this.tabPageIndex == 0 ? 0.7 : 0.1)
           .alignSelf(ItemAlign.Start)
+          .layoutWeight(1)
 
         // 拖动进度条时，显示即将跳转的时间
         Text(`${changeDuration(this.sliderMovingTime)}`)
           .fontSize(isPhoneLarge ? 12 : Constants.FONT_SIZE_COMMON)
           .fontColor(Color.White)
           .backgroundColor(Color.Gray)
-          .borderRadius(15)
+          .borderRadius(Constants.RADIUS_CARD)
           .textAlign(TextAlign.Center)
-          .padding({ left: 10, right: 10 })
+          .padding({ left: Constants.PADDING_EDGE_DEFAULT, right: Constants.PADDING_EDGE_DEFAULT })
           .alignSelf(ItemAlign.Center)
           .visibility(this.isMovingSlider ? Visibility.Visible : Visibility.Hidden)
 
         // 总时间
         Text(`${changeDuration(this.song.duration)}`)
           .fontSize(isPhoneLarge ? 12 : Constants.FONT_SIZE_COMMON)
-          .layoutWeight(1)
           .textAlign(TextAlign.End)
           .fontColor(Color.White)
           .opacity(this.tabPageIndex == 0 ? 0.7 : 0.1)
           .alignSelf(ItemAlign.End)
+          .layoutWeight(1)
       }
       .width('90%')
 
@@ -274,26 +301,10 @@ export struct PlayingCover {
         .showSteps(false)
         .showTips(false)
         .opacity(this.tabPageIndex == 0 ? 0.7 : 0.1)
-        .onChange((value: number, mode: SliderChangeMode) => {
-          animateTo({ duration: 500, curve: Curve.Smooth, }, () => {
-            if (mode == SliderChangeMode.Begin) {
-              this.isMovingSlider = true
-              this.sliderMovingTime = value
-              this.sliderThickness = 20
-            } else if (mode == SliderChangeMode.Moving) {
-              this.sliderMovingTime = value
-            } else if (mode == SliderChangeMode.End) {
-              this.time = value
-              this.sliderThickness = 10
-              this.isMovingSlider = false
-              seekMusic(this.sliderMovingTime)
-            }
-          })
-        })
+        .onChange(this.handleSliderChange)
     }
     .width(isPhoneLarge ? '90%' : '100%')
   }
-
   /**
    * PlayButton
    * 控制上一首、下一首、播放和暂停
@@ -372,10 +383,13 @@ export struct PlayingCover {
             .height(this.song.id == 0 ? '70%' : '100%')
             .borderRadius(5)
             .aspectRatio(1)
-            // .shadow({ radius: 30, type: ShadowType.BLUR, offsetX: 20, offsetY: 20 })
-            .geometryTransition('coverImg')
         }
-        .height('60%')
+        .height('80%')
+        .aspectRatio(1)
+        .constraintSize({
+          minHeight: 0,
+          maxHeight: new BreakpointType<number>(300, 300, 500).getValue(this.widBp)
+        })
         .padding({ bottom: 30 })
       }
       .width('100%')
@@ -395,15 +409,7 @@ export struct PlayingCover {
             this.isShowArtists = true
           }
         })
-        .bindSheet(this.isShowArtists, this.ArtistsSheet(), {
-          preferType: SheetType.CENTER,
-          height: SheetSize.FIT_CONTENT,
-          dragBar: false,
-          showClose: false,
-          backgroundColor: Color.Transparent,
-          blurStyle: BlurStyle.Regular,
-          onDisappear: () => { this.isShowArtists = false }
-        })
+        .bindSheet(this.isShowArtists, this.ArtistsSheet(), this.artistsSheetOptions)
     }
     .layoutWeight(1)
     .width('100%')
@@ -427,8 +433,6 @@ export struct PlayingCover {
             .height(this.song.id == 0 ? '70%' : '100%')
             .borderRadius(5)
             .aspectRatio(1)
-            // .shadow({ radius: 30, type: ShadowType.BLUR, offsetX: 20, offsetY: 20 })
-            .geometryTransition('coverImg')
         }
         .height('80%')
         .padding({ bottom: 10 })
@@ -448,15 +452,7 @@ export struct PlayingCover {
               this.isShowArtists = true
             }
           })
-          .bindSheet(this.isShowArtists, this.ArtistsSheet(), {
-            preferType: SheetType.CENTER,
-            height: SheetSize.FIT_CONTENT,
-            dragBar: false,
-            showClose: false,
-            backgroundColor: Color.Transparent,
-            blurStyle: BlurStyle.Regular,
-            onDisappear: () => { this.isShowArtists = false }
-          })
+          .bindSheet(this.isShowArtists, this.ArtistsSheet(), this.artistsSheetOptions)
       }
       .width('100%')
       .layoutWeight(1)
@@ -565,6 +561,7 @@ export struct PlayingCover {
     .width('100%')
     .height('100%')
     .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
+    .onAppear(() => { this.tabPageIndex = 0 })
   }
 
   @Builder PhoneLargeUI() {
@@ -583,30 +580,31 @@ export struct PlayingCover {
         Column({ space: 5 }) {
           this.SliderContent(true)
           this.ToolBar(20, '90%')
-          Row() {
-            LoopModeButton({ imgWidth: 25, btnWidth: 25, imgColor: Color.White }).opacity(0.8)
-            this.PlayButton(35)
-            PlayQueueButton({ imgWidth: 25, imgColor: Color.White }).opacity(0.8)
-          }
-          .opacity(this.tabPageIndex == 0 ? 0.8 : 0.2)
-          .justifyContent(FlexAlign.SpaceEvenly)
-          .width('80%')
-          .padding({ top: 5 })
         }
         .width('90%')
       }
-      .height('100%')
+      .padding({ bottom: 5 })
       .width('100%')
       .layoutWeight(1)
 
-      LyricComponent()
-        .width('100%')
-        .layoutWeight(1)
+      Stack({ alignContent: Alignment.Bottom }) {
+        LyricComponent()
+          .width('100%')
+          .layoutWeight(1)
+        Row() {
+          LoopModeButton({ imgWidth: 25, btnWidth: 25, imgColor: Color.White }).opacity(0.8)
+          this.PlayButton(35)
+          PlayQueueButton({ imgWidth: 25, imgColor: Color.White }).opacity(0.8)
+        }
+        .opacity(0.6)
+        .justifyContent(FlexAlign.SpaceEvenly)
+        .width('80%')
+      }
+      .layoutWeight(1)
     }
-    .width('100%')
-    .height('100%')
     .padding({ left: Constants.PADDING_EDGE_TEXT, right: Constants.PADDING_EDGE_TEXT })
     .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
+    .onAppear(() => { this.tabPageIndex = 0 })
   }
 
   @Builder PersonalFmButton() {
@@ -618,19 +616,19 @@ export struct PlayingCover {
       .clickEffect({ level: ClickEffectLevel.LIGHT, scale: 0.8 })
       .borderRadius(1)
       .shadow({ radius: 10 })
-      .scale(this.isNormalPhone && this.breakpoint === 'sm' ? { centerX: 0.8, centerY: 0.8 } : { centerX: 1, centerY: 1 })
+      .scale((this.widBp === 'md' && this.heightBp === 'sm') ? { centerX: 0.8, centerY: 0.8 } : { centerX: 1, centerY: 1 })
       .visibility(this.isPersonalFm && this.playmode === 1 ? Visibility.Visible : Visibility.None)
-      .bindMenu(this.PersonalFmMenu())
+      .bindMenu(PersonalFmMenu(this.personalFmMode))
   }
 
-  @Builder MenuSheet() {
+  @Builder PlayerActionSheet() {
     PlayerActionSheet({
       isShow: this.isShowMenu,
       isShowTimer: this.isShowTimer,
       isShowAddSheet: this.isShowAddSheet,
       isShowArtists: this.isShowArtists,
       isShowSettings: this.isShowSettings,
-      showOrientation: this.isNormalPhone
+      showOrientation: (this.widBp === 'md' && this.heightBp === 'sm') || (this.widBp === 'sm' && this.heightBp === 'md')
     })
   }
 
@@ -640,25 +638,6 @@ export struct PlayingCover {
 
   @Builder SettingsSheet() {
     PlaySettingsPage()
-  }
-
-  @Builder PersonalFmMenu() {
-    Menu() {
-      if(this.personalFmMode !== 0) {
-        MenuItem({ content: `- ${PlayConstants.PERSONAL_FM_MODE_NAME[0]} -` })
-          .onClick(() => { AppStorage.setOrCreate(StorageConstants.PERSONAL_FM_MODE, 0 )})
-      }
-      if(this.personalFmMode !== 1) {
-        MenuItem({ content: `- ${PlayConstants.PERSONAL_FM_MODE_NAME[1]} -` })
-          .onClick(() => { AppStorage.setOrCreate(StorageConstants.PERSONAL_FM_MODE, 1 )})
-      }
-      if(this.personalFmMode !== 2) {
-        MenuItem({ content: `- ${PlayConstants.PERSONAL_FM_MODE_NAME[2]} -` })
-          .onClick(() => { AppStorage.setOrCreate(StorageConstants.PERSONAL_FM_MODE, 2 )})
-      }
-      MenuItem({ content: '关闭私人FM' })
-        .onClick(() => { AppStorage.setOrCreate(StorageConstants.IS_PERSONAL_FM, false) })
-    }
   }
 }
 

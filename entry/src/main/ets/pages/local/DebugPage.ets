@@ -13,7 +13,8 @@ export struct DebugPage {
   @StorageProp(StorageConstants.COOKIE) cookie: string = ''
   @StorageProp(StorageConstants.USER) user: User = UserItem
   @StorageProp(StorageConstants.DEVICE_TYPE) deviceType: resourceManager.DeviceType = resourceManager.DeviceType.DEVICE_TYPE_PHONE
-  @StorageProp(StorageConstants.BREAKPOINT) breakpoint: string = 'sm'
+  @StorageProp(StorageConstants.BREAKPOINT_WIDTH) widBp: string = 'sm'
+  @StorageProp(StorageConstants.BREAKPOINT_HEIGHT) heightBp: string = 'sm'
   @State apiUrl: string = ''
   @State result: string = ''
 
@@ -31,7 +32,9 @@ export struct DebugPage {
               this.deviceType == resourceManager.DeviceType.DEVICE_TYPE_TABLET ? 'Tablet' :
               this.deviceType == resourceManager.DeviceType.DEVICE_TYPE_2IN1 ? '2in1' : 'Unknown'} `)
             .textStyle()
-          Text(`Breakpoint: ${this.breakpoint}`)
+          Text(`Width Breakpoint: ${this.widBp}`)
+            .textStyle()
+          Text(`Height Breakpoint: ${this.heightBp}`)
             .textStyle()
           Row({ space: 10 }) {
             TextInput()

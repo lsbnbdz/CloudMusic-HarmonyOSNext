@@ -9,7 +9,7 @@ import { PlayQueue } from '../../common/entities/local/PlayQueue'
 import PlayQueueUtils from '../../common/utils/play/PlayQueueUtils'
 import { playQueue } from '../../common/functions/play/playControl'
 import { EmitterConstants } from '../../common/constants/EmitterConstants'
-import { PLAYMODE } from '../../common/model/enum'
+import { PLAYMODE } from '../../common/model/Enum'
 
 /**
  * 每日推荐歌单页面
@@ -21,7 +21,7 @@ const TAG = '[DailyListPage] '
 export struct DailyListPage {
   @StorageProp('bottomRectHeight') bottomRectHeight: number = 0
   @StorageProp('topRectHeight') topRectHeight: number = 0
-  @StorageProp(StorageConstants.BREAKPOINT) breakpoint: string = 'sm'
+  @StorageProp(StorageConstants.BREAKPOINT_WIDTH) breakpoint: string = 'sm'
   @State list: DailySongRes[] = new Array()
   @State hasLoaded: boolean = false
   @State isLoading: boolean = true
@@ -143,7 +143,7 @@ export struct DailyListPage {
         .height('100%')
 
         BottomBarComponent()
-          .padding(Constants.PADDING_EDGE_DEFAULT)
+          .padding({ left: Constants.PADDING_EDGE_DEFAULT, right: Constants.PADDING_EDGE_DEFAULT })
           .backgroundColor(Color.Transparent)
           .visibility(this.breakpoint === 'lg' ? Visibility.None : Visibility.Visible)
       }

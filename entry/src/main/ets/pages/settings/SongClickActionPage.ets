@@ -14,7 +14,7 @@ import { SongCard } from "../../components/cards/SongCard"
 @Component
 export struct SongClickActionPage {
   @StorageLink(StorageConstants.SONG_CLICK_ACTION) @Watch('changeActionType') clickAction: number = 0
-  @StorageProp(StorageConstants.BREAKPOINT) breakpoint: string = 'sm'
+  @StorageProp(StorageConstants.BREAKPOINT_WIDTH) breakpoint: string = 'sm'
   @StorageProp('bottomRectHeight') bottomRectHeight: number = 0
   @State isShowSheet: boolean = false
   @State egSong: Song = {
@@ -40,76 +40,80 @@ export struct SongClickActionPage {
 
   build() {
     NavDestination() {
-      Column({ space: 10 }) {
-        Text('歌曲卡片样式')
-          .titleStyle()
-        Stack() {
-          SongCard({
-            picUrl: $r('app.media.ic_files_audio'),
-            song: this.egSong
-          })
-          Button()
-            .backgroundColor(Color.Transparent)
-            .width('100%')
-            .height(60)
-            .type(ButtonType.Normal)
-            .bindSheet(this.isShowSheet, this.EgSheet(), {
-              preferType: SheetType.CENTER,
-              height: '50%',
-              dragBar: false,
-              showClose: false,
-              backgroundColor: Color.Transparent,
-              blurStyle: BlurStyle.Regular,
-              onDisappear: (() => { this.isShowSheet = false })
+      Scroll() {
+        Column({ space: 10 }) {
+          Text('歌曲卡片样式')
+            .titleStyle()
+          Stack() {
+            SongCard({
+              picUrl: $r('app.media.ic_files_audio'),
+              song: this.egSong
             })
-            .gesture(
-              LongPressGesture({
-                duration: 500
-              }).onAction(() => {
-                VibratorUtils.startCount('sharp', 1, 100)
-                this.isShowSheet = true
+            Button()
+              .backgroundColor(Color.Transparent)
+              .width('100%')
+              .height(60)
+              .type(ButtonType.Normal)
+              .bindSheet(this.isShowSheet, this.EgSheet(), {
+                preferType: SheetType.CENTER,
+                height: '50%',
+                dragBar: false,
+                showClose: false,
+                backgroundColor: Color.Transparent,
+                blurStyle: BlurStyle.Regular,
+                onDisappear: (() => { this.isShowSheet = false })
               })
-            )
-            .onClick(async () => {
-              if(this.clickAction == 0) {
-                this.isShowSheet = true
-              } else if(this.clickAction == 1) {
-                ToastUtil.showToast('单曲播放')
-              } else {
-                ToastUtil.showToast('随歌单一同播放',)
-              }
-            })
-        }
+              .gesture(
+                LongPressGesture({
+                  duration: 500
+                }).onAction(() => {
+                  VibratorUtils.startCount('sharp', 1, 100)
+                  this.isShowSheet = true
+                })
+              )
+              .onClick(async () => {
+                if(this.clickAction == 0) {
+                  this.isShowSheet = true
+                } else if(this.clickAction == 1) {
+                  ToastUtil.showToast('单曲播放')
+                } else {
+                  ToastUtil.showToast('随歌单一同播放',)
+                }
+              })
+          }
 
-        Text('设置卡片单击操作')
-          .titleStyle()
-        this.SettingItem(0, '优先弹出半模态界面')
-        this.SettingItem(1, '直接播放（优先播放单曲）')
-        this.SettingItem(2, '直接播放（优先随歌单播放）')
+          Text('设置卡片单击操作')
+            .titleStyle()
+          this.SettingItem(0, '优先弹出半模态界面')
+          this.SettingItem(1, '直接播放（优先播放单曲）')
+          this.SettingItem(2, '直接播放（优先随歌单播放）')
 
-        Text('歌曲卡片操作说明')
-          .titleStyle()
+          Text('歌曲卡片操作说明')
+            .titleStyle()
 
-        Text() {
-          Span('单击：支持设置对应操作' + '\n')
-          Span('长按：弹出半模态界面')
-        }
+          Text() {
+            Span('单击：支持设置对应操作' + '\n')
+            Span('长按：弹出半模态界面')
+          }
           .fontColor($r('app.color.reverse'))
           .fontSize(12)
           .fontWeight(FontWeight.Medium)
           .width('100%')
           .textAlign(TextAlign.Start)
           .lineHeight(20)
+        }
+        .padding({
+          left: 20,
+          right: 20,
+          bottom: px2vp(this.bottomRectHeight) + Constants.PADDING_EDGE_TEXT,
+          top: Constants.PADDING_EDGE_DEFAULT
+        })
+        .width('100%')
+        .height('100%')
+        .justifyContent(FlexAlign.Start)
       }
-      .padding({
-        left: 20,
-        right: 20,
-        bottom: px2vp(this.bottomRectHeight) + Constants.PADDING_EDGE_TEXT,
-        top: Constants.PADDING_EDGE_DEFAULT
-      })
       .width('100%')
-      .height('100%')
-      .justifyContent(FlexAlign.Start)
+      .scrollBar(BarState.Off)
     }
     .title('歌曲卡片设置')
     .backgroundColor($r('app.color.background'))

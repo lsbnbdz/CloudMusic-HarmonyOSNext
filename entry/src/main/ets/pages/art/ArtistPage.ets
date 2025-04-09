@@ -19,7 +19,7 @@ export struct ArtistPage {
     }
   }
   @StorageProp('bottomRectHeight') bottomRectHeight: number = 0
-  @StorageProp(StorageConstants.BREAKPOINT) breakpoint: string = 'sm'
+  @StorageProp(StorageConstants.BREAKPOINT_WIDTH) breakpoint: string = 'sm'
   @State artist: ArtistInfo = ArtistInfoItem
   @State isLoading: boolean = true
   @State showTitleBar: boolean = false
@@ -145,7 +145,7 @@ export struct ArtistPage {
         .visibility(this.isLoading ? Visibility.Visible : Visibility.Hidden)
 
         BottomBarComponent()
-          .padding(Constants.PADDING_EDGE_DEFAULT)
+          .padding({ left: Constants.PADDING_EDGE_DEFAULT, right: Constants.PADDING_EDGE_DEFAULT })
           .backgroundColor(Color.Transparent)
           .visibility(this.breakpoint === 'lg' ? Visibility.None : Visibility.Visible)
       }

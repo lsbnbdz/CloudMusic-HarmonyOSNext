@@ -10,7 +10,7 @@ export interface LocalSong {
   lyricFile: string
 }
 
-export const LocalSongClass: LocalSong = {
+export const LocalSongItem: LocalSong = {
   id: -1,
   songId: -1,
   name: "",

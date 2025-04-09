@@ -1,4 +1,5 @@
 import { PlayQueue } from "../../../common/entities/local/PlayQueue"
+import BreakpointUtils from "../../../common/utils/system/BreakpointUtils"
 import { PlayQueueSheet } from "../../sheets/PlayQueueSheet"
 
 @Component
@@ -10,6 +11,15 @@ export struct PlayQueueButton {
   @State imgWidth: number = 30
   @State imgColor: Color | ResourceStr = $r('app.color.reverse')
 
+  private sheetOptions: SheetOptions = {
+    preferType: SheetType.BOTTOM,
+    height: BreakpointUtils.getHeightBreakpoint() === 'sm' ? SheetSize.LARGE : '70%',
+    dragBar: false,
+    showClose: false,
+    backgroundColor: $r('app.color.background'),
+    onDisappear: () => { this.isShow = false }
+  }
+
   build() {
     Button(){
       Image($r('app.media.ic_public_view_list_filled'))
@@ -20,14 +30,8 @@ export struct PlayQueueButton {
     .stateEffect(false)
     .backgroundColor(Color.Transparent)
     .onClick(() => { this.isShow = !this.isShow })
-    .bindSheet(this.isShow, this.QueueComponent(), {
-      preferType: SheetType.BOTTOM,
-      detents: ['70%', '100%'],
-      dragBar: false,
-      showClose: false,
-      backgroundColor: $r('app.color.background'),
-      onDisappear: () => { this.isShow = false }
-    })
+    .clickEffect({ level: ClickEffectLevel.LIGHT, scale: 0.9 })
+    .bindSheet(this.isShow, this.QueueComponent(), this.sheetOptions)
   }
 
   @Builder

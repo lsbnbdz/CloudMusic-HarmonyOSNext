@@ -1,15 +1,15 @@
 import { LogUtil, ToastUtil } from "@pura/harmony-utils"
 import { getPlayLists } from "../../../api/playListApi"
-import Constants from "../../../common/constants/Constants"
-import { StorageConstants } from "../../../common/constants/StorageConstants"
-import { PlayList } from "../../../common/entities/playlist/PlayList"
-import { User, UserItem } from "../../../common/entities/user/User"
-import { PlayListCard, PlayListCard_Skeleton } from "../../cards/PlayListCard"
+import Constants from "../../constants/Constants"
+import { StorageConstants } from "../../constants/StorageConstants"
+import { PlayList } from "../../entities/playlist/PlayList"
+import { User, UserItem } from "../../entities/user/User"
+import { PlayListCard, PlayListCard_Skeleton } from "../../../components/cards/PlayListCard"
 
 @Component
 export struct UserPlayLists {
   @StorageProp('bottomRectHeight') bottomRectHeight: number = 0
-  @StorageProp(StorageConstants.BREAKPOINT) breakpoint: string = 'sm'
+  @StorageProp(StorageConstants.BREAKPOINT_WIDTH) breakpoint: string = 'sm'
   @StorageProp(StorageConstants.IS_LOGGED) @Watch('getPlayLists') isLogged: boolean = false
   @StorageProp(StorageConstants.USER) user: User = UserItem
   @StorageProp(StorageConstants.USER_PLAYLISTS) playLists: Array<PlayList> = []
@@ -135,7 +135,8 @@ export struct UserPlayLists {
             .padding( this.breakpoint == 'md' ? 5 : { bottom: 10 } )
         }
       })
-      ListItem().height(px2vp(this.bottomRectHeight) + 120)
+      ListItem()
+      ListItem().height(px2vp(this.bottomRectHeight) + 56 + Constants.HEIGHT_MINI + Constants.PADDING_EDGE_DEFAULT*2)
     }
     .height('100%')
     .width('100%')

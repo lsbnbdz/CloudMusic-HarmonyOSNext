@@ -23,7 +23,7 @@ export struct PlayQueueSheet {
   @StorageProp(StorageConstants.PLAY_MODE) playmode: number = 1
   @StorageProp(StorageConstants.USER_PLAYLISTS) playLists: Array<PlayList> = []
   @StorageProp(StorageConstants.IS_PERSONAL_FM) isPersonalFm: boolean = false
-  @StorageProp(StorageConstants.BREAKPOINT) breakpoint: string = 'sm'
+  @StorageProp(StorageConstants.BREAKPOINT_WIDTH) breakpoint: string = 'sm'
   @State isLoading: boolean = false
   @Link isShow: boolean
   @State dataSource: LazyData<PlayQueue> = new LazyData()

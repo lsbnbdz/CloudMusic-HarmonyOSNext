@@ -1,17 +1,18 @@
 import { LogUtil, ToastUtil } from "@pura/harmony-utils";
 import { getDjSublist } from "../../../api/djApi";
-import { StorageConstants } from "../../../common/constants/StorageConstants";
-import { DjRadio } from "../../../common/entities/dj/DjResult";
-import { DjRadioParam } from "../../../common/entities/local/PageParams";
-import { DjRadioCard } from "../../cards/DjRadioCard";
-import { PlayListCard_Skeleton } from "../../cards/PlayListCard";
+import Constants from "../../constants/Constants";
+import { StorageConstants } from "../../constants/StorageConstants";
+import { DjRadio } from "../../entities/dj/DjResult";
+import { DjRadioParam } from "../../entities/local/PageParams";
+import { DjRadioCard } from "../../../components/cards/DjRadioCard";
+import { PlayListCard_Skeleton } from "../../../components/cards/PlayListCard";
 
 @Component
 export struct UserDjRadioList {
   @StorageProp('bottomRectHeight') bottomRectHeight: number = 0
   @StorageProp(StorageConstants.USER_DJRADIO_LIST) djRadioList: DjRadio[] = []
   @StorageProp(StorageConstants.IS_LOGGED) @Watch('getRadioList') isLogged: boolean = false
-  @StorageProp(StorageConstants.BREAKPOINT) breakpoint: string = 'sm'
+  @StorageProp(StorageConstants.BREAKPOINT_WIDTH) breakpoint: string = 'sm'
   @State isLoading: boolean = false
   @State isRefreshing: boolean = false
   @State lastRefreshTime: number = 0
@@ -81,7 +82,8 @@ export struct UserDjRadioList {
               })
           })
         }
-        ListItem().height(px2vp(this.bottomRectHeight) + 120)
+        ListItem()
+        ListItem().height(px2vp(this.bottomRectHeight) + 56 + Constants.HEIGHT_MINI + Constants.PADDING_EDGE_DEFAULT)
       }
       .lanes(this.breakpoint == 'lg' || this.breakpoint === 'md' ? 2 : 1)
       .width('100%')

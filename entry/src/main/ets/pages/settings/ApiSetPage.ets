@@ -15,34 +15,38 @@ export struct ApiSetPage {
   @StorageProp(StorageConstants.CUSTOM_COOKIE) customCookie: string = ''
   @StorageProp(StorageConstants.API_URL) customApiUrl: string = ''
   @StorageProp(StorageConstants.VALID_API_URL) validApiUrl: boolean = false
-  @StorageProp(StorageConstants.BREAKPOINT) breakpoint: string = 'sm'
+  @StorageProp(StorageConstants.BREAKPOINT_WIDTH) breakpoint: string = 'sm'
   @StorageProp('bottomRectHeight') bottomRectHeight: number = 0
 
   build() {
     NavDestination() {
-      Column({ space: 20 }) {
-        Text() {
-          Span(`用户云服务状态: `)
-          Span(`${this.validApiUrl ? '正常' : '不可用'}`)
-            .fontWeight(FontWeight.Bold)
-            .fontColor(this.validApiUrl ? Color.Green : $r('app.color.app_red'))
+      Scroll() {
+        Column({ space: 20 }) {
+          Text() {
+            Span(`用户云服务状态: `)
+            Span(`${this.validApiUrl ? '正常' : '不可用'}`)
+              .fontWeight(FontWeight.Bold)
+              .fontColor(this.validApiUrl ? Color.Green : $r('app.color.app_red'))
+          }
+          .width('100%')
+          .textAlign(TextAlign.Center)
+          .fontColor($r('app.color.reverse'))
+          .fontSize(Constants.FONT_SIZE_COMMON)
+          .padding(Constants.PADDING_EDGE_DEFAULT)
+          this.SetApiUrl()
+          if(this.validApiUrl) {
+            this.SetCookie()
+          }
         }
+        .padding({ top: Constants.PADDING_EDGE_DEFAULT, left: Constants.PADDING_EDGE_DEFAULT, right: Constants.PADDING_EDGE_DEFAULT, bottom: px2vp(this.bottomRectHeight) + Constants.PADDING_EDGE_TEXT })
         .width('100%')
-        .textAlign(TextAlign.Center)
-        .fontColor($r('app.color.reverse'))
-        .fontSize(Constants.FONT_SIZE_COMMON)
-        .padding(Constants.PADDING_EDGE_DEFAULT)
-        this.SetApiUrl()
-        if(this.validApiUrl) {
-          this.SetCookie()
-        }
+        .constraintSize({
+          minWidth: 200,
+          maxWidth: 600
+        })
       }
-      .padding({ top: Constants.PADDING_EDGE_DEFAULT, left: Constants.PADDING_EDGE_DEFAULT, right: Constants.PADDING_EDGE_DEFAULT, bottom: px2vp(this.bottomRectHeight) + Constants.PADDING_EDGE_TEXT })
       .width('100%')
-      .constraintSize({
-        minWidth: 200,
-        maxWidth: 600
-      })
+      .scrollBar(BarState.Off)
     }
     .backgroundColor($r('app.color.background'))
     .title('云服务配置')
@@ -78,7 +82,7 @@ export struct ApiSetPage {
     Column({ space: 10 }) {
       Row() {
         Row({ space: 5 }) {
-          Text('手动设置Cookie').LeftText()
+          Text('(高级) 手动设置Cookie').LeftText()
           ExplainButton({ title: '手动设置Cookie',
             msg: '注意: 若您使用应用内登录，请勿开启此选项\n\n' +
               '设置后每次API请求都将使用该Cookie, 包括登录、用户信息等获取, 重启后生效\n\n' +

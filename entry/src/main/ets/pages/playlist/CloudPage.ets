@@ -13,7 +13,7 @@ import { PlayQueue } from '../../common/entities/local/PlayQueue'
 import PlayQueueUtils from '../../common/utils/play/PlayQueueUtils'
 import { playQueue } from '../../common/functions/play/playControl'
 import { Album } from '../../common/entities/song/Song'
-import { PLAYMODE } from '../../common/model/enum'
+import { PLAYMODE } from '../../common/model/Enum'
 
 /**
  * 云盘
@@ -25,7 +25,7 @@ const TAG = '[CloudPage] '
 export struct CloudPage {
   @StorageProp('bottomRectHeight') bottomRectHeight: number = 0
   @StorageProp('topRectHeight') topRectHeight: number = 0
-  @StorageProp(StorageConstants.BREAKPOINT) breakpoint: string = 'sm'
+  @StorageProp(StorageConstants.BREAKPOINT_WIDTH) breakpoint: string = 'sm'
   private currentOffset: number = 0
   @State list: PlayListSong[] = new Array()
   @State dataSource: LazyData<PlayListSong> = new LazyData()
@@ -163,7 +163,7 @@ export struct CloudPage {
         .height('100%')
 
         BottomBarComponent()
-          .padding(Constants.PADDING_EDGE_DEFAULT)
+          .padding({ left: Constants.PADDING_EDGE_DEFAULT, right: Constants.PADDING_EDGE_DEFAULT })
           .backgroundColor(Color.Transparent)
           .visibility(this.breakpoint === 'lg' ? Visibility.None : Visibility.Visible)
       }

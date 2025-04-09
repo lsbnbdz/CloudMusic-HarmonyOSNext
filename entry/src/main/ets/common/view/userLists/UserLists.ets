@@ -1,6 +1,6 @@
 import { UserPlayLists } from "./UserPlayLists";
 import { UserDjRadioList } from "./UserDjRadioList";
-import Constants from "../../../common/constants/Constants";
+import Constants from "../../constants/Constants";
 
 /**
  * 用户歌单

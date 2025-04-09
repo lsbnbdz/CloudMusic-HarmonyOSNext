@@ -9,7 +9,7 @@ import { DjRadioParam } from "../../common/entities/local/PageParams"
 import { PlayQueue } from "../../common/entities/local/PlayQueue"
 import { djRadioToQueue } from "../../common/functions/play/djRadioOp"
 import { playQueue } from "../../common/functions/play/playControl"
-import { PLAYMODE } from "../../common/model/enum"
+import { PLAYMODE } from "../../common/model/Enum"
 import PlayQueueUtils from "../../common/utils/play/PlayQueueUtils"
 import { ClickToLoadButton, LoadingMoreButton, NoMoreButton } from "../../components/buttons/LoadMoreButtons"
 import { SongCard } from "../../components/cards/SongCard"
@@ -18,7 +18,7 @@ import { BottomBarComponent } from "../../components/play/BottomBarComponent"
 @Component
 export struct DjRadioPage {
   param: DjRadioParam = { djRadio: djRadioItem }
-  @StorageProp(StorageConstants.BREAKPOINT) breakpoint: string = 'sm'
+  @StorageProp(StorageConstants.BREAKPOINT_WIDTH) breakpoint: string = 'sm'
   @StorageProp('topRectHeight') topRectHeight: number = 0
   @StorageProp('bottomRectHeight') bottomRectHeight: number = 0
   @StorageProp(StorageConstants.IS_PLAYER_LOADING) isPlayerLoading: boolean = false
@@ -145,7 +145,7 @@ export struct DjRadioPage {
         }
 
         BottomBarComponent()
-          .padding(Constants.PADDING_EDGE_DEFAULT)
+          .padding({ left: Constants.PADDING_EDGE_DEFAULT, right: Constants.PADDING_EDGE_DEFAULT })
           .backgroundColor(Color.Transparent)
           .visibility(this.breakpoint === 'lg' ? Visibility.None : Visibility.Visible)
       }

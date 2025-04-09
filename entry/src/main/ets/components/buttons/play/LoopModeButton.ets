@@ -35,6 +35,7 @@ export struct LoopModeButton {
   .width(width)
   .hoverEffect(HoverEffect.Scale)
   .stateEffect(false)
+  .clickEffect({ level: ClickEffectLevel.LIGHT, scale: 0.9 })
 }
 
 @Extend(Image) function image(width: number = 30) {

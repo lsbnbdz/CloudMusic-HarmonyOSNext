@@ -1,15 +1,15 @@
-import { Explore } from '../components/main/Explore/Explore'
+import { Explore } from '../common/view/Explore'
 import { BottomBarComponent } from '../components/play/BottomBarComponent';
 import Constants from '../common/constants/Constants';
 import {
   AlbumParam,
   ArtistParam,
   CommonParam } from '../common/entities/local/PageParams';
-import { UserLists } from '../components/main/UserPlayLists/UserLists';
-import { Me } from '../components/main/Me/Me';
+import { UserLists } from '../common/view/userLists/UserLists';
+import { Me } from '../common/view/Me';
 import { StorageConstants } from '../common/constants/StorageConstants';
 import BreakpointUtils from '../common/utils/system/BreakpointUtils';
-import { EmitterUtil } from '@pura/harmony-utils';
+import { EmitterUtil, LogUtil } from '@pura/harmony-utils';
 import { EmitterConstants } from '../common/constants/EmitterConstants';
 import { PageMap } from '../common/model/PageMap';
 
@@ -22,12 +22,11 @@ struct Index {
 
   @StorageProp('topRectHeight') topRectHeight: number = 0
   @StorageProp('bottomRectHeight') bottomRectHeight: number = 0
-  @StorageProp(StorageConstants.BREAKPOINT) breakpoint: string = 'sm'
+  @StorageProp(StorageConstants.BREAKPOINT_WIDTH) widBp: string = 'sm'
   @StorageProp(StorageConstants.DEFAULT_PAGE_INDEX) index: number = 0
   @State currentHour: number = 0
   @State tabCurrentIndex: number = 0
   @State categoryTabIndex: number = 0
-  @State toolBarHeight: number = 0
 
   async aboutToAppear(): Promise<void> {
     BreakpointUtils.register()
@@ -62,7 +61,7 @@ struct Index {
         icon: $r('app.media.ic_public_search_filled'),
         action: () => {
           this.pageInfos.clear()
-          this.pageInfos.pushPathByName('SearchPage', null, (this.breakpoint === 'lg') && this.pageInfos.size() === 0 ? false : true)
+          this.pageInfos.pushPathByName('SearchPage', null, (this.widBp === 'lg') && this.pageInfos.size() === 0 ? false : true)
         }
       })
     }
@@ -75,25 +74,16 @@ struct Index {
         }
       })
     }
-    // if(this.index == 1) {
-    //   items.unshift({
-    //     value: 'Add',
-    //     icon: $r('app.media.ic_public_add_filled'),
-    //     action: () => {
-    //       this.addPlayListController.open()
-    //     }
-    //   })
-    // }
     return items
   }
 
-  async build() {
+  build() {
     Navigation(this.pageInfos) {
       Stack({ alignContent: Alignment.Bottom }) {
         Tabs({ controller: this.tabController, index: this.tabCurrentIndex }) {
           TabContent() { Explore({ currentHour: this.currentHour }) }
           TabContent() { UserLists({ categoryTabIndex: this.categoryTabIndex }) }
-          TabContent() { Me({ breakpoint: this.breakpoint }) }
+          TabContent() { Me({ breakpoint: this.widBp }) }
         }
         .height('100%')
         .width('100%')
@@ -106,7 +96,11 @@ struct Index {
         .onChange((index) => { this.index = index })
 
         BottomBarComponent()
-          .padding({ left: Constants.PADDING_EDGE_DEFAULT, right: Constants.PADDING_EDGE_DEFAULT, bottom: px2vp(this.bottomRectHeight) + this.toolBarHeight })
+          .padding({
+            left: Constants.PADDING_EDGE_DEFAULT,
+            right: Constants.PADDING_EDGE_DEFAULT,
+            bottom: Constants.PADDING_EDGE_DEFAULT + 54
+          })
           .backgroundColor(Color.Transparent)
       }
     }
@@ -114,7 +108,7 @@ struct Index {
     .width('100%')
     .navBarWidth('50%')
     .navBarPosition(NavBarPosition.Start)
-    .mode((this.breakpoint == 'lg' && this.pageInfos.size() > 0) ? NavigationMode.Split : NavigationMode.Stack)
+    .mode((this.widBp == 'lg' && this.pageInfos.size() > 0) ? NavigationMode.Split : NavigationMode.Stack)
     .enableModeChangeAnimation(true)
     .titleMode(NavigationTitleMode.Mini)
     .title(this.index === 1 ? this.CategoryTabBar : this.index === 0 ? '发现' : '我的')
@@ -135,9 +129,6 @@ struct Index {
     .backgroundColor(Color.Transparent)
     .justifyContent(FlexAlign.SpaceEvenly)
     .width('100%')
-    .onAreaChange((oldArea, newArea) => {
-      this.toolBarHeight = newArea.height as number
-    })
   }
 
   @Builder ToolBarItem(index: number, icon: ResourceStr, activeIcon: ResourceStr, text: string) {

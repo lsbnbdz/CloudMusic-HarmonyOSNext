@@ -9,7 +9,7 @@ export struct CommentCard {
     Column({ space: Constants.PADDING_EDGE_DEFAULT }) {
       // User Information
       Row({ space: 5 }) {
-        Image(this.comment.user.avatarUrl)
+        Image(this.comment.user.avatarUrl + '?param=128y128')
           .width(Constants.SIZE_IMG_AVATAR)
           .aspectRatio(1)
           .borderRadius(Constants.RADIUS_FULL)

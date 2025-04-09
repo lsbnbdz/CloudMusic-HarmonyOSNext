@@ -19,6 +19,10 @@ export class EmitterConstants {
    */
   static readonly EMITTER_REFRESH_PLAYQUEUE: string = 'REFRESH_PLAYQUEUE'
   /**
+   * 刷新LocalSong列表
+   */
+  static readonly REFRESH_LOCALSONGS: string = 'REFRESH_LOCALSONGS'
+  /**
    * 从歌单中删除歌曲
    */
   static readonly EMITTER_DELETE_FROM_PLAYLIST: string = 'DELETE_FROM_PLAYLIST'

@@ -8,7 +8,7 @@ import { BottomBarComponent } from "../../components/play/BottomBarComponent"
 
 @Component
 export struct CommentPage {
-  @StorageProp(StorageConstants.BREAKPOINT) breakpoint: string = 'sm'
+  @StorageProp(StorageConstants.BREAKPOINT_WIDTH) breakpoint: string = 'sm'
   @StorageProp('bottomRectHeight') bottomRectHeight: number = 0
   @State param: CommentParam = { songId: 0, songName: '' }
   @State comments: Comment[] = []
@@ -54,7 +54,7 @@ export struct CommentPage {
           .backToTop(true)
         }
         BottomBarComponent()
-          .padding(Constants.PADDING_EDGE_DEFAULT)
+          .padding({ left: Constants.PADDING_EDGE_DEFAULT, right: Constants.PADDING_EDGE_DEFAULT })
           .visibility(this.breakpoint === 'lg' ? Visibility.None : Visibility.Visible)
       }
       .height('100%')

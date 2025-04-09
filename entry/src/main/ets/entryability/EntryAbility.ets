@@ -6,10 +6,11 @@ import { AppUtil, CrashUtil, LogUtil } from '@pura/harmony-utils';
 import { appInit } from '../common/functions/app/appInit';
 import { StorageConstants } from '../common/constants/StorageConstants';
 import { BusinessError } from '@kit.BasicServicesKit';
-import OrientationUtils from '../common/utils/system/OrientationUtils';
+import OrientationUtils from '../common/utils/system/WindowUtils';
 
 
 export default class EntryAbility extends UIAbility {
+  private uiContext?: UIContext
   async onCreate(want: Want, launchParam: AbilityConstant.LaunchParam): Promise<void> {
     hilog.info(0x0000, 'testTag', '%{public}s', 'Ability onCreate');
 
@@ -19,10 +20,11 @@ export default class EntryAbility extends UIAbility {
     LogUtil.init(0x1010, 'Cloud Music', true)
 
     // 初始化用户首选项
-    await PreferencesUtils.loadPreference(this.context, StorageConstants.USER_PREF)
-    await PreferencesUtils.loadPreference(this.context, StorageConstants.SET_PERF)
-    await PreferencesUtils.loadPreference(this.context, StorageConstants.QUEUE_PREF)
-
+    await Promise.all([
+      PreferencesUtils.loadPreference(this.context, StorageConstants.USER_PREF),
+      PreferencesUtils.loadPreference(this.context, StorageConstants.SET_PERF),
+      PreferencesUtils.loadPreference(this.context, StorageConstants.QUEUE_PREF)
+    ])
     // 初始化应用信息
     await appInit()
   }
@@ -38,39 +40,32 @@ export default class EntryAbility extends UIAbility {
       if(errCode) {
         return
       }
-      OrientationUtils.init(data)
     })
     windowStage.loadContent('pages/Index', async (err, data) => {
       if (err.code) {
         return
       }
-      let windowClass: window.Window = windowStage.getMainWindowSync() // 获取应用主窗口
-      // 设置窗口全屏
-      // let isLayoutFullScreen = true;
-      // windowClass.setWindowLayoutFullScreen(isLayoutFullScreen).then(() => {
-      //   console.info('Succeeded in setting the window layout to full-screen mode.');
-      // }).catch((err: BusinessError) => {
-      //   console.error('Failed to set the window layout to full-screen mode. Cause:' + JSON.stringify(err));
-      // });
+      let windowClass: window.Window = windowStage.getMainWindowSync()
+      OrientationUtils.init(windowClass)
 
       // 获取布局避让遮挡的区域
       let type = window.AvoidAreaType.TYPE_NAVIGATION_INDICATOR
       let avoidArea = windowClass.getWindowAvoidArea(type)
       let bottomRectHeight = avoidArea.bottomRect.height
-      AppStorage.setOrCreate('bottomRectHeight', bottomRectHeight)
+      AppStorage.setOrCreate(StorageConstants.BOTTOM_RECT_HEIGHT, bottomRectHeight)
       type = window.AvoidAreaType.TYPE_SYSTEM
       avoidArea = windowClass.getWindowAvoidArea(type)
       let topRectHeight = avoidArea.topRect.height
-      AppStorage.setOrCreate('topRectHeight', topRectHeight)
+      AppStorage.setOrCreate(StorageConstants.TOP_RECT_HEIGHT, topRectHeight)
 
       // 注册监听函数，动态获取避让区域数据
       windowClass.on('avoidAreaChange', (data) => {
         if (data.type === window.AvoidAreaType.TYPE_SYSTEM) {
           let topRectHeight = data.area.topRect.height
-          AppStorage.setOrCreate('topRectHeight', topRectHeight)
+          AppStorage.setOrCreate(StorageConstants.TOP_RECT_HEIGHT, topRectHeight)
         } else if (data.type == window.AvoidAreaType.TYPE_NAVIGATION_INDICATOR) {
           let bottomRectHeight = data.area.bottomRect.height
-          AppStorage.setOrCreate('bottomRectHeight', bottomRectHeight)
+          AppStorage.setOrCreate(StorageConstants.BOTTOM_RECT_HEIGHT, bottomRectHeight)
         }
       })
     })

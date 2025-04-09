@@ -12,7 +12,7 @@ import { playQueue } from "../../common/functions/play/playControl"
 import { SongInfoSheet } from "../sheets/SongInfoSheet"
 import { PlayListAddSheet } from "../sheets/PlayListAddSheet"
 import { DjRadio, djRadioItem } from "../../common/entities/dj/DjResult"
-import { PLAYMODE } from "../../common/model/enum"
+import { PLAYMODE } from "../../common/model/Enum"
 
 @Component
 export struct SongCard {

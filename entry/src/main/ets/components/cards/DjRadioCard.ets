@@ -56,7 +56,7 @@ export struct DjRadioCard {
 export struct DjRadioRecommendCard {
   djRadio: RecommendDjRadio = RecommendDjRadioItem
   @Consume('pageInfos') pageInfos: NavPathStack
-  @StorageProp(StorageConstants.BREAKPOINT) breakpoint: string = 'sm'
+  @StorageProp(StorageConstants.BREAKPOINT_WIDTH) breakpoint: string = 'sm'
 
   build() {
     Column({ space: 5 }) {

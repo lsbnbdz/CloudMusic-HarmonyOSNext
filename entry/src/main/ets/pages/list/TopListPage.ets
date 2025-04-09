@@ -6,7 +6,7 @@ import { TopListItemCard } from "../../components/cards/TopListItemCard"
 @Component
 export struct TopListPage {
   @StorageLink(StorageConstants.TOPLISTS) topList: Array<TopListItem> = []
-  @StorageProp(StorageConstants.BREAKPOINT) breakpoint: string = 'sm'
+  @StorageProp(StorageConstants.BREAKPOINT_WIDTH) breakpoint: string = 'sm'
   build() {
     NavDestination() {
       Grid() {

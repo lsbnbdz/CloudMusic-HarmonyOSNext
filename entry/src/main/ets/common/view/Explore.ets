@@ -1,17 +1,17 @@
 import { DialogUtil, ToastUtil} from "@pura/harmony-utils";
-import { RecommendCards } from "../../cards/RecommendCards";
-import Constants from "../../../common/constants/Constants";
-import { TopListItem } from "../../../common/entities/recommend/TopList";
-import { getTopList } from "../../../api/topListApi";
-import { TopListItemCard } from "../../cards/TopListItemCard";
-import { StorageConstants } from "../../../common/constants/StorageConstants";
-import { getPersonalizedList } from "../../../api/playListApi";
-import { PersonalListItem } from "../../../common/entities/recommend/Personalized";
-import { PersonalizedCard } from "../../cards/PersonalizedCard";
-import { AppInfo, AppInfoClass } from "../../../common/entities/local/AppInfo";
-import { getRecommendDj } from "../../../api/djApi";
-import { DjRadioRecommendCard } from "../../cards/DjRadioCard";
-import { RecommendDjRadio } from "../../../common/entities/dj/DjRecommend";
+import { RecommendCards } from "../../components/cards/RecommendCards";
+import Constants from "../constants/Constants";
+import { TopListItem } from "../entities/recommend/TopList";
+import { getTopList } from "../../api/topListApi";
+import { TopListItemCard } from "../../components/cards/TopListItemCard";
+import { StorageConstants } from "../constants/StorageConstants";
+import { getPersonalizedList } from "../../api/playListApi";
+import { PersonalListItem } from "../entities/recommend/Personalized";
+import { PersonalizedCard } from "../../components/cards/PersonalizedCard";
+import { AppInfo, AppInfoClass } from "../entities/local/AppInfo";
+import { getRecommendDj } from "../../api/djApi";
+import { DjRadioRecommendCard } from "../../components/cards/DjRadioCard";
+import { RecommendDjRadio } from "../entities/dj/DjRecommend";
 
 @Component
 export struct Explore {
@@ -23,7 +23,7 @@ export struct Explore {
   @StorageLink(StorageConstants.TOPLISTS) topList: Array<TopListItem> = []
   @StorageLink(StorageConstants.PERSONALIZED_LIST) personalizedList: Array<PersonalListItem> = []
   @StorageLink(StorageConstants.RECOMMENDED_DJ) recommendDjRadioList: Array<RecommendDjRadio> = []
-  @StorageProp(StorageConstants.BREAKPOINT) breakpoint: string = 'sm'
+  @StorageProp(StorageConstants.BREAKPOINT_WIDTH) breakpoint: string = 'sm'
   @State isLoadingTopList: boolean = false
   @State isLoadingPersonalized: boolean = false
   @State isLoadingRecommendDjRadio: boolean = false

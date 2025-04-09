@@ -18,6 +18,26 @@ export class StorageConstants {
    */
   static readonly BREAKPOINT: string = 'currentBreakpoint'
   /**
+   * Current Width Breakpoint
+   * @description AppStorage
+   */
+  static readonly BREAKPOINT_WIDTH: string = 'currentWidthBreakpoint'
+  /**
+   * Current Height Breakpoint
+   * @description AppStorage
+   */
+  static readonly BREAKPOINT_HEIGHT: string = 'currentHeightBreakpoint'
+  /**
+   * Bottom Rect Height
+   * @description AppStorage
+   */
+  static readonly BOTTOM_RECT_HEIGHT: string = 'bottomRectHeight'
+  /**
+   * Current TopRectHeight
+   * @description AppStorage
+   */
+  static readonly TOP_RECT_HEIGHT: string = 'topRectHeight'
+  /**
    * API URL 是否有效
    * @description AppStorage
    */

@@ -1,4 +1,4 @@
-import { PLAYMODE } from "../../model/enum"
+import { PLAYMODE } from "../../model/Enum"
 import { Song } from "../song/Song"
 
 export interface PlayQueue {

@@ -18,7 +18,7 @@ import PlayQueueUtils from '../../common/utils/play/PlayQueueUtils'
 import { PlayQueue } from '../../common/entities/local/PlayQueue'
 import { playQueue } from '../../common/functions/play/playControl'
 import { Album } from '../../common/entities/song/Song'
-import { PLAYMODE } from '../../common/model/enum'
+import { PLAYMODE } from '../../common/model/Enum'
 
 /**
  * 歌单二级页面
@@ -37,7 +37,7 @@ export struct PlayListPage {
   @StorageProp('topRectHeight') topRectHeight: number = 0
   @StorageProp(StorageConstants.IS_PLAYER_LOADING) isPlayerLoading: boolean = false
   @StorageProp(StorageConstants.USER) user: User = UserItem
-  @StorageProp(StorageConstants.BREAKPOINT) breakpoint: string = 'sm'
+  @StorageProp(StorageConstants.BREAKPOINT_WIDTH) breakpoint: string = 'sm'
   @StorageProp(StorageConstants.USER_PLAYLISTS) userPlayLists: PlayList[] = []
   @StorageProp(StorageConstants.IS_LOGGED) isLogged: boolean = false
   @Consume('pageInfos') pageInfos: NavPathStack
@@ -222,7 +222,7 @@ export struct PlayListPage {
         .height('100%')
 
         BottomBarComponent()
-          .padding(Constants.PADDING_EDGE_DEFAULT)
+          .padding({ left: Constants.PADDING_EDGE_DEFAULT, right: Constants.PADDING_EDGE_DEFAULT })
           .backgroundColor(Color.Transparent)
           .visibility(this.breakpoint === 'lg' ? Visibility.None : Visibility.Visible)
       }

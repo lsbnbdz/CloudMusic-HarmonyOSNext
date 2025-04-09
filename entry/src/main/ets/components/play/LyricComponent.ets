@@ -15,7 +15,6 @@ export struct LyricComponent {
   @State userScrolling: number = 0
   @State userScrollingInterval: number = 0
   @State lyric: Lyric[] = []
-  @State listCenterIndex: number = 0
   @StorageProp(StorageConstants.LYRIC_STYLE) lyricStyle: LyricStyle = LyricStyleItem
 
   private scroller: Scroller = new Scroller()
@@ -75,9 +74,6 @@ export struct LyricComponent {
       .onTouch(() => {
         this.userScrolling = 2
       })
-      .onScrollIndex((start, end, center) => {
-        this.listCenterIndex = center
-      })
     }
   }
 }
@@ -94,6 +90,7 @@ export struct LyricComponent {
     this.index = params.index
     this.item = params.item as Lyric
   }
+
   build() {
     Text(this.item.content)
       .width('100%')

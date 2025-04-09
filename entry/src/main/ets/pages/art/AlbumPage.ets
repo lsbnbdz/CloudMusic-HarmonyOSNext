@@ -12,7 +12,7 @@ import { playListToQueue } from "../../common/functions/play/playListOp"
 @Component
 export struct AlbumPage {
   @StorageProp('bottomRectHeight') bottomRectHeight: number = 0
-  @StorageProp(StorageConstants.BREAKPOINT) breakpoint: string = 'sm'
+  @StorageProp(StorageConstants.BREAKPOINT_WIDTH) breakpoint: string = 'sm'
   @StorageLink(StorageConstants.IS_PLAYER_LOADING) isPlayerLoading: boolean = false
   @State songs: PlayListSong[] = []
   @State isLoading: boolean = true
@@ -86,7 +86,7 @@ export struct AlbumPage {
         }
 
         BottomBarComponent()
-          .padding(Constants.PADDING_EDGE_DEFAULT)
+          .padding({ left: Constants.PADDING_EDGE_DEFAULT, right: Constants.PADDING_EDGE_DEFAULT })
           .backgroundColor(Color.Transparent)
           .visibility(this.breakpoint === 'lg' ? Visibility.None : Visibility.Visible)
       }

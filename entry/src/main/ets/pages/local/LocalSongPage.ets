@@ -9,6 +9,7 @@ import RelationalStoreUtils from '../../common/utils/data/RelationalStoreUtils';
 import { LocalMigrationSheet } from '../../components/sheets/LocalMigrationSheet';
 import { LazyData } from '@pie/lazy-data';
 import { PickerUtil } from '@pura/picker_utils';
+import { EmitterConstants } from '../../common/constants/EmitterConstants';
 
 /**
  * 缓存管理页
@@ -20,7 +21,7 @@ const TAG = '[LocalSongPage]] '
 export struct LocalSongPage {
   @StorageProp('bottomRectHeight') bottomRectHeight: number = 0
   @StorageProp('topRectHeight') topRectHeight: number = 0
-  @StorageProp(StorageConstants.BREAKPOINT) breakpoint: string = 'sm'
+  @StorageProp(StorageConstants.BREAKPOINT_WIDTH) breakpoint: string = 'sm'
   @State filesList: string[] = []
   @State searchKeyword: string = ''
   @State filteredSongs: LocalSong[] = new Array()
@@ -71,9 +72,13 @@ export struct LocalSongPage {
     this.refreshList()
     this.filesList = await FileUtils.getFileName()
     this.isLoading = false
-    EmitterUtil.onSubscribe('refreshLocalSongs', async () => {
-      await this.refreshList()
+    EmitterUtil.onSubscribe(EmitterConstants.REFRESH_LOCALSONGS, () => {
+      this.refreshList()
     })
+  }
+
+  aboutToDisappear(): void {
+    EmitterUtil.unSubscribe(EmitterConstants.REFRESH_LOCALSONGS)
   }
 
   build() {
@@ -224,7 +229,7 @@ export struct LocalSongPage {
         }
 
         BottomBarComponent()
-          .padding(Constants.PADDING_EDGE_DEFAULT)
+          .padding({ left: Constants.PADDING_EDGE_DEFAULT, right: Constants.PADDING_EDGE_DEFAULT })
           .backgroundColor(Color.Transparent)
           .visibility(this.breakpoint === 'lg' ? Visibility.None : Visibility.Visible)
       }

@@ -48,7 +48,6 @@ export struct DonatePage {
         }
         .padding({ top: Constants.PADDING_EDGE_TEXT })
         .width('100%')
-        .height('auto')
       }
       .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.BOTTOM])
       .height('100%')

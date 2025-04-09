@@ -56,7 +56,7 @@ export struct ApiSetPage {
     Column({ space: 10 }) {
       Row() {
         Row({ space: 5 }) {
-          Text('用户自定义云服务配置').LeftText()
+          Text('云服务配置 (需要用户自搭建)').LeftText()
         }
       }
       .width('100%')
